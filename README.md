@@ -1,6 +1,6 @@
-# Lale_android_ENT_Web
+# lale_android
 
-
+Lale for android
 
 ## Getting started
 
@@ -10,19 +10,17 @@ Already a pro? Just edit this README.md and make it your own. Want to make it ea
 
 ## Add your files
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
 
 ```
 cd existing_repo
-git remote add origin http://gitlab.flowring.com/lale/lale_android_ent_web.git
-git branch -M master
-git push -uf origin master
+git remote add origin http://gitlab.flowring.com/lale/lale_android.git
+git branch -M laletoc_refactor
+git push -uf origin laletoc_refactor
 ```
 
 ## Integrate with your tools
 
-- [ ] [Set up project integrations](http://gitlab.flowring.com/lale/lale_android_ent_web/-/settings/integrations)
+- [ ] [Set up project integrations](http://gitlab.flowring.com/lale/lale_android/-/settings/integrations)
 
 ## Collaborate with your team
 
@@ -46,7 +44,7 @@ Use the built-in continuous integration in GitLab.
 
 # Editing this README
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!).  Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
 
 ## Suggestions for a good README
 Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.

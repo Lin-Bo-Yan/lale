@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:background="#00000000">
+
+    <RelativeLayout
+        android:layout_width="359dp"
+        android:layout_height="82dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:alpha="0.7"
+        android:background="@drawable/round_alpha70_181818">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true">
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/title"
+                android:layout_width="164dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:lines="1"
+                android:text="邀請者"
+                android:textColor="#FFFFFF"
+                android:textSize="22dp" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_below="@+id/title"
+                android:layout_marginStart="14dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/scan_btn_bg"
+                android:src="@drawable/ic_launcher" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/text"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/title"
+                android:layout_marginStart="34dp"
+                android:lines="1"
+                android:text="lale企業語音"
+                android:textColor="#FFFFFF"
+                android:textSize="18dp" />
+        </RelativeLayout>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/call_light"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+
+            android:layout_marginEnd="14dp"
+            android:background="@drawable/round_0a84ff"
+            android:scaleType="center"
+            android:src="@drawable/call_light" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/call_times"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="14dp"
+            android:layout_toStartOf="@+id/call_light"
+            android:background="@drawable/round_ff3b30"
+            android:scaleType="center"
+            android:src="@drawable/call_times" />
+
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

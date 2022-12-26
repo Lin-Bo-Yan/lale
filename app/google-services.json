@@ -1,0 +1,262 @@
+{
+  "project_info": {
+    "project_number": "599773960182",
+    "firebase_url": "https://lale-customer.firebaseio.com",
+    "project_id": "lale-customer",
+    "storage_bucket": "lale-customer.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:599773960182:android:985bb0205d998da8e619d7",
+        "android_client_info": {
+          "package_name": "com.flowring.arbordemo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "599773960182-l95g6ju4qq74fobi31e4s9i3gnngmmsp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuJkxv86KD-E32OswWTLfiiN3xyGu9Kfg"
+        },
+        {
+          "current_key": "AIzaSyBuM3Y-imWk_GDyGrxfum2L6EDuPJuh-6c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "599773960182-l95g6ju4qq74fobi31e4s9i3gnngmmsp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "599773960182-ho5craf363f5sc7dbvrbpm5qq87dtuc3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.flowring.miy"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:599773960182:android:7656d08ad1e32006e619d7",
+        "android_client_info": {
+          "package_name": "com.flowring.laleents"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "599773960182-l95g6ju4qq74fobi31e4s9i3gnngmmsp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuJkxv86KD-E32OswWTLfiiN3xyGu9Kfg"
+        },
+        {
+          "current_key": "AIzaSyBuM3Y-imWk_GDyGrxfum2L6EDuPJuh-6c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "599773960182-l95g6ju4qq74fobi31e4s9i3gnngmmsp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "599773960182-ho5craf363f5sc7dbvrbpm5qq87dtuc3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.flowring.miy"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:599773960182:android:19fd44f15a58b2f5e619d7",
+        "android_client_info": {
+          "package_name": "com.flowring.laletoc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "599773960182-3cl1bcbrfvdd4rckuqoudgp8pp8ho8bn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.flowring.laletoc",
+            "certificate_hash": "2f536e2aded4e059f379000538008cc78f4ec8b8"
+          }
+        },
+        {
+          "client_id": "599773960182-9rcnff968v5edq1o2pg7af5f4hht03jv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.flowring.laletoc",
+            "certificate_hash": "3b58aa77205781bffcf844ccb10c592664c328b3"
+          }
+        },
+        {
+          "client_id": "599773960182-l2irs4c9k5kc2fnhinujekgppcoc7ius.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.flowring.laletoc",
+            "certificate_hash": "4accd07ca0e770096e45241fdf9571d313c78b42"
+          }
+        },
+        {
+          "client_id": "599773960182-l95g6ju4qq74fobi31e4s9i3gnngmmsp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuJkxv86KD-E32OswWTLfiiN3xyGu9Kfg"
+        },
+        {
+          "current_key": "AIzaSyBuM3Y-imWk_GDyGrxfum2L6EDuPJuh-6c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "599773960182-l95g6ju4qq74fobi31e4s9i3gnngmmsp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "599773960182-ho5craf363f5sc7dbvrbpm5qq87dtuc3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.flowring.miy"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:599773960182:android:27f530081e3ace88e619d7",
+        "android_client_info": {
+          "package_name": "com.flowring.mfun"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "599773960182-0qgdom4qcqfteomb4a2qoa64v2r8phv4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.flowring.mfun",
+            "certificate_hash": "5b524e683f05830b8b009609d6bf315fff39618a"
+          }
+        },
+        {
+          "client_id": "599773960182-avkqqo68oklvedi0smr390d3umo9tc09.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.flowring.mfun",
+            "certificate_hash": "2f536e2aded4e059f379000538008cc78f4ec8b8"
+          }
+        },
+        {
+          "client_id": "599773960182-l95g6ju4qq74fobi31e4s9i3gnngmmsp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuJkxv86KD-E32OswWTLfiiN3xyGu9Kfg"
+        },
+        {
+          "current_key": "AIzaSyBuM3Y-imWk_GDyGrxfum2L6EDuPJuh-6c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "599773960182-l95g6ju4qq74fobi31e4s9i3gnngmmsp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "599773960182-ho5craf363f5sc7dbvrbpm5qq87dtuc3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.flowring.miy"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:599773960182:android:2e0098b526aecac2e619d7",
+        "android_client_info": {
+          "package_name": "com.flowring.miy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "599773960182-7e81rh9bfts4l4cb6gsia6a11ps2umqq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.flowring.miy",
+            "certificate_hash": "3a572ae485300325ea70aea3acff7b2fdcc4ccbe"
+          }
+        },
+        {
+          "client_id": "599773960182-uf5ld57381t2nrd5jbre5vbjmvvmv482.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.flowring.miy",
+            "certificate_hash": "2f536e2aded4e059f379000538008cc78f4ec8b8"
+          }
+        },
+        {
+          "client_id": "599773960182-l95g6ju4qq74fobi31e4s9i3gnngmmsp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuJkxv86KD-E32OswWTLfiiN3xyGu9Kfg"
+        },
+        {
+          "current_key": "AIzaSyBuM3Y-imWk_GDyGrxfum2L6EDuPJuh-6c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "599773960182-l95g6ju4qq74fobi31e4s9i3gnngmmsp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "599773960182-ho5craf363f5sc7dbvrbpm5qq87dtuc3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.flowring.miy"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

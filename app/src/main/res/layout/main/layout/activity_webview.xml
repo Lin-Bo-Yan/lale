@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="44dp"
+        android:orientation="horizontal"
+        android:id="@+id/linearLayout"
+        android:background="#08C7D0"
+        android:gravity="left">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/close"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="24dp"
+            android:src="@drawable/nav_icon_close" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/url"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="49dp"
+            android:layout_toEndOf="@+id/close"
+            android:lines="1"
+            android:maxWidth="300dp"
+            android:text="127.0.0.1"
+            android:textColor="@color/white"
+            android:textSize="14dp" />
+
+    </RelativeLayout>
+
+    <WebView
+
+        android:id="@+id/webview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/linearLayout" />
+
+    <!--    <androidx.appcompat.widget.AppCompatImageView-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="match_parent"-->
+    <!--        android:layout_alignParentTop="true"-->
+    <!--        android:alpha="0.7"-->
+    <!--        android:layout_marginTop="-19dp"-->
+    <!--        android:src="@drawable/g107654" />-->
+
+</RelativeLayout>

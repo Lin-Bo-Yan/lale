@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.flowring.laleents">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /> <!-- 全域浮動框 -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />   <!-- 保持喚醒 -->
+    <uses-permission android:name="android.permission.VIBRATE" />     <!-- 震動 -->
+    <uses-permission android:name="com.android.launcher.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /><!--背景服務 -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.SYSTEM_OVERLAY_WINDOW" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /><!--这行代码必须存在，否则点击不了系统设置中的按钮-->
+
+
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <queries>
+        <provider android:authorities="com.facebook.katana.provider.PlatformProvider" />
+    </queries>
+    <!-- WebRTC Dependencies -->
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-feature android:name="android.hardware.camera" />
+
+    <!-- PubNub Dependencies -->
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="com.flowring.laletoc.permission.C2D_MESSAGE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+
+    <!--    <permission-->
+    <!--        android:name="com.flowring.laletoc.permission.C2D_MESSAGE"-->
+    <!--        android:protectionLevel="signature" />-->
+
+
+    <application
+        android:allowBackup="true"
+        android:hardwareAccelerated="true"
+        android:largeHeap="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@drawable/ic_launcher_round"
+        android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
+        android:launchMode="singleTask"
+
+        android:requestLegacyExternalStorage="true"
+        android:preserveLegacyExternalStorage="true"
+        android:theme="@style/AppTheme">
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.flowring.laleents.fileprovider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_path" />
+        </provider>
+
+        <service android:name="org.eclipse.paho.android.service.MqttService"
+            android:exported ="false"/>
+        <service android:name=".tools.pusher.MyFirebaseMessagingService"
+            android:exported ="false">
+            <intent-filter>
+
+                <action android:name="com.google.firebase.MESSAGING_EVENT"
+                    android:exported ="false"/>
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".tools.cloud.mqtt.MqttService"
+            android:exported ="false"
+            android:enabled="true"></service>
+
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@mipmap/ic_launcher" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorAccent" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="urgent_alert" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBuM3Y-imWk_GDyGrxfum2L6EDuPJuh-6c" />
+
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+
+
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
+
+        <activity
+            android:name=".ui.widget.jitsiMeet.WaitAnswerActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:exported ="true"/>
+        <activity
+            android:name=".ui.main.webBody.EimLoginActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:exported ="true"/>
+        <activity
+            android:name=".ui.main.webBody.MainWebActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleTask"
+            android:exported ="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+
+        </activity>
+        <activity android:name=".ui.main.webBody.shareActivity"
+            android:exported ="true">
+            <!--            <intent-filter>-->
+            <!--                <action android:name="android.intent.action.SEND" />-->
+            <!--                <category android:name="android.intent.category.DEFAULT" />-->
+            <!--                <data android:mimeType="*/*" />-->
+            <!--            </intent-filter>-->
+            <!--            <intent-filter>-->
+            <!--                <action android:name="android.intent.action.SEND_MULTIPLE" />-->
+            <!--                <category android:name="android.intent.category.DEFAULT" />-->
+            <!--                <data android:mimeType="*/*" />-->
+            <!--            </intent-filter>-->
+        </activity>
+
+        <activity
+            android:name=".ui.widget.jitsiMeet.WebJitisiMeetActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"
+            android:supportsPictureInPicture="true"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
+            android:windowSoftInputMode="stateHidden|adjustNothing"
+            android:exported ="true"/>
+
+        <activity
+            android:name=".ui.main.webBody.WebViewActivity"
+            android:screenOrientation="portrait"
+            android:stateNotNeeded="true"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:exported ="true"/>
+        <activity
+            android:name=".ui.widget.qrCode.ScanCaptureActivity"
+            android:screenOrientation="portrait"
+            android:stateNotNeeded="true"
+            android:theme="@style/AppTheme.ScanActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:exported ="true"/>
+
+        <receiver android:name=".tools.phone.BootBroadcastReceiver"
+            android:exported ="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+
+
+    </application>
+
+    <queries>
+        <package
+            android:exported ="false"
+            android:name="com.tencent.mm" />
+    </queries>
+</manifest>

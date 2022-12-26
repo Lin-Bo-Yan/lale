@@ -1,0 +1,10 @@
+<resources>
+
+    <string name="login">登入</string>
+
+    <string name="more_edit_name_hint">請輸入暱稱</string>
+
+    <string name="scan_qrcode">掃描QR Code</string>
+    <string name="scan_qrcode_desc">將掃描框對準QR Code後會自動進行掃描</string>
+
+</resources>

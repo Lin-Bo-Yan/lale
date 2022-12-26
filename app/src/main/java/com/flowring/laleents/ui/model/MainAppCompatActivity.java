@@ -1,0 +1,152 @@
+package com.flowring.laleents.ui.model;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
+import android.view.WindowManager;
+
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+
+import com.flowring.laleents.model.msg.MessageInfo;
+import com.flowring.laleents.model.msg.MessageItem;
+import com.flowring.laleents.tools.CallbackUtils;
+import com.flowring.laleents.tools.DialogUtils;
+import com.flowring.laleents.tools.StringUtils;
+import com.flowring.laleents.tools.phone.DefinedUtils;
+import com.flowring.laleents.tools.phone.LocalBroadcastControlCenter;
+import com.flowring.laleents.ui.widget.dialog.DialogWait;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+public class MainAppCompatActivity extends AppCompatActivity {
+
+
+    //websocket 配置
+    public CallbackUtils.ActivityReturn activityReturn;
+    public ActivityResultLauncher ActivityResult = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<androidx.activity.result.ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (activityReturn != null)
+                        activityReturn.Callback(result);
+                }
+            }
+    );
+    protected String[] BroadcastMessageIds = new String[]{"test", Intent.ACTION_SEND_MULTIPLE, Intent.ACTION_SEND, LocalBroadcastControlCenter.ACTION_NOTIFI_AF, LocalBroadcastControlCenter.ACTION_MQTT_Error};
+    protected BroadcastReceiver FireBaseMsgBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+            if (action.equals(LocalBroadcastControlCenter.ACTION_NOTIFI_AF)) {
+                MessageInfo messageInfo = null;
+                try {
+                    messageInfo = new MessageInfo(new JSONObject(intent.getStringExtra("data")));
+                    MessageItem.ReCardInfo reCardInfo = messageInfo.getMessage(new HashMap<>()).getCard();
+                    ArrayList<String> stringTaskArray = new ArrayList<>();
+                    stringTaskArray.add(reCardInfo.getAvatarUrl());
+                    stringTaskArray.add(reCardInfo.getUserName());
+                    stringTaskArray.add(reCardInfo.notifyType);
+                    stringTaskArray.add("" + reCardInfo.priority);
+                    stringTaskArray.add(reCardInfo.keyword);
+                    stringTaskArray.add(reCardInfo.processName);
+                    stringTaskArray.add(reCardInfo.rootUserName);
+                    stringTaskArray.add(reCardInfo.duedate);
+                    stringTaskArray.add(reCardInfo.url);
+                    ArrayList<String> formList = new ArrayList<>();
+                    formList.addAll(intent.getStringArrayListExtra("formList"));
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            } else if (action.equals(Intent.ACTION_SEND)) {
+                StringUtils.HaoLog("testWebActivity ACTION_SEND");
+            } else if (action.equals(Intent.ACTION_SEND_MULTIPLE)) {
+                StringUtils.HaoLog("testWebActivity ACTION_SEND_MULTIPLE");
+            } else if (action.equals(LocalBroadcastControlCenter.ACTION_MQTT_FRIEND)) {
+                String user_id = intent.getStringExtra("user_id");
+                String user_name = intent.getStringExtra("user_name");
+                String user_avatar_url = intent.getStringExtra("user_avatar_url");
+            } else if (action.equals(LocalBroadcastControlCenter.ACTION_MQTT_Error)) {
+                DialogUtils.showDialogMessage(MainAppCompatActivity.this, "伺服器連線異常");
+            }
+        }
+    };
+
+
+
+
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        itFilter.addAction(DefinedUtils.ACTION_FIREBASE_MESSAGE);
+        itFilter.addAction(DefinedUtils.ACTION_FRIEND_INVITE);
+        itFilter.addAction(Intent.ACTION_SEND);
+        itFilter.addAction(Intent.ACTION_SEND_MULTIPLE);
+        itFilter.addAction("test");
+        //保持亮起
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+
+    }
+
+
+    protected IntentFilter itFilter = new IntentFilter();
+
+    @Override
+    protected void onPause() {
+        //跳好友通邀請通知訊息
+
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+    }
+
+
+
+
+    protected DialogWait dialogWait;
+
+    public void cancelWait() {
+        runOnUiThread(() -> {
+            if (dialogWait != null) {
+                dialogWait.dismissDialog();
+                dialogWait = null;
+            }
+        });
+
+    }
+
+    public void showWait() {
+        runOnUiThread(() -> {
+            FragmentManager fm = getSupportFragmentManager();
+            dialogWait = (DialogWait) fm.findFragmentByTag("DIALOG_UPLOAD_THEME_WAIT");
+            if (dialogWait == null) {
+                dialogWait = DialogWait.newInstanceForTimeout();
+                dialogWait.show(fm, "DIALOG_UPLOAD_THEME_WAIT");
+            }
+        });
+
+    }
+
+
+}
