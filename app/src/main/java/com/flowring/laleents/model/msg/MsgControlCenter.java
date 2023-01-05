@@ -402,8 +402,8 @@ public class MsgControlCenter {
         if (messageInfo != null) {
             //觸發接收到時的回調
             {
-                if (messageInfo.is_lale_ecosystem_af_notify() && source == Source.notifi)
-                    LocalBroadcastControlCenter.send(AllData.context, LocalBroadcastControlCenter.ACTION_NOTIFI_AF, value);
+//                if (messageInfo.is_lale_ecosystem_af_notify() && source == Source.notifi)
+//                    LocalBroadcastControlCenter.send(AllData.context, LocalBroadcastControlCenter.ACTION_NOTIFI_AF, value);
             }
             if (messageInfo.is_lale_room()) {
                 RoomControlCenter.getAllRoom();

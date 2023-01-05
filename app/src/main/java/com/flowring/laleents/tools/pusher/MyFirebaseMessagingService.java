@@ -92,15 +92,22 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                             sendNotification(messageInfo, remoteMessage.getData().get("body"));
                         }
                     } else {
-                        if (!isAppForeground && messageInfo != null) {
+                            StringUtils.HaoLog("是否在前景"+isAppForeground);
+                            if(messageInfo != null)
+                            {    if (!isAppForeground ) {
                             sendNotification(messageInfo, remoteMessage.getData().get("body"));
+                        }else
+                        {
+                            LocalBroadcastControlCenter.send(this, LocalBroadcastControlCenter.ACTION_NOTIFI_AF, remoteMessage.getData().get("body"));
                         }
+                            }
                     }
 
 
                 }
             } else {
                 boolean isAppForeground = CommonUtils.foregrounded();
+                StringUtils.HaoLog("是否在前景"+isAppForeground);
                 if (!isAppForeground) {
                     sendNoChatNotification(remoteMessage);
                 } else {
