@@ -3,6 +3,8 @@ package com.flowring.laleents.tools.pusher;
 import static android.app.ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND;
 import static android.app.ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE;
 import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
+import static android.app.PendingIntent.FLAG_IMMUTABLE;
+import static android.app.PendingIntent.FLAG_MUTABLE;
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 import static com.flowring.laleents.model.msg.MsgControlCenter.receiveMsg;
 
@@ -133,7 +135,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     body = workNotifi.content;
                 }
                 StringUtils.HaoLog("body="+body);
-                PendingIntent pendingIntent = PendingIntent.getActivity(this, afid, intent,  FLAG_UPDATE_CURRENT);
+                PendingIntent pendingIntent = PendingIntent.getActivity(this, afid, intent,  FLAG_IMMUTABLE);
 
 
                 NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channel_id)
@@ -209,7 +211,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             intent.putExtra("roomInfo", data.room_id);
         }
         StringUtils.HaoLog("workNotifi =" + new Gson().toJson(workNotifi));
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, id, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, id, intent, FLAG_IMMUTABLE );
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
