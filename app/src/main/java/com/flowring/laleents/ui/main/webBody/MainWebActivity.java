@@ -1024,6 +1024,9 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
                 case "downloadByUrl":
                     downloadByUrl(data);
                     break;
+                case "downloadByUrls":
+                    downloadByUrls(data);
+                    break;
                 case "downloadByBytesBase64":
                     downloadByBytesBase64(data);
                     break;
@@ -1088,7 +1091,7 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
         return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
     }
 
-    private void downloadFile(String url, String userAgent, String contentDisposition, String mimeType) {
+    private void downloadFile(String url, String fileName) {
         DownloadManager.Request request;
         try {
             request = new DownloadManager.Request(
@@ -1115,13 +1118,13 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
         }
 
         request.addRequestHeader("cookie", cookies);
-        request.addRequestHeader("User-Agent", userAgent);
+        request.addRequestHeader("User-Agent", "");
         request.setDescription("Downloading File...");
         request.allowScanningByMediaScanner();
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH mm ss SSS");
         request.setDestinationInExternalPublicDir(
-                Environment.DIRECTORY_DOWNLOADS, sdf.format(new Date().getDate()) + StringUtils.toExtension(conection.getContentType()));
+                Environment.DIRECTORY_DOWNLOADS, fileName == null ? sdf.format(new Date().getDate()) + StringUtils.toExtension(conection.getContentType()) : fileName);
         DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
         dm.enqueue(request);
         try {
@@ -1133,6 +1136,39 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
         StringUtils.HaoLog("DownloadManager=end");
     }
 
+    private void downloadFile(String[] urls, String fileName, downloadByUrlsCallback back) {
+        DownloadManager.Request request;
+
+        if (urlsNew < urlsMax) {
+            try {
+                String cookies = CookieManager.getInstance().getCookie(urls[urlsNew]);
+                URLConnection conection = null;
+                request = new DownloadManager.Request(
+                        Uri.parse(urls[urlsNew]));
+                conection = new URL(urls[urlsNew]).openConnection();
+                request.addRequestHeader("cookie", cookies);
+                request.addRequestHeader("User-Agent", "");
+                request.setDescription("Downloading File...");
+                request.allowScanningByMediaScanner();
+                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH mm ss SSS");
+                request.setDestinationInExternalPublicDir(
+                        Environment.DIRECTORY_DOWNLOADS, fileName == null ? sdf.format(new Date().getDate()) + StringUtils.toExtension(conection.getContentType()) : fileName);
+                DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+                dm.enqueue(request);
+                downloadFile(urls, fileName, back);
+            } catch (IOException | IllegalArgumentException e) {
+                e.printStackTrace();
+                downloadFile(urls, fileName, back);
+                urlsError.add(urls[urlsNew]);
+            }
+            urlsNew++;
+        } else {
+
+            back.onEnd(urlsIsOk, urlsError.toArray(new String[0]));
+        }
+
+    }
     public static String getVersionName(Context context) {
         String versionName = "";
         try {
@@ -1368,17 +1404,87 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
         unDo(data.toString());
     }
 
+    private int urlsMax = 0;
+    private boolean urlsIsOk = true;
+    private int urlsNew = 0;
+    private ArrayList<String> urlsError = new ArrayList<>();
+
+    private void downloadByUrls(JSONObject data) {
+
+        if (PermissionUtils.checkPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) || (Build.VERSION.SDK_INT > Build.VERSION_CODES.R)) {
+            new Thread(() -> {
+
+                StringUtils.HaoLog(data.toString());
+                try {
+                    JSONArray urls = data.getJSONArray("urls");
+                    String[] urlsArray = new String[urls.length()];
+                    for (int i = 0; i < urls.length(); i++) {
+                        urlsArray[i] = urls.getString(i);
+                    }
+
+                    urlsMax = urls.length();
+                    urlsNew = 0;
+                    urlsError = new ArrayList<>();
+                    downloadFile(urlsArray, null, new downloadByUrlsCallback() {
+                        @Override
+                        public void onEnd(boolean isSuccess, String[] errorUrl) {
+                            downloadByUrlsReturn(isSuccess, errorUrl);
+                        }
+                    });
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }).start();
+        } else {
+            StringUtils.HaoLog("詢問權限");
+            runOnUiThread(() -> {
+                downloadByUrlsReturn(false, null);
+                PermissionUtils.requestPermission(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, null, "該功能需要下載權限");
+
+            });
+        }
+
+    }
+
+    interface downloadByUrlsCallback {
+        void onEnd(boolean isSuccess, String[] errorUrl);
+    }
+
+    private void downloadByUrlsReturn(boolean isSuccess, String[] errorUrl) {
+        runOnUiThread(() -> {
+            try {
+
+                sendToWeb(new JSONObject().put("type", "downloadFiles").put("data", new JSONObject().put("isSuccess", isSuccess).put("errorUrl", errorUrl)).toString());
+            } catch (JSONException e2) {
+                StringUtils.HaoLog("sendToWeb Error=" + e2);
+                e2.printStackTrace();
+            }
+
+
+        });
+    }
+
     private void downloadByUrl(JSONObject data) {
 
         if (PermissionUtils.checkPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) || (Build.VERSION.SDK_INT > Build.VERSION_CODES.R)) {
             new Thread(() -> {
                 StringUtils.HaoLog(data.toString());
-
-                downloadFile(data.optString("url"), "", "", "");
-
+                if (data.isNull("fileName"))
+                    downloadFile(data.optString("url"), null);
+                else
+                    downloadFile(data.optString("url"), data.optString("fileName"));
             }).start();
         } else {
             StringUtils.HaoLog("詢問權限");
+            try {
+
+                sendToWeb(new JSONObject().put("type", "downloadFile").put("data", new JSONObject().put("isSuccess", false)).toString());
+            } catch (JSONException e2) {
+                StringUtils.HaoLog("sendToWeb Error=" + e2);
+                e2.printStackTrace();
+            }
             runOnUiThread(() -> {
 
                 PermissionUtils.requestPermission(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, null, "該功能需要下載權限");
@@ -1387,6 +1493,7 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
         }
 
     }
+
 
     private void getAddressBook() {
         if (PermissionUtils.checkPermission(this, Manifest.permission.READ_CONTACTS)) {
