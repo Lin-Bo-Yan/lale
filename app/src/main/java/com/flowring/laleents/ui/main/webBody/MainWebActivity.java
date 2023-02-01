@@ -1331,7 +1331,7 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
             webView.destroy();
             webView = null;
         }
-        Intent intent = new Intent(MainWebActivity.this, EimLoginActivity.class);
+        Intent intent = new Intent(getApplicationContext(), EimLoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
     }

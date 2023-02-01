@@ -48,15 +48,17 @@ public class ActivityUtils {
                     MsgControlCenter.stopRing();
                     Intent intent = new Intent(AllData.context, WebJitisiMeetActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    if (displayName == null || displayName.isEmpty())
+                    if (displayName == null || displayName.isEmpty()){
                         intent.putExtra("displayName", UserControlCenter.getUserMinInfo().displayName);
-                    else
+                    } else{
                         intent.putExtra("displayName", displayName);
+                    }
                     intent.putExtra("userId", userId);
-                    if (avatar == null || avatar.isEmpty())
+                    if (avatar == null || avatar.isEmpty()){
                         intent.putExtra("avatar", UserControlCenter.getUserMinInfo().avatarUrl);
-                    else
+                    } else {
                         intent.putExtra("avatar", avatar);
+                    }
                     intent.putExtra("laleToken", laleToken);
                     intent.putExtra("mqttHost", mqttHost);
                     intent.putExtra("jitsiDomain", jitsiDomain);
@@ -65,10 +67,7 @@ public class ActivityUtils {
                     intent.putExtra("roomId", roomId);
                     intent.putExtra("roomName", roomName);
 
-
-
                     intent.putExtra("messageDomain", UserControlCenter.getUserMinInfo().eimUserData.lale_external_server_info.messageServerUrl);
-
                     intent.putExtra("isGroupCall", isGroupCall);
 
                     AllData.context.getApplicationContext().startActivity(intent);

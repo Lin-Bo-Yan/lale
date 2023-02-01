@@ -25,8 +25,9 @@ public class EimUserData {
     public UserMin getUserMin() {
         UserMin userMin = new UserMin();
         userMin.userId = lale_user_id;
-        if (!isLaleAppEim)
+        if (!isLaleAppEim){
             userMin.userId = af_mem_id;
+        }
         userMin.token = lale_token;
         userMin.refreshToken = refresh_token;
         /*
