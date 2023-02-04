@@ -1140,6 +1140,7 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
         DownloadManager.Request request;
 
         if (urlsNew < urlsMax) {
+            StringUtils.HaoLog("urlsNew:" + urlsNew + " urlsMax=" + urlsMax);
             try {
                 String cookies = CookieManager.getInstance().getCookie(urls[urlsNew]);
                 URLConnection conection = null;
@@ -1156,19 +1157,24 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
                         Environment.DIRECTORY_DOWNLOADS, fileName == null ? sdf.format(new Date().getDate()) + StringUtils.toExtension(conection.getContentType()) : fileName);
                 DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
                 dm.enqueue(request);
+                urlsNew++;
                 downloadFile(urls, fileName, back);
             } catch (IOException | IllegalArgumentException e) {
                 e.printStackTrace();
+                urlsNew++;
                 downloadFile(urls, fileName, back);
                 urlsError.add(urls[urlsNew]);
             }
-            urlsNew++;
+
         } else {
 
-            back.onEnd(urlsIsOk, urlsError.toArray(new String[0]));
+            String[] error = new String[urlsError.size()];
+            urlsError.toArray(error);
+            back.onEnd(urlsIsOk, error);
         }
 
     }
+
     public static String getVersionName(Context context) {
         String versionName = "";
         try {
@@ -1455,8 +1461,12 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
     private void downloadByUrlsReturn(boolean isSuccess, String[] errorUrl) {
         runOnUiThread(() -> {
             try {
+                JSONArray errorUrls = new JSONArray();
+                for (int i = 0; i < errorUrl.length; i++) {
+                    errorUrls.put(errorUrl[i]);
+                }
 
-                sendToWeb(new JSONObject().put("type", "downloadFiles").put("data", new JSONObject().put("isSuccess", isSuccess).put("errorUrl", errorUrl)).toString());
+                sendToWeb(new JSONObject().put("type", "downloadFiles").put("data", new JSONObject().put("isSuccess", isSuccess).put("errorUrl", errorUrls)).toString());
             } catch (JSONException e2) {
                 StringUtils.HaoLog("sendToWeb Error=" + e2);
                 e2.printStackTrace();
