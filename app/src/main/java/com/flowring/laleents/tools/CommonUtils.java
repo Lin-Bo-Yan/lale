@@ -774,7 +774,7 @@ public class CommonUtils extends Object {
                     new ShortcutInfoCompat.Builder(context, shortcutID).setShortLabel(name).setIntent(intent).setIcon(IconCompat.createWithAdaptiveBitmap(bitmap)).build();
 
             PendingIntent successCallback = PendingIntent.getBroadcast(context, 0,
-                    intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    intent, PendingIntent.FLAG_IMMUTABLE);
 
             ShortcutManagerCompat.requestPinShortcut(context, pinShortcutInfo, successCallback.getIntentSender());
         }
