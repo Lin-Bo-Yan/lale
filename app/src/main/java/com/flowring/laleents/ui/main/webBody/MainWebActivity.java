@@ -174,6 +174,7 @@ public class MainWebActivity extends MainAppCompatActivity {
     }
 
     private final static int FILE_CHOOSER_RESULT_CODE = 1234;
+    private final static int ACCESS_FINE_LOCATION_CODE = 1235;
 
     private boolean checkContactaPermission() {
         boolean check = PermissionChecker.checkSelfPermission(MainWebActivity.this, Manifest.permission.READ_CONTACTS)
@@ -372,7 +373,20 @@ public class MainWebActivity extends MainAppCompatActivity {
 
         super.onDestroy();
     }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
+        if(requestCode == ACCESS_FINE_LOCATION_CODE)
+        {
+            try {
+                JSONObject j = new JSONObject().put("type", "authorize").put("data", new JSONObject().put("type","location").put("isSuccess",grantResults[0]==PackageManager.PERMISSION_GRANTED));
+                sendToWeb(j.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -1012,6 +1026,9 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
                 case "NewUrl":
                     NewUrl(data);
                     break;
+                case "authorize":
+                    authorize(data);
+                    break;
                 case "feedback":
                     feedback();
                     break;
@@ -1569,7 +1586,26 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
         }
 
     }
+    void authorize(JSONObject data) {
+        String type;
+        if (data.has("type")) {
+            type = data.optString("url");
+            if(type.equals("location"))
+            {
+                if(PermissionUtils.checkPermission(MainWebActivity.this,"android.permission.ACCESS_FINE_LOCATION"))
+                {
+                    try {
+                        JSONObject j = new JSONObject().put("type", "authorize").put("data", new JSONObject().put("type","location").put("isSuccess",true));
+                        sendToWeb(j.toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 
+                }else PermissionUtils.requestPermission(MainWebActivity.this,"android.permission.ACCESS_FINE_LOCATION","需要您的位置權限");
+            }
+        }
+
+    }
     void openChrome(JSONObject data) {
         String sURL;
         try {
