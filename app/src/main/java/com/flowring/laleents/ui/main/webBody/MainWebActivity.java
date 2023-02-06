@@ -1639,7 +1639,7 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
 
             }
         };
-        ActivityUtils.gotoQRcode(this, ScanCaptureActivity.ScanCaptureType.Bind, ActivityResult);
+        ActivityUtils.gotoQRcode(this, ScanCaptureActivity.ScanCaptureType.Json, ActivityResult);
     }
 
     private void openLine(String inviteMessage) {

@@ -41,7 +41,6 @@ public class EimLoginActivity extends MainAppCompatActivity {
 
         btn_login = findViewById(R.id.btn_login);
         btn_login.setOnClickListener(view -> {
-
             activityReturn = new CallbackUtils.ActivityReturn() {
                 @Override
                 public void Callback(androidx.activity.result.ActivityResult activityResult) {
@@ -54,7 +53,8 @@ public class EimLoginActivity extends MainAppCompatActivity {
                     }
                 }
             };
-            ActivityUtils.gotoQRcode(this, ScanCaptureActivity.ScanCaptureType.Json, ActivityResult);
+            ScanCaptureActivity.ScanCaptureType ScanCaptureType = ScanCaptureActivity.ScanCaptureType.Json;
+            ActivityUtils.gotoQRcode(this, ScanCaptureType, ActivityResult);
         });
     }
 
@@ -84,7 +84,9 @@ public class EimLoginActivity extends MainAppCompatActivity {
         }).start();
     }
     public static void connection_server_get_httpReturn(MainAppCompatActivity activity, JSONObject result){
-        HttpAfReturn httpReturn = CloudUtils.iCloudUtils.getEimQRcode(activity, result.optString("af_token"), result.optString("qrcode_info_url"));
+        String af_token = result.optString("af_token");
+        String qrcode_info_url = result.optString("qrcode_info_url");
+        HttpAfReturn httpReturn = CloudUtils.iCloudUtils.getEimQRcode(activity, af_token, qrcode_info_url);
         if (httpReturn.success) {
             StringUtils.HaoLog("掃描成功");
             StringUtils.HaoLog("取得使用者資料:" + new Gson().toJson(httpReturn.data));

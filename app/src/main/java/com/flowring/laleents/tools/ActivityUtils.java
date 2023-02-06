@@ -78,7 +78,7 @@ public class ActivityUtils {
     }
 
     static public void gotoQRcode(ComponentActivity activity, ScanCaptureActivity.ScanCaptureType type, ActivityResultLauncher RcodeResult) {
-        Intent intent = new Intent(activity, ScanCaptureActivity.class);
+        Intent intent = new Intent(activity.getApplicationContext(), ScanCaptureActivity.class);
         intent.putExtra("ScanCaptureType", type);
         RcodeResult.launch(intent);
     }

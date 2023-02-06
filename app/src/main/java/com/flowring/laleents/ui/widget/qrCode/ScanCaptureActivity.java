@@ -66,20 +66,17 @@ public class ScanCaptureActivity extends MainAppCompatActivity {
     private static final String TAG = ScanCaptureActivity.class.getSimpleName();
 
     public enum ScanCaptureType {
-        Bind,
-        Json,
-        Text
+        Json
     }
 
     private DecoratedBarcodeView barcodeScannerView;
     private boolean scanOnly = false;
-    private boolean hasShowMyQRcode = true;
-    ScanCaptureType scanCaptureType = ScanCaptureType.Json;
+    ScanCaptureType scanCaptureType = null;
     private final BarcodeCallback barcodeCallback = new BarcodeCallback() {
         @Override
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
-                handleDecode(result.getText());
+                handleDecode_switchJudge(result.getText());
             }
             Log.d(TAG, "barcodeResult = " + result.getText());
         }
@@ -96,7 +93,6 @@ public class ScanCaptureActivity extends MainAppCompatActivity {
 
         scanCaptureType = (ScanCaptureType) getIntent().getExtras().get("ScanCaptureType");
         scanOnly = (boolean) getIntent().getBooleanExtra("scanOnly", false);
-
         setContentView(scanOnly ? R.layout.activity_scan_bind : R.layout.activity_scan_qrcode);
         initToolbar(getString(R.string.scan_qrcode));
 
@@ -116,20 +112,22 @@ public class ScanCaptureActivity extends MainAppCompatActivity {
             btnChooseQrcode.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (PermissionUtils.checkPermission(ScanCaptureActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                        Intent intent = new Intent(ScanCaptureActivity.this, PickerActivity.class);
+                    String read_external_storage_permission = Manifest.permission.READ_EXTERNAL_STORAGE;
+                    if (PermissionUtils.checkPermission(ScanCaptureActivity.this, read_external_storage_permission)) {
+                        Intent intent = new Intent(getApplicationContext(), PickerActivity.class);
                         intent.putExtra(PickerConfig.SELECT_MODE, PickerConfig.PICKER_IMAGE);
                         intent.putExtra(PickerConfig.MAX_SELECT_COUNT, 1);
                         startActivityForResult(intent, DefinedUtils.REQUEST_IMAGE_PICKER);
                     } else {
-                        PermissionUtils.requestPermission(ScanCaptureActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE, "拿取相簿中的QRcode圖片需要檔案存取權限");
+                        PermissionUtils.requestPermission(ScanCaptureActivity.this, read_external_storage_permission, "拿取相簿中的QRcode圖片需要檔案存取權限");
                     }
                 }
             });
         }
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
-            PermissionUtils.requestPermission(this, Manifest.permission.CAMERA, "掃描QRcode功能需要相機權限");
+        String permission_camera = Manifest.permission.CAMERA;
+        if (ContextCompat.checkSelfPermission(this, permission_camera) != PackageManager.PERMISSION_GRANTED){
+            PermissionUtils.requestPermission(this, permission_camera, "掃描QRcode功能需要相機權限");
+        }
 
 //        capture = new CaptureManager(this, barcodeScannerView);
 //        capture.initializeFromIntent(getIntent(), savedInstanceState);
@@ -151,53 +149,31 @@ public class ScanCaptureActivity extends MainAppCompatActivity {
                 finish();
             }
         });
-
-//        if (!isBind) {
-//            ImageView imgRight = findViewById(R.id.img_toolbar_right);
-//            imgRight.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    Intent intent = new Intent(ScanCaptureActivity.this, PickerActivity.class);
-//                    intent.putExtra(PickerConfig.SELECT_MODE, PickerConfig.PICKER_IMAGE);
-//                    intent.putExtra(PickerConfig.MAX_SELECT_COUNT, 1);
-//                    startActivityForResult(intent, DefinedUtils.REQUEST_IMAGE_PICKER);
-//                }
-//            });
-//        }
     }
 
-    private void handleDecode(String result) {
+    private void handleDecode_switchJudge(String result) {
         barcodeScannerView.pause();
-        if (scanCaptureType == ScanCaptureType.Bind) {
-            Intent resultIntent = new Intent();
-            resultIntent.putExtra("SCAN_QRCODE", result);
-            setResult(Activity.RESULT_OK, resultIntent);
-            finish();
-        } else if (scanCaptureType == ScanCaptureType.Json) {
-            boolean isJson = false;
-            try {
-                isJson = new JSONObject(result) != null;
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            if (isJson) {
-                Intent resultIntent = new Intent();
-                resultIntent.putExtra("SCAN_QRCODE", result);
-                setResult(Activity.RESULT_OK, resultIntent);
-                finish();
-            } else {
-                barcodeScannerView.resume();
-            }
-        } else if (scanCaptureType == ScanCaptureType.Bind) {
-            Intent resultIntent = new Intent();
-            resultIntent.putExtra("SCAN_QRCODE", result);
-            setResult(Activity.RESULT_OK, resultIntent);
-            finish();
+        switch (scanCaptureType){
+            case Json:
+                boolean isJson = false;
+                try {
+                    isJson = new JSONObject(result) != null;
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if (isJson) {
+                    Intent resultIntent_switchJudge = new Intent();
+                    resultIntent_switchJudge.putExtra("SCAN_QRCODE", result);
+                    setResult(Activity.RESULT_OK, resultIntent_switchJudge);
+                    finish();
+                } else {
+                    barcodeScannerView.resume();
+                }
+                break;
         }
-
     }
 
-    private void decodeImage(String path) {
+    private void Imagedecode(String path) {
         Bitmap bitmap = BitmapFactory.decodeFile(path);
         int width = bitmap.getWidth(), height = bitmap.getHeight();
         int[] pixels = new int[width * height];
@@ -215,7 +191,8 @@ public class ScanCaptureActivity extends MainAppCompatActivity {
                 showErrorHint();
                 return;
             }
-            handleDecode(scanResult.getText());
+            handleDecode_switchJudge(scanResult.getText());
+
         } catch (Exception e) {
             e.printStackTrace();
             showErrorHint();
@@ -275,9 +252,59 @@ public class ScanCaptureActivity extends MainAppCompatActivity {
 
             Media image = images.get(0);
             if (image != null) {
-                decodeImage(image.path);
+                Imagedecode(image.path);
             }
         }
     }
 
 }
+
+
+/* 人豪寫的方法，他的用意是登入開啟的QR跑判斷 ScanCaptureType.Json這條，登入後開啟的QR跑 ScanCaptureType.Bind，但實驗發現兩個其實做一樣的事情
+    private void handleDecode(String result) {
+        barcodeScannerView.pause();
+        if (scanCaptureType.equals(ScanCaptureType.Bind)) {
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("SCAN_QRCODE", result);
+            setResult(Activity.RESULT_OK, resultIntent);
+            finish();
+        } else if (scanCaptureType.equals(ScanCaptureType.Json)) {
+            boolean isJson = false;
+            try {
+                isJson = new JSONObject(result) != null;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            if (isJson) {
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("SCAN_QRCODE", result);
+                setResult(Activity.RESULT_OK, resultIntent);
+                finish();
+            } else {
+                barcodeScannerView.resume();
+            }
+        } else if (scanCaptureType.equals(ScanCaptureType.Bind)) {
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("SCAN_QRCODE", result);
+            setResult(Activity.RESULT_OK, resultIntent);
+            finish();
+        }
+
+    }
+*/
+
+
+/* 原本就已經註解掉了，不知有何用意，就先移下來
+        if (!isBind) {
+            ImageView imgRight = findViewById(R.id.img_toolbar_right);
+            imgRight.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(ScanCaptureActivity.this, PickerActivity.class);
+                    intent.putExtra(PickerConfig.SELECT_MODE, PickerConfig.PICKER_IMAGE);
+                    intent.putExtra(PickerConfig.MAX_SELECT_COUNT, 1);
+                    startActivityForResult(intent, DefinedUtils.REQUEST_IMAGE_PICKER);
+                }
+            });
+        }
+*/
