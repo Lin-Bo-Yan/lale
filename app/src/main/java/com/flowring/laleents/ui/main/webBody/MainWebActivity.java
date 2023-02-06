@@ -1589,7 +1589,7 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
     void authorize(JSONObject data) {
         String type;
         if (data.has("type")) {
-            type = data.optString("url");
+            type = data.optString("type");
             if(type.equals("location"))
             {
                 if(PermissionUtils.checkPermission(MainWebActivity.this,"android.permission.ACCESS_FINE_LOCATION"))
