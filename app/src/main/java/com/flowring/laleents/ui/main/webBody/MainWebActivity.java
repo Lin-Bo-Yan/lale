@@ -838,8 +838,23 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
             @Override
             public void onPermissionRequest(final PermissionRequest request) {
 
-                request.grant(request.getResources());
+                String[]  PermissionRequest=request.getResources();
+                for (int i = 0; i < PermissionRequest.length; i++) {
+                    StringUtils.HaoLog("onPermissionRequest:"+PermissionRequest[i]);
+                    if(PermissionRequest[i].equals("android.webkit.resource.AUDIO_CAPTURE"))
+                    {
+                        if(   PermissionUtils.checkPermission(MainWebActivity.this,"android.permission.RECORD_AUDIO"))
+                        {
+                        }else
+                        {
+                            runOnUiThread(()->{
+                                requestPermissions(new String[]{"android.permission.RECORD_AUDIO"}, 466);
+                            });
 
+                        }
+                    }
+                }
+                request.grant(request.getResources());
             }
 
             @Override
