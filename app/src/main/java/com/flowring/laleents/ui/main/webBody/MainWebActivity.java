@@ -926,7 +926,7 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
                 if (getContext() == null) {
                     return false;
                 }
-                AlertDialog.Builder b = new AlertDialog.Builder(MainWebActivity.this);
+                AlertDialog.Builder b = new AlertDialog.Builder(MainWebActivity.this.getApplicationContext());
                 b.setTitle("Alert");
                 b.setMessage(message);
                 b.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -943,7 +943,7 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
             @Override
             public boolean onJsConfirm(WebView view, String url, String message, final JsResult result) {
                 Log.e("hao", "onJsConfirm");
-                AlertDialog.Builder b = new AlertDialog.Builder(MainWebActivity.this);
+                AlertDialog.Builder b = new AlertDialog.Builder(MainWebActivity.this.getApplicationContext());
                 b.setTitle("Confirm");
                 b.setMessage(message);
                 b.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -1109,7 +1109,7 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
         sb.setStream(NuriForFile);
         sb.setSubject("問題回報");
         sb.startChooser();
-        Toast.makeText(this, "請選擇電子信箱進行傳送", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "請選擇電子信箱進行傳送", Toast.LENGTH_LONG).show();
 
     }
 
@@ -1274,7 +1274,7 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
                 e.printStackTrace();
             }
             if (MqttService.mqttControlCenter == null) {
-                Intent intentServer = new Intent(this, MqttService.class);
+                Intent intentServer = new Intent(getApplicationContext(), MqttService.class);
                 intentServer.putExtra("data", "new");
                 startService(intentServer);
             } else {
@@ -1649,7 +1649,7 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
             Uri uri = Uri.parse(scheme);
             startActivity(new Intent(Intent.ACTION_VIEW, uri));
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(MainWebActivity.this, "尚未安裝Line。", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainWebActivity.this.getApplicationContext(), "尚未安裝Line。", Toast.LENGTH_SHORT).show();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -1663,7 +1663,7 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
             wechatIntent.putExtra(Intent.EXTRA_TEXT, inviteMessage);
             startActivity(wechatIntent);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(MainWebActivity.this, "尚未安裝Wechat。", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainWebActivity.this.getApplicationContext(), "尚未安裝Wechat。", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -1682,7 +1682,7 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
             wechatIntent.putExtra(Intent.EXTRA_SUBJECT, "一起來用Lale吧!");
             startActivity(wechatIntent);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(MainWebActivity.this, "尚未安裝Gmail。", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainWebActivity.this.getApplicationContext(), "尚未安裝Gmail。", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -2346,7 +2346,7 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
         os.flush();
 
         if (downloadFile.exists()) {
-            Toast.makeText(this, "下載成功", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "下載成功", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -2433,14 +2433,14 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
                                     }
                                     if (photos.size() == count.get()) {
                                         cancelWait();
-                                        Toast.makeText(MainWebActivity.this, "已下載", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(MainWebActivity.this.getApplicationContext(), "已下載", Toast.LENGTH_SHORT).show();
                                     }
 
                                 }
                             }, new Consumer<Throwable>() {
                                 @Override
                                 public void accept(Throwable throwable) throws Exception {
-                                    Toast.makeText(MainWebActivity.this, "下載失敗", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(MainWebActivity.this.getApplicationContext(), "下載失敗", Toast.LENGTH_SHORT).show();
                                 }
                             }, new Action() {
                                 @Override

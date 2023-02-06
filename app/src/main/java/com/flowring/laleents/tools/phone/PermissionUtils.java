@@ -96,7 +96,7 @@ public class PermissionUtils {
 
     public static void requestPermission(Fragment fragment, @NonNull String[] permission, Integer newRequestCode, String requestText) {
         StringUtils.HaoLog("fragment=" + fragment);
-        new AlertDialog.Builder(fragment.getActivity())
+        new AlertDialog.Builder(fragment.getContext())
                 .setMessage(requestText)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override

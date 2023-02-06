@@ -14,7 +14,6 @@ public class FriendItem {
     public FriendItem(UserInRoom userInRoom) {
         this.friendInfo = new FriendInfo();
         friendInfo.aliasName = userInRoom.displayName;
-        friendInfo.aliasName = userInRoom.displayName;
         friendInfo.friendId = userInRoom.userId;
         friendInfo.friendAvatarUrl = userInRoom.avatarThumbnailUrl;
 
