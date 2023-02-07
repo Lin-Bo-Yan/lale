@@ -177,9 +177,10 @@ public class MainWebActivity extends MainAppCompatActivity {
     private final static int ACCESS_FINE_LOCATION_CODE = 1235;
 
     private boolean checkContactaPermission() {
-        boolean check = PermissionChecker.checkSelfPermission(MainWebActivity.this, Manifest.permission.READ_CONTACTS)
-                == PermissionChecker.PERMISSION_GRANTED;
+        boolean check = PermissionUtils.checkPermission(MainWebActivity.this,Manifest.permission.READ_CONTACTS);
         return check;
+        //        boolean check = PermissionChecker.checkSelfPermission(MainWebActivity.this, Manifest.permission.READ_CONTACTS)
+        //                == PermissionChecker.PERMISSION_GRANTED;
     }
 /*
 * 登入 - token 傳遞, 保持 token 更新避免 mqtt 斷線及 api auth 失效
@@ -249,7 +250,6 @@ public class MainWebActivity extends MainAppCompatActivity {
         } catch (IllegalArgumentException e) {
             StringUtils.HaoLog("downloadFile Error=" + e);
             try {
-
                 sendToWeb(new JSONObject().put("type", "downloadFile").put("data", new JSONObject().put("isSuccess", false)).toString());
             } catch (JSONException e2) {
                 StringUtils.HaoLog("sendToWeb Error=" + e2);
@@ -317,7 +317,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         itFilter.addAction(LocalBroadcastControlCenter.ACTION_NOTIFI_AF);
         itFilter.addAction(Intent.ACTION_SEND);
         itFilter.addAction(Intent.ACTION_SEND_MULTIPLE);
-        LocalBroadcastManager.getInstance(this).registerReceiver(FireBaseMsgBroadcastReceiver, itFilter); //註冊廣播接收器
+        LocalBroadcastManager.getInstance((Context) this).registerReceiver(FireBaseMsgBroadcastReceiver, itFilter); //註冊廣播接收器
     }
 
     @SuppressLint({"JavascriptInterface", "SetJavaScriptEnabled"})

@@ -45,7 +45,7 @@ public class MainAppCompatActivity extends AppCompatActivity {
                 }
             }
     );
-    protected String[] BroadcastMessageIds = new String[]{"test", Intent.ACTION_SEND_MULTIPLE, Intent.ACTION_SEND, LocalBroadcastControlCenter.ACTION_NOTIFI_AF, LocalBroadcastControlCenter.ACTION_MQTT_Error};
+//    protected String[] BroadcastMessageIds = new String[]{"test", Intent.ACTION_SEND_MULTIPLE, Intent.ACTION_SEND, LocalBroadcastControlCenter.ACTION_NOTIFI_AF, LocalBroadcastControlCenter.ACTION_MQTT_Error};
     protected BroadcastReceiver FireBaseMsgBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -74,7 +74,7 @@ public class MainAppCompatActivity extends AppCompatActivity {
                 }
 
             } else if (action.equals(Intent.ACTION_SEND)) {
-                StringUtils.HaoLog("testWebActivity ACTION_SEND");
+                StringUtils.HaoLog("testWebActivity 動作發送");
             } else if (action.equals(Intent.ACTION_SEND_MULTIPLE)) {
                 StringUtils.HaoLog("testWebActivity ACTION_SEND_MULTIPLE");
             } else if (action.equals(LocalBroadcastControlCenter.ACTION_MQTT_FRIEND)) {
@@ -88,9 +88,54 @@ public class MainAppCompatActivity extends AppCompatActivity {
     };
 
 
+    protected BroadcastReceiver FireBaseMsgBroadcastReceiver_switch = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            switch (action){
+                case LocalBroadcastControlCenter.ACTION_NOTIFI_AF:
+                    MessageInfo messageInfo = null;
+                    //收到辦公類型通知
+                    try {
+                        messageInfo = new MessageInfo(new JSONObject(intent.getStringExtra("data")));
+                        MessageItem.ReCardInfo reCardInfo = messageInfo.getMessage(new HashMap<>()).getCard();
+                        ArrayList<String> stringTaskArray = new ArrayList<>();
+                        stringTaskArray.add(reCardInfo.getAvatarUrl());
+                        stringTaskArray.add(reCardInfo.getUserName());
+                        stringTaskArray.add(reCardInfo.notifyType);
+                        stringTaskArray.add("" + reCardInfo.priority);
+                        stringTaskArray.add(reCardInfo.keyword);
+                        stringTaskArray.add(reCardInfo.processName);
+                        stringTaskArray.add(reCardInfo.rootUserName);
+                        stringTaskArray.add(reCardInfo.duedate);
+                        stringTaskArray.add(reCardInfo.url);
+                        ArrayList<String> formList = new ArrayList<>();
+                        formList.addAll(intent.getStringArrayListExtra("formList"));
 
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case LocalBroadcastControlCenter.ACTION_MQTT_FRIEND: //收到好友邀請
+                    String user_id = intent.getStringExtra("user_id");
+                    String user_name = intent.getStringExtra("user_name");
+                    String user_avatar_url = intent.getStringExtra("user_avatar_url");
+                    break;
+                case LocalBroadcastControlCenter.ACTION_MQTT_Error: //通訊連線異常
+                    DialogUtils.showDialogMessage(MainAppCompatActivity.this, "伺服器連線異常");
+                    break;
+                case Intent.ACTION_SEND:
+                    StringUtils.HaoLog("testWebActivity 動作發送");
+                    break;
+                case Intent.ACTION_SEND_MULTIPLE:
+                    StringUtils.HaoLog("testWebActivity 動作發送多個");
+                    break;
+            }
 
+        }
+    };
 
+    protected IntentFilter itFilter = new IntentFilter();
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,9 +150,6 @@ public class MainAppCompatActivity extends AppCompatActivity {
 
     }
 
-
-    protected IntentFilter itFilter = new IntentFilter();
-
     @Override
     protected void onPause() {
         //跳好友通邀請通知訊息
@@ -120,9 +162,6 @@ public class MainAppCompatActivity extends AppCompatActivity {
 
         super.onResume();
     }
-
-
-
 
     protected DialogWait dialogWait;
 
