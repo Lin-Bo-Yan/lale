@@ -79,7 +79,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
                 connection_server_get_httpReturn(activity,result);
             } else {
                 activity.cancelWait();
-                DialogUtils.showDialogMessage(activity, "登入失敗，您的QRCode已失效  1");
+                DialogUtils.showDialogMessage(activity, "登入失敗，您的QRCode已失效 ");
             }
         }).start();
     }
@@ -100,7 +100,8 @@ public class EimLoginActivity extends MainAppCompatActivity {
 //                            "  \"af_wfci_service_url\": \"http://192.168.3.53:8083\"\n" +
 //                            "}";
 
-            EimUserData eimUserData = new Gson().fromJson(new Gson().toJson(httpReturn.data), EimUserData.class);
+            String eimUserDataString = new Gson().toJson(httpReturn.data);
+            EimUserData eimUserData = new Gson().fromJson(eimUserDataString, EimUserData.class);
             {
                 UserMin userMin = eimUserData.getUserMin();
 
@@ -114,7 +115,8 @@ public class EimLoginActivity extends MainAppCompatActivity {
 
                 if (httpReturn2.status == 200) {
 
-                    UserMin userMin = new Gson().fromJson(new Gson().toJson(httpReturn2.data), UserMin.class);
+                    String userMinString = new Gson().toJson(httpReturn2.data);
+                    UserMin userMin = new Gson().fromJson(userMinString, UserMin.class);
                     StringUtils.HaoLog("httpReturn2.data=" + new Gson().toJson(httpReturn2.data));
                     userMin.eimUserData = eimUserData;
 
@@ -163,7 +165,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
                 SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
                 String deviceToken = instanceIdResult.getToken();
                 new Thread(() -> {
-                    HttpReturn pu = new HttpReturn();
+                    HttpReturn pu;
                     try {
                         JSONObject UserIds = new JSONObject(pref.getString("UserIds", "{}"));
                         StringUtils.HaoLog("UserIds=" + UserIds.toString());
