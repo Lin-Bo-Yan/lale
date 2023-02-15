@@ -126,13 +126,6 @@ public class MqttControlCenter {
                 client.setCallback(mqttCallback);
                 StringUtils.HaoLog("mqttCallback");
                 initConnOpts();
-//                try {
-//                    if (client.isConnected()) {
-//                        client.disconnectForcibly();
-//                    }
-//                } catch (MqttException e) {
-//                    e.printStackTrace();
-//                }
                 client.connect(connOpts);
                 StringUtils.HaoLog("connOpts");
                 handler.post(subscribe);
@@ -186,7 +179,7 @@ public class MqttControlCenter {
 
         @Override
         public void messageArrived(String topic, MqttMessage message) throws Exception {
-            // subscribe后得到的消息会执行到这里面
+            // subscribe後得到的消息會執行到這裡面
             new Thread(() -> {
                 StringUtils.HaoLog("接收消息内容" + new String(message.getPayload()));
                 MsgControlCenter.receiveMsg(new String(message.getPayload()), MsgControlCenter.Source.mqtt);
@@ -210,7 +203,7 @@ public class MqttControlCenter {
         handler = new Handler(thread.getLooper());
         stopNew = false;
         handler.post(EndMqtt);
-        // MQTT 连接选项
+        // MQTT 連接選項
         initConnOpts();
         StringUtils.HaoLog("handler.post 3");
         handler.post(NewConnect);
@@ -265,10 +258,6 @@ public class MqttControlCenter {
                 }
             }
         });
-
-
     }
-
-
 }
 

@@ -431,22 +431,22 @@ public class MsgControlCenter {
                         LocalBroadcastControlCenter.send(AllData.context, LocalBroadcastControlCenter.ACTION_MQTT_ROOM, value);
                     }
                 } else {
-                    if (messageInfo.is_lale_call_request()) {
+                    if (messageInfo.is_lale_call_request()) { // 通話視訊請求通知，通話類型 = lale.call.request
                         {
-
                             RoomMinInfo roomMinInfo = AllData.getRoomMinInfo(messageInfo.room_id);
                             if (roomMinInfo != null) {
-                                if (messageInfo.getCallRequest().result == null)
+                                if (messageInfo.getCallRequest().result == null){
                                     roomMinInfo.call_status = messageInfo.getCallRequest().type.equals("audio") ? 2 : 1;
-                                if (messageInfo.getCallRequest().result.equals("unavailable"))
+                                }
+                                if (messageInfo.getCallRequest().result.equals("unavailable")){
                                     roomMinInfo.call_status = 0;
-
-
+                                }
                                 AllData.updateRoom(roomMinInfo);
                             }
                             if (source == Source.mqtt) {
-                                if (!messageInfo.sender.equals(UserControlCenter.getUserMinInfo().userId)&&!messageInfo.isGroup())
+                                if (!messageInfo.sender.equals(UserControlCenter.getUserMinInfo().userId)&&!messageInfo.isGroup()){
                                     DialogUtils.showCall(AllData.context, messageInfo);
+                                }
                                 LocalBroadcastControlCenter.send(AllData.context, LocalBroadcastControlCenter.ACTION_MQTT_CALL_REQUEST, value);
                             }
                         }
@@ -464,8 +464,6 @@ public class MsgControlCenter {
                                     requestEvent.content = messageInfo.content;
                                     AllData.updateMsg(requestEvent);
                                 }
-
-
                         }
                         if (source == Source.mqtt) {
                             LocalBroadcastControlCenter.send(AllData.context, LocalBroadcastControlCenter.ACTION_MQTT_CALL_MSG, value);
@@ -488,7 +486,6 @@ public class MsgControlCenter {
                         if (roomMinInfo != null) {
                             roomMinInfo.call_status = 0;
                             AllData.updateRoom(roomMinInfo);
-
                         }
                         if (source == Source.mqtt) {
                             LocalBroadcastControlCenter.send(AllData.context, LocalBroadcastControlCenter.ACTION_MQTT_CALL_MSG, value);
@@ -500,14 +497,12 @@ public class MsgControlCenter {
                     if (up) {
                         RoomMinInfo roomMinInfo = AllData.getRoomMinInfo(messageInfo.room_id);
                         if (roomMinInfo != null) {
-
                             if (roomMinInfo.last_msg_time < messageInfo.timestamp) {
                                 if (messageInfo.unreadCount != -1)
                                     roomMinInfo.unread_count = messageInfo.unreadCount;
                                 roomMinInfo.last_msg_time = messageInfo.timestamp;
                                 roomMinInfo.last_msg = messageInfo.getText();
                             }
-
                             if (roomMinInfo.status == 0 || roomMinInfo.status == 2) {
                                 roomMinInfo.status = 1;
 
@@ -515,20 +510,16 @@ public class MsgControlCenter {
                                     @Override
                                     public void Callback(HttpReturn httpReturn) {
                                         StringUtils.HaoLog(httpReturn);
-
                                     }
                                 });
-
-
                             }
                             boolean updateRoom = AllData.updateRoom(roomMinInfo);
-
                         }
-
                     }
                 }
-                if (source == Source.mqtt)
+                if (source == Source.mqtt){
                     LocalBroadcastControlCenter.send(AllData.context, LocalBroadcastControlCenter.ACTION_MQTT_MSG, value);
+                }
             }
             //存入dp
 

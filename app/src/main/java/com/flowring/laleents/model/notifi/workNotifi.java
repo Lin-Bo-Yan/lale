@@ -1,6 +1,7 @@
 package com.flowring.laleents.model.notifi;
 
 public class workNotifi {
+    // 欄位跟 "AF 寄送訊息到 EIM 或 Lale App " 一樣
     public String msgType;
     public String memID;
     public String userName;
@@ -21,11 +22,12 @@ public class workNotifi {
     public String rootTaskProName;
     public String url;
     public String totalTaskCount;
+
+    // 會議 新增、修改、刪除、會議開始通知
     public String title;
+    public String content;
     public String button_link;
     public String img_url;
     public MeetInfo meetInfo;
     public String type;
-
-    public String content;
 }

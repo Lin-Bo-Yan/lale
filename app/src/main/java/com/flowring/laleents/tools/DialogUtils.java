@@ -10,10 +10,16 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.KeyguardManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.media.AudioAttributes;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -27,9 +33,11 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -100,14 +108,13 @@ public class DialogUtils {
             callMessageInfo = MessageInfo;
             RoomMinInfo roomMinInfo = AllData.getRoomMinInfo(callMessageInfo.room_id);
             UserControlCenter.upEimUser();
-            if (roomMinInfo != null)
-                showCallDialog(context, roomMinInfo);
-            else {
+            if (roomMinInfo != null){
+                showCallNotifications(context,callMessageInfo);
+            } else {
                 RoomControlCenter.getRoom0(callMessageInfo.room_id, new CallbackUtils.APIReturn() {
                     @Override
                     public void Callback(boolean isok, String DataOrErrorMsg) {
-
-                        showCallDialog(context, AllData.getRoomMinInfo(callMessageInfo.room_id));
+                        showCallNotifications(context,callMessageInfo);
                     }
                 });
             }
@@ -118,6 +125,7 @@ public class DialogUtils {
 
     static boolean isCallOk = false;
 
+    //棄用
     static void showCallDialog(Context context, RoomMinInfo roomMinInfo) {
         if (Settings.canDrawOverlays(context)) {
             runOnUiThread(() -> {
@@ -218,6 +226,68 @@ public class DialogUtils {
                 });
             });
         }
+    }
+
+    private static void showCallNotifications(Context context, MessageInfo messageInfo){
+        String channel_id = "lale_channel_id";
+        int id = CommonUtils.letterToNumber(messageInfo.id);
+        if(id < 0){
+            id = -id;
+        }
+
+        // 默認系統提示音
+        Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        Intent intent = new Intent(context, MainWebActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context,id,intent,PendingIntent.FLAG_IMMUTABLE);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationChannel channel = new NotificationChannel(channel_id,"通話通知", NotificationManager.IMPORTANCE_HIGH);
+            channel.setDescription("Lale 收到新訊息時使用的通知類型 (請注意，若未開啟可能無法接收新訊息通知)");
+            channel.setShowBadge(true);
+            channel.canShowBadge();
+            channel.enableLights(true);
+            channel.setLightColor(Color.RED);
+            channel.enableVibration(true);
+            channel.setVibrationPattern(new long[]{100, 200, 300, 400, 500});
+            AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .build();
+            channel.setSound(uri, audioAttributes);
+            channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context,channel_id)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setFullScreenIntent(pendingIntent, true) // 顯示的意圖不是啟動
+                .setAutoCancel(true);
+
+        RemoteViews headsUpRemoteView = new RemoteViews(context.getPackageName(), R.layout.notification_custom);
+        //取得 誰打來
+        RoomMinInfo roomMinInfo = AllData.getRoomMinInfo(messageInfo.room_id);
+        if (roomMinInfo != null){
+            headsUpRemoteView.setTextViewText(R.id.title,roomMinInfo.name);
+        }
+
+
+//        Intent answerIntent = new Intent();
+//        answerIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        answerIntent.setClass(context, MainWebActivity.class);
+//        answerIntent.putExtra("Answer", "Answer call clicked");
+//        PendingIntent ddd = PendingIntent.getActivity(context,5001,answerIntent,FLAG_IMMUTABLE);
+        headsUpRemoteView.setOnClickPendingIntent(R.id.button_accept_call, pendingIntent);
+
+        //headsUpRemoteView.setOnClickPendingIntent(R.id.button_No_call, null); //設null會沒反應
+
+
+        builder.setCustomContentView(headsUpRemoteView);
+        notificationManager.notify(id, builder.build());
+
+        // notificationManager.cancel(id); // 取消來電
     }
 
     static public void showDialogMessage(Context context, String text) {
@@ -364,7 +434,6 @@ public class DialogUtils {
 
     }
 
-
     static public Dialog showDialogList(Context context, Map<String, View.OnClickListener> button) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = LayoutInflater.from(context);
@@ -386,7 +455,6 @@ public class DialogUtils {
         }));
         return dialog;
     }
-
 
     static public Dialog showGetImage(Activity activity, CallbackUtils.ReturnData<File> callback) {
         Map<String, View.OnClickListener> list = new HashMap<>();

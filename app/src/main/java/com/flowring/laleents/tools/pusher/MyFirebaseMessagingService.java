@@ -162,7 +162,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     StringUtils.HaoLog("Build.VERSION.SDK_INT >= Build.VERSION_CODES.O");
                     NotificationChannel channel = new NotificationChannel(
-                            "lale_channel_id", "新訊息通知", NotificationManager.IMPORTANCE_DEFAULT
+                            channel_id, "新訊息通知", NotificationManager.IMPORTANCE_DEFAULT
                     );
                     channel.setDescription("Lale 收到新訊息時使用的通知類型 (請注意，若未開啟可能無法接收新訊息通知)");
                     channel.setShowBadge(true);
@@ -312,7 +312,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             StringUtils.HaoLog("Build.VERSION.SDK_INT >= Build.VERSION_CODES.O");
             NotificationChannel channel = new NotificationChannel(
-                    "lale_channel_id", "新訊息通知", NotificationManager.IMPORTANCE_DEFAULT
+                    channel_id, "新訊息通知", NotificationManager.IMPORTANCE_DEFAULT
             );
             channel.setDescription("Lale 收到新訊息時使用的通知類型 (請注意，若未開啟可能無法接收新訊息通知)");
             channel.setShowBadge(true);
