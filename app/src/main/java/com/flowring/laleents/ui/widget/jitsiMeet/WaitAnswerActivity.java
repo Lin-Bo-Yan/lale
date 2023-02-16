@@ -61,11 +61,8 @@ public class WaitAnswerActivity extends MainAppCompatActivity {
                                     if (messageInfo.getCallRequest().result.equals("cancel") || messageInfo.getCallRequest().result.equals("timeout"))
                                         finish();
                                 }
-//
-
                             }
                         }
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -73,7 +70,7 @@ public class WaitAnswerActivity extends MainAppCompatActivity {
             }
         };
         itFilter.addAction(LocalBroadcastControlCenter.ACTION_MQTT_CALL_MSG);
-        LocalBroadcastManager.getInstance(this).registerReceiver(FireBaseMsgBroadcastReceiver, itFilter); //註冊廣播接收器
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(FireBaseMsgBroadcastReceiver, itFilter); //註冊廣播接收器
         if (AllData.context == null) {
             AllData.context = getApplicationContext();
         }
@@ -99,14 +96,12 @@ public class WaitAnswerActivity extends MainAppCompatActivity {
                     finish();
                 });
                 end.setOnClickListener(view -> {
-
                     MsgControlCenter.sendRejectRequest(roomMinInfo.id, MessageInfo.id);
                     finish();
                 });
 
                 ok = findViewById(R.id.ok);
                 ok.setOnClickListener(view -> {
-
                     ActivityUtils.gotoWebJitisiMeet(this, UserControlCenter.getUserMinInfo().displayName,
                             UserControlCenter.getUserMinInfo().userId,
                             UserControlCenter.getUserMinInfo().avatarThumbnailUrl,

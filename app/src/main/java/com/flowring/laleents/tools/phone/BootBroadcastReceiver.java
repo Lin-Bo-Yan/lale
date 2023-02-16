@@ -3,6 +3,7 @@ package com.flowring.laleents.tools.phone;
 import static android.content.Context.ALARM_SERVICE;
 
 import android.app.AlarmManager;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -11,13 +12,17 @@ import android.content.IntentFilter;
 import android.os.SystemClock;
 
 import com.flowring.laleents.model.HttpReturn;
+import com.flowring.laleents.model.msg.MessageInfo;
+import com.flowring.laleents.model.msg.MsgControlCenter;
+import com.flowring.laleents.model.room.RoomMinInfo;
 import com.flowring.laleents.model.user.UserControlCenter;
+import com.flowring.laleents.tools.ActivityUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.cloud.api.CloudUtils;
 import com.flowring.laleents.tools.cloud.mqtt.MqttService;
 
 public class BootBroadcastReceiver extends BroadcastReceiver {
-
+    static public MessageInfo callMessageInfo = null;
     @Override
     public void onReceive(Context context, Intent intent) {
 
@@ -27,6 +32,13 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
             context.startService(intentServer);
         }
 
+        if(intent != null){
+            if(intent.getAction().equals("reject_notification")){rejectCall(context,intent);}
+
+            if(intent.getAction().equals("accept_notification")){acceptCall(context,intent);}
+        } else {
+            StringUtils.HaoLog("BroadcastReceiver錯誤");
+        }
     }
 
     public static final String TEST_ACTION = "XXX.XXX.XXX" + "_TEST_ACTION";
@@ -57,5 +69,46 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
         alarmManager.cancel(pendingIntent);
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, SystemClock.elapsedRealtime() + 1000, AlarmManager.INTERVAL_DAY, pendingIntent);
 
+    }
+
+    private void rejectCall(Context context, Intent intent){
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            int id = intent.getExtras().getInt("id");
+            notificationManager.cancel(id);//取消來電
+            String room_id = intent.getStringExtra("messageInfo_room_id");
+            String eventId = intent.getStringExtra("messageInfo_eventId");
+            MsgControlCenter.stopRing();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    MsgControlCenter.sendRejectRequest(room_id,eventId);
+                }
+            }).start();
+    }
+
+    private void acceptCall(Context context, Intent intent){
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        int id = intent.getExtras().getInt("id");
+        notificationManager.cancel(id);
+        String room_id = intent.getStringExtra("messageInfo_room_id");
+        String eventId = intent.getStringExtra("messageInfo_eventId");
+        callMessageInfo = (MessageInfo) intent.getSerializableExtra("MessageInfo");
+
+        boolean isGroup = false;
+        String roomName = "";
+        if (AllData.context != null) {
+            RoomMinInfo roomMinInfo = AllData.getRoomMinInfo(room_id);
+            if (roomMinInfo != null) {
+                isGroup = roomMinInfo.isGroup();
+                roomName = roomMinInfo.name;
+            }
+        }
+        MsgControlCenter.sendApplyRequest(room_id, eventId);
+        ActivityUtils.gotoWebJitisiMeet(context, UserControlCenter.getUserMinInfo().displayName,
+                UserControlCenter.getUserMinInfo().userId,
+                UserControlCenter.getUserMinInfo().avatarThumbnailUrl,
+                UserControlCenter.getUserMinInfo().token, UserControlCenter.getUserMinInfo().externalServerSetting.mqttUrl,
+                UserControlCenter.getUserMinInfo().externalServerSetting.jitsiServerUrl, callMessageInfo.getCallRequest().type, eventId, room_id, roomName, isGroup
+        );
     }
 }

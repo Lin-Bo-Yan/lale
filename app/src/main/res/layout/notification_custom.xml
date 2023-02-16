@@ -20,14 +20,6 @@
             android:layout_marginStart="15dp"
             android:textColor="@color/cardview_dark_background"
             android:textSize="22dp" />
-        <!--        <ImageView-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_below="@+id/title"-->
-        <!--            android:layout_marginStart="14dp"-->
-        <!--            android:layout_marginTop="5dp"-->
-        <!--            android:background="@drawable/scan_btn_bg"-->
-        <!--            android:src="@drawable/ic_launcher"/>-->
     </LinearLayout>
 
 
@@ -38,14 +30,14 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/button_accept_call"
+            android:id="@+id/button_No_call"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:background="@drawable/call_cancel_icon"
             android:textColor="@color/white"/>
 
         <Button
-            android:id="@+id/button_No_call"
+            android:id="@+id/button_accept_call"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:background="@drawable/call_ok_icon"

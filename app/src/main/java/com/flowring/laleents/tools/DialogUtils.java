@@ -52,8 +52,10 @@ import com.flowring.laleents.model.room.RoomControlCenter;
 import com.flowring.laleents.model.room.RoomMinInfo;
 import com.flowring.laleents.model.user.UserControlCenter;
 import com.flowring.laleents.tools.phone.AllData;
+import com.flowring.laleents.tools.phone.BootBroadcastReceiver;
 import com.flowring.laleents.tools.phone.DefinedUtils;
 import com.flowring.laleents.tools.phone.PermissionUtils;
+import com.flowring.laleents.ui.main.webBody.EimLoginActivity;
 import com.flowring.laleents.ui.main.webBody.MainWebActivity;
 import com.flowring.laleents.ui.widget.dialog.StringAdapter;
 import com.flowring.laleents.ui.widget.jitsiMeet.WaitAnswerActivity;
@@ -99,12 +101,12 @@ public class DialogUtils {
         KeyguardManager keyguardManager = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
         boolean isLock = keyguardManager != null && keyguardManager.inKeyguardRestrictedInputMode();
         if (isLock) {
-            Intent intent = new Intent(context, WaitAnswerActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra("MessageInfo", MessageInfo);
-            context.startActivity(intent);
+            showCallNotifications(context,callMessageInfo);
+//            Intent intent = new Intent(context, WaitAnswerActivity.class);
+//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            intent.putExtra("MessageInfo", MessageInfo);
+//            context.startActivity(intent);
         } else {
-
             callMessageInfo = MessageInfo;
             RoomMinInfo roomMinInfo = AllData.getRoomMinInfo(callMessageInfo.room_id);
             UserControlCenter.upEimUser();
@@ -116,6 +118,7 @@ public class DialogUtils {
                     public void Callback(boolean isok, String DataOrErrorMsg) {
                         showCallNotifications(context,callMessageInfo);
                     }
+
                 });
             }
         }
@@ -140,7 +143,7 @@ public class DialogUtils {
 
                 callDialog.setCancelable(false);
                 callDialog.setCanceledOnTouchOutside(false);
-                //8.0系统加强后台管理，禁止在其他应用和窗口弹提醒弹窗，如果要弹，必须使用TYPE_APPLICATION_OVERLAY，否则弹不出
+                //8.0系統加強後台管理，禁止在其他應用和窗口彈提醒彈窗，如果要彈，必須使用TYPE_APPLICATION_OVERLAY，否則彈不出
 
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -238,18 +241,15 @@ public class DialogUtils {
         // 默認系統提示音
         Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        Intent intent = new Intent(context, MainWebActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context,id,intent,PendingIntent.FLAG_IMMUTABLE);
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             NotificationChannel channel = new NotificationChannel(channel_id,"通話通知", NotificationManager.IMPORTANCE_HIGH);
-            channel.setDescription("Lale 收到新訊息時使用的通知類型 (請注意，若未開啟可能無法接收新訊息通知)");
-            channel.setShowBadge(true);
-            channel.canShowBadge();
-            channel.enableLights(true);
+            channel.setShowBadge(true); // 開啟知顯示應用程式圖示旁邊的小圓點徽章,顯示未讀取訊息數量或其他提醒
+            channel.canShowBadge(); //斷該裝置是否支援顯示徽章。
+            channel.enableLights(true);//致能閃燈
             channel.setLightColor(Color.RED);
-            channel.enableVibration(true);
-            channel.setVibrationPattern(new long[]{100, 200, 300, 400, 500});
+            channel.enableVibration(true); //致能震動
+            channel.setVibrationPattern(new long[]{100, 200, 300, 400, 500}); //設定震動模式
             AudioAttributes audioAttributes = new AudioAttributes.Builder()
                     .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                     .setUsage(AudioAttributes.USAGE_NOTIFICATION)
@@ -262,8 +262,9 @@ public class DialogUtils {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context,channel_id)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .setFullScreenIntent(null, true)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setFullScreenIntent(pendingIntent, true) // 顯示的意圖不是啟動
                 .setAutoCancel(true);
 
         RemoteViews headsUpRemoteView = new RemoteViews(context.getPackageName(), R.layout.notification_custom);
@@ -273,21 +274,25 @@ public class DialogUtils {
             headsUpRemoteView.setTextViewText(R.id.title,roomMinInfo.name);
         }
 
+        Intent rejectIntent = new Intent(context, BootBroadcastReceiver.class);
+        rejectIntent.putExtra("id",id);
+        rejectIntent.putExtra("messageInfo_room_id",messageInfo.room_id);
+        rejectIntent.putExtra("messageInfo_eventId",messageInfo.id);
+        rejectIntent.setAction("reject_notification");
+        PendingIntent rejectPenInt = PendingIntent.getBroadcast(context,id,rejectIntent,PendingIntent.FLAG_IMMUTABLE);
+        headsUpRemoteView.setOnClickPendingIntent(R.id.button_No_call, rejectPenInt);
 
-//        Intent answerIntent = new Intent();
-//        answerIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//        answerIntent.setClass(context, MainWebActivity.class);
-//        answerIntent.putExtra("Answer", "Answer call clicked");
-//        PendingIntent ddd = PendingIntent.getActivity(context,5001,answerIntent,FLAG_IMMUTABLE);
-        headsUpRemoteView.setOnClickPendingIntent(R.id.button_accept_call, pendingIntent);
-
-        //headsUpRemoteView.setOnClickPendingIntent(R.id.button_No_call, null); //設null會沒反應
-
+        Intent acceptIntent = new Intent(context, BootBroadcastReceiver.class);
+        acceptIntent.putExtra("id",id);
+        acceptIntent.putExtra("messageInfo_room_id",messageInfo.room_id);
+        acceptIntent.putExtra("messageInfo_eventId",messageInfo.id);
+        acceptIntent.putExtra("MessageInfo", messageInfo);
+        acceptIntent.setAction("accept_notification");
+        PendingIntent acceptPenInt = PendingIntent.getBroadcast(context,id,acceptIntent,PendingIntent.FLAG_IMMUTABLE);
+        headsUpRemoteView.setOnClickPendingIntent(R.id.button_accept_call, acceptPenInt);
 
         builder.setCustomContentView(headsUpRemoteView);
         notificationManager.notify(id, builder.build());
-
-        // notificationManager.cancel(id); // 取消來電
     }
 
     static public void showDialogMessage(Context context, String text) {

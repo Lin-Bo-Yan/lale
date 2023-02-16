@@ -401,14 +401,10 @@ public class MsgControlCenter {
 
         if (messageInfo != null) {
             //觸發接收到時的回調
-            {
-//                if (messageInfo.is_lale_ecosystem_af_notify() && source == Source.notifi)
-//                    LocalBroadcastControlCenter.send(AllData.context, LocalBroadcastControlCenter.ACTION_NOTIFI_AF, value);
-            }
-            if (messageInfo.is_lale_room()) {
+            if (messageInfo.is_lale_room()) { // lale.room
                 RoomControlCenter.getAllRoom();
                 LocalBroadcastControlCenter.send(AllData.context, LocalBroadcastControlCenter.ACTION_MQTT_ROOM, value);
-            } else if (messageInfo.is_lale_member_invite()) {
+            } else if (messageInfo.is_lale_member_invite()) { // lale.member.invite
                 if (messageInfo.getMemberInvite().userId.equals(UserControlCenter.getUserMinInfo().userId)) {
                     AllData.updateRoom(messageInfo.getMemberInvite().room);
                     LocalBroadcastControlCenter.send(AllData.context, LocalBroadcastControlCenter.ACTION_MQTT_ROOM, value);
@@ -468,8 +464,6 @@ public class MsgControlCenter {
                         if (source == Source.mqtt) {
                             LocalBroadcastControlCenter.send(AllData.context, LocalBroadcastControlCenter.ACTION_MQTT_CALL_MSG, value);
                         }
-
-
                     } else if (messageInfo.is_lale_call_spendtime()) {
                         MessageInfo requestEventId = AllData.getMsg(messageInfo.getCallRequest().requestEventId);
                         if (requestEventId != null) {
@@ -528,6 +522,11 @@ public class MsgControlCenter {
         }
         return messageInfo;
     }
+
+
+
+
+
 
     static private MediaPlayer incomingCallPlayer;
 
