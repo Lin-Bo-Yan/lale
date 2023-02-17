@@ -64,6 +64,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     }
 
+    @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
         if (AllData.context == null)
@@ -77,10 +78,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     StringUtils.HaoLog("messageInfo result1=" + messageInfo);
                     //判斷是否在前景
                     boolean isAppForeground = CommonUtils.foregrounded();
-
-//                    if (messageInfo.is_lale_call_group_status()) {
-//
-//                    } else
                         if (messageInfo.is_lale_call_request()) {
 
                     } else if (messageInfo.is_lale_call_response()) {
@@ -120,7 +117,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     }
 
-   private void sendNoChatNotification(RemoteMessage remoteMessage) {
+
+    private void sendNoChatNotification(RemoteMessage remoteMessage) {
         String channel_id = "lale_channel_id";
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         String body = remoteMessage.getData().get("body");

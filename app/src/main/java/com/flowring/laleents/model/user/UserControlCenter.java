@@ -496,7 +496,7 @@ public class UserControlCenter {
 
     }
 
-    public static void upEimUser() {
+    public static void getOrgtreeuserimage() {
         HttpAfReturn httpReturn2 = CloudUtils.iCloudUtils.orgtreeuserimage(UserControlCenter.getUserMinInfo().eimUserData.af_url, new String[]{UserControlCenter.getUserMinInfo().eimUserData.lale_user_id});
         StringUtils.HaoLog("getRoomMembers=", httpReturn2);
         if (httpReturn2.code == 200) {
@@ -508,8 +508,6 @@ public class UserControlCenter {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
         }
     }
-
 }

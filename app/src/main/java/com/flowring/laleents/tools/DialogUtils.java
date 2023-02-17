@@ -96,39 +96,19 @@ public class DialogUtils {
     static AlertDialog callDialog;
     static public MessageInfo callMessageInfo = null;
 
-    static public void showCall(Context context, MessageInfo MessageInfo) {
+    static public void showCall(Context context, MessageInfo messageInfo) {
         MsgControlCenter.playRing();
         KeyguardManager keyguardManager = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
         boolean isLock = keyguardManager != null && keyguardManager.inKeyguardRestrictedInputMode();
         if (isLock) {
-            showCallNotifications(context,callMessageInfo);
-//            Intent intent = new Intent(context, WaitAnswerActivity.class);
-//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//            intent.putExtra("MessageInfo", MessageInfo);
-//            context.startActivity(intent);
+            getOrgtreeuserimage(context, messageInfo);
         } else {
-            callMessageInfo = MessageInfo;
-            RoomMinInfo roomMinInfo = AllData.getRoomMinInfo(callMessageInfo.room_id);
-            UserControlCenter.upEimUser();
-            if (roomMinInfo != null){
-                showCallNotifications(context,callMessageInfo);
-            } else {
-                RoomControlCenter.getRoom0(callMessageInfo.room_id, new CallbackUtils.APIReturn() {
-                    @Override
-                    public void Callback(boolean isok, String DataOrErrorMsg) {
-                        showCallNotifications(context,callMessageInfo);
-                    }
-
-                });
-            }
+            getOrgtreeuserimage(context, messageInfo);
         }
-
-
     }
 
-    static boolean isCallOk = false;
-
     //棄用
+//    static boolean isCallOk = false;
     static void showCallDialog(Context context, RoomMinInfo roomMinInfo) {
         if (Settings.canDrawOverlays(context)) {
             runOnUiThread(() -> {
@@ -136,7 +116,7 @@ public class DialogUtils {
                     callDialog.dismiss();
                     callDialog = null;
                 }
-                isCallOk = false;
+//                isCallOk = false;
                 AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.TransparentDialog);
                 callDialog = builder.create();
                 callDialog.setView(LayoutInflater.from(context).inflate(R.layout.dialog_call, null));
@@ -191,14 +171,13 @@ public class DialogUtils {
                     public void onDismiss(DialogInterface dialog) {
                         
                         MsgControlCenter.stopRing();
-                        if (!isCallOk)
-                            MsgControlCenter.sendRejectRequest(callMessageInfo.room_id, callMessageInfo.id);
+//                        if (!isCallOk){MsgControlCenter.sendRejectRequest(callMessageInfo.room_id, callMessageInfo.id);}
                     }
                 });
                 call_light.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        isCallOk = true;
+//                        isCallOk = true;
                         callDialog.cancel();
                         boolean isGroup = false;
                         String roomName = "";
@@ -231,7 +210,27 @@ public class DialogUtils {
         }
     }
 
-    private static void showCallNotifications(Context context, MessageInfo messageInfo){
+    private static void getOrgtreeuserimage(Context context, MessageInfo messageInfo){
+        callMessageInfo = messageInfo;
+        if (callMessageInfo != null){
+            UserControlCenter.getOrgtreeuserimage();
+            notifications(context,callMessageInfo);
+        } else {
+            StringUtils.HaoLog("getOrgtreeuserimage  "+"callMessageInfo is null");
+            RoomControlCenter.getRoom0(callMessageInfo.room_id, new CallbackUtils.APIReturn() {
+                @Override
+                public void Callback(boolean isok, String DataOrErrorMsg) {
+                    if(callMessageInfo != null){
+                        notifications(context,callMessageInfo);
+                    }else {
+                        StringUtils.HaoLog("getRoomMembers  "+"callMessageInfo is null");
+                    }
+                }
+            });
+        }
+    }
+
+    private static void notifications(Context context, MessageInfo messageInfo){
         String channel_id = "lale_channel_id";
         int id = CommonUtils.letterToNumber(messageInfo.id);
         if(id < 0){
@@ -259,11 +258,14 @@ public class DialogUtils {
             notificationManager.createNotificationChannel(channel);
         }
 
+        Intent intent = new Intent(context, MainWebActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context,channel_id)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                .setFullScreenIntent(null, true)
+                .setFullScreenIntent(pendingIntent, true)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setAutoCancel(true);
 

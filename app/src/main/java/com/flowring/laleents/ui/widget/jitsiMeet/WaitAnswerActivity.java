@@ -78,7 +78,7 @@ public class WaitAnswerActivity extends MainAppCompatActivity {
             finish();
         new Thread(() -> {
             RoomMinInfo roomMinInfo = AllData.getRoomMinInfoNoNull(MessageInfo.room_id);
-            UserControlCenter.upEimUser();
+            UserControlCenter.getOrgtreeuserimage();
             runOnUiThread(() -> {
                 if (roomMinInfo == null)
                     finish();
