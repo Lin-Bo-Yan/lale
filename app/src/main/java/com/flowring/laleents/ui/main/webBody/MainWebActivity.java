@@ -1205,7 +1205,7 @@ public class MainWebActivity extends MainAppCompatActivity {
     public static String getVersionName(Context context) {
         String versionName = "";
         try {
-            //获取软件版本号，对应AndroidManifest.xml下android:versionName
+            //獲取軟件版本號，對應AndroidManifest.xml下android:versionName
             versionName = context.getPackageManager().
                     getPackageInfo(context.getPackageName(), 0).versionName;
         } catch (PackageManager.NameNotFoundException e) {

@@ -22,7 +22,7 @@
     <uses-permission android:name="android.permission.SYSTEM_OVERLAY_WINDOW" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /><!--这行代码必须存在，否则点击不了系统设置中的按钮-->
 
-
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" /> <!--禁用螢幕鎖-->
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <queries>

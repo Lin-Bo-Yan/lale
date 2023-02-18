@@ -23,6 +23,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.PowerManager;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.view.Gravity;
@@ -101,6 +102,12 @@ public class DialogUtils {
         KeyguardManager keyguardManager = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
         boolean isLock = keyguardManager != null && keyguardManager.inKeyguardRestrictedInputMode();
         if (isLock) {
+            KeyguardManager.KeyguardLock keyguardLock = keyguardManager.newKeyguardLock("com.example.myapp:bright");
+            keyguardLock.disableKeyguard();
+            PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+            PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.SCREEN_DIM_WAKE_LOCK,"com.example.myapp:bright");
+            wakeLock.acquire();
+            wakeLock.release();
             getOrgtreeuserimage(context, messageInfo);
         } else {
             getOrgtreeuserimage(context, messageInfo);

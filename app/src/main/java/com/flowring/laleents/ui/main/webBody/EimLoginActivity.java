@@ -147,7 +147,12 @@ public class EimLoginActivity extends MainAppCompatActivity {
                 String deviceToken = instanceIdResult.getToken();
                 StringUtils.HaoLog("deviceToken:"+deviceToken);
                 new Thread(() -> {
-                    HttpAfReturn pu = CloudUtils.iCloudUtils.setAfPusher(UserControlCenter.getUserMinInfo().eimUserData.af_wfci_service_url, UserControlCenter.getUserMinInfo().eimUserData.af_mem_id,UserControlCenter.getUserMinInfo().eimUserData.af_login_id, deviceToken, Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID));
+                    String WFCI_URL = UserControlCenter.getUserMinInfo().eimUserData.af_wfci_service_url;
+                    String memId = UserControlCenter.getUserMinInfo().eimUserData.af_mem_id;
+                    String userId = UserControlCenter.getUserMinInfo().eimUserData.af_login_id;
+                    String uuid = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
+                    HttpAfReturn pu = CloudUtils.iCloudUtils.setAfPusher(WFCI_URL, memId,userId, deviceToken, uuid);
+
                     StringUtils.HaoLog("AF推播註冊:", pu);
                     activity.runOnUiThread(() -> {
                         activity.finish();
@@ -172,10 +177,14 @@ public class EimLoginActivity extends MainAppCompatActivity {
                         StringUtils.HaoLog("deviceToken=" + deviceToken);
 
                         if (UserIds.length() <= 1){
-                            pu = CloudUtils.iCloudUtils.setPusher(UserControlCenter.getUserMinInfo().userId, deviceToken, Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID));
+                            String userId = UserControlCenter.getUserMinInfo().userId;
+                            String uuid = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
+                            pu = CloudUtils.iCloudUtils.setPusher(userId, deviceToken, uuid);
                         } else {
-                            UserControlCenter.switchAccounts(UserControlCenter.getUserMinInfo().userId);
-                            pu = CloudUtils.iCloudUtils.updatePusher(UserControlCenter.getUserMinInfo().userId, Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID));
+                            String userId = UserControlCenter.getUserMinInfo().userId;
+                            String uuid = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
+                            UserControlCenter.switchAccounts(userId);
+                            pu = CloudUtils.iCloudUtils.updatePusher(userId, uuid);
                         }
                         StringUtils.HaoLog("setPusher=" + pu);
 
