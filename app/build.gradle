@@ -5,10 +5,10 @@ android {
     buildToolsVersion "28.0.3"
     defaultConfig {
         applicationId "com.flowring.laleents"
-        minSdkVersion 26
+        minSdkVersion 28
         targetSdkVersion 31
         versionCode 151
-        versionName "1.1.2.1"
+        versionName "1.1.2.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         ndkVersion "21.3.6528147"
 //        ndk {
