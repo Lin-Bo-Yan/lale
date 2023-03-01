@@ -79,22 +79,23 @@ public class DialogUtils {
                 .create().show();
     }
 
-    static public void hideCall(Context context, MessageInfo MessageInfo) {
-        runOnUiThread(() -> {
-            if (callDialog != null) {
-                callDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        MsgControlCenter.stopRing();
-                    }
-                });
-                callDialog.dismiss();
-                callDialog = null;
-            }
-        });
-    }
+    //棄用
+//    static public void hideCall(Context context, MessageInfo MessageInfo) {
+//        runOnUiThread(() -> {
+//            if (callDialog != null) {
+//                callDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+//                    @Override
+//                    public void onDismiss(DialogInterface dialog) {
+//                        MsgControlCenter.stopRing();
+//                    }
+//                });
+//                callDialog.dismiss();
+//                callDialog = null;
+//            }
+//        });
+//    }
+//    static AlertDialog callDialog;
 
-    static AlertDialog callDialog;
     static public MessageInfo callMessageInfo = null;
 
     static public void showCall(Context context, MessageInfo messageInfo) {
@@ -116,106 +117,106 @@ public class DialogUtils {
 
     //棄用
 //    static boolean isCallOk = false;
-    static void showCallDialog(Context context, RoomMinInfo roomMinInfo) {
-        if (Settings.canDrawOverlays(context)) {
-            runOnUiThread(() -> {
-                if (callDialog != null) {
-                    callDialog.dismiss();
-                    callDialog = null;
-                }
-//                isCallOk = false;
-                AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.TransparentDialog);
-                callDialog = builder.create();
-                callDialog.setView(LayoutInflater.from(context).inflate(R.layout.dialog_call, null));
-
-                callDialog.setCancelable(false);
-                callDialog.setCanceledOnTouchOutside(false);
-                //8.0系統加強後台管理，禁止在其他應用和窗口彈提醒彈窗，如果要彈，必須使用TYPE_APPLICATION_OVERLAY，否則彈不出
-
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    callDialog.getWindow().setType((WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY));
-//                    callDialog.getWindow().setType((WindowManager.LayoutParams.TYPE_INPUT_METHOD_DIALOG));
-
-                } else {
-                    callDialog.getWindow().setType((WindowManager.LayoutParams.TYPE_PHONE));
-                }
-//                callDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-//                callDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
-//                callDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
-//                callDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
-                callDialog.getWindow().setDimAmount(0);
-                callDialog.getWindow().setFlags(FLAG_NOT_TOUCH_MODAL,FLAG_NOT_TOUCH_MODAL);
-
-                Window window = callDialog.getWindow();
-                WindowManager.LayoutParams wlp = window.getAttributes();
-                wlp.gravity = Gravity.TOP;
-                callDialog.show();
-
-                TextView title = callDialog.findViewById(R.id.title);
-                StringUtils.HaoLog("title=" + title + " MessageInfo=" + callMessageInfo + "");
-                if (AllData.context == null) {
-                    AllData.context = context.getApplicationContext();
-                }
-
-
-                title.setText(roomMinInfo == null ? callMessageInfo.room_id : roomMinInfo.name);
-
-                TextView text = callDialog.findViewById(R.id.text);
-                if ((callMessageInfo.getCallRequest().type.equals("audio"))) {
-                    text.setText("lale 企業語音...");
-                } else {
-                    text.setText("lale 企業視訊...");
-
-                }
-                ImageView call_light = callDialog.findViewById(R.id.call_light);
-                if (AllData.context == null) {
-                    AllData.context = context.getApplicationContext();
-                }
-
-                callDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        
-                        MsgControlCenter.stopRing();
-//                        if (!isCallOk){MsgControlCenter.sendRejectRequest(callMessageInfo.room_id, callMessageInfo.id);}
-                    }
-                });
-                call_light.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-//                        isCallOk = true;
-                        callDialog.cancel();
-                        boolean isGroup = false;
-                        String roomName = "";
-                        if (AllData.context != null) {
-                            RoomMinInfo roomMinInfo = AllData.getRoomMinInfo(callMessageInfo.room_id);
-                            if (roomMinInfo != null) {
-                                isGroup = roomMinInfo.isGroup();
-                                roomName = roomMinInfo.name;
-                            }
-
-                        }
-                        MsgControlCenter.sendApplyRequest(callMessageInfo.room_id, callMessageInfo.id);
-                        ActivityUtils.gotoWebJitisiMeet(context, UserControlCenter.getUserMinInfo().displayName,
-                                UserControlCenter.getUserMinInfo().userId,
-                                UserControlCenter.getUserMinInfo().avatarThumbnailUrl,
-                                UserControlCenter.getUserMinInfo().token, UserControlCenter.getUserMinInfo().externalServerSetting.mqttUrl,
-                                UserControlCenter.getUserMinInfo().externalServerSetting.jitsiServerUrl, callMessageInfo.getCallRequest().type, callMessageInfo.id, callMessageInfo.room_id, roomName, isGroup
-                        );
-                    }
-                });
-                ImageView call_times = callDialog.findViewById(R.id.call_times);
-                call_times.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        callDialog.cancel();
-
-                    }
-                });
-            });
-        }
-    }
+//    static void showCallDialog(Context context, RoomMinInfo roomMinInfo) {
+//        if (Settings.canDrawOverlays(context)) {
+//            runOnUiThread(() -> {
+//                if (callDialog != null) {
+//                    callDialog.dismiss();
+//                    callDialog = null;
+//                }
+////                isCallOk = false;
+//                AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.TransparentDialog);
+//                callDialog = builder.create();
+//                callDialog.setView(LayoutInflater.from(context).inflate(R.layout.dialog_call, null));
+//
+//                callDialog.setCancelable(false);
+//                callDialog.setCanceledOnTouchOutside(false);
+//                //8.0系統加強後台管理，禁止在其他應用和窗口彈提醒彈窗，如果要彈，必須使用TYPE_APPLICATION_OVERLAY，否則彈不出
+//
+//
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                    callDialog.getWindow().setType((WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY));
+////                    callDialog.getWindow().setType((WindowManager.LayoutParams.TYPE_INPUT_METHOD_DIALOG));
+//
+//                } else {
+//                    callDialog.getWindow().setType((WindowManager.LayoutParams.TYPE_PHONE));
+//                }
+////                callDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+////                callDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+////                callDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+////                callDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+//                callDialog.getWindow().setDimAmount(0);
+//                callDialog.getWindow().setFlags(FLAG_NOT_TOUCH_MODAL,FLAG_NOT_TOUCH_MODAL);
+//
+//                Window window = callDialog.getWindow();
+//                WindowManager.LayoutParams wlp = window.getAttributes();
+//                wlp.gravity = Gravity.TOP;
+//                callDialog.show();
+//
+//                TextView title = callDialog.findViewById(R.id.title);
+//                StringUtils.HaoLog("title=" + title + " MessageInfo=" + callMessageInfo + "");
+//                if (AllData.context == null) {
+//                    AllData.context = context.getApplicationContext();
+//                }
+//
+//
+//                title.setText(roomMinInfo == null ? callMessageInfo.room_id : roomMinInfo.name);
+//
+//                TextView text = callDialog.findViewById(R.id.text);
+//                if ((callMessageInfo.getCallRequest().type.equals("audio"))) {
+//                    text.setText("lale 企業語音...");
+//                } else {
+//                    text.setText("lale 企業視訊...");
+//
+//                }
+//                ImageView call_light = callDialog.findViewById(R.id.call_light);
+//                if (AllData.context == null) {
+//                    AllData.context = context.getApplicationContext();
+//                }
+//
+//                callDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+//                    @Override
+//                    public void onDismiss(DialogInterface dialog) {
+//
+//                        MsgControlCenter.stopRing();
+////                        if (!isCallOk){MsgControlCenter.sendRejectRequest(callMessageInfo.room_id, callMessageInfo.id);}
+//                    }
+//                });
+//                call_light.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+////                        isCallOk = true;
+//                        callDialog.cancel();
+//                        boolean isGroup = false;
+//                        String roomName = "";
+//                        if (AllData.context != null) {
+//                            RoomMinInfo roomMinInfo = AllData.getRoomMinInfo(callMessageInfo.room_id);
+//                            if (roomMinInfo != null) {
+//                                isGroup = roomMinInfo.isGroup();
+//                                roomName = roomMinInfo.name;
+//                            }
+//
+//                        }
+//                        MsgControlCenter.sendApplyRequest(callMessageInfo.room_id, callMessageInfo.id);
+//                        ActivityUtils.gotoWebJitisiMeet(context, UserControlCenter.getUserMinInfo().displayName,
+//                                UserControlCenter.getUserMinInfo().userId,
+//                                UserControlCenter.getUserMinInfo().avatarThumbnailUrl,
+//                                UserControlCenter.getUserMinInfo().token, UserControlCenter.getUserMinInfo().externalServerSetting.mqttUrl,
+//                                UserControlCenter.getUserMinInfo().externalServerSetting.jitsiServerUrl, callMessageInfo.getCallRequest().type, callMessageInfo.id, callMessageInfo.room_id, roomName, isGroup
+//                        );
+//                    }
+//                });
+//                ImageView call_times = callDialog.findViewById(R.id.call_times);
+//                call_times.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        callDialog.cancel();
+//
+//                    }
+//                });
+//            });
+//        }
+//    }
 
     private static void getOrgtreeuserimage(Context context, MessageInfo messageInfo){
         callMessageInfo = messageInfo;

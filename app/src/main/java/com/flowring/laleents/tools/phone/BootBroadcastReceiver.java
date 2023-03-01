@@ -77,7 +77,6 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
             notificationManager.cancel(id);//取消來電
             String room_id = intent.getStringExtra("messageInfo_room_id");
             String eventId = intent.getStringExtra("messageInfo_eventId");
-            MsgControlCenter.stopRing();
             new Thread(new Runnable() {
                 @Override
                 public void run() {
