@@ -265,8 +265,9 @@ public class UserControlCenter {
     public static void getCompany(CallbackUtils.CompanyReturn callback) {
         if (company != null) {
             callback.Callback(company);
-        } else
+        } else {
             getNewCompany(callback);
+        }
     }
 
     public static void getNewCompany(CallbackUtils.CompanyReturn callback) {
@@ -281,11 +282,12 @@ public class UserControlCenter {
                 if (Companies != null && Companies.size() > 0) {
                     company = Companies.get(0);
                     callback.Callback(company);
-                } else
+                } else{
                     callback.Callback(null);
-            } else
+                }
+            } else{
                 callback.Callback(null);
-
+            }
         }).start();
 
     }
@@ -293,8 +295,9 @@ public class UserControlCenter {
     public static void getAfToken(CallbackUtils.messageReturn callback) {
         if (afToken != null) {
             callback.Callback(afToken);
-        } else
+        } else{
             getNewAfToken(callback);
+        }
     }
 
     public static void getNewAfToken(CallbackUtils.messageReturn callback) {
@@ -313,20 +316,18 @@ public class UserControlCenter {
                             AFtoken aFtoken = gson.fromJson(gson.toJson(httpReturn.data), AFtoken.class);
                             afToken = aFtoken.token;
                             callback.Callback(afToken);
-                        } else
+                        } else{
                             callback.Callback(null);
-
+                        }
                     }).start();
 
                 } else
                     callback.Callback(null);
             }
         });
-
     }
 
     public static void getMainUserWebagendaUrl(CallbackUtils.messageReturn callback) {
-
         getMainUserInfo(new CallbackUtils.userReturn() {
             @Override
             public void Callback(UserInfo userInfo) {
@@ -413,9 +414,7 @@ public class UserControlCenter {
                     SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
                     pref.edit().putString("nowUserId", "").apply();
                     pref.edit().putString("UserIds", "{}").apply();
-                    if (MqttService.mqttControlCenter != null)
-                        MqttService.mqttControlCenter.DisConnect();
-
+                    if (MqttService.mqttControlCenter != null){MqttService.mqttControlCenter.DisConnect();}
                     userMin = null;
                     cleanUser();
                     delectAll();
@@ -436,20 +435,14 @@ public class UserControlCenter {
                             delectAll();
                             callback.Callback(httpReturn);
                         }).start();
-
-
                     }
                 });
-
             }
         }
-
-
     }
 
     public static UserMin getUserMinInfo() {
-        if (userMin != null)
-            return userMin;
+        if (userMin != null){return userMin;}
         userMin = getUserMinInfoByPhone();
         return userMin;
     }
@@ -457,9 +450,9 @@ public class UserControlCenter {
     static UserMin getUserMinInfoByPhone() {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
         String id = pref.getString("nowUserId", "");
-        if (id.isEmpty())
+        if (id.isEmpty()){
             return null;
-        else
+        } else{
             try {
                 JSONObject UserIds = new JSONObject(pref.getString("UserIds", "[]"));
                 Gson gson = new Gson();
@@ -468,8 +461,8 @@ public class UserControlCenter {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        return null;
-
+            return null;
+        }
     }
 
     public static void getUserInfo(String userId, CallbackUtils.userReturn callback) {
@@ -492,9 +485,7 @@ public class UserControlCenter {
             while (keys.hasNext()) {
                 String key = keys.next();
                 StringUtils.HaoLog(UserIds.get(key).toString());
-                {
-                    userMins.add(new Gson().fromJson(UserIds.get(key).toString(), UserMin.class));
-                }
+                userMins.add(new Gson().fromJson(UserIds.get(key).toString(), UserMin.class));
             }
             StringUtils.HaoLog("" + userMins.size());
             return userMins;
@@ -510,7 +501,6 @@ public class UserControlCenter {
         StringUtils.HaoLog("getRoomMembers=", httpReturn2);
         if (httpReturn2.code == 200) {
             try {
-
                 JSONObject jsonObject = new JSONObject(new Gson().toJson(httpReturn2.data));
                 UserMin userMin = UserControlCenter.getUserMinInfo();
                 userMin.avatarUrl = jsonObject.optString(userMin.eimUserData.lale_user_id);

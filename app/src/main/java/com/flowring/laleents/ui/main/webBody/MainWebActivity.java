@@ -461,7 +461,7 @@ public class MainWebActivity extends MainAppCompatActivity {
 
     public void showUpgradeDialog() {
         AlertDialog.Builder alertDialogBuilder =
-                new AlertDialog.Builder(this)
+                new AlertDialog.Builder(getApplicationContext())
                         .setMessage(getString(R.string.update_app_text))
                         .setPositiveButton(android.R.string.ok, (dialog, which) -> {
                             dialog.dismiss();
@@ -482,18 +482,20 @@ public class MainWebActivity extends MainAppCompatActivity {
         if (webView == null) {
             StringUtils.HaoLog("init webView");
             webView = new MyWebView(getApplicationContext());
-            setWebView(webView, getMainWebUrl());
+            setWebView(webView, getMainWebURL());
             backtoActivity();
         }
     }
 
 
-    public String getMainWebUrl() {
-        if (UserControlCenter.getUserMinInfo() != null && UserControlCenter.getUserMinInfo().eimUserData != null && UserControlCenter.getUserMinInfo().eimUserData.af_url != null)
-            return UserControlCenter.getUserMinInfo().eimUserData.af_url + "/eimApp/index.html#/";
-
+    public String getMainWebURL() {
+        UserMin userMin = UserControlCenter.getUserMinInfo();
+        if (userMin != null &&
+                userMin.eimUserData != null &&
+                userMin.eimUserData.af_url != null){
+            return userMin.eimUserData.af_url + "/eimApp/index.html#/";
+        }
         return "";
-
     }
 
 
@@ -507,8 +509,6 @@ public class MainWebActivity extends MainAppCompatActivity {
         deleteDatabase("webviewCache.db");
         //WebView 缓存文件
         File appCacheDir = new File(getFilesDir().getAbsolutePath() + "/webcache");
-
-
         File webviewCacheDir = new File(getCacheDir().getAbsolutePath() + "/webviewCache");
 
         //删除webview 缓存目录
@@ -519,8 +519,6 @@ public class MainWebActivity extends MainAppCompatActivity {
         if (appCacheDir.exists()) {
             deleteFile(appCacheDir.getPath());
         }
-
-
     }
 
     private void chooseCAMERA() {
@@ -725,7 +723,6 @@ public class MainWebActivity extends MainAppCompatActivity {
 //            if (UserControlCenter.getUserMinInfo() != null && !UserControlCenter.getUserMinInfo().userId.isEmpty()) {
 //                StringUtils.HaoLog("initOnMainWebPageFinished " + UserControlCenter.getUserMinInfo());
 //                Login();
-//
 //            }
             if (getIntent().getAction() != null && getIntent().getAction().equals(Intent.ACTION_SEND)) {
                 shareToWeb(getIntent());
@@ -786,8 +783,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         this.getWindow().setFlags(
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
-        if (webView == null)
-            webView = new WebView(getApplicationContext());
+        if (webView == null){webView = new WebView(getApplicationContext());}
         webView.setVisibility(View.INVISIBLE);
         webView.setDownloadListener(mWebDownloadListener);
         cleanWebviewCache();
@@ -813,10 +809,13 @@ public class MainWebActivity extends MainAppCompatActivity {
                 StringUtils.HaoLog("還活著 onReceivedHttpError error getUrl=" + request.getUrl());
                 StringUtils.HaoLog("還活著 onReceivedHttpError error=" + errorResponse.getData());
                 StringUtils.HaoLog("還活著 onReceivedHttpError error getStatusCode=" + errorResponse.getStatusCode());
-if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusCode()>=500&&errorResponse.getStatusCode()<600)
-{
-    Logout();
-}
+                final int MIN_ERROR_STATUS_CODE = 500;
+                final int MAX_ERROR_STATUS_CODE = 600;
+                if (errorResponse.getStatusCode() >= MIN_ERROR_STATUS_CODE
+                        && errorResponse.getStatusCode() < MAX_ERROR_STATUS_CODE
+                        && getMainWebURL().equals(request.getUrl().toString())) {
+                    Logout();
+                }
                 super.onReceivedHttpError(view, request, errorResponse);
             }
 
@@ -827,8 +826,6 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
             }
         });
         webSettings.setAllowFileAccess(true);
-
-
         webSettings.setBuiltInZoomControls(true);
         webSettings.setDisplayZoomControls(false);
         webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
@@ -980,14 +977,12 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
         webView.setWebChromeClient(mWebChromeClient);
 //        webView.loadData(testUrl, "text/html; charset=utf-8", "UTF-8");
         if (!init) {
-            if (getIntent().getBooleanExtra("bFromPhone", false) && getIntent().getStringExtra("roomInfo") != null) {
-                StringUtils.HaoLog("initOnMainWebPageFinished 前往" + getIntent().getStringExtra("roomInfo"));
-                webView.loadUrl(getMainWebUrl() + "chatroom/" + getIntent().getStringExtra("roomInfo"));
-                init = true;
-            } else {
-                webView.loadUrl(url);
-                StringUtils.HaoLog("init setWebView");
-            }
+            String roomInfo = getIntent().getStringExtra("roomInfo");
+            boolean bFromPhone = getIntent().getBooleanExtra("bFromPhone", false);
+            String urlToLoad = bFromPhone && roomInfo != null ? getMainWebURL() + "chatroom/" + roomInfo : url;
+            StringUtils.HaoLog("init setWebView 1 " + (init ? "true" : "fale")+" urlToLoad= "+urlToLoad);
+            webView.loadUrl(urlToLoad);
+            init = true;
         } else {
             StringUtils.HaoLog("init setWebView 2");
             webView.loadUrl(url);
@@ -1259,31 +1254,32 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
         sendToWeb(json);
     }
 
-    boolean isLogin = false;
+    boolean isLoggedIn = false;
 
     private void Login() {
-        if (!isLogin) {
-            if (AllData.dbHelper == null) {
-                StringUtils.HaoLog("userId=" + UserControlCenter.getUserMinInfo().userId);
-                AllData.initSQL(UserControlCenter.getUserMinInfo().userId);
-            }
-            try {
-                StringUtils.HaoLog("Login=" + new Gson().toJson(UserControlCenter.getUserMinInfo().eimUserData));
-                sendToWeb(new JSONObject().put("type", "loginEim").put("data", new JSONObject(new Gson().toJson(UserControlCenter.getUserMinInfo().eimUserData))).toString());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            if (MqttService.mqttControlCenter == null) {
-                Intent intentServer = new Intent(getApplicationContext(), MqttService.class);
-                intentServer.putExtra("data", "new");
-                startService(intentServer);
-            } else {
-                MqttService.mqttControlCenter.NewConnect();
-            }
-            isLogin = true;
+        if(isLoggedIn){
+            return;
         }
-
-
+        StringUtils.HaoLog("isLoggedIn= "+isLoggedIn);
+        if (AllData.dbHelper == null) {
+            StringUtils.HaoLog("userId= " + UserControlCenter.getUserMinInfo().userId);
+            AllData.initSQL(UserControlCenter.getUserMinInfo().userId);
+        }
+        try {
+            StringUtils.HaoLog("Login=" + new Gson().toJson(UserControlCenter.getUserMinInfo().eimUserData));
+            String json = new JSONObject().put("type", "loginEim").put("data", new JSONObject(new Gson().toJson(UserControlCenter.getUserMinInfo().eimUserData))).toString();
+            sendToWeb(json);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if (MqttService.mqttControlCenter == null) {
+            Intent intentServer = new Intent(getApplicationContext(), MqttService.class);
+            intentServer.putExtra("data", "new");
+            startService(intentServer);
+        } else {
+            MqttService.mqttControlCenter.NewConnect();
+        }
+        isLoggedIn = true;
     }
 
     private void setRoomBackground(JSONObject data) {
@@ -1317,7 +1313,7 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
                 NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                 manager.cancelAll();
                 runOnUiThread(() -> {
-                    isLogin = false;
+                    isLoggedIn = false;
                     goLogin();
                 });
 
@@ -1436,9 +1432,6 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
     }
 
     private void downloadByBytesBase64(JSONObject data) {
-
-        String folder;
-        String bytesBase64;
         unDo(data.toString());
     }
 
@@ -1497,8 +1490,8 @@ if(getMainWebUrl().equals(request.getUrl().toString())&&errorResponse.getStatusC
                 for (int i = 0; i < errorUrl.length; i++) {
                     errorUrls.put(errorUrl[i]);
                 }
-
-                sendToWeb(new JSONObject().put("type", "downloadFiles").put("data", new JSONObject().put("isSuccess", isSuccess).put("errorUrl", errorUrls)).toString());
+                String json = new JSONObject().put("type", "downloadFiles").put("data", new JSONObject().put("isSuccess", isSuccess).put("errorUrl", errorUrls)).toString();
+                sendToWeb(json);
             } catch (JSONException e2) {
                 StringUtils.HaoLog("sendToWeb Error=" + e2);
                 e2.printStackTrace();
