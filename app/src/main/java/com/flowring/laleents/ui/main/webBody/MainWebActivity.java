@@ -481,7 +481,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         StringUtils.HaoLog("checkHasWebView webView=" + webView);
         if (webView == null) {
             StringUtils.HaoLog("init webView");
-            webView = new MyWebView(getApplicationContext());
+            webView = new MyWebView(this);
             setWebView(webView, getMainWebURL());
             backtoActivity();
         }
