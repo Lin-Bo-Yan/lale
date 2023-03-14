@@ -19,14 +19,12 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /><!--背景服務 -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SYSTEM_OVERLAY_WINDOW" />
-<<<<<<< HEAD
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /><!--这行代码必须存在，否则点击不了系统设置中的按钮-->
 
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /><!--需要彈出一個選擇窗口，所有必須有以下權限，這行代碼必須存在，否則點擊不了系統設置中的按鈕-->
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" /> <!--禁用螢幕鎖-->
-=======
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /> <!-- 需要彈出一個選擇窗口，所有必須有以下權限，這行代碼必須存在，否則點擊不了系統設置中的按鈕 -->
 
->>>>>>> 2a123ca (bugfix：修正HTML select控鍵無法順利彈出)
+
+
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <queries>

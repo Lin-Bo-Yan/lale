@@ -80,21 +80,21 @@ public class DialogUtils {
     }
 
     //棄用
-//    static public void hideCall(Context context, MessageInfo MessageInfo) {
-//        runOnUiThread(() -> {
-//            if (callDialog != null) {
-//                callDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-//                    @Override
-//                    public void onDismiss(DialogInterface dialog) {
-//                        MsgControlCenter.stopRing();
-//                    }
-//                });
-//                callDialog.dismiss();
-//                callDialog = null;
-//            }
-//        });
-//    }
-//    static AlertDialog callDialog;
+    static public void hideCall(Context context, MessageInfo MessageInfo) {
+        runOnUiThread(() -> {
+            if (callDialog != null) {
+                callDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        MsgControlCenter.stopRing();
+                    }
+                });
+                callDialog.dismiss();
+                callDialog = null;
+            }
+        });
+    }
+    static AlertDialog callDialog;
 
     static public MessageInfo callMessageInfo = null;
 
@@ -103,207 +103,225 @@ public class DialogUtils {
         KeyguardManager keyguardManager = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
         boolean isLock = keyguardManager != null && keyguardManager.inKeyguardRestrictedInputMode();
         if (isLock) {
-            KeyguardManager.KeyguardLock keyguardLock = keyguardManager.newKeyguardLock("com.example.myapp:bright");
-            keyguardLock.disableKeyguard();
-            PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-            PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.SCREEN_DIM_WAKE_LOCK,"com.example.myapp:bright");
-            wakeLock.acquire();
-            wakeLock.release();
-            getOrgtreeuserimage(context, messageInfo);
+//            KeyguardManager.KeyguardLock keyguardLock = keyguardManager.newKeyguardLock("com.example.myapp:bright");
+//            keyguardLock.disableKeyguard();
+//            PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+//            PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.SCREEN_DIM_WAKE_LOCK,"com.example.myapp:bright");
+//            wakeLock.acquire();
+//            wakeLock.release();
+//            getOrgtreeuserimage(context, messageInfo);
+
+            Intent intent = new Intent(context, WaitAnswerActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra("MessageInfo", messageInfo);
+            context.startActivity(intent);
         } else {
-            getOrgtreeuserimage(context, messageInfo);
+            callMessageInfo = messageInfo;
+            RoomMinInfo roomMinInfo = AllData.getRoomMinInfo(callMessageInfo.room_id);
+            UserControlCenter.getOrgtreeuserimage();
+            if (roomMinInfo != null)
+                showCallDialog(context, roomMinInfo);
+            else {
+                RoomControlCenter.getRoom0(callMessageInfo.room_id, new CallbackUtils.APIReturn() {
+                    @Override
+                    public void Callback(boolean isok, String DataOrErrorMsg) {
+
+                        showCallDialog(context, AllData.getRoomMinInfo(callMessageInfo.room_id));
+                    }
+                });
+            }
         }
     }
 
     //棄用
-//    static boolean isCallOk = false;
-//    static void showCallDialog(Context context, RoomMinInfo roomMinInfo) {
-//        if (Settings.canDrawOverlays(context)) {
-//            runOnUiThread(() -> {
-//                if (callDialog != null) {
-//                    callDialog.dismiss();
-//                    callDialog = null;
-//                }
-////                isCallOk = false;
-//                AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.TransparentDialog);
-//                callDialog = builder.create();
-//                callDialog.setView(LayoutInflater.from(context).inflate(R.layout.dialog_call, null));
-//
-//                callDialog.setCancelable(false);
-//                callDialog.setCanceledOnTouchOutside(false);
-//                //8.0系統加強後台管理，禁止在其他應用和窗口彈提醒彈窗，如果要彈，必須使用TYPE_APPLICATION_OVERLAY，否則彈不出
-//
-//
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//                    callDialog.getWindow().setType((WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY));
-////                    callDialog.getWindow().setType((WindowManager.LayoutParams.TYPE_INPUT_METHOD_DIALOG));
-//
-//                } else {
-//                    callDialog.getWindow().setType((WindowManager.LayoutParams.TYPE_PHONE));
-//                }
-////                callDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-////                callDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
-////                callDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
-////                callDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
-//                callDialog.getWindow().setDimAmount(0);
-//                callDialog.getWindow().setFlags(FLAG_NOT_TOUCH_MODAL,FLAG_NOT_TOUCH_MODAL);
-//
-//                Window window = callDialog.getWindow();
-//                WindowManager.LayoutParams wlp = window.getAttributes();
-//                wlp.gravity = Gravity.TOP;
-//                callDialog.show();
-//
-//                TextView title = callDialog.findViewById(R.id.title);
-//                StringUtils.HaoLog("title=" + title + " MessageInfo=" + callMessageInfo + "");
-//                if (AllData.context == null) {
-//                    AllData.context = context.getApplicationContext();
-//                }
-//
-//
-//                title.setText(roomMinInfo == null ? callMessageInfo.room_id : roomMinInfo.name);
-//
-//                TextView text = callDialog.findViewById(R.id.text);
-//                if ((callMessageInfo.getCallRequest().type.equals("audio"))) {
-//                    text.setText("lale 企業語音...");
-//                } else {
-//                    text.setText("lale 企業視訊...");
-//
-//                }
-//                ImageView call_light = callDialog.findViewById(R.id.call_light);
-//                if (AllData.context == null) {
-//                    AllData.context = context.getApplicationContext();
-//                }
-//
-//                callDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-//                    @Override
-//                    public void onDismiss(DialogInterface dialog) {
-//
-//                        MsgControlCenter.stopRing();
-////                        if (!isCallOk){MsgControlCenter.sendRejectRequest(callMessageInfo.room_id, callMessageInfo.id);}
-//                    }
-//                });
-//                call_light.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-////                        isCallOk = true;
-//                        callDialog.cancel();
-//                        boolean isGroup = false;
-//                        String roomName = "";
-//                        if (AllData.context != null) {
-//                            RoomMinInfo roomMinInfo = AllData.getRoomMinInfo(callMessageInfo.room_id);
-//                            if (roomMinInfo != null) {
-//                                isGroup = roomMinInfo.isGroup();
-//                                roomName = roomMinInfo.name;
-//                            }
-//
-//                        }
-//                        MsgControlCenter.sendApplyRequest(callMessageInfo.room_id, callMessageInfo.id);
-//                        ActivityUtils.gotoWebJitisiMeet(context, UserControlCenter.getUserMinInfo().displayName,
-//                                UserControlCenter.getUserMinInfo().userId,
-//                                UserControlCenter.getUserMinInfo().avatarThumbnailUrl,
-//                                UserControlCenter.getUserMinInfo().token, UserControlCenter.getUserMinInfo().externalServerSetting.mqttUrl,
-//                                UserControlCenter.getUserMinInfo().externalServerSetting.jitsiServerUrl, callMessageInfo.getCallRequest().type, callMessageInfo.id, callMessageInfo.room_id, roomName, isGroup
-//                        );
-//                    }
-//                });
-//                ImageView call_times = callDialog.findViewById(R.id.call_times);
-//                call_times.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        callDialog.cancel();
-//
-//                    }
-//                });
-//            });
-//        }
-//    }
-
-    private static void getOrgtreeuserimage(Context context, MessageInfo messageInfo){
-        callMessageInfo = messageInfo;
-        if (callMessageInfo != null){
-            UserControlCenter.getOrgtreeuserimage();
-            notifications(context,callMessageInfo);
-        } else {
-            StringUtils.HaoLog("getOrgtreeuserimage  "+"callMessageInfo is null");
-            RoomControlCenter.getRoom0(callMessageInfo.room_id, new CallbackUtils.APIReturn() {
-                @Override
-                public void Callback(boolean isok, String DataOrErrorMsg) {
-                    if(callMessageInfo != null){
-                        notifications(context,callMessageInfo);
-                    }else {
-                        StringUtils.HaoLog("getRoomMembers  "+"callMessageInfo is null");
-                    }
+    static boolean isCallOk = false;
+    static void showCallDialog(Context context, RoomMinInfo roomMinInfo) {
+        if (Settings.canDrawOverlays(context)) {
+            runOnUiThread(() -> {
+                if (callDialog != null) {
+                    callDialog.dismiss();
+                    callDialog = null;
                 }
+                isCallOk = false;
+                AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.TransparentDialog);
+                callDialog = builder.create();
+                callDialog.setView(LayoutInflater.from(context).inflate(R.layout.dialog_call, null));
+
+                callDialog.setCancelable(false);
+                callDialog.setCanceledOnTouchOutside(false);
+                //8.0系統加強後台管理，禁止在其他應用和窗口彈提醒彈窗，如果要彈，必須使用TYPE_APPLICATION_OVERLAY，否則彈不出
+
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    callDialog.getWindow().setType((WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY));
+//                    callDialog.getWindow().setType((WindowManager.LayoutParams.TYPE_INPUT_METHOD_DIALOG));
+
+                } else {
+                    callDialog.getWindow().setType((WindowManager.LayoutParams.TYPE_PHONE));
+                }
+//                callDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+//                callDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+//                callDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+//                callDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+                callDialog.getWindow().setDimAmount(0);
+                callDialog.getWindow().setFlags(FLAG_NOT_TOUCH_MODAL,FLAG_NOT_TOUCH_MODAL);
+
+                Window window = callDialog.getWindow();
+                WindowManager.LayoutParams wlp = window.getAttributes();
+                wlp.gravity = Gravity.TOP;
+                callDialog.show();
+
+                TextView title = callDialog.findViewById(R.id.title);
+                StringUtils.HaoLog("title=" + title + " MessageInfo=" + callMessageInfo + "");
+                if (AllData.context == null) {
+                    AllData.context = context.getApplicationContext();
+                }
+
+
+                title.setText(roomMinInfo == null ? callMessageInfo.room_id : roomMinInfo.name);
+
+                TextView text = callDialog.findViewById(R.id.text);
+                if ((callMessageInfo.getCallRequest().type.equals("audio"))) {
+                    text.setText("lale 企業語音...");
+                } else {
+                    text.setText("lale 企業視訊...");
+
+                }
+                ImageView call_light = callDialog.findViewById(R.id.call_light);
+                if (AllData.context == null) {
+                    AllData.context = context.getApplicationContext();
+                }
+
+                callDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+
+                        MsgControlCenter.stopRing();
+                        if (!isCallOk){MsgControlCenter.sendRejectRequest(callMessageInfo.room_id, callMessageInfo.id);}
+                    }
+                });
+                call_light.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        isCallOk = true;
+                        callDialog.cancel();
+                        boolean isGroup = false;
+                        String roomName = "";
+                        if (AllData.context != null) {
+                            RoomMinInfo roomMinInfo = AllData.getRoomMinInfo(callMessageInfo.room_id);
+                            if (roomMinInfo != null) {
+                                isGroup = roomMinInfo.isGroup();
+                                roomName = roomMinInfo.name;
+                            }
+
+                        }
+                        MsgControlCenter.sendApplyRequest(callMessageInfo.room_id, callMessageInfo.id);
+                        ActivityUtils.gotoWebJitisiMeet(context, UserControlCenter.getUserMinInfo().displayName,
+                                UserControlCenter.getUserMinInfo().userId,
+                                UserControlCenter.getUserMinInfo().avatarThumbnailUrl,
+                                UserControlCenter.getUserMinInfo().token, UserControlCenter.getUserMinInfo().externalServerSetting.mqttUrl,
+                                UserControlCenter.getUserMinInfo().externalServerSetting.jitsiServerUrl, callMessageInfo.getCallRequest().type, callMessageInfo.id, callMessageInfo.room_id, roomName, isGroup
+                        );
+                    }
+                });
+                ImageView call_times = callDialog.findViewById(R.id.call_times);
+                call_times.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        callDialog.cancel();
+
+                    }
+                });
             });
         }
     }
 
-    private static void notifications(Context context, MessageInfo messageInfo){
-        String channel_id = "lale_channel_id";
-        int id = CommonUtils.letterToNumber(messageInfo.id);
-        if(id < 0){
-            id = -id;
-        }
-
-        // 默認系統提示音
-        Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            NotificationChannel channel = new NotificationChannel(channel_id,"通話通知", NotificationManager.IMPORTANCE_HIGH);
-            channel.setShowBadge(true); // 開啟知顯示應用程式圖示旁邊的小圓點徽章,顯示未讀取訊息數量或其他提醒
-            channel.canShowBadge(); //斷該裝置是否支援顯示徽章。
-            channel.enableLights(true);//致能閃燈
-            channel.setLightColor(Color.RED);
-            channel.enableVibration(true); //致能震動
-            channel.setVibrationPattern(new long[]{100, 200, 300, 400, 500}); //設定震動模式
-            AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-                    .build();
-            channel.setSound(uri, audioAttributes);
-            channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
-            notificationManager.createNotificationChannel(channel);
-        }
-
-        Intent intent = new Intent(context, MainWebActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context,channel_id)
-                .setSmallIcon(R.drawable.ic_launcher)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                .setFullScreenIntent(pendingIntent, true)
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setAutoCancel(true);
-
-        RemoteViews headsUpRemoteView = new RemoteViews(context.getPackageName(), R.layout.notification_custom);
-        //取得 誰打來
-        RoomMinInfo roomMinInfo = AllData.getRoomMinInfo(messageInfo.room_id);
-        if (roomMinInfo != null){
-            headsUpRemoteView.setTextViewText(R.id.title,roomMinInfo.name);
-        }
-
-        Intent rejectIntent = new Intent(context, BootBroadcastReceiver.class);
-        rejectIntent.putExtra("id",id);
-        rejectIntent.putExtra("messageInfo_room_id",messageInfo.room_id);
-        rejectIntent.putExtra("messageInfo_eventId",messageInfo.id);
-        rejectIntent.setAction("reject_notification");
-        PendingIntent rejectPenInt = PendingIntent.getBroadcast(context,id,rejectIntent,PendingIntent.FLAG_IMMUTABLE);
-        headsUpRemoteView.setOnClickPendingIntent(R.id.button_No_call, rejectPenInt);
-
-        Intent acceptIntent = new Intent(context, BootBroadcastReceiver.class);
-        acceptIntent.putExtra("id",id);
-        acceptIntent.putExtra("messageInfo_room_id",messageInfo.room_id);
-        acceptIntent.putExtra("messageInfo_eventId",messageInfo.id);
-        acceptIntent.putExtra("MessageInfo", messageInfo);
-        acceptIntent.setAction("accept_notification");
-        PendingIntent acceptPenInt = PendingIntent.getBroadcast(context,id,acceptIntent,PendingIntent.FLAG_IMMUTABLE);
-        headsUpRemoteView.setOnClickPendingIntent(R.id.button_accept_call, acceptPenInt);
-
-        builder.setCustomContentView(headsUpRemoteView);
-        notificationManager.notify(id, builder.build());
-    }
+//    private static void getOrgtreeuserimage(Context context, MessageInfo messageInfo){
+//        callMessageInfo = messageInfo;
+//        if (callMessageInfo != null){
+//            UserControlCenter.getOrgtreeuserimage();
+//            notifications(context,callMessageInfo);
+//        } else {
+//            StringUtils.HaoLog("getOrgtreeuserimage  "+"callMessageInfo is null");
+//            RoomControlCenter.getRoom0(callMessageInfo.room_id, new CallbackUtils.APIReturn() {
+//                @Override
+//                public void Callback(boolean isok, String DataOrErrorMsg) {
+//                    if(callMessageInfo != null){
+//                        notifications(context,callMessageInfo);
+//                    }else {
+//                        StringUtils.HaoLog("getRoomMembers  "+"callMessageInfo is null");
+//                    }
+//                }
+//            });
+//        }
+//    }
+//
+//    private static void notifications(Context context, MessageInfo messageInfo){
+//        String channel_id = "lale_channel_id";
+//        int id = CommonUtils.letterToNumber(messageInfo.id);
+//        if(id < 0){
+//            id = -id;
+//        }
+//
+//        // 默認系統提示音
+//        Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+//
+//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+//            NotificationChannel channel = new NotificationChannel(channel_id,"通話通知", NotificationManager.IMPORTANCE_HIGH);
+//            channel.setShowBadge(true); // 開啟知顯示應用程式圖示旁邊的小圓點徽章,顯示未讀取訊息數量或其他提醒
+//            channel.canShowBadge(); //斷該裝置是否支援顯示徽章。
+//            channel.enableLights(true);//致能閃燈
+//            channel.setLightColor(Color.RED);
+//            channel.enableVibration(true); //致能震動
+//            channel.setVibrationPattern(new long[]{100, 200, 300, 400, 500}); //設定震動模式
+//            AudioAttributes audioAttributes = new AudioAttributes.Builder()
+//                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+//                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+//                    .build();
+//            channel.setSound(uri, audioAttributes);
+//            channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
+//            notificationManager.createNotificationChannel(channel);
+//        }
+//
+//        Intent intent = new Intent(context, MainWebActivity.class);
+//        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+//
+//        NotificationCompat.Builder builder = new NotificationCompat.Builder(context,channel_id)
+//                .setSmallIcon(R.drawable.ic_launcher)
+//                .setPriority(NotificationCompat.PRIORITY_HIGH)
+//                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+//                .setFullScreenIntent(pendingIntent, true)
+//                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+//                .setAutoCancel(true);
+//
+//        RemoteViews headsUpRemoteView = new RemoteViews(context.getPackageName(), R.layout.notification_custom);
+//        //取得 誰打來
+//        RoomMinInfo roomMinInfo = AllData.getRoomMinInfo(messageInfo.room_id);
+//        if (roomMinInfo != null){
+//            headsUpRemoteView.setTextViewText(R.id.title,roomMinInfo.name);
+//        }
+//
+//        Intent rejectIntent = new Intent(context, BootBroadcastReceiver.class);
+//        rejectIntent.putExtra("id",id);
+//        rejectIntent.putExtra("messageInfo_room_id",messageInfo.room_id);
+//        rejectIntent.putExtra("messageInfo_eventId",messageInfo.id);
+//        rejectIntent.setAction("reject_notification");
+//        PendingIntent rejectPenInt = PendingIntent.getBroadcast(context,id,rejectIntent,PendingIntent.FLAG_IMMUTABLE);
+//        headsUpRemoteView.setOnClickPendingIntent(R.id.button_No_call, rejectPenInt);
+//
+//        Intent acceptIntent = new Intent(context, BootBroadcastReceiver.class);
+//        acceptIntent.putExtra("id",id);
+//        acceptIntent.putExtra("messageInfo_room_id",messageInfo.room_id);
+//        acceptIntent.putExtra("messageInfo_eventId",messageInfo.id);
+//        acceptIntent.putExtra("MessageInfo", messageInfo);
+//        acceptIntent.setAction("accept_notification");
+//        PendingIntent acceptPenInt = PendingIntent.getBroadcast(context,id,acceptIntent,PendingIntent.FLAG_IMMUTABLE);
+//        headsUpRemoteView.setOnClickPendingIntent(R.id.button_accept_call, acceptPenInt);
+//
+//        builder.setCustomContentView(headsUpRemoteView);
+//        notificationManager.notify(id, builder.build());
+//    }
 
     static public void showDialogMessage(Context context, String text) {
         runOnUiThread(()->{

@@ -456,7 +456,8 @@ public class MsgControlCenter {
                                 if (messageInfo.getCallRequest().result.equals("cancel") || (!roomMinInfo.isGroup() && messageInfo.getCallRequest().result.equals("reject")) || (!roomMinInfo.isGroup() && messageInfo.getCallRequest().result.equals("call"))) {
                                     roomMinInfo.call_status = 0;
                                     AllData.updateRoom(roomMinInfo);
-                                    MsgControlCenter.stopRing();
+                                    DialogUtils.hideCall(AllData.context,messageInfo);
+//                                    MsgControlCenter.stopRing();
                                     requestEvent.content = messageInfo.content;
                                     AllData.updateMsg(requestEvent);
                                 }
