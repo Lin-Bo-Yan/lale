@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 
 import com.flowring.laleents.model.HttpAfReturn;
@@ -28,8 +29,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.security.KeyStore;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateExpiredException;
+import java.security.cert.CertificateNotYetValidException;
+import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,8 +48,11 @@ import java.util.Map;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
 import okhttp3.MediaType;
@@ -1835,35 +1848,109 @@ public class CloudUtils implements ICloudUtils {
             final TrustManager[] trustAllCerts = new TrustManager[]{
                 new X509TrustManager() {
                     @Override
-                    public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+                    public void checkClientTrusted(X509Certificate[] chain, String authType) {
 
                     }
+                    //方法中默認允許了所有的證書
                     @Override
-                    public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
-
+                    public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                        for(X509Certificate cert : chain){
+                            try {
+                                // 檢查伺服器 SSL 憑證是是否有效。
+                                cert.checkValidity();
+                            } catch (CertificateExpiredException e) {
+                                throw new CertificateException("Certificate expired");
+                            } catch (CertificateNotYetValidException e) {
+                                throw new CertificateException("Certificate not yet valid");
+                            }
+                        }
                     }
                     @Override
-                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                        return new java.security.cert.X509Certificate[]{};
+                    public X509Certificate[] getAcceptedIssuers() {
+                        return new X509Certificate[]{};
                     }
                 }
             };
 
             final SSLContext sslContext = SSLContext.getInstance("SSL");
             sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
-            final javax.net.ssl.SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+
+            final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
             OkHttpClient.Builder builder = new OkHttpClient.Builder();
             builder.sslSocketFactory(sslSocketFactory);
 
+            //hostnameVerifier 是對服務端返回的一些信息進行相關校驗的地方
             builder.hostnameVerifier(new HostnameVerifier() {
                 @Override
                 public boolean verify(String hostname, SSLSession session) {
-                        return true;
+                    Certificate[] localCertificates = new Certificate[0];
+                    try{
+                        //獲取證書鏈中的所有證書
+                        localCertificates = session.getPeerCertificates();
+                        }catch (SSLPeerUnverifiedException e){
+                            e.printStackTrace();
+                        }
+                        //打印所有證書內容
+                        for(Certificate certificate : localCertificates){
+                        StringUtils.HaoLog("dd= "+certificate.toString());
+                        }
+//                        try{
+//                            createFileWithByte(localCertificates[0].getEncoded());
+//                        }catch (CertificateEncodingException e){
+//                                e.printStackTrace();
+//                        }
+                    return true;
                     }
             });
             return builder.build();
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private static void createFileWithByte(byte[] bytes) {
+        /**
+         創建File對象，其中包含文件所在的目錄以及文件的命名
+         */
+        File file = new File(Environment.getExternalStorageDirectory(),
+                "ca.cer");
+        // 创建FileOutputStream对象
+        FileOutputStream outputStream = null;
+        // 创建BufferedOutputStream对象
+        BufferedOutputStream bufferedOutputStream = null;
+        try {
+            // 如果文件存在則刪除
+            if (file.exists()) {
+                file.delete();
+            }
+            // 在文件系統中根據路徑創建一個新的空文件
+            file.createNewFile();
+            // 獲取FileOutputStream對象
+            outputStream = new FileOutputStream(file);
+            // 獲取BufferedOutputStream對象
+            bufferedOutputStream = new BufferedOutputStream(outputStream);
+            // 往文件所在的緩衝輸出流中寫byte數據
+            bufferedOutputStream.write(bytes);
+            // 刷出緩衝輸出流，該步很關鍵，要是不執行flush()方法，那麼文件的內容是空的。
+            bufferedOutputStream.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // 關閉創建的流對象
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (bufferedOutputStream != null) {
+                try {
+                    bufferedOutputStream.close();
+                } catch (Exception e2) {
+                    e2.printStackTrace();
+                }
+            }
         }
     }
 
