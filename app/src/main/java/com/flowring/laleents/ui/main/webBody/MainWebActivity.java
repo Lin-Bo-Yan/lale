@@ -36,6 +36,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.webkit.GeolocationPermissions;
@@ -846,6 +847,24 @@ public class MainWebActivity extends MainAppCompatActivity {
         webSettings.setMediaPlaybackRequiresUserGesture(false);
 
         WebChromeClient mWebChromeClient = new WebChromeClient() {
+
+            @Override
+            public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+                StringUtils.HaoLog("webView_Log= "+consoleMessage.messageLevel());
+                switch (consoleMessage.messageLevel()){
+                    case ERROR://將error信息上報到服務端
+                        StringUtils.HaoLog("webView_Log= " + " "+consoleMessage.message());
+                        break;
+                    case LOG:
+                        StringUtils.HaoLog("webView_Log= " + " "+consoleMessage.message());
+                        break;
+                    case WARNING:
+                        StringUtils.HaoLog("webView_Log= " + " "+consoleMessage.message());
+                        break;
+                }
+                return super.onConsoleMessage(consoleMessage);
+            }
+
             @Override
             public void onPermissionRequest(final PermissionRequest request) {
 
@@ -923,7 +942,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                 if (getContext() == null) {
                     return false;
                 }
-                AlertDialog.Builder b = new AlertDialog.Builder(MainWebActivity.this.getApplicationContext());
+                AlertDialog.Builder b = new AlertDialog.Builder((Context) MainWebActivity.this);
                 b.setTitle("Alert");
                 b.setMessage(message);
                 b.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -940,7 +959,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             @Override
             public boolean onJsConfirm(WebView view, String url, String message, final JsResult result) {
                 Log.e("hao", "onJsConfirm");
-                AlertDialog.Builder b = new AlertDialog.Builder(MainWebActivity.this.getApplicationContext());
+                AlertDialog.Builder b = new AlertDialog.Builder((Context) MainWebActivity.this);
                 b.setTitle("Confirm");
                 b.setMessage(message);
                 b.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -1104,7 +1123,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         sb.setStream(NuriForFile);
         sb.setSubject("問題回報");
         sb.startChooser();
-        Toast.makeText(getApplicationContext(), "請選擇電子信箱進行傳送", Toast.LENGTH_LONG).show();
+        Toast.makeText((Context) this, "請選擇電子信箱進行傳送", Toast.LENGTH_LONG).show();
 
     }
 
@@ -1273,7 +1292,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             e.printStackTrace();
         }
         if (MqttService.mqttControlCenter == null) {
-            Intent intentServer = new Intent(getApplicationContext(), MqttService.class);
+            Intent intentServer = new Intent((Context) this, MqttService.class);
             intentServer.putExtra("data", "new");
             startService(intentServer);
         } else {
@@ -1327,7 +1346,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             webView.destroy();
             webView = null;
         }
-        Intent intent = new Intent(getApplicationContext(), EimLoginActivity.class);
+        Intent intent = new Intent((Context) MainWebActivity.this, EimLoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
     }
@@ -1642,7 +1661,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             Uri uri = Uri.parse(scheme);
             startActivity(new Intent(Intent.ACTION_VIEW, uri));
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(MainWebActivity.this.getApplicationContext(), "尚未安裝Line。", Toast.LENGTH_SHORT).show();
+            Toast.makeText((Context) MainWebActivity.this, "尚未安裝Line。", Toast.LENGTH_SHORT).show();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -1656,7 +1675,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             wechatIntent.putExtra(Intent.EXTRA_TEXT, inviteMessage);
             startActivity(wechatIntent);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(MainWebActivity.this.getApplicationContext(), "尚未安裝Wechat。", Toast.LENGTH_SHORT).show();
+            Toast.makeText((Context) MainWebActivity.this, "尚未安裝Wechat。", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -1675,7 +1694,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             wechatIntent.putExtra(Intent.EXTRA_SUBJECT, "一起來用Lale吧!");
             startActivity(wechatIntent);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(MainWebActivity.this.getApplicationContext(), "尚未安裝Gmail。", Toast.LENGTH_SHORT).show();
+            Toast.makeText((Context) MainWebActivity.this, "尚未安裝Gmail。", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -2339,7 +2358,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         os.flush();
 
         if (downloadFile.exists()) {
-            Toast.makeText(getApplicationContext(), "下載成功", Toast.LENGTH_SHORT).show();
+            Toast.makeText((Context) this, "下載成功", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -2426,14 +2445,14 @@ public class MainWebActivity extends MainAppCompatActivity {
                                     }
                                     if (photos.size() == count.get()) {
                                         cancelWait();
-                                        Toast.makeText(MainWebActivity.this.getApplicationContext(), "已下載", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText((Context) MainWebActivity.this, "已下載", Toast.LENGTH_SHORT).show();
                                     }
 
                                 }
                             }, new Consumer<Throwable>() {
                                 @Override
                                 public void accept(Throwable throwable) throws Exception {
-                                    Toast.makeText(MainWebActivity.this.getApplicationContext(), "下載失敗", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText((Context) MainWebActivity.this, "下載失敗", Toast.LENGTH_SHORT).show();
                                 }
                             }, new Action() {
                                 @Override
