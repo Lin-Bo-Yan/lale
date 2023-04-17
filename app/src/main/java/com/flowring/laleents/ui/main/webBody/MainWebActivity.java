@@ -205,7 +205,36 @@ public class MainWebActivity extends MainAppCompatActivity {
 
     //region  test
     final Handler handler = new Handler();
+    static public void saveLog(MainAppCompatActivity activity)
+    {
+        activity.runOnUiThread(()->{
+            DialogUtils.showDialogMessage(activity, "將log","存到down" ,new CallbackUtils.noReturn() {
+                        @Override
+                        public void Callback() {
 
+                            File downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+
+
+                            File targetFile = new File(downloadDir, "log.log");
+                            try {
+                                FileInputStream fis = new FileInputStream( com.flowring.laleents.tools.Log.mLogFile);
+                                FileOutputStream fos = new FileOutputStream(targetFile);
+                                byte[] buffer = new byte[1024];
+                                int read;
+                                while ((read = fis.read(buffer)) != -1) {
+                                    fos.write(buffer, 0, read);
+                                }
+                                fis.close();
+                                fos.flush();
+                                fos.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+            );
+        });
+    }
     Runnable log = new Runnable() {
         @Override
         public void run() {
@@ -350,6 +379,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         checkHasWebView();
         StringUtils.HaoLog("onResume=" + userMin);
         if (userMin != null && !userMin.userId.isEmpty()) {
+
             checkPermission();
 
 
@@ -357,6 +387,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         } else {
             goLogin();
         }
+
 
     }
 
@@ -822,6 +853,9 @@ public class MainWebActivity extends MainAppCompatActivity {
             @Override
             public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
                 StringUtils.HaoLog("還活著 onReceivedSslError error=" + error.toString());
+
+//                handler.proceed();
+
                 super.onReceivedSslError(view, handler, error);
             }
         });
@@ -1098,9 +1132,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         sb.setEmailTo(tos);
         sb.setText("使用者Lale ID : " + UserControlCenter.getUserMinInfo().userId + "\n問題描述:");
         sb.setType("message/rfc822");
-        File mLogFile = new File(FileUtils.getApplicationFolder(this, DefinedUtils.FOLDER_FILES) +
-                "/" + "laletoB_logs.log");
-        Uri NuriForFile = FileProvider.getUriForFile(this, "com.flowring.laleents.fileprovider", mLogFile);
+
+
+        Uri NuriForFile = FileProvider.getUriForFile(this, "com.flowring.laleents.fileprovider", com.flowring.laleents.tools.Log.mLogFile);
         sb.setStream(NuriForFile);
         sb.setSubject("問題回報");
         sb.startChooser();
@@ -1228,8 +1262,11 @@ public class MainWebActivity extends MainAppCompatActivity {
 
         StringUtils.HaoLog("webOk");
         if (userMin != null && !userMin.userId.isEmpty()) {
-            checkPermission();
-            Login();
+           checkPermission();
+           Login();
+        }else
+        {
+            StringUtils.HaoLog("login 沒開始"+userMin+" "+userMin.userId);
         }
         initOnMainWebPageFinished();
     }
@@ -1266,10 +1303,13 @@ public class MainWebActivity extends MainAppCompatActivity {
             AllData.initSQL(UserControlCenter.getUserMinInfo().userId);
         }
         try {
+            StringUtils.HaoLog("Login 成功=" + UserControlCenter.getUserMinInfo());
             StringUtils.HaoLog("Login=" + new Gson().toJson(UserControlCenter.getUserMinInfo().eimUserData));
             String json = new JSONObject().put("type", "loginEim").put("data", new JSONObject(new Gson().toJson(UserControlCenter.getUserMinInfo().eimUserData))).toString();
             sendToWeb(json);
         } catch (JSONException e) {
+            StringUtils.HaoLog("Login 失敗=" + UserControlCenter.getUserMinInfo());
+
             e.printStackTrace();
         }
         if (MqttService.mqttControlCenter == null) {

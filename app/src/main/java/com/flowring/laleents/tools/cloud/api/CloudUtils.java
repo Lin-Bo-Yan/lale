@@ -172,7 +172,7 @@ public class CloudUtils implements ICloudUtils {
     public HttpReturn loginThirdParty(String displayName, String deviceID, int type, String sID, File image) {
 
 
-        OkHttpClient client = new OkHttpClient().newBuilder().build();
+        OkHttpClient client = getUnsafeOkHttpClient().newBuilder().build();
 
         JSONObject jbody = new JSONObject();
         try {
@@ -1764,7 +1764,7 @@ public class CloudUtils implements ICloudUtils {
     }
 
     HttpReturn gethttpReturn(Request.Builder request) {
-        OkHttpClient client = new OkHttpClient().newBuilder().build();
+        OkHttpClient client = getUnsafeOkHttpClient().newBuilder().build();
 
         try {
             Response response = client.newCall(request.build()).execute();
@@ -1786,7 +1786,7 @@ public class CloudUtils implements ICloudUtils {
     }
 
     HttpReturn gethttp2Return(Request.Builder request) {
-        OkHttpClient client = new OkHttpClient().newBuilder().build();
+        OkHttpClient client = getUnsafeOkHttpClient().newBuilder().build();
 
         try {
             Response response = client.newCall(request.build()).execute();
@@ -1810,7 +1810,7 @@ public class CloudUtils implements ICloudUtils {
     }
 
     HttpReturn getJhttpReturn(Request.Builder request) {
-        OkHttpClient client = new OkHttpClient().newBuilder().build();
+        OkHttpClient client = getUnsafeOkHttpClient().newBuilder().build();
 
         try {
             Response response = client.newCall(request.build()).execute();
@@ -1956,7 +1956,7 @@ public class CloudUtils implements ICloudUtils {
 
     public String getString(Request.Builder request) {
 
-        OkHttpClient client = new OkHttpClient().newBuilder().build();
+        OkHttpClient client = getUnsafeOkHttpClient().newBuilder().build();
 
         try {
             Response response = client.newCall(request.build()).execute();
@@ -2024,7 +2024,7 @@ public class CloudUtils implements ICloudUtils {
         Request.Builder request = new Request.Builder()
                 .url(url)
                 .get();
-        OkHttpClient client = new OkHttpClient().newBuilder().build();
+        OkHttpClient client = getUnsafeOkHttpClient().newBuilder().build();
 
         try {
             Response response = client.newCall(request.build()).execute();

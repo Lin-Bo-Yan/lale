@@ -22,7 +22,6 @@ import androidx.fragment.app.Fragment;
 
 import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.DialogUtils;
-import com.flowring.laleents.tools.Log;
 import com.flowring.laleents.tools.StringUtils;
 
 public class PermissionUtils {
@@ -135,7 +134,7 @@ public class PermissionUtils {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-                Log.d("checkLocation", "請開啟地圖權限");
+                StringUtils.HaoLog("checkLocation 請開啟地圖權限");
             } else {
                 Location lastLoc = locMgr.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                 float[] results = new float[3];
@@ -145,7 +144,7 @@ public class PermissionUtils {
                 if (results[0] / 1000 < 20 && results[0] != 0) {
 //                    initDialogAD();
                 }
-                Log.d("checkLocation", "距離屏東" + results[0] / 1000 + "公里");
+                StringUtils.HaoLog("checkLocation 距離屏東" + results[0] / 1000 + "公里");
             }
         } else {
             Toast.makeText(context, "請開啟定位服務", Toast.LENGTH_LONG).show();

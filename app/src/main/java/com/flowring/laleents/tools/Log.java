@@ -14,21 +14,8 @@ import java.util.Date;
 public class Log {
     private static final String NEW_LINE = System.getProperty("line.separator");
     public static boolean mLogcatAppender = BuildConfig.DEBUG;
-    static File mLogFile = null;
+  public   static File mLogFile = null;
 
-    static {
-        if (mLogFile != null) {
-            String path = mLogFile.getAbsolutePath();
-            if (!mLogFile.exists()) {
-                try {
-                    mLogFile.createNewFile();
-                } catch (final IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            logDeviceInfo();
-        }
-    }
 
     public static void i(String TAG, String message) {
         appendLog(TAG + " : " + message);
@@ -66,21 +53,37 @@ public class Log {
     }
 
     public static void setContext(Context mContext) {
-        mLogFile = new File(FileUtils.getApplicationFolder(mContext, DefinedUtils.FOLDER_FILES) +
+        if(mLogFile == null)
+        {
+            mLogFile = new File(FileUtils.getApplicationFolder(mContext, DefinedUtils.FOLDER_FILES) +
                 "/" + "laletoB_logs.log");
+            if (!mLogFile.exists()) {
+                try {
+                    mLogFile.createNewFile();
+                } catch (final IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            logDeviceInfo();
+        }
     }
 
     private static synchronized void appendLog(String text) {
         final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-
+        android.util.Log.d("TAG", "進行寫入");
         if (mLogFile != null) {
             try {
                 final FileWriter fileOut = new FileWriter(mLogFile, true);
                 fileOut.append(sdf.format(new Date()) + " : " + text + NEW_LINE);
                 fileOut.close();
+                android.util.Log.d("TAG", "寫入成功");
             } catch (final IOException e) {
+                android.util.Log.d("TAG", "寫入失敗");
                 e.printStackTrace();
             }
+        }else
+        {
+            android.util.Log.d("TAG", "寫入失敗 mLogFile = null");
         }
     }
 

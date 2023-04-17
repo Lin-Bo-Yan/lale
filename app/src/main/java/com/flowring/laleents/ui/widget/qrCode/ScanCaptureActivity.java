@@ -22,7 +22,7 @@ import com.dmcbig.mediapicker.PickerActivity;
 import com.dmcbig.mediapicker.PickerConfig;
 import com.dmcbig.mediapicker.entity.Media;
 import com.flowring.laleents.R;
-import com.flowring.laleents.tools.Log;
+import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.phone.DefinedUtils;
 import com.flowring.laleents.tools.phone.PermissionUtils;
 import com.flowring.laleents.ui.model.MainAppCompatActivity;
@@ -62,12 +62,12 @@ public class ScanCaptureActivity extends MainAppCompatActivity {
             if (result.getText() != null) {
                 handleDecode_switchJudge(result.getText());
             }
-            Log.d(TAG, "barcodeResult = " + result.getText());
+            StringUtils.HaoLog("barcodeResult = " + result.getText());
         }
 
         @Override
         public void possibleResultPoints(List<ResultPoint> resultPoints) {
-            Log.d(TAG, "possibleResultPoints");
+            StringUtils.HaoLog( "possibleResultPoints");
         }
     };
 
@@ -226,7 +226,7 @@ public class ScanCaptureActivity extends MainAppCompatActivity {
     @Override
     protected void onActivityResult(int request, int result, Intent data) {
         super.onActivityResult(request, result, data);
-        Log.d(TAG, String.format("onActivityResult requestCode = %d, resultCode = %d", request, result));
+        StringUtils.HaoLog(String.format("onActivityResult requestCode = %d, resultCode = %d", request, result));
 
         if (request == DefinedUtils.REQUEST_IMAGE_PICKER) {
             ArrayList<Media> images = data.getParcelableArrayListExtra(PickerConfig.EXTRA_RESULT);
