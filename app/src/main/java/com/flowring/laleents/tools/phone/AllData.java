@@ -95,11 +95,11 @@ public class AllData {
     }
 
     public static void initSQL(String userId) {
-        if (dbHelper != null && Objects.equals(dbHelper.UserId, userId)) {
+        if (dbHelper != null && Objects.equals("v" + dbHelper.UserId, "v"+userId)) {
             StringUtils.HaoLog("不重複建立SQL");
             return;
         }
-        final String dbName = userId.replace("@", "_").replace(":", "_").replace(".", "_");
+        final String dbName = "v"+userId.replace("@", "_").replace(":", "_").replace(".", "_");
         if (m_database != null){m_database.close();}
         dbHelper = new DBHelper(context, dbName, FinalData.DBVersion);
         m_database = dbHelper.getWritableDatabase();

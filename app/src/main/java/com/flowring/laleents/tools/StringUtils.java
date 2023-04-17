@@ -335,7 +335,7 @@ public class StringUtils {
     }
 
     static public void HaoLog(String data, int showC) {
-        if (BuildConfig.DEBUG) {
+       {
             StackTraceElement[] stes = Thread.currentThread().getStackTrace();
 if(stes.length > showC)
     showC =stes.length -1;

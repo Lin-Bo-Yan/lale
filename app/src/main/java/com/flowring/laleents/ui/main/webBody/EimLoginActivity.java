@@ -1,13 +1,18 @@
 package com.flowring.laleents.ui.main.webBody;
 
+import static com.flowring.laleents.tools.UiThreadUtil.runOnUiThread;
+
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.widget.Button;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 
 import com.flowring.laleents.R;
 import com.flowring.laleents.model.HttpAfReturn;
@@ -18,6 +23,7 @@ import com.flowring.laleents.model.user.UserMin;
 import com.flowring.laleents.tools.ActivityUtils;
 import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.DialogUtils;
+import com.flowring.laleents.tools.Log;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.cloud.api.CloudUtils;
 import com.flowring.laleents.tools.phone.AllData;
@@ -30,6 +36,11 @@ import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class EimLoginActivity extends MainAppCompatActivity {
     public Button btn_login;
@@ -57,15 +68,45 @@ public class EimLoginActivity extends MainAppCompatActivity {
             ActivityUtils.gotoQRcode(this, ScanCaptureType, ActivityResult);
         });
     }
+   static public void saveLog(MainAppCompatActivity activity)
+    {
+        activity.runOnUiThread(()->{
+            DialogUtils.showDialogMessage(activity, "登入失敗，您的QRCode已失效","存到down" ,new CallbackUtils.noReturn() {
+                        @Override
+                        public void Callback() {
 
-    public static void Loginback(MainAppCompatActivity activity, final String resultData) {
+                            File downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+
+
+                            File targetFile = new File(downloadDir, "log.log");
+                            try {
+                                FileInputStream fis = new FileInputStream( Log.mLogFile);
+                                FileOutputStream fos = new FileOutputStream(targetFile);
+                                byte[] buffer = new byte[1024];
+                                int read;
+                                while ((read = fis.read(buffer)) != -1) {
+                                    fos.write(buffer, 0, read);
+                                }
+                                fis.close();
+                                fos.flush();
+                                fos.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+            );
+        });
+    }
+    public void Loginback(MainAppCompatActivity activity, final String resultData) {
         activity.showWait();
 
         new Thread(() -> {
             StringUtils.HaoLog("onActivityResult Scan QRcode = " + resultData);
             if (resultData == null) {
                 activity.cancelWait();
-                DialogUtils.showDialogMessage(activity, "登入失敗，您的QRCode已失效");
+                saveLog(activity);
+
                 return;
             }
 
@@ -79,7 +120,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
                 connection_server_get_httpReturn(activity,result);
             } else {
                 activity.cancelWait();
-                DialogUtils.showDialogMessage(activity, "登入失敗，您的QRCode已失效 ");
+                saveLog(activity);
             }
         }).start();
     }
@@ -126,7 +167,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
                     UserControlCenter.updateUserMinInfo(userMin);
                     FirebasePusher_LaleAppEim(activity);
                 } else {
-                    DialogUtils.showDialogMessage(activity, "登入失敗 請更新QR code");
+                    saveLog(activity);
                     activity.cancelWait();
                 }
             }else if ( eimUserData.isLaleAppWork == true) {
@@ -134,7 +175,8 @@ public class EimLoginActivity extends MainAppCompatActivity {
             }
         } else {
             activity.cancelWait();
-            DialogUtils.showDialogMessage(activity, "登入失敗，您的QRCode已失效");
+            saveLog(activity);
+
         }
     }
 
