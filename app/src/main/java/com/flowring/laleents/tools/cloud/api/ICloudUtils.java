@@ -172,10 +172,17 @@ public interface ICloudUtils {
     @WorkerThread
     HttpReturn resetUserBackground();
 
+    /**
+     * 驗證 token 是否正確
+     */
+    @WorkerThread
+    boolean checkToken();
 
-    //endregion
-
-    //region  已登入 節慶相關
+    /**
+     * 更新 token
+     */
+    @WorkerThread
+    HttpReturn updateToken();
 
     /**
      * 取得節慶資料

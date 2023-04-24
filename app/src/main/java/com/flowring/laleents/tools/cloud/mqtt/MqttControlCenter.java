@@ -5,11 +5,16 @@ import static com.pubnub.api.vendor.Base64.NO_WRAP;
 import android.os.Handler;
 import android.os.HandlerThread;
 
+import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.model.msg.MsgControlCenter;
+import com.flowring.laleents.model.user.TokenInfo;
 import com.flowring.laleents.model.user.UserControlCenter;
+import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.StringUtils;
+import com.flowring.laleents.tools.cloud.api.CloudUtils;
 import com.flowring.laleents.tools.phone.AllData;
 import com.flowring.laleents.tools.phone.LocalBroadcastControlCenter;
+import com.google.gson.Gson;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -121,15 +126,21 @@ public class MqttControlCenter {
                 e.printStackTrace();
             }
             try {
-                client = new MqttClient(getBroker(), getClientId(), new MemoryPersistence());
-                StringUtils.HaoLog("建立連線");
-                client.setCallback(mqttCallback);
-                StringUtils.HaoLog("mqttCallback");
-                initConnOpts();
-                client.connect(connOpts);
-                StringUtils.HaoLog("connOpts");
-                handler.post(subscribe);
-                StringUtils.HaoLog("重新連線成功");
+                Boolean correct = CloudUtils.iCloudUtils.checkToken();
+
+                if(correct){
+                    client = new MqttClient(getBroker(), getClientId(), new MemoryPersistence());
+                    StringUtils.HaoLog("建立連線");
+                    client.setCallback(mqttCallback);
+                    StringUtils.HaoLog("mqttCallback");
+                    initConnOpts();
+                    client.connect(connOpts);
+                    StringUtils.HaoLog("connOpts");
+                    handler.post(subscribe);
+                    StringUtils.HaoLog("重新連線成功");
+                } else {
+                    tokenRefresh();
+                }
             } catch (MqttException e) {
                 e.printStackTrace();
                 if (AllData.context != null) {
@@ -258,6 +269,29 @@ public class MqttControlCenter {
                 }
             }
         });
+    }
+
+    private void tokenRefresh() {
+        HttpReturn httpReturn = CloudUtils.iCloudUtils.reToken();
+        StringUtils.HaoLog("測試"+"token 2 "+httpReturn.status);
+        if(httpReturn.status != 200){
+            if (httpReturn.msg.equals("token 逾時")) {
+                StringUtils.HaoLog("測試"+"token 2 "+"登出");
+                //登出
+            } else {
+                StringUtils.HaoLog("測試"+" 連線狀態異常 "+httpReturn.msg);
+            }
+        } else {
+            StringUtils.HaoLog("測試"+"token 2 "+"成功");
+            String dataString = new Gson().toJson(httpReturn.data);
+            TokenInfo tokenInfo = new Gson().fromJson(dataString, TokenInfo.class);
+            UserControlCenter.getUserMinInfo().token = tokenInfo.token;
+            UserControlCenter.getUserMinInfo().refreshToken = tokenInfo.refreshToken;
+            UserControlCenter.getUserMinInfo().expiration = tokenInfo.expiration;
+            UserControlCenter.getUserMinInfo().refreshExpiration = tokenInfo.refreshExpiration;
+            //計時器
+            MqttService.mqttControlCenter.NewConnect();
+        }
     }
 }
 

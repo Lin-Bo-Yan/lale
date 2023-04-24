@@ -1751,6 +1751,7 @@ public class CloudUtils implements ICloudUtils {
         return gethttpReturn(request);
     }
 
+    @Override
     public boolean checkToken() {
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(mediaType, "{\r\n    \"token\":\"" + UserControlCenter.getUserMinInfo().token + "\"\r\n}");
@@ -1761,6 +1762,17 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Content-Type", "application/json");
         return gethttpReturn(request).status == 200 && ((boolean) gethttpReturn(request).data);
 
+    }
+
+    @Override
+    public HttpReturn updateToken(){
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, "{\r\n    \"refreshToken\":\"" + UserControlCenter.getUserMinInfo().refreshToken + "\"\r\n}");
+        Request.Builder request = new Request.Builder()
+                .url(AllData.getMainServer() + "/user/token")
+                .method("PUT", body)
+                .addHeader("Content-Type", "application/json");
+        return gethttpReturn(request);
     }
 
     HttpReturn gethttpReturn(Request.Builder request) {
