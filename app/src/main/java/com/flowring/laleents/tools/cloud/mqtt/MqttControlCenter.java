@@ -127,17 +127,9 @@ public class MqttControlCenter {
             }
             try {
                 Boolean correct = CloudUtils.iCloudUtils.checkToken();
-
+                StringUtils.HaoLog("測試 "+"Token 是否正確"+" "+correct);
                 if(correct){
-                    client = new MqttClient(getBroker(), getClientId(), new MemoryPersistence());
-                    StringUtils.HaoLog("建立連線");
-                    client.setCallback(mqttCallback);
-                    StringUtils.HaoLog("mqttCallback");
-                    initConnOpts();
-                    client.connect(connOpts);
-                    StringUtils.HaoLog("connOpts");
-                    handler.post(subscribe);
-                    StringUtils.HaoLog("重新連線成功");
+                    connection();
                 } else {
                     tokenRefresh();
                 }
@@ -271,26 +263,44 @@ public class MqttControlCenter {
         });
     }
 
-    private void tokenRefresh() {
+    private void connection() throws MqttException{
+        client = new MqttClient(getBroker(), getClientId(), new MemoryPersistence());
+        StringUtils.HaoLog("測試 "+"建立連線");
+        client.setCallback(mqttCallback);
+        StringUtils.HaoLog("mqttCallback");
+        initConnOpts();
+        client.connect(connOpts);
+        StringUtils.HaoLog("connOpts");
+        handler.post(subscribe);
+        StringUtils.HaoLog("測試 "+"重新連線成功");
+    }
+
+    private void tokenRefresh() throws MqttException{
         HttpReturn httpReturn = CloudUtils.iCloudUtils.reToken();
-        StringUtils.HaoLog("測試"+"token 2 "+httpReturn.status);
         if(httpReturn.status != 200){
-            if (httpReturn.msg.equals("token 逾時")) {
-                StringUtils.HaoLog("測試"+"token 2 "+"登出");
+            if ("refresh token 逾時".equals(httpReturn.msg)) {
+                StringUtils.HaoLog("測試"+" 2 "+"登出");
                 //登出
             } else {
+                //恢復網路時間太久導致連線失敗，每支手機恢復網路速度不一樣，設計上斷網路delay 1 秒鐘執行NewCom
                 StringUtils.HaoLog("測試"+" 連線狀態異常 "+httpReturn.msg);
             }
         } else {
-            StringUtils.HaoLog("測試"+"token 2 "+"成功");
-            String dataString = new Gson().toJson(httpReturn.data);
-            TokenInfo tokenInfo = new Gson().fromJson(dataString, TokenInfo.class);
-            UserControlCenter.getUserMinInfo().token = tokenInfo.token;
-            UserControlCenter.getUserMinInfo().refreshToken = tokenInfo.refreshToken;
-            UserControlCenter.getUserMinInfo().expiration = tokenInfo.expiration;
-            UserControlCenter.getUserMinInfo().refreshExpiration = tokenInfo.refreshExpiration;
-            //計時器
-            MqttService.mqttControlCenter.NewConnect();
+            StringUtils.HaoLog("測試 2 "+httpReturn.msg);
+            switch (httpReturn.msg){
+                case "token 未逾時":
+                    connection();
+                    return;
+                case "token 已刷新":
+                    String dataString = new Gson().toJson(httpReturn.data);
+                    TokenInfo tokenInfo = new Gson().fromJson(dataString, TokenInfo.class);
+                    UserControlCenter.getUserMinInfo().token = tokenInfo.token;
+                    UserControlCenter.getUserMinInfo().refreshToken = tokenInfo.refreshToken;
+                    UserControlCenter.getUserMinInfo().expiration = tokenInfo.expiration;
+                    UserControlCenter.getUserMinInfo().refreshExpiration = tokenInfo.refreshExpiration;
+                    connection();
+                    return;
+            }
         }
     }
 }
