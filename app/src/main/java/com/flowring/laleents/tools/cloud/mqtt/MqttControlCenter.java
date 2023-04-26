@@ -279,14 +279,17 @@ public class MqttControlCenter {
         HttpReturn httpReturn = CloudUtils.iCloudUtils.reToken();
         if(httpReturn.status != 200){
             if ("refresh token 逾時".equals(httpReturn.msg)) {
-                StringUtils.HaoLog("測試"+" 2 "+"登出");
-                //登出
+                StringUtils.HaoLog("tokenRefresh 登出");
+                UserControlCenter.setLogout(new CallbackUtils.ReturnHttp() {
+                    @Override
+                    public void Callback(HttpReturn httpReturn) {}
+                });
             } else {
                 //恢復網路時間太久導致連線失敗，每支手機恢復網路速度不一樣，設計上斷網路delay 1 秒鐘執行NewCom
-                StringUtils.HaoLog("測試"+" 連線狀態異常 "+httpReturn.msg);
+                StringUtils.HaoLog("連線狀態異常 "+httpReturn.msg);
             }
         } else {
-            StringUtils.HaoLog("測試 2 "+httpReturn.msg);
+            StringUtils.HaoLog("tokenRefresh "+httpReturn.msg);
             switch (httpReturn.msg){
                 case "token 未逾時":
                     connection();
