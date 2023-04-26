@@ -1,11 +1,15 @@
 package com.flowring.laleents.tools;
 
+import android.app.Activity;
 import android.content.Context;
+import android.os.Environment;
 
 import com.flowring.laleents.BuildConfig;
 import com.flowring.laleents.tools.phone.DefinedUtils;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -94,5 +98,36 @@ public class Log {
         appendLog("Device : " + android.os.Build.DEVICE);
         appendLog("Codename : " + android.os.Build.VERSION.CODENAME);
         appendLog("Release : " + android.os.Build.VERSION.RELEASE);
+    }
+
+    public static void saveLog(Activity activity)
+    {
+        activity.runOnUiThread(()->{
+            DialogUtils.showDialogMessage(activity, "將log","存到down" ,new CallbackUtils.noReturn() {
+                        @Override
+                        public void Callback() {
+
+                            File downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+
+
+                            File targetFile = new File(downloadDir, "log.log");
+                            try {
+                                FileInputStream fis = new FileInputStream( com.flowring.laleents.tools.Log.mLogFile);
+                                FileOutputStream fos = new FileOutputStream(targetFile);
+                                byte[] buffer = new byte[1024];
+                                int read;
+                                while ((read = fis.read(buffer)) != -1) {
+                                    fos.write(buffer, 0, read);
+                                }
+                                fis.close();
+                                fos.flush();
+                                fos.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+            );
+        });
     }
 }

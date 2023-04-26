@@ -206,36 +206,6 @@ public class MainWebActivity extends MainAppCompatActivity {
 
     //region  test
     final Handler handler = new Handler();
-    static public void saveLog(MainAppCompatActivity activity)
-    {
-        activity.runOnUiThread(()->{
-            DialogUtils.showDialogMessage(activity, "將log","存到down" ,new CallbackUtils.noReturn() {
-                        @Override
-                        public void Callback() {
-
-                            File downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-
-
-                            File targetFile = new File(downloadDir, "log.log");
-                            try {
-                                FileInputStream fis = new FileInputStream( com.flowring.laleents.tools.Log.mLogFile);
-                                FileOutputStream fos = new FileOutputStream(targetFile);
-                                byte[] buffer = new byte[1024];
-                                int read;
-                                while ((read = fis.read(buffer)) != -1) {
-                                    fos.write(buffer, 0, read);
-                                }
-                                fis.close();
-                                fos.flush();
-                                fos.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-            );
-        });
-    }
     Runnable log = new Runnable() {
         @Override
         public void run() {
@@ -1134,6 +1104,9 @@ public class MainWebActivity extends MainAppCompatActivity {
                 case "getAPPVersion":
                     getAPPVersion();
                     break;
+                case "webLog":
+                    webLog(data);
+                    break;
                 default:
                     unDo(json);
                     break;
@@ -1273,6 +1246,13 @@ public class MainWebActivity extends MainAppCompatActivity {
             sendToWeb(new JSONObject().put("type", "getAPPVersion").put("data", new JSONObject().put("Version", getVersionName(MainWebActivity.this))).toString());
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void webLog(JSONObject data){
+        if(data.has("data")){
+            String webLog = data.optString("data");
+            StringUtils.HaoLog(webLog);
         }
     }
 
