@@ -6,5 +6,5 @@
 
     <string name="scan_qrcode">掃描QR Code</string>
     <string name="scan_qrcode_desc">將掃描框對準QR Code後會自動進行掃描</string>
-
+    <string name="unused_account_logged_out">App過久未使用您的帳號已被登出</string>
 </resources>

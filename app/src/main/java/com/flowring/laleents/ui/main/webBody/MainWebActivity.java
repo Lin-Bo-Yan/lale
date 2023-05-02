@@ -76,6 +76,7 @@ import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.model.explore.Microapp;
 import com.flowring.laleents.model.room.RoomControlCenter;
 import com.flowring.laleents.model.room.RoomInfoInPhone;
+import com.flowring.laleents.model.user.TokenInfo;
 import com.flowring.laleents.model.user.UserControlCenter;
 import com.flowring.laleents.model.user.UserInfo;
 import com.flowring.laleents.model.user.UserMin;
@@ -1440,7 +1441,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             public void Callback(HttpReturn httpReturn) {
                 try {
                     if (httpReturn.status != 200) {
-                        if (httpReturn.msg.equals("token 逾時")) {
+                        if ("refresh token 逾時".equals(httpReturn.msg)) {
                             Logout();
                         } else {
                             DialogUtils.showDialogMessage(MainWebActivity.this, httpReturn.msg, "連線狀態異常，是否要登出？", new CallbackUtils.noReturn() {
@@ -1472,13 +1473,25 @@ public class MainWebActivity extends MainAppCompatActivity {
         UserControlCenter.tokenRefresh(new CallbackUtils.ReturnHttp() {
             @Override
             public void Callback(HttpReturn httpReturn) {
-                StringUtils.HaoLog("censorToken= "+httpReturn.msg);
-                if(httpReturn.status != 200){
-                    if ("refresh token 逾時".equals(httpReturn.msg)) {
-                        StringUtils.HaoLog("App過久未使用您的帳號已被登出");
-                        DialogUtils.showDialog(MainWebActivity.this,R.layout.dialog_account_logout);
-                        Logout();
+                try{
+                    StringUtils.HaoLog("censorToken= "+httpReturn.msg);
+                    if(httpReturn.status != 200){
+                        if ("refresh token 逾時".equals(httpReturn.msg)) {
+                            StringUtils.HaoLog("App過久未使用您的帳號已被登出");
+                            DialogUtils.showDialog(MainWebActivity.this,R.layout.dialog_account_logout);
+                            Logout();
+                        }
+                    } else {
+                        switch (httpReturn.msg){
+                            case "token 已刷新":
+                                JSONObject j = new JSONObject().put("type", "tokenRefresh").put("data", new JSONObject(new Gson().toJson(httpReturn.data)));
+                                sendToWeb(j.toString());
+                                return;
+                        }
                     }
+                }catch (JSONException e){
+                    StringUtils.HaoLog("錯誤：" + e);
+                    e.printStackTrace();
                 }
             }
         });
