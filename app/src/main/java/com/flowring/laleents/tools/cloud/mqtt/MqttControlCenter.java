@@ -290,20 +290,7 @@ public class MqttControlCenter {
             }
         } else {
             StringUtils.HaoLog("tokenRefresh "+httpReturn.msg);
-            switch (httpReturn.msg){
-                case "token 未逾時":
-                    connection();
-                    return;
-                case "token 已刷新":
-                    String dataString = new Gson().toJson(httpReturn.data);
-                    TokenInfo tokenInfo = new Gson().fromJson(dataString, TokenInfo.class);
-                    UserControlCenter.getUserMinInfo().token = tokenInfo.token;
-                    UserControlCenter.getUserMinInfo().refreshToken = tokenInfo.refreshToken;
-                    UserControlCenter.getUserMinInfo().expiration = tokenInfo.expiration;
-                    UserControlCenter.getUserMinInfo().refreshExpiration = tokenInfo.refreshExpiration;
-                    connection();
-                    return;
-            }
+            connection();
         }
     }
 }
