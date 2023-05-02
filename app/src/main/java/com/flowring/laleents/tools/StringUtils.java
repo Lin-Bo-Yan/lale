@@ -469,6 +469,16 @@ if(stes.length > showC)
 
     }
 
+    public static int version(String version){
+        String[] parts = version.split("\\."); // 將版本字符串拆分為多個部分
+        String versionNumber = ""; // 用於存儲版本數字
+        for (String part : parts) {
+            versionNumber += part; // 將部分連接成一個字符串
+        }
+        int versionInt = Integer.parseInt(versionNumber); // 將版本字符串轉換為整數
+        return versionInt;
+    }
+
     public static Bitmap drawBitmap(String data) {
 
         int[] color = new int[]{

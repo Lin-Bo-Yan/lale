@@ -325,8 +325,6 @@ public class MainWebActivity extends MainAppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_call);
-        if (AllData.context == null)
-            AllData.context = getApplicationContext();
         initFireBaseMsgBroadcastReceiver();
         com.flowring.laleents.tools.Log.setContext(getApplicationContext());
         AllData.init(getApplicationContext());
@@ -345,21 +343,19 @@ public class MainWebActivity extends MainAppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        if (AllData.context == null){
+            AllData.context = getApplicationContext();
+        }
         checkAppNeedUpdate();
         UserMin userMin = UserControlCenter.getUserMinInfo();
         checkHasWebView();
         StringUtils.HaoLog("onResume=" + userMin);
         if (userMin != null && !userMin.userId.isEmpty()) {
-
             checkPermission();
-
-
 //            testLogout();
         } else {
             goLogin();
         }
-
-
     }
 
     @Override
@@ -457,13 +453,15 @@ public class MainWebActivity extends MainAppCompatActivity {
     public void checkAppNeedUpdate() {
         new Thread(() -> {
             if (CloudUtils.iCloudUtils.checkAppNeedUpdate())
-                showUpgradeDialog();
+                runOnUiThread(() -> {
+                    showUpgradeDialog();
+                });
         }).start();
     }
 
     public void showUpgradeDialog() {
         AlertDialog.Builder alertDialogBuilder =
-                new AlertDialog.Builder(getApplicationContext())
+                new AlertDialog.Builder((Context) this)
                         .setMessage(getString(R.string.update_app_text))
                         .setPositiveButton(android.R.string.ok, (dialog, which) -> {
                             dialog.dismiss();

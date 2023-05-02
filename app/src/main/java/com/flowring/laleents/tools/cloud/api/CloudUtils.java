@@ -14,6 +14,7 @@ import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.model.room.RoomInfoInPhone;
 import com.flowring.laleents.model.stickerlibrary.CustomizeSticker;
 import com.flowring.laleents.model.stickerlibrary.Stickerlibrary;
+import com.flowring.laleents.model.user.GetMinVersion;
 import com.flowring.laleents.model.user.TokenInfo;
 import com.flowring.laleents.model.user.UserControlCenter;
 import com.flowring.laleents.model.user.UserMin;
@@ -74,7 +75,29 @@ public class CloudUtils implements ICloudUtils {
 
     @Override
     public boolean checkAppNeedUpdate() {
-        return false;
+        Request.Builder request = new Request.Builder()
+                .url(AllData.getMainServer() + "/util/app/version/android")
+                .get()
+                .addHeader("Content-Type", "application/json");
+        HttpReturn httpReturn = gethttpReturn(request);
+        String data = new Gson().toJson(httpReturn.data);
+        GetMinVersion dbVersion = new Gson().fromJson(data,GetMinVersion.class);
+        String appVersion = MainWebActivity.getVersionName(AllData.context);
+
+        if(dbVersion != null && dbVersion.version != null && !dbVersion.version.isEmpty()
+                && appVersion != null && !appVersion.isEmpty()){
+            int appVersionInt = StringUtils.version(appVersion);
+            int dbVersionInt = StringUtils.version(dbVersion.version);
+            Boolean newVersion = appVersionInt >= dbVersionInt;
+            if(newVersion){
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            StringUtils.HaoLog("googleVersion 為 null");
+            return false;
+        }
     }
 
     @Override
