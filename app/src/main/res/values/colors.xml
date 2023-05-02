@@ -13,6 +13,7 @@
     <color name="colorExploreBlue">#2496BA</color>
 
     <color name="colorBlack50">#80000000</color>
+    <color name="black">#000000</color>
 
     <!--    <color name="colorTitleSelected">#A9C833</color>-->
     <color name="colorDateBg">#3BB4B7</color>

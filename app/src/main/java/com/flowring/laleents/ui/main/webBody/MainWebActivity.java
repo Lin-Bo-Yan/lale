@@ -352,7 +352,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         StringUtils.HaoLog("onResume=" + userMin);
         if (userMin != null && !userMin.userId.isEmpty()) {
             checkPermission();
-//            testLogout();
+            censorToken();
         } else {
             goLogin();
         }
@@ -1463,6 +1463,22 @@ public class MainWebActivity extends MainAppCompatActivity {
                 } catch (JSONException e) {
                     StringUtils.HaoLog("錯誤：" + e);
                     e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void censorToken() {
+        UserControlCenter.tokenRefresh(new CallbackUtils.ReturnHttp() {
+            @Override
+            public void Callback(HttpReturn httpReturn) {
+                StringUtils.HaoLog("censorToken= "+httpReturn.msg);
+                if(httpReturn.status != 200){
+                    if ("refresh token 逾時".equals(httpReturn.msg)) {
+                        StringUtils.HaoLog("App過久未使用您的帳號已被登出");
+                        DialogUtils.showDialog(MainWebActivity.this,R.layout.dialog_account_logout);
+                        Logout();
+                    }
                 }
             }
         });

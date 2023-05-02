@@ -602,4 +602,12 @@ public class DialogUtils {
 
     }
 
+
+    public static void showDialog(Activity activity,final int layout){
+        Dialog dialog = new Dialog(activity);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(true);
+        dialog.setContentView(layout);
+        dialog.show();
+    }
 }
