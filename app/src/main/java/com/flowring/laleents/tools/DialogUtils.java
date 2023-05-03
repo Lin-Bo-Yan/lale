@@ -23,6 +23,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -610,6 +611,10 @@ public class DialogUtils {
             dialog.setCancelable(true);
             dialog.setContentView(layout);
             dialog.show();
+            Handler handler = new Handler();
+            handler.postDelayed(() -> {
+                dialog.dismiss();
+            },500);
         });
     }
 }
