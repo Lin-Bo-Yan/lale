@@ -604,17 +604,22 @@ public class DialogUtils {
     }
 
 
-    public static void showDialog(Activity activity,final int layout){
+    public static void showDialog(Activity activity,CallbackUtils.tokenReturn tokenReturn){
         runOnUiThread(() -> {
             Dialog dialog = new Dialog(activity);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setCancelable(true);
-            dialog.setContentView(layout);
+            dialog.setContentView(R.layout.dialog_account_logout);
             dialog.show();
-            Handler handler = new Handler();
-            handler.postDelayed(() -> {
-                dialog.dismiss();
-            },500);
+            Button sureButton = dialog.findViewById(R.id.sureButton);
+            sureButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                    tokenReturn.Callback();
+                }
+            });
+
         });
     }
 }

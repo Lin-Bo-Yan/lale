@@ -1442,7 +1442,12 @@ public class MainWebActivity extends MainAppCompatActivity {
                 try {
                     if (httpReturn.status != 200) {
                         if ("refresh token 逾時".equals(httpReturn.msg)) {
-                            Logout();
+                            DialogUtils.showDialog(MainWebActivity.this, new CallbackUtils.tokenReturn() {
+                                @Override
+                                public void Callback() {
+                                    Logout();
+                                }
+                            });
                         } else {
                             DialogUtils.showDialogMessage(MainWebActivity.this, httpReturn.msg, "連線狀態異常，是否要登出？", new CallbackUtils.noReturn() {
                                 @Override
@@ -1473,25 +1478,17 @@ public class MainWebActivity extends MainAppCompatActivity {
         UserControlCenter.tokenRefresh(new CallbackUtils.ReturnHttp() {
             @Override
             public void Callback(HttpReturn httpReturn) {
-                try{
-                    StringUtils.HaoLog("censorToken= "+httpReturn.msg);
-                    if(httpReturn.status != 200){
-                        if ("refresh token 逾時".equals(httpReturn.msg)) {
-                            StringUtils.HaoLog("App過久未使用您的帳號已被登出");
-                            DialogUtils.showDialog(MainWebActivity.this,R.layout.dialog_account_logout);
-                            Logout();
-                        }
-                    } else {
-                        switch (httpReturn.msg){
-                            case "token 已刷新":
-                                JSONObject j = new JSONObject().put("type", "tokenRefresh").put("data", new JSONObject(new Gson().toJson(httpReturn.data)));
-                                sendToWeb(j.toString());
-                                return;
-                        }
+                StringUtils.HaoLog("censorToken= "+httpReturn.msg);
+                if(httpReturn.status != 200){
+                    if ("refresh token 逾時".equals(httpReturn.msg)) {
+                        DialogUtils.showDialog(MainWebActivity.this, new CallbackUtils.tokenReturn() {
+                            @Override
+                            public void Callback() {
+                                StringUtils.HaoLog("App過久未使用您的帳號已被登出");
+                                Logout();
+                            }
+                        });
                     }
-                }catch (JSONException e){
-                    StringUtils.HaoLog("錯誤：" + e);
-                    e.printStackTrace();
                 }
             }
         });

@@ -15,5 +15,12 @@
         android:textColor="@color/black"
         android:textSize="20dp"/>
 
+    <Button
+        android:id="@+id/sureButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="確定"
+        android:textColor="@color/black"/>
+
 
 </LinearLayout>

@@ -126,4 +126,8 @@ public class CallbackUtils {
 
     }
 
+    public interface tokenReturn {
+        void Callback();
+
+    }
 }
