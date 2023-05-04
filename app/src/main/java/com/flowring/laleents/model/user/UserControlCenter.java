@@ -407,7 +407,9 @@ public class UserControlCenter {
     public static void setLogout(CallbackUtils.ReturnHttp callback) {
         if (UserControlCenter.getUserMinInfo() != null) {
             if (UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim) {
+                StringUtils.HaoLog("登出 2");
                 new Thread(() -> {
+                    StringUtils.HaoLog("登出 3");
                     HttpReturn httpReturn = new HttpReturn();
                     httpReturn = CloudUtils.iCloudUtils.closePusher(UserControlCenter.getUserMinInfo().eimUserData.af_login_id, Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID));
 
@@ -421,11 +423,13 @@ public class UserControlCenter {
                     callback.Callback(httpReturn);
                 }).start();
             } else {
+                StringUtils.HaoLog("登出 2-1");
                 FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
                     @Override
                     public void onSuccess(InstanceIdResult instanceIdResult) {
                         String deviceToken = instanceIdResult.getToken();
                         new Thread(() -> {
+                            StringUtils.HaoLog("登出 3-1");
                             HttpReturn httpReturn = CloudUtils.iCloudUtils.closeAfPusher(UserControlCenter.getUserMinInfo().eimUserData.af_url, UserControlCenter.getUserMinInfo().eimUserData.af_login_id, deviceToken, Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID));
                             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
                             pref.edit().putString("nowUserId", "").apply();
@@ -438,6 +442,7 @@ public class UserControlCenter {
                     }
                 });
             }
+        StringUtils.HaoLog("登出 結束");
         }
     }
 
