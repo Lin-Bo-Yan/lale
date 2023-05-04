@@ -1003,7 +1003,15 @@ public class MainWebActivity extends MainAppCompatActivity {
             String roomInfo = getIntent().getStringExtra("roomInfo");
             boolean bFromPhone = getIntent().getBooleanExtra("bFromPhone", false);
             String urlToLoad = bFromPhone && roomInfo != null ? getMainWebURL() + "chatroom/" + roomInfo : url;
-            StringUtils.HaoLog("init setWebView 1 " + (init ? "true" : "fale")+" urlToLoad= "+urlToLoad);
+            StringUtils.HaoLog("init setWebView 1 " + (init ? "true" : "false")+" urlToLoad= "+urlToLoad);
+            StringUtils.HaoLog("init setWebView 1 " + url);
+            StringUtils.HaoLog("init setWebView 1 " + roomInfo);
+            StringUtils.HaoLog("init setWebView 1 " + bFromPhone);
+
+            if(!bFromPhone && roomInfo == null){
+                NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                manager.cancelAll();
+            }
             webView.loadUrl(urlToLoad);
             init = true;
         } else {

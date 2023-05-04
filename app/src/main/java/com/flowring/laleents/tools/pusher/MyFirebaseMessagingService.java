@@ -205,14 +205,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (data.is_lale_ecosystem_af_notify()) {
 
             try {
-                workNotifi = new Gson().fromJson(new JSONObject(data.content).optString("data"), workNotifi.class);
+                String msg = new JSONObject(data.content).optString("data");
+                StringUtils.HaoLog("Notification= "+msg);
+                workNotifi = new Gson().fromJson(msg, workNotifi.class);
                 intent.putExtra("Notification", notificationBody);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
         } else {
-
+            StringUtils.HaoLog("Notification= " + data.room_id);
             intent.putExtra("roomInfo", data.room_id);
         }
         StringUtils.HaoLog("workNotifi =" + new Gson().toJson(workNotifi));
