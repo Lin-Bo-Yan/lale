@@ -608,7 +608,6 @@ public class DialogUtils {
         runOnUiThread(() -> {
             Dialog dialog = new Dialog(activity);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.setCancelable(true);
             dialog.setContentView(R.layout.dialog_account_logout);
             dialog.show();
             Button sureButton = dialog.findViewById(R.id.sureButton);
@@ -619,7 +618,6 @@ public class DialogUtils {
                     tokenReturn.Callback();
                 }
             });
-
         });
     }
 }

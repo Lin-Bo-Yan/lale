@@ -2,8 +2,10 @@ package com.flowring.laleents.tools.cloud.mqtt;
 
 import static com.pubnub.api.vendor.Base64.NO_WRAP;
 
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.preference.PreferenceManager;
 
 import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.model.msg.MsgControlCenter;
@@ -279,10 +281,13 @@ public class MqttControlCenter {
         HttpReturn httpReturn = CloudUtils.iCloudUtils.reToken();
         if(httpReturn.status != 200){
             if ("refresh token 逾時".equals(httpReturn.msg)) {
-                StringUtils.HaoLog("tokenRefresh 登出");
                 UserControlCenter.setLogout(new CallbackUtils.ReturnHttp() {
                     @Override
-                    public void Callback(HttpReturn httpReturn) {}
+                    public void Callback(HttpReturn httpReturn) {
+                        StringUtils.HaoLog("tokenRefresh 登出 "+httpReturn.msg);
+                        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
+                        pref.edit().putString("tokenRefresh","登出").apply();
+                    }
                 });
             } else {
                 //恢復網路時間太久導致連線失敗，每支手機恢復網路速度不一樣，設計上斷網路delay 1 秒鐘執行NewCom

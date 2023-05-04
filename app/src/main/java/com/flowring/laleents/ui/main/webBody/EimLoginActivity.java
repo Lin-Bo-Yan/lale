@@ -3,6 +3,7 @@ package com.flowring.laleents.ui.main.webBody;
 import static com.flowring.laleents.tools.UiThreadUtil.runOnUiThread;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -49,6 +50,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_eim);
+        getPref();
 
         btn_login = findViewById(R.id.btn_login);
         btn_login.setOnClickListener(view -> {
@@ -124,6 +126,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
             }
         }).start();
     }
+
     public static void connection_server_get_httpReturn(MainAppCompatActivity activity, JSONObject result){
         String af_token = result.optString("af_token");
         String qrcode_info_url = result.optString("qrcode_info_url");
@@ -179,7 +182,6 @@ public class EimLoginActivity extends MainAppCompatActivity {
 
         }
     }
-
 
     public static void FirebasePusher_AF_push_registration(MainAppCompatActivity activity){
         StringUtils.HaoLog("AF_push_registration");
@@ -239,5 +241,19 @@ public class EimLoginActivity extends MainAppCompatActivity {
                 }).start();
             }
         });
+    }
+
+    private void getPref(){
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences((Context) EimLoginActivity.this);
+        String tokenRefresh = pref.getString("tokenRefresh","");
+        if("登出".equals(tokenRefresh)){
+            DialogUtils.showDialog(EimLoginActivity.this, new CallbackUtils.tokenReturn() {
+                @Override
+                public void Callback() {}
+            });
+            pref.edit().remove("tokenRefresh").apply();
+        } else {
+            StringUtils.HaoLog("SharedPreferences 沒有值");
+        }
     }
 }
