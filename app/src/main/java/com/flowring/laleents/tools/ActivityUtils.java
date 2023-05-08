@@ -13,6 +13,7 @@ import com.flowring.laleents.model.msg.MsgControlCenter;
 import com.flowring.laleents.model.user.UserControlCenter;
 import com.flowring.laleents.model.user.UserInfo;
 import com.flowring.laleents.tools.phone.AllData;
+import com.flowring.laleents.ui.main.webBody.FileReaderActivity;
 import com.flowring.laleents.ui.main.webBody.MainWebActivity;
 import com.flowring.laleents.ui.main.webBody.WebViewActivity;
 import com.flowring.laleents.ui.widget.jitsiMeet.WebJitisiMeetActivity;
@@ -87,12 +88,12 @@ public class ActivityUtils {
 
     public static void goFileReaderActivity(Context context, String url, JSONObject data){
         String googleDocs = "http://docs.google.com/gview?embedded=true&url=";
-//        runOnUiThread(() -> {
-//            Intent intent = new Intent(context, FileReaderActivity.class);
-//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//            intent.putExtra("url", googleDocs + url);
-//            intent.putExtra("jsonData",data.toString());
-//            context.startActivity(intent);
-//        });
+        runOnUiThread(() -> {
+            Intent intent = new Intent(context, FileReaderActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra("url", googleDocs + url);
+            intent.putExtra("jsonData",data.toString());
+            context.startActivity(intent);
+        });
     }
 }
