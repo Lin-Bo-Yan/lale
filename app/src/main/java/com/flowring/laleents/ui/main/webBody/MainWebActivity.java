@@ -1113,6 +1113,9 @@ public class MainWebActivity extends MainAppCompatActivity {
                 case "getAPPVersion":
                     getAPPVersion();
                     break;
+                case "quickLook":
+                    classificationFileType(data);
+                    break;
                 case "webLog":
                     webLog(data);
                     break;
@@ -1186,7 +1189,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH mm ss SSS");
         request.setDestinationInExternalPublicDir(
-                Environment.DIRECTORY_DOWNLOADS, fileName == null ? sdf.format(new Date().getDate()) + StringUtils.toExtension(conection.getContentType()) : fileName);
+                Environment.DIRECTORY_DOWNLOADS, fileName == null ? sdf.format(new Date().getDate()) + FileUtils.toExtension(conection.getContentType()) : fileName);
         DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
         dm.enqueue(request);
         try {
@@ -1216,7 +1219,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
                 final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH mm ss SSS");
                 request.setDestinationInExternalPublicDir(
-                        Environment.DIRECTORY_DOWNLOADS, fileName == null ? sdf.format(new Date().getDate()) + StringUtils.toExtension(conection.getContentType()) : fileName);
+                        Environment.DIRECTORY_DOWNLOADS, fileName == null ? sdf.format(new Date().getDate()) + FileUtils.toExtension(conection.getContentType()) : fileName);
                 DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
                 dm.enqueue(request);
                 urlsNew++;
@@ -1255,6 +1258,75 @@ public class MainWebActivity extends MainAppCompatActivity {
             sendToWeb(new JSONObject().put("type", "getAPPVersion").put("data", new JSONObject().put("Version", getVersionName(MainWebActivity.this))).toString());
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void classificationFileType(JSONObject data){
+        String contentType = null;
+        String fileName;
+        String fileType = null;
+        if(data.has("url")){
+            try {
+                fileName = data.getString("fileName");
+                fileType = FileUtils.fileType(fileName);
+                contentType = FileUtils.contentType(fileType);
+            }catch (JSONException e){e.printStackTrace();}
+        } else {StringUtils.HaoLog("資料不存在");}
+
+        if(contentType != null && !contentType.isEmpty()){
+            switch (contentType){
+                case "data":
+                    StringUtils.HaoLog("檔案不支援 "+fileType);
+                    Intent intent = new Intent(getApplicationContext(),FileNotSupportedActivity.class);
+                    intent.putExtra("JSONObject",data.toString());
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    return;
+                default:
+                    judgmentFileName(data,ActionType.openFile);
+            }
+        }
+    }
+
+    public enum  ActionType{
+        download,openFile
+    }
+
+    //因為下載檔案都要判別檔案名稱是否空白，設計成共用
+    private void judgmentFileName(JSONObject data, ActionType type){
+        if (PermissionUtils.checkPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) || (Build.VERSION.SDK_INT > Build.VERSION_CODES.R)) {
+            String dataUrl = data.optString("url");
+            if (data.isNull("fileName")){
+                switch (type){
+                    case download:
+                        // downloadFile(dataUrl, null); // 原設計沒有開執行續
+                        break;
+                    case openFile:
+                        ActivityUtils.goFileReaderActivity(this,dataUrl,data);
+                        break;
+                }
+            } else {
+                switch (type) {
+                    case download:
+                        //downloadFile(dataUrl, data.optString("fileName")); // 原設計沒有開執行續
+                        break;
+                    case openFile:
+                        ActivityUtils.goFileReaderActivity(this,dataUrl,data);
+                        break;
+                }
+            }
+        } else {
+            switch (type){
+                case download:
+                    try{
+                        sendToWeb(new JSONObject().put("type", "downloadFile").put("data", new JSONObject().put("isSuccess", false)).toString());
+                    }catch(JSONException e2){
+                        StringUtils.HaoLog("sendToWeb Error=" + e2);
+                        e2.printStackTrace();
+                    }
+                    break;
+            }
+            PermissionUtils.requestPermission(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, null, "該功能需要下載權限");
         }
     }
 
@@ -1887,7 +1959,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
                     StringUtils.HaoLog("getContentType=" + conection.getContentType());
                     StringUtils.HaoLog("getContent=" + conection.getContent());
-                    String fileName = sdf.format(new Date().getDate()) + StringUtils.toExtension(conection.getContentType());
+                    String fileName = sdf.format(new Date().getDate()) + FileUtils.toExtension(conection.getContentType());
                     String filePath = getExternalFilesDir(null) + "/"
                             + fileName;
                     // Output stream
@@ -1973,7 +2045,7 @@ public class MainWebActivity extends MainAppCompatActivity {
 
                     // Output stream
                     OutputStream output = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() + "/"
-                            + sdf.format(new Date().getDate()) + StringUtils.toExtension(conection.getContentType()));
+                            + sdf.format(new Date().getDate()) + FileUtils.toExtension(conection.getContentType()));
                     byte data[] = new byte[1024];
 
                     long total = 0;

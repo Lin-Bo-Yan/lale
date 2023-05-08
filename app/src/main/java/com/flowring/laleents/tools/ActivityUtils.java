@@ -18,6 +18,8 @@ import com.flowring.laleents.ui.main.webBody.WebViewActivity;
 import com.flowring.laleents.ui.widget.jitsiMeet.WebJitisiMeetActivity;
 import com.flowring.laleents.ui.widget.qrCode.ScanCaptureActivity;
 
+import org.json.JSONObject;
+
 
 public class ActivityUtils {
 
@@ -83,5 +85,14 @@ public class ActivityUtils {
         RcodeResult.launch(intent);
     }
 
-
+    public static void goFileReaderActivity(Context context, String url, JSONObject data){
+        String googleDocs = "http://docs.google.com/gview?embedded=true&url=";
+//        runOnUiThread(() -> {
+//            Intent intent = new Intent(context, FileReaderActivity.class);
+//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            intent.putExtra("url", googleDocs + url);
+//            intent.putExtra("jsonData",data.toString());
+//            context.startActivity(intent);
+//        });
+    }
 }

@@ -138,6 +138,15 @@
 
 
         </activity>
+
+        <activity
+            android:name=".ui.main.webBody.FileNotSupportedActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+
         <activity android:name=".ui.main.webBody.shareActivity"
             android:exported ="true">
             <!--            <intent-filter>-->
