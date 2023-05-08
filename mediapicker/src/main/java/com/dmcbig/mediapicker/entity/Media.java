@@ -6,18 +6,20 @@ import android.text.TextUtils;
 
 /**
  * Created by dmcBig on 2017/7/4.
+ * Media模型，用來表示儲存在設備上的媒體檔案
+ * Media 實作了 Parcelable 接口，這表示它可以在 Activity 或 Fragment 之間進行傳遞。
  */
 
 public class Media implements Parcelable {
-    public String path;
-    public String name;
-    public String extension;
-    public long time;
-    public int mediaType;
-    public long size;
-    public int id;
-    public String parentDir;
-    public String mimeType;
+    public String path;         //path: 媒體檔案的路徑
+    public String name;         //name: 媒體檔案的名稱
+    public String extension;    //extension: 媒體檔案的副檔名
+    public long time;           //time: 媒體檔案的修改時間
+    public int mediaType;       //mediaType: 媒體檔案的類型（例如圖片、影片、音樂等等）
+    public long size;           //size: 媒體檔案的大小
+    public int id;              //id: 媒體檔案的唯一識別碼
+    public String parentDir;    //parentDir: 媒體檔案所在的父目錄
+    public String mimeType;     //mimeType: 媒體檔案的 MIME type
 
     public Media(String path, String name, long time, int mediaType, long size, int id, String parentDir, String mimeType) {
         this.path = path;

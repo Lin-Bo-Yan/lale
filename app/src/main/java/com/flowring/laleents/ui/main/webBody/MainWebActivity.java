@@ -60,7 +60,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ShareCompat;
 import androidx.core.content.FileProvider;
-import androidx.core.content.PermissionChecker;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.bumptech.glide.Glide;
@@ -70,13 +69,11 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.dmcbig.mediapicker.PickerConfig;
 import com.dmcbig.mediapicker.entity.Media;
-import com.flowring.laleents.BuildConfig;
 import com.flowring.laleents.R;
 import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.model.explore.Microapp;
 import com.flowring.laleents.model.room.RoomControlCenter;
 import com.flowring.laleents.model.room.RoomInfoInPhone;
-import com.flowring.laleents.model.user.TokenInfo;
 import com.flowring.laleents.model.user.UserControlCenter;
 import com.flowring.laleents.model.user.UserInfo;
 import com.flowring.laleents.model.user.UserMin;
@@ -389,6 +386,8 @@ public class MainWebActivity extends MainAppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        StringUtils.HaoLog("onActivityResult=" + data.getExtras());
+        StringUtils.HaoLog("onActivityResult=" + resultCode);
         if (requestCode == FILE_CHOOSER_RESULT_CODE) {
             if (null == mUploadMessage) return;
             //如果沒選照片就設定收到的值為null，使下次可以再次選取
@@ -437,14 +436,16 @@ public class MainWebActivity extends MainAppCompatActivity {
             if (images != null) {
                 Uri[] uris = new Uri[images.size()];
                 for (int i = 0; i < images.size(); i++) {
-                    uris[i] = Uri.fromFile(new File(images.get(i).path));
+                    Media media = images.get(i);
+                    uris[i] = Uri.fromFile(new File(media.path));
                 }
                 if (mUploadMessage != null) {
                     mUploadMessage.onReceiveValue(uris);
                     mUploadMessage = null;
                 }
             }
-        } else if (requestCode == DefinedUtils.REQUEST_CHROME_TAB) {
+        }
+        if (requestCode == DefinedUtils.REQUEST_CHROME_TAB) {
             if (resultCode == Activity.RESULT_CANCELED) {
                 closeNativeBrowser();
             }
