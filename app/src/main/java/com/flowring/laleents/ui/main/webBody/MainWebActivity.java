@@ -26,6 +26,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.provider.ContactsContract;
 import android.provider.DocumentsContract;
@@ -1037,6 +1038,16 @@ public class MainWebActivity extends MainAppCompatActivity {
             viewGroup.addView(overlay);
         }
     }
+
+    private void webRendered(){
+        StringUtils.HaoLog("webRendered= "+Thread.currentThread().getName());
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            public void run() {
+                viewGroup.removeView(overlay);
+                StringUtils.HaoLog("webRendered= "+Thread.currentThread().getName());
+            }
+        },600);
+    }
     //endregion
 
     //region  postMessage
@@ -1125,7 +1136,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     webLog(data);
                     break;
                 case "webRendered":
-                    viewGroup.removeView(overlay);
+                    webRendered();
                     break;
                 case "webMessage":
 
