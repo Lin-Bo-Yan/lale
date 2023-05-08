@@ -296,6 +296,54 @@ public class StringUtils {
         return "data";
     }
 
+    static public String shareType(String fileName){
+        int lastDotIndex = fileName.lastIndexOf(".");
+        if (lastDotIndex == -1 || lastDotIndex == 0) {
+            return "";
+        }
+        return fileName.substring(lastDotIndex);
+    }
+
+    static public String contentType(String value){
+        switch (value) {
+            case ".xls":
+                return "application/vnd.ms-excel";
+            case ".xlsx":
+                return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            case ".txt":
+                return "text/plain";
+            case ".jfif":
+                return "image/jfif";
+            case ".jpe":
+                return "image/jpe";
+            case ".jpeg":
+                return "image/jpeg";
+            case ".jpg":
+                return "image/jpg";
+            case ".m4e":
+                return "video/mpeg4";
+            case ".m4a":
+                return "audio/mp4a-latm";
+            case ".mp3":
+                return "audio/mp3";
+            case ".mp4":
+                return "video/mpeg4";
+            case ".png":
+                return "image/png";
+            case ".gif":
+                return "image/gif";
+            case ".pdf":
+                return "application/pdf";
+            case ".zip":
+                return "application/zip";
+            case ".ppt":
+                return "application/vnd.ms-powerpoint";
+            case ".pptx":
+                return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+        }
+        return "data";
+    }
+
     static public String SetNoNull(Object value, String jsonString) {
         JSONObject json = null;
         Field[] fields = value.getClass().getFields();
@@ -541,11 +589,18 @@ if(stes.length > showC)
                 mTextPaint
         );
 
-        // 保存绘图为本地图片
+        // 保存繪圖為本地圖片
         mCanvas.save();
         mCanvas.restore();
 
 
         return mBitmap;
+    }
+
+    public static String getNewString(String fileId){
+        // event_1638440675785703424
+        int length = fileId.length();
+        String result = fileId.substring(length - 10);
+        return result;
     }
 }

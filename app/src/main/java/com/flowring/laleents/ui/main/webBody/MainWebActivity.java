@@ -81,6 +81,7 @@ import com.flowring.laleents.tools.ActivityUtils;
 import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.CommonUtils;
 import com.flowring.laleents.tools.DialogUtils;
+import com.flowring.laleents.tools.DownloadUtils;
 import com.flowring.laleents.tools.FileUtils;
 import com.flowring.laleents.tools.FormatUtils;
 import com.flowring.laleents.tools.StringUtils;
@@ -1399,7 +1400,9 @@ public class MainWebActivity extends MainAppCompatActivity {
                 case "QRcodeImage":
                     openQRcodeImage(inviteMessage);
                     break;
-
+                case "otherApp":
+                    hyperlinkSharingOrFileSharing(inviteMessage);
+                    break;
             }
         }
     }
@@ -1601,6 +1604,68 @@ public class MainWebActivity extends MainAppCompatActivity {
 
     }
 
+    private void hyperlinkSharingOrFileSharing(String inviteMessage){
+        String string = null;
+        String url = null;
+        try{
+            JSONArray jsonArray = new JSONArray(inviteMessage);
+            JSONObject jsonObject = jsonArray.getJSONObject(0);
+            string = jsonObject.optString("string");
+            url = jsonObject.optString("url");
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+
+        if(url != null && !url.isEmpty()){
+            judgmentFileName(inviteMessage);
+        } else if(string != null && !string.isEmpty()){
+            //文字超文本分享
+            textHypertextSharing(string);
+        }
+    }
+
+    private void textHypertextSharing(String textMessage){
+        try {
+            Intent thirdPartyAppIntent = new Intent(Intent.ACTION_SEND);
+            thirdPartyAppIntent.setType("text/plain");
+            thirdPartyAppIntent.putExtra(Intent.EXTRA_TEXT, textMessage);
+            startActivity(Intent.createChooser(thirdPartyAppIntent,"分享文本訊息"));
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(getApplicationContext(), "尚未安裝應用程式。", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void judgmentFileName(String inviteMessage){
+        String oldFileName = null;
+        try{
+            JSONArray jsonArray = new JSONArray(inviteMessage);
+            JSONObject jsonObject = jsonArray.getJSONObject(0);
+            oldFileName = jsonObject.optString("name");
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+        if (oldFileName.isEmpty()){
+            DownloadUtils.shareFileTypeDownload(inviteMessage,null,this);
+        } else {
+            DownloadUtils.shareFileTypeDownload(inviteMessage,oldFileName,this);
+        }
+    }
+
+    public static void shareFileType(File folder, Context context){
+        String state = Environment.getExternalStorageState();
+        if(state.equals(Environment.MEDIA_MOUNTED)){
+            if(folder.exists()){
+                Uri cacheDirUri = FileProvider.getUriForFile(context, "com.flowring.laletoc.fileprovider", folder);
+                if(cacheDirUri != null){
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.putExtra(Intent.EXTRA_STREAM,cacheDirUri);
+                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    intent.setType("application/*");
+                    context.startActivity(Intent.createChooser(intent,"分享檔案"));
+                }
+            } else {StringUtils.HaoLog("檔案不存在");}
+        } else {StringUtils.HaoLog("存儲設備不可用，無法進行讀寫操作");}
+    }
 
     private void getAddressBook() {
         if (PermissionUtils.checkPermission(this, Manifest.permission.READ_CONTACTS)) {

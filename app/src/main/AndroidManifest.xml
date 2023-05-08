@@ -22,7 +22,7 @@
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /><!--需要彈出一個選擇窗口，所有必須有以下權限，這行代碼必須存在，否則點擊不了系統設置中的按鈕-->
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" /> <!--禁用螢幕鎖-->
-
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION"/><!--VISIBILITY_HIDDEN，這需要權限-->
 
 
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
