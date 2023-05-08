@@ -505,6 +505,8 @@ public class MainWebActivity extends MainAppCompatActivity {
     boolean init = false;
 
     MyWebView webView;
+    private ViewGroup viewGroup = null;
+    private View overlay = null;
 
     void cleanWebviewCache() {
         deleteDatabase("webview.db");
@@ -716,23 +718,22 @@ public class MainWebActivity extends MainAppCompatActivity {
     }
 
     void initOnMainWebPageFinished() {
-
-
         if (!init) {
             init = true;
-
             StringUtils.HaoLog("initOnMainWebPageFinished");
 //            if (UserControlCenter.getUserMinInfo() != null && !UserControlCenter.getUserMinInfo().userId.isEmpty()) {
 //                StringUtils.HaoLog("initOnMainWebPageFinished " + UserControlCenter.getUserMinInfo());
 //                Login();
+//
 //            }
             if (getIntent().getAction() != null && getIntent().getAction().equals(Intent.ACTION_SEND)) {
                 shareToWeb(getIntent());
             } else if (getIntent().getAction() != null && getIntent().getAction().equals(Intent.ACTION_SEND_MULTIPLE)) {
-            } else checkUpApp(getIntent());
+                //multipleShareToWeb(getIntent());
+            } else {
+                checkUpApp(getIntent());
+            }
         }
-
-
     }
 
     void checkUpApp(Intent intent) {
@@ -1026,9 +1027,14 @@ public class MainWebActivity extends MainAppCompatActivity {
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
                     FrameLayout.LayoutParams.MATCH_PARENT,
                     FrameLayout.LayoutParams.MATCH_PARENT);
-            if (webView.getParent() != null)
+            if (webView.getParent() != null){
                 ((ViewGroup) webView.getParent()).removeView(webView);
-            ((ViewGroup) findViewById(R.id.all)).addView(webView, params);
+            }
+            // 取得 viewGroup 的 ViewGroup，並加入 WebView 與 activity_call
+            viewGroup = findViewById(R.id.all);
+            viewGroup.addView(webView, params);
+            overlay = getLayoutInflater().inflate(R.layout.activity_call, viewGroup, false);
+            viewGroup.addView(overlay);
         }
     }
     //endregion
@@ -1117,6 +1123,12 @@ public class MainWebActivity extends MainAppCompatActivity {
                     break;
                 case "webLog":
                     webLog(data);
+                    break;
+                case "webRendered":
+                    viewGroup.removeView(overlay);
+                    break;
+                case "webMessage":
+
                     break;
                 default:
                     unDo(json);
