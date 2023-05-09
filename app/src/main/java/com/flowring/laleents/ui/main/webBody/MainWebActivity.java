@@ -351,7 +351,6 @@ public class MainWebActivity extends MainAppCompatActivity {
         StringUtils.HaoLog("onResume=" + userMin);
         if (userMin != null && !userMin.userId.isEmpty()) {
             checkPermission();
-            censorToken();
         } else {
             goLogin();
         }
