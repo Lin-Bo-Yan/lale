@@ -246,6 +246,9 @@ public class EimLoginActivity extends MainAppCompatActivity {
     private void getPref(){
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences((Context) EimLoginActivity.this);
         String tokenRefresh = pref.getString("tokenRefresh","");
+        Boolean signOut = pref.getBoolean("isSignOut",false);
+        StringUtils.HaoLog("getPref："+tokenRefresh);
+        StringUtils.HaoLog("getPref 布林："+signOut);
         if("登出".equals(tokenRefresh)){
             DialogUtils.showDialog(EimLoginActivity.this, new CallbackUtils.tokenReturn() {
                 @Override

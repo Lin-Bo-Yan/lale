@@ -2,11 +2,14 @@ package com.flowring.laleents.ui.widget.qrCode;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -25,6 +28,7 @@ import com.flowring.laleents.R;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.phone.DefinedUtils;
 import com.flowring.laleents.tools.phone.PermissionUtils;
+import com.flowring.laleents.ui.main.webBody.EimLoginActivity;
 import com.flowring.laleents.ui.model.MainAppCompatActivity;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.MultiFormatReader;
@@ -74,6 +78,11 @@ public class ScanCaptureActivity extends MainAppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //防止沒清除sp時，再清一次
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences((Context) ScanCaptureActivity.this);
+        pref.edit().remove("tokenRefresh").apply();
+        StringUtils.HaoLog("ScanCaptureActivity：" + pref.getString("tokenRefresh",""));
 
         scanCaptureType = (ScanCaptureType) getIntent().getExtras().get("ScanCaptureType");
         scanOnly = (boolean) getIntent().getBooleanExtra("scanOnly", false);

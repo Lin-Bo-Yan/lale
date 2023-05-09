@@ -141,7 +141,8 @@
 
         <activity
             android:name=".ui.main.webBody.FileNotSupportedActivity"
-            android:exported="false">
+            android:exported ="true"
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />

@@ -387,7 +387,7 @@ public class MainWebActivity extends MainAppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        StringUtils.HaoLog("onActivityResult=" + data.getExtras());
+        StringUtils.HaoLog("onActivityResult=" + data);
         StringUtils.HaoLog("onActivityResult=" + resultCode);
         if (requestCode == FILE_CHOOSER_RESULT_CODE) {
             if (null == mUploadMessage) return;
@@ -1457,6 +1457,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             String inviteMessage = "";
             if (data.has("data"))
                 inviteMessage = data.optString("data");
+            StringUtils.HaoLog("share command："+data.optString("type"));
             switch (data.optString("type")) {
                 case "sms":
                     openMessage(inviteMessage);
@@ -1727,7 +1728,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         String state = Environment.getExternalStorageState();
         if(state.equals(Environment.MEDIA_MOUNTED)){
             if(folder.exists()){
-                Uri cacheDirUri = FileProvider.getUriForFile(context, "com.flowring.laletoc.fileprovider", folder);
+                Uri cacheDirUri = FileProvider.getUriForFile(context, "com.flowring.laleents.fileprovider", folder);
                 if(cacheDirUri != null){
                     Intent intent = new Intent(Intent.ACTION_SEND);
                     intent.putExtra(Intent.EXTRA_STREAM,cacheDirUri);

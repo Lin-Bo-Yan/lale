@@ -287,6 +287,7 @@ public class MqttControlCenter {
                         StringUtils.HaoLog("tokenRefresh 登出 "+httpReturn.msg);
                         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
                         pref.edit().putString("tokenRefresh","登出").apply();
+                        pref.edit().putBoolean("isSignOut", true);
                     }
                 });
             } else {
