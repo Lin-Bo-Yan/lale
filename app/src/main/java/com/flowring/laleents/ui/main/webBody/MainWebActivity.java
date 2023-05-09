@@ -3,6 +3,9 @@ package com.flowring.laleents.ui.main.webBody;
 import static java.security.AccessController.getContext;
 
 import android.Manifest;
+import android.animation.LayoutTransition;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -1039,14 +1042,19 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
-    private void webRendered(){
+    private void webRendered(int second){
         StringUtils.HaoLog("webRendered= "+Thread.currentThread().getName());
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             public void run() {
+                LayoutTransition layoutTransition = new LayoutTransition();
+                PropertyValuesHolder aniChan = PropertyValuesHolder.ofFloat("rotation",0,50,0);
+                ObjectAnimator changeDis = ObjectAnimator.ofPropertyValuesHolder(this,aniChan);
+                layoutTransition.setAnimator(LayoutTransition.CHANGE_DISAPPEARING,changeDis);
+                viewGroup.setLayoutTransition(layoutTransition);
                 viewGroup.removeView(overlay);
                 StringUtils.HaoLog("webRendered= "+Thread.currentThread().getName());
             }
-        },600);
+        },second);
     }
     //endregion
 
@@ -1124,7 +1132,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     updateRooms();
                     break;
                 case "webOk":
-                    webOk();
+                    webOk(data);
                     break;
                 case "getAPPVersion":
                     getAPPVersion();
@@ -1136,7 +1144,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     webLog(data);
                     break;
                 case "webRendered":
-                    webRendered();
+                    webRendered(500);
                     break;
                 case "webMessage":
 
@@ -1359,7 +1367,10 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
-    private void webOk() {
+    private void webOk(JSONObject data) {
+        if(data == null){
+            webRendered(3000);
+        }
         UserMin userMin = UserControlCenter.getUserMinInfo();
 
         StringUtils.HaoLog("webOk");
