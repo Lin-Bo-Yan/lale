@@ -173,6 +173,11 @@ public class MainWebActivity extends MainAppCompatActivity {
                 StringUtils.HaoLog("詢問使用重啟");
                 PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.RECEIVE_BOOT_COMPLETED, "開機後重新啟動背景服務");
             }
+            if (PermissionUtils.checkPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) || (Build.VERSION.SDK_INT > Build.VERSION_CODES.R)) {
+                StringUtils.HaoLog("可以使用讀寫");
+            } else {
+                PermissionUtils.requestPermission(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, null, "該功能需要下載權限");
+            }
         });
 
     }
