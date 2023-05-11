@@ -77,6 +77,7 @@ import com.dmcbig.mediapicker.entity.Media;
 import com.flowring.laleents.R;
 import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.model.explore.Microapp;
+import com.flowring.laleents.model.msg.MsgControlCenter;
 import com.flowring.laleents.model.room.RoomControlCenter;
 import com.flowring.laleents.model.room.RoomInfoInPhone;
 import com.flowring.laleents.model.user.UserControlCenter;
@@ -685,6 +686,8 @@ public class MainWebActivity extends MainAppCompatActivity {
         mUploadMessage = null;
     }
 
+    File outputFile = null;
+    String fileName = null;
     void shareToWeb(Intent intent) {
 
         String type = intent.getType();
@@ -708,35 +711,57 @@ public class MainWebActivity extends MainAppCompatActivity {
             }
             //從手機分享單張圖片
             else if (type.startsWith("image/")) {
+                //需要下載權限
                 Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
-                String fileName = FileUtils.getContentURIFileName(this,imageUri);
-                FileUtils.getFilePathFromUri(this,imageUri,fileName);
-//                try {
-//                    sendToWeb("gotoShare", new JSONObject().put("type", "image").put("data", getBase64FromPath(imageUri.getPath())));
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-
+                fileName = FileUtils.getContentURIFileName(this,imageUri);
+                outputFile = FileUtils.getFilePathFromUri(this,imageUri,fileName);
+                //String thumbnail = getBase64FromPath(imageUri.getPath());
+                try {
+                    JSONArray jsonArray = new JSONArray();
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("onlyKey","hashcode");
+                    jsonObject.put("mimeType",type);
+                    jsonObject.put("name",fileName);
+                    jsonObject.put("thumbnail","thumbnail");//縮圖
+                    jsonArray.put(jsonObject);
+                    sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             } else if (type.startsWith("video/")) {
                 Uri videoUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
-                String fileName = FileUtils.getContentURIFileName(this,videoUri);
-                FileUtils.getFilePathFromUri(this,videoUri,fileName);
-//                try {
-//                    sendToWeb("gotoShare", new JSONObject().put("type", "video").put("data", getBase64FromPath(videoUri.getPath())));
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
+                fileName = FileUtils.getContentURIFileName(this,videoUri);
+                outputFile = FileUtils.getFilePathFromUri(this,videoUri,fileName);
+                try {
+                    JSONArray jsonArray = new JSONArray();
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("onlyKey","hashcode");
+                    jsonObject.put("mimeType",type);
+                    jsonObject.put("name",fileName);
+                    jsonObject.put("thumbnail","thumbnail");//縮圖
+                    jsonArray.put(jsonObject);
+                    sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
             //從手機其他檔案
             else {
                 Uri fileUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
-                String fileName = FileUtils.getContentURIFileName(this,fileUri);
-                FileUtils.getFilePathFromUri(this,fileUri,fileName);
-//                try {
-//                    sendToWeb("gotoShare", new JSONObject().put("type", "file").put("data", getBase64FromPath(fileUri.getPath())));
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
+                fileName = FileUtils.getContentURIFileName(this,fileUri);
+                outputFile = FileUtils.getFilePathFromUri(this,fileUri,fileName);
+                try {
+                    JSONArray jsonArray = new JSONArray();
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("onlyKey","hashcode");
+                    jsonObject.put("mimeType",type);
+                    jsonObject.put("name",fileName);
+                    jsonObject.put("thumbnail","thumbnail");//縮圖
+                    jsonArray.put(jsonObject);
+                    sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -1167,7 +1192,9 @@ public class MainWebActivity extends MainAppCompatActivity {
                     webRendered(500);
                     break;
                 case "webMessage":
-
+                    break;
+                case "shareFileToCloud":
+                    shareFileToCloud(data);
                     break;
                 default:
                     unDo(json);
@@ -1384,6 +1411,30 @@ public class MainWebActivity extends MainAppCompatActivity {
         if(data.has("data")){
             String webLog = data.optString("data");
             StringUtils.HaoLog(webLog);
+        }
+    }
+
+    private void shareFileToCloud(JSONObject data){
+        String roomId = null;
+        if(data.has("roomId")){
+            roomId = data.optString("roomId");
+        } else {
+            StringUtils.HaoLog("資料不存在");
+        }
+        if(roomId != null && !roomId.isEmpty() && outputFile != null && outputFile.length() > 0){
+            HttpReturn httpReturn = MsgControlCenter.sendFile(roomId,outputFile);
+            try {
+                JSONArray jsonArray = new JSONArray();
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("onlyKey","hashcode");
+                jsonObject.put("fileId",httpReturn.data);
+                jsonObject.put("name",fileName);
+                jsonObject.put("thumbnail","thumbnail");//縮圖
+                jsonArray.put(jsonObject);
+                sendToWeb(new JSONObject().put("type","shareFileToCloud").put("data",jsonArray).toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 

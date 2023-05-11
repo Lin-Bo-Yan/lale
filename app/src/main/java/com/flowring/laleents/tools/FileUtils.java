@@ -473,18 +473,19 @@ public class FileUtils {
         }
     }
 
-    public static void getFilePathFromUri(final Context context, final Uri uri, final String fileName) {
-        try{
+    public static File getFilePathFromUri(final Context context, final Uri uri, final String fileName) {
+        File outputFile = null;
+        try {
             InputStream inputStream = context.getContentResolver().openInputStream(uri);
             BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
             // 將成為新緩存文件的文件
             Resources resources = context.getResources();
             String app_name = resources.getString(R.string.app_name);
             String tableOfContents = Environment.DIRECTORY_PICTURES + File.separator + app_name + File.separator + "externalSharing";
-            File outputFile = new File(Environment.getExternalStoragePublicDirectory(tableOfContents), fileName);
+            outputFile = new File(Environment.getExternalStoragePublicDirectory(tableOfContents), fileName);
             //getAbsolutePath()用於獲取文件的絕對路徑。它返回一個字符串，表示文件在文件系統中的完整路徑
             File outputDirectory = new File(Environment.getExternalStoragePublicDirectory(tableOfContents).getAbsolutePath());
-            if(!outputDirectory.exists()){
+            if (!outputDirectory.exists()) {
                 outputDirectory.mkdirs();
             }
 
@@ -508,13 +509,14 @@ public class FileUtils {
             inputStream.close();
             bufferedInputStream.close();
             bufferedOutputStream.close();
-
-        }catch (FileNotFoundException e){
-            StringUtils.HaoLog("無法打開閱讀 "+e);
+            return outputFile;
+        } catch (FileNotFoundException e) {
+            StringUtils.HaoLog("無法打開閱讀 " + e);
         } catch (IOException e) {
-            StringUtils.HaoLog("無法打開閱讀 "+e);
+            StringUtils.HaoLog("無法打開閱讀 " + e);
             e.printStackTrace();
         }
+        return outputFile;
     }
 
     public static File createTemporalFileFrom(final Context context, final InputStream inputStream, final String fileName) {
