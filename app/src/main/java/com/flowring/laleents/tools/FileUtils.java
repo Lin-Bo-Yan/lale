@@ -452,6 +452,56 @@ public class FileUtils {
         return "";
     }
 
+    public static File[] getFilePathsFromUris(final Context context, final ArrayList<Uri> uris, final String[] fileNames) {
+        File[] outputFiles = new File[uris.size()];
+        for (int i = 0; i < uris.size(); i++) {
+            Uri uri = uris.get(i);
+            String fileName = fileNames[i];
+            try {
+                InputStream inputStream = context.getContentResolver().openInputStream(uri);
+                BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+                // 將成為新緩存文件的文件
+                Resources resources = context.getResources();
+                String app_name = resources.getString(R.string.app_name);
+                String tableOfContents = Environment.DIRECTORY_PICTURES + File.separator + app_name + File.separator + "externalSharing";
+                File outputFile = new File(Environment.getExternalStoragePublicDirectory(tableOfContents), fileName);
+                //getAbsolutePath()用於獲取文件的絕對路徑。它返回一個字符串，表示文件在文件系統中的完整路徑
+                File outputDirectory = new File(Environment.getExternalStoragePublicDirectory(tableOfContents).getAbsolutePath());
+                if (!outputDirectory.exists()) {
+                    outputDirectory.mkdirs();
+                }
+
+                BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
+                // 這將保存每次迭代的內容
+                byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+                // 如果到達文件末尾則為 -1
+                int readBytes = 0;
+                while (true) {
+                    readBytes = bufferedInputStream.read(buffer);
+                    // 檢查讀取是否失敗
+                    if (readBytes == -1) {
+                        bufferedOutputStream.flush();
+                        break;
+                    }
+
+                    bufferedOutputStream.write(buffer);
+                    bufferedOutputStream.flush();
+                }
+                // 關閉一切
+                inputStream.close();
+                bufferedInputStream.close();
+                bufferedOutputStream.close();
+                outputFiles[i] = outputFile;
+            } catch (FileNotFoundException e) {
+                StringUtils.HaoLog("無法打開閱讀 " + e);
+            } catch (IOException e) {
+                StringUtils.HaoLog("無法打開閱讀 " + e);
+                e.printStackTrace();
+            }
+        }
+        return outputFiles;
+    }
+
     public static String getContentURIFileName(final Context context, final Uri uri){
         String fileName = null;
         ContentResolver contentResolver = context.getContentResolver();
@@ -471,6 +521,38 @@ public class FileUtils {
         }else {
             return "";
         }
+    }
+
+    public static String[] getContentURIFileNames(final Context context, final ArrayList<Uri> uris) {
+        String[] fileNames = new String[uris.size()];
+        for (int i = 0; i < uris.size(); i++) {
+            Uri uri = uris.get(i);
+            String fileName = null;
+            ContentResolver contentResolver = context.getContentResolver();
+            Cursor cursor = contentResolver.query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    int index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                    if (index >= 0) {
+                        fileName = cursor.getString(index);
+                    } else {
+                        StringUtils.HaoLog("長度小於0");
+                    }
+                } else {
+                    StringUtils.HaoLog("該列不存在");
+                }
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
+            }
+            if (fileName != null) {
+                fileNames[i] = fileName;
+            } else {
+                fileNames[i] = "";
+            }
+        }
+        return fileNames;
     }
 
     public static File getFilePathFromUri(final Context context, final Uri uri, final String fileName) {

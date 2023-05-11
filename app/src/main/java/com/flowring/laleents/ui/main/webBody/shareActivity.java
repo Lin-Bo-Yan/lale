@@ -11,6 +11,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.phone.AllData;
 
+import java.util.ArrayList;
+
 public class shareActivity extends Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -21,6 +23,7 @@ public class shareActivity extends Activity {
         intent.setType(getIntent().getType());
         StringUtils.HaoLog("testWebActivity BroadcastReceiver " + getIntent().getAction());
         Uri uri = getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
+        ArrayList<Uri> uris = getIntent().getParcelableArrayListExtra(Intent.EXTRA_STREAM);
         String extraText = getIntent().getStringExtra(Intent.EXTRA_TEXT);
 
         if (uri != null){
@@ -33,6 +36,11 @@ public class shareActivity extends Activity {
         intent1.setAction(getIntent().getAction());
         intent1.setType(getIntent().getType());
         if (uri != null){
+            StringUtils.HaoLog("單筆資料");
+            intent1.putExtras(getIntent());
+        }
+        if (uris != null){
+            StringUtils.HaoLog("多筆資料");
             intent1.putExtras(getIntent());
         }
         intent1.putExtra(Intent.EXTRA_TEXT, extraText);
