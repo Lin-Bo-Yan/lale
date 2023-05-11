@@ -275,7 +275,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 }
             }
         } else {
-            StringUtils.HaoLog("道觀通知" + workNotifi.msgType);
+            StringUtils.HaoLog("到關通知" + workNotifi.msgType);
 
             if (workNotifi.msgType.contains("AF_TASK")) {
 

@@ -1269,7 +1269,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     webLog(data);
                     break;
                 case "webRendered":
-                    webRendered(500);
+                    webRendered(700);
                     break;
                 case "webMessage":
                     break;
