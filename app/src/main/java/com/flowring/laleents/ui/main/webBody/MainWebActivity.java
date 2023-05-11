@@ -18,6 +18,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -325,6 +326,12 @@ public class MainWebActivity extends MainAppCompatActivity {
         itFilter.addAction(LocalBroadcastControlCenter.ACTION_NOTIFI_AF);
         itFilter.addAction(Intent.ACTION_SEND);
         itFilter.addAction(Intent.ACTION_SEND_MULTIPLE);
+        try {
+            itFilter.addDataType("*/*");
+        }catch (IntentFilter.MalformedMimeTypeException e){
+            StringUtils.HaoLog( e.toString());
+            e.printStackTrace();
+        }
         LocalBroadcastManager.getInstance((Context) this).registerReceiver(FireBaseMsgBroadcastReceiver, itFilter); //註冊廣播接收器
     }
 
@@ -683,45 +690,53 @@ public class MainWebActivity extends MainAppCompatActivity {
         String type = intent.getType();
         String action = intent.getAction();
         StringUtils.HaoLog("BroadcastReceiver EXTRA_TEXT=" + intent.getStringExtra(Intent.EXTRA_TEXT));
-
         StringUtils.HaoLog("BroadcastReceiver EXTRA_STREAM=" + intent.getParcelableExtra(Intent.EXTRA_STREAM));
         if (Intent.ACTION_SEND.equals(action) && type != null) {
-            //從手機分享純文字
+            //從手機分享純文字，但txt檔案會被當成純文字，txt檔案exteaStream會有值
             if (type.startsWith("text/")) {
                 String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
                 try {
-                    sendToWeb("gotoShare", new JSONObject().put("type", "text").put("data", sharedText));
+                    JSONArray jsonArray = new JSONArray();
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("mimeType","message");
+                    jsonObject.put("string",sharedText);
+                    jsonArray.put(jsonObject);
+                    sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
             }
             //從手機分享單張圖片
             else if (type.startsWith("image/")) {
                 Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
-
-                try {
-                    sendToWeb("gotoShare", new JSONObject().put("type", "image").put("data", getBase64FromPath(imageUri.getPath())));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                String fileName = FileUtils.getContentURIFileName(this,imageUri);
+                FileUtils.getFilePathFromUri(this,imageUri,fileName);
+//                try {
+//                    sendToWeb("gotoShare", new JSONObject().put("type", "image").put("data", getBase64FromPath(imageUri.getPath())));
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
 
             } else if (type.startsWith("video/")) {
                 Uri videoUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
-                try {
-                    sendToWeb("gotoShare", new JSONObject().put("type", "video").put("data", getBase64FromPath(videoUri.getPath())));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                String fileName = FileUtils.getContentURIFileName(this,videoUri);
+                FileUtils.getFilePathFromUri(this,videoUri,fileName);
+//                try {
+//                    sendToWeb("gotoShare", new JSONObject().put("type", "video").put("data", getBase64FromPath(videoUri.getPath())));
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
             }
             //從手機其他檔案
             else {
                 Uri fileUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
-                try {
-                    sendToWeb("gotoShare", new JSONObject().put("type", "file").put("data", getBase64FromPath(fileUri.getPath())));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                String fileName = FileUtils.getContentURIFileName(this,fileUri);
+                FileUtils.getFilePathFromUri(this,fileUri,fileName);
+//                try {
+//                    sendToWeb("gotoShare", new JSONObject().put("type", "file").put("data", getBase64FromPath(fileUri.getPath())));
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
             }
         }
     }

@@ -58,6 +58,7 @@ public class DefinedUtils {
     public static final int MSG_STATE_VOICE_IN = 9;             //別人傳音訊
     public static final int MSG_STATE_VOICE_OUT = 10;           //自己傳音訊
 
+    public static final int DEFAULT_BUFFER_SIZE = 4096;
     public static final String FRIEND_TYPE_INVITE = "好友邀請";
     public static final String FRIEND_TYPE_FAVORITE = "我的最愛";
     public static final String FRIEND_TYPE_FRIEND = "好友";

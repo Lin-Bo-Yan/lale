@@ -28,15 +28,16 @@ public class shareActivity extends Activity {
         }
         intent.putExtra(Intent.EXTRA_TEXT, extraText);
         intent.setAction(getIntent().getAction());
-        {
-            Intent intent1 = new Intent(getIntent().getAction());
-            intent1.setAction(getIntent().getAction());
-            if (uri != null){
-                intent1.putExtras(getIntent());
-            }
-            intent1.putExtra(Intent.EXTRA_TEXT, extraText);
-            LocalBroadcastManager.getInstance(this).sendBroadcast(intent1); //發送廣播訊息
+
+        Intent intent1 = new Intent(getIntent().getAction());
+        intent1.setAction(getIntent().getAction());
+        intent1.setType(getIntent().getType());
+        if (uri != null){
+            intent1.putExtras(getIntent());
         }
+        intent1.putExtra(Intent.EXTRA_TEXT, extraText);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent1); //發送廣播訊息
+
         startActivity(intent);
         finish();
     }
