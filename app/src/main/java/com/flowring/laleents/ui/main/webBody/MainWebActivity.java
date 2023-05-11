@@ -32,6 +32,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.Parcelable;
 import android.provider.ContactsContract;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
@@ -692,21 +693,32 @@ public class MainWebActivity extends MainAppCompatActivity {
 
         String type = intent.getType();
         String action = intent.getAction();
+        Parcelable stream = intent.getParcelableExtra(Intent.EXTRA_STREAM);
         StringUtils.HaoLog("BroadcastReceiver EXTRA_TEXT=" + intent.getStringExtra(Intent.EXTRA_TEXT));
         StringUtils.HaoLog("BroadcastReceiver EXTRA_STREAM=" + intent.getParcelableExtra(Intent.EXTRA_STREAM));
         if (Intent.ACTION_SEND.equals(action) && type != null) {
             //從手機分享純文字，但txt檔案會被當成純文字，txt檔案exteaStream會有值
             if (type.startsWith("text/")) {
-                String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
-                try {
-                    JSONArray jsonArray = new JSONArray();
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("mimeType","message");
-                    jsonObject.put("string",sharedText);
-                    jsonArray.put(jsonObject);
-                    sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                if(stream != null){
+                    StringUtils.HaoLog("txt分享");
+                    Uri txtUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                    fileName = FileUtils.getContentURIFileName(this,txtUri);
+                    outputFile = FileUtils.getFilePathFromUri(this,txtUri,fileName);
+                    try {
+                        JSONArray jsonArray = new JSONArray();
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("onlyKey","hashcode");
+                        jsonObject.put("mimeType",type);
+                        jsonObject.put("name",fileName);
+                        jsonObject.put("thumbnail","thumbnail");//縮圖
+                        jsonArray.put(jsonObject);
+                        sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    StringUtils.HaoLog("文字分享");
+                    plainText(intent);
                 }
             }
             //從手機分享單張圖片
@@ -763,6 +775,20 @@ public class MainWebActivity extends MainAppCompatActivity {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+
+    private void plainText(Intent intent){
+        String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+        try {
+            JSONArray jsonArray = new JSONArray();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("mimeType","message");
+            jsonObject.put("string",sharedText);
+            jsonArray.put(jsonObject);
+            sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
