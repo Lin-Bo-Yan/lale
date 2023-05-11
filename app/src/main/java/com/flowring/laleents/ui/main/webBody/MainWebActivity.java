@@ -127,6 +127,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -800,16 +802,20 @@ public class MainWebActivity extends MainAppCompatActivity {
         if (extras != null) {
             String text = extras.getString(Intent.EXTRA_TEXT);
             ArrayList<Uri> uris = extras.getParcelableArrayList(Intent.EXTRA_STREAM);
-//            if(text != null && !text.isEmpty()){
-//                try {
-//                    JSONObject jsonObject = new JSONObject();
-//                    jsonObject.put("mimeType","message");
-//                    jsonObject.put("string",text);
-//                    jsonArray.put(jsonObject);
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//            }
+            if(text != null && !text.isEmpty()){
+                Pattern pattern = Pattern.compile("(?<=\\n\\n)[^\\n]+");
+                Matcher matcher = pattern.matcher(text);
+                while (matcher.find()) {
+                    try {
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("mimeType","message");
+                        jsonObject.put("string",matcher.group());
+                        jsonArray.put(jsonObject);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
 
             if(uris != null){
                 // 這裡就可以對 Uri 做處理了
