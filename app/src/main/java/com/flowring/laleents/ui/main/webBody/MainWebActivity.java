@@ -87,6 +87,7 @@ import com.flowring.laleents.model.user.UserMin;
 import com.flowring.laleents.tools.ActivityUtils;
 import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.CommonUtils;
+import com.flowring.laleents.tools.DefaultThumbnail;
 import com.flowring.laleents.tools.DialogUtils;
 import com.flowring.laleents.tools.DownloadUtils;
 import com.flowring.laleents.tools.FileUtils;
@@ -737,7 +738,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     jsonObject.put("onlyKey","hashcode");
                     jsonObject.put("mimeType",type);
                     jsonObject.put("name",fileName);
-                    jsonObject.put("thumbnail","thumbnail");//縮圖
+                    jsonObject.put("thumbnail", DefaultThumbnail.getImageThumbnail());//縮圖
                     jsonArray.put(jsonObject);
                     sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
                 } catch (JSONException e) {
