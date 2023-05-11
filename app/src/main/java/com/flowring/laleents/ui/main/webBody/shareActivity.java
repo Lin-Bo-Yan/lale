@@ -2,6 +2,7 @@ package com.flowring.laleents.ui.main.webBody;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -19,32 +20,24 @@ public class shareActivity extends Activity {
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         intent.setType(getIntent().getType());
         StringUtils.HaoLog("testWebActivity BroadcastReceiver " + getIntent().getAction());
-        if (getIntent().getParcelableExtra(Intent.EXTRA_STREAM) != null)
+        Uri uri = getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
+        String extraText = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+
+        if (uri != null){
             intent.putExtras(getIntent());
-        intent.putExtra(Intent.EXTRA_TEXT, getIntent().getStringExtra(Intent.EXTRA_TEXT));
+        }
+        intent.putExtra(Intent.EXTRA_TEXT, extraText);
         intent.setAction(getIntent().getAction());
         {
             Intent intent1 = new Intent(getIntent().getAction());
             intent1.setAction(getIntent().getAction());
-            if (getIntent().getParcelableExtra(Intent.EXTRA_STREAM) != null)
+            if (uri != null){
                 intent1.putExtras(getIntent());
-            intent1.putExtra(Intent.EXTRA_TEXT, getIntent().getStringExtra(Intent.EXTRA_TEXT));
+            }
+            intent1.putExtra(Intent.EXTRA_TEXT, extraText);
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent1); //發送廣播訊息
         }
         startActivity(intent);
         finish();
-//        Intent intent = getIntent();
-//        if (intent != null) {
-//
-//            String action = intent.getAction();
-//            String type = intent.getType();
-//
-//            StringUtils.HaoLog("testWebActivity= action =" + action);
-//            StringUtils.HaoLog("testWebActivity= type =" + type);
-//
-//        }else
-//        {
-//            StringUtils.HaoLog("testWebActivity= intent=null" );
-//        }
     }
 }
