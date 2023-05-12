@@ -847,9 +847,9 @@ public class MainWebActivity extends MainAppCompatActivity {
     }
 
     void initOnMainWebPageFinished() {
+        StringUtils.HaoLog("initOnMainWebPageFinished= tob 1"+init);
         if (!init) {
             init = true;
-            StringUtils.HaoLog("initOnMainWebPageFinished");
 //            if (UserControlCenter.getUserMinInfo() != null && !UserControlCenter.getUserMinInfo().userId.isEmpty()) {
 //                StringUtils.HaoLog("initOnMainWebPageFinished " + UserControlCenter.getUserMinInfo());
 //                Login();
@@ -858,7 +858,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             if (getIntent().getAction() != null && getIntent().getAction().equals(Intent.ACTION_SEND)) {
                 shareToWeb(getIntent());
             } else if (getIntent().getAction() != null && getIntent().getAction().equals(Intent.ACTION_SEND_MULTIPLE)) {
-                //multipleShareToWeb(getIntent());
+                multipleShareToWeb(getIntent());
             } else {
                 checkUpApp(getIntent());
             }
@@ -1132,18 +1132,20 @@ public class MainWebActivity extends MainAppCompatActivity {
         if (!init) {
             String roomInfo = getIntent().getStringExtra("roomInfo");
             boolean bFromPhone = getIntent().getBooleanExtra("bFromPhone", false);
-            String urlToLoad = bFromPhone && roomInfo != null ? getMainWebURL() + "chatroom/" + roomInfo : url;
-            StringUtils.HaoLog("init setWebView 1 " + (init ? "true" : "false")+" urlToLoad= "+urlToLoad);
-            StringUtils.HaoLog("init setWebView 1 " + url);
-            StringUtils.HaoLog("init setWebView 1 " + roomInfo);
-            StringUtils.HaoLog("init setWebView 1 " + bFromPhone);
-
-            if(!bFromPhone && roomInfo == null){
+            if(bFromPhone && roomInfo != null){
+                String urlToLoad = bFromPhone && roomInfo != null ? getMainWebURL() + "chatroom/" + roomInfo : url;
+                StringUtils.HaoLog("init setWebView 1 " + (init ? "true" : "false")+" urlToLoad= "+urlToLoad);
+                StringUtils.HaoLog("init setWebView 1 " + url);
+                StringUtils.HaoLog("init setWebView 1 " + roomInfo);
+                StringUtils.HaoLog("init setWebView 1 " + bFromPhone);
+                webView.loadUrl(urlToLoad);
+                StringUtils.HaoLog("initOnMainWebPageFinished= tob 2"+init);
+                init = true;
+            } else {
                 NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                 manager.cancelAll();
+                webView.loadUrl(url);
             }
-            webView.loadUrl(urlToLoad);
-            init = true;
         } else {
             StringUtils.HaoLog("init setWebView 2");
             webView.loadUrl(url);
@@ -1680,6 +1682,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     break;
                 case "Line":
                     openLine(inviteMessage);
+                    break;
                 case "QRcodeImage":
                     openQRcodeImage(inviteMessage);
                     break;
