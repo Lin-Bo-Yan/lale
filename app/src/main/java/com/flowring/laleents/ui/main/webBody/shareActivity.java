@@ -18,7 +18,7 @@ public class shareActivity extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent intent = new Intent(AllData.context, MainWebActivity.class);
+        Intent intent = new Intent(shareActivity.this, MainWebActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         intent.setType(getIntent().getType());
         StringUtils.HaoLog("testWebActivity BroadcastReceiver " + getIntent().getAction());
