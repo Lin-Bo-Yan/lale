@@ -43,4 +43,11 @@ public interface IMessage2 {
     boolean isSelect();
 
     void setSelect(boolean isSelect);
+
+    /**
+     *
+     * 誰踢出
+     * */
+
+    boolean isAdm();
 }

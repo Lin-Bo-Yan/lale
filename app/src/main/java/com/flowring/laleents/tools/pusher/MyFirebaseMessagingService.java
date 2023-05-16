@@ -90,8 +90,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     StringUtils.HaoLog("messageInfo result1=" + messageInfo);
                     //判斷是否在前景
                     boolean isAppForeground = CommonUtils.foregrounded();
-                        if (messageInfo.is_lale_call_request()) {
-
+                    if (messageInfo.is_lale_call_request()) {
+                            StringUtils.HaoLog("群組視訊/語音通話");
                     } else if (messageInfo.is_lale_call_response()) {
                         if (messageInfo.getCallRequest().result.equals("unavailable")) {
                             sendNotification(messageInfo, remoteMessage.getData().get("body"));
@@ -301,15 +301,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 }
 
             }
-            StringUtils.HaoLog("room=" + room);
-            StringUtils.HaoLog("userInRoom=" + userInRoom);
+            StringUtils.HaoLog("群組= " + room.type);
+            StringUtils.HaoLog("userInRoom=" + userInRoom.displayName);
             //知道對方名稱
             if (userInRoom != null) {
-                if (room.type != 1) {
-                    body = userInRoom.displayName + ": " + body;
-                }
-                if (room.type != 6)
+                //群組通知 room.type = 6，1對1 通知 room.type = 1
+                if (room.type == 1){
                     avatar_url = userInRoom.avatarUrl;
+                }
             }
 
             if (room.type == 4) {

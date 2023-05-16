@@ -392,10 +392,15 @@ public class MessageInfo implements Serializable, IMessage2 {
                 return "取消一則公告";
             if (is_lale_reply())
                 return new JSONObject(content).optString("msg");
-            if (is_lale_member_join())
-                return new JSONObject(content).optString("userName") + "進入聊天室";
-            if (is_lale_member_left())
-                return new JSONObject(content).optString("userName") + "離開聊天室";
+            if (is_lale_member_join()){
+                return new JSONObject(content).optString("userName") + "加入群組";
+            }
+            if (is_lale_member_left()){
+                if(isAdm()){
+                    return new JSONObject(content).optString("userName")+ "已被管理員移出群組";
+                }
+                return new JSONObject(content).optString("userName") + "已離開群組";
+            }
             if (is_lale_file_received())
                 return "一個檔案";
             if (is_lale_image_received())
@@ -477,6 +482,22 @@ public class MessageInfo implements Serializable, IMessage2 {
     @Override
     public void setSelect(boolean isSelect) {
         this.isSelect = isSelect;
+    }
+
+    @Override
+    public boolean isAdm() {
+        String userId = null;
+        try {
+            userId = new JSONObject(content).optString("userId");
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+        if(userId != null&& !userId.isEmpty()){
+            if(sender.equals(userId)){
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
