@@ -89,18 +89,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                             sendNotification(messageInfo, remoteMessage.getData().get("body"));
                         }
                     } else {
-                            StringUtils.HaoLog("是否在前景"+isAppForeground);
-                            if(messageInfo != null)
-                            {    if (!isAppForeground ) {
-                            sendNotification(messageInfo, remoteMessage.getData().get("body"));
-                        }else
-                        {
-                            LocalBroadcastControlCenter.send(this, LocalBroadcastControlCenter.ACTION_NOTIFI_AF, remoteMessage.getData().get("body"));
-                        }
+                        StringUtils.HaoLog("是否在前景"+isAppForeground);
+                        if(messageInfo != null) {
+                            if (!isAppForeground ) {
+                                sendNotification(messageInfo, remoteMessage.getData().get("body"));
+                            } else {
+                                LocalBroadcastControlCenter.send(this, LocalBroadcastControlCenter.ACTION_NOTIFI_AF, remoteMessage.getData().get("body"));
                             }
+                        }
                     }
-
-
                 }
             } else {
                 boolean isAppForeground = CommonUtils.foregrounded();
@@ -110,7 +107,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 } else {
                     LocalBroadcastControlCenter.send(this, LocalBroadcastControlCenter.ACTION_NOTIFI_AF, remoteMessage.getData().get("body"));
                 }
-
             }
 
         }
