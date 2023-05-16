@@ -100,6 +100,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         } else if ((!messageInfo.isGroup()) && messageInfo.getCallRequest().result.equals("reject")) {
                             sendNotification(messageInfo, remoteMessage.getData().get("body"));
                         }
+                    }else if(messageInfo.is_lale_member_left()){
+                        StringUtils.HaoLog("人員離開通知");
+                        sendGroupNotification(messageInfo);
+                    }else if(messageInfo.is_lale_member_join()){
+                        StringUtils.HaoLog("人員加入通知");
+                        sendGroupNotification(messageInfo);
                     } else {
                         StringUtils.HaoLog("是否在前景"+isAppForeground);
                         if(messageInfo != null) {
@@ -382,6 +388,101 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         notificationManager.notify(id, notificationBuilder.build());
         StringUtils.HaoLog("發送通知  ");
 
+    }
+
+    private void sendGroupNotification(MessageInfo data){
+        Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        String channel_id = "lale_channel_id";
+        int id = CommonUtils.letterToNumber(data.id);
+        StringUtils.HaoLog("id=" + id);
+        if (id < 0) {
+            id = -id;
+        }
+
+        //處理點選訊息的跳轉
+        Intent intent = new Intent(this, MainWebActivity.class);
+        intent.putExtra("bFromPhone",true);
+        if(data.is_lale_member_join() || data.is_lale_member_left()){
+            intent.putExtra("roomInfo", data.room_id);
+        }
+        StringUtils.HaoLog("data.content=" + data.content);
+        if(data.content == null){
+            return;
+        }
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, id, intent, FLAG_IMMUTABLE );
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        //設定標題 內文
+        RoomMinInfo room = AllData.getRoomMinInfo(data.room_id);
+        if (room == null) {
+            RoomControlCenter.getAllRoom();
+            room = AllData.getRoomMinInfo(data.room_id);
+        }
+        String body = data.getText();
+        UserInRoom userInRoom = null;
+        String title = data.type;
+        String avatar_url = "";
+        if (room != null) {
+            avatar_url = room.avatarUrl;
+            title = room.name;
+            userInRoom = AllData.getUserInRoom(room.id, data.sender);
+            if (userInRoom != null) {
+                StringUtils.HaoLog("userInRoom !=null");
+            } else {
+                StringUtils.HaoLog("room.type =" + room.type);
+                if (room.type == 6 ){
+                    AllData.setUserInRoom(room.id, RoomSettingControlCenter.getGroupMembers(room.groupId));
+                } else {
+                    AllData.setUserInRoom(room.id, RoomSettingControlCenter.getRoomMembers(room.id));
+                }
+                userInRoom = AllData.getUserInRoom(room.id, data.sender);
+            }
+
+        }
+        StringUtils.HaoLog("群組= " + room.type);
+        StringUtils.HaoLog("群組= " + userInRoom.displayName);
+        StringUtils.HaoLog("群組= " + body);
+        StringUtils.HaoLog("群組= " + title);
+        //知道對方名稱
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channel_id)
+                .setSmallIcon(R.drawable.default_group)
+                .setContentTitle(title)
+                .setContentText(body)
+                .setAutoCancel(true)
+                .setSound(uri)
+                .setContentIntent(pendingIntent)
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setPriority(Notification.PRIORITY_HIGH)
+                .setLights(Color.RED, 1000, 300)
+                .setDefaults(Notification.DEFAULT_LIGHTS);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            StringUtils.HaoLog("Build.VERSION.SDK_INT >= Build.VERSION_CODES.O");
+            NotificationChannel channel = new NotificationChannel(
+                    channel_id, "新訊息通知", NotificationManager.IMPORTANCE_DEFAULT
+            );
+            channel.setDescription("Lale 收到新訊息時使用的通知類型 (請注意，若未開啟可能無法接收新訊息通知)");
+            channel.setShowBadge(true);
+            channel.canShowBadge();
+            channel.enableLights(true);
+
+            channel.setLightColor(Color.RED);
+            channel.enableVibration(true);
+            channel.setVibrationPattern(new long[]{100, 200, 300, 400, 500});
+            AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .build();
+            channel.setSound(uri, audioAttributes);
+            channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
+            notificationManager.createNotificationChannel(channel);
+
+        }
+
+        notificationManager.notify(id, notificationBuilder.build());
+        StringUtils.HaoLog("發送通知  ");
     }
 
     private boolean foregrounded() {
