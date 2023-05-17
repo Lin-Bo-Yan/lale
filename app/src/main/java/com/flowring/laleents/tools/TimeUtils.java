@@ -5,6 +5,7 @@ import static com.flowring.laleents.tools.StringUtils.HaoLog;
 import android.icu.text.SimpleDateFormat;
 
 import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
 
 public class TimeUtils {
@@ -41,5 +42,18 @@ public class TimeUtils {
     static public void EndTimestamp(String value) {
         HaoLog("時戳" + "(" + value + "):" + NowTimestamp());
     }
+    public static String customTime(){
+        // 獲取當前時間的 Calendar 實例
+        Calendar calendar = Calendar.getInstance();
+        // 獲取當前小時和分鐘
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        //StringBuilder builder = new StringBuilder();
+        //builder.append(hour);
+        //builder.append(":");
+        //builder.append(minute);
+        String time = String.format("%s:%s", hour, minute);
 
+        return time;
+    }
 }

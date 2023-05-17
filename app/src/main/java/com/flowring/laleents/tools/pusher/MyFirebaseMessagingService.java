@@ -188,7 +188,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channel_id)
                         .setSmallIcon(R.drawable.ic_launcher)
                         .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher))
-
                         .setContentTitle(title)
                         .setContentText(body)
                         .setAutoCancel(true)
@@ -421,9 +420,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String body = data.getText();
         UserInRoom userInRoom = null;
         String title = data.type;
-        String avatar_url = "";
         if (room != null) {
-            avatar_url = room.avatarUrl;
             title = room.name;
             userInRoom = AllData.getUserInRoom(room.id, data.sender);
             if (userInRoom != null) {
@@ -443,10 +440,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         StringUtils.HaoLog("群組= " + userInRoom.displayName);
         StringUtils.HaoLog("群組= " + body);
         StringUtils.HaoLog("群組= " + title);
+        StringUtils.HaoLog("群組= " + data.room_id);
         //知道對方名稱
 
+        //.setContent(remoteViews) RemoteViews使用
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channel_id)
-                .setSmallIcon(R.drawable.default_group)
+                .setSmallIcon(R.drawable.lale_logo)
                 .setContentTitle(title)
                 .setContentText(body)
                 .setAutoCancel(true)
@@ -482,7 +481,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
 
         notificationManager.notify(id, notificationBuilder.build());
-        StringUtils.HaoLog("發送通知  ");
+        StringUtils.HaoLog("發送群組通知  ");
     }
 
     private boolean foregrounded() {
