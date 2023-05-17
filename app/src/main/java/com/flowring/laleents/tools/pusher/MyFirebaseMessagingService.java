@@ -102,10 +102,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         }
                     }else if(messageInfo.is_lale_member_left()){
                         StringUtils.HaoLog("人員離開通知");
-                        sendGroupNotification(messageInfo);
+                        if(!isAppForeground){
+                            sendGroupNotification(messageInfo);
+                        }else {
+                            LocalBroadcastControlCenter.send(this, LocalBroadcastControlCenter.ACTION_NOTIFI_AF, remoteMessage.getData().get("body"));
+                        }
                     }else if(messageInfo.is_lale_member_join()){
                         StringUtils.HaoLog("人員加入通知");
-                        sendGroupNotification(messageInfo);
+                        if(!isAppForeground){
+                            sendGroupNotification(messageInfo);
+                        }else {
+                            LocalBroadcastControlCenter.send(this, LocalBroadcastControlCenter.ACTION_NOTIFI_AF, remoteMessage.getData().get("body"));
+                        }
                     } else {
                         StringUtils.HaoLog("是否在前景"+isAppForeground);
                         if(messageInfo != null) {
