@@ -932,15 +932,15 @@ public class MainWebActivity extends MainAppCompatActivity {
 
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                StringUtils.HaoLog("還活著 onReceivedError error=" + error.toString());
+                StringUtils.HaoLog("還活著 onReceivedError 請求超時= " + error.toString());
                 super.onReceivedError(view, request, error);
             }
 
             @Override
             public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
-                StringUtils.HaoLog("還活著 onReceivedHttpError error getUrl=" + request.getUrl());
-                StringUtils.HaoLog("還活著 onReceivedHttpError error=" + errorResponse.getData());
-                StringUtils.HaoLog("還活著 onReceivedHttpError error getStatusCode=" + errorResponse.getStatusCode());
+                StringUtils.HaoLog("還活著 onReceivedHttpError getUrl= " + request.getUrl());
+                StringUtils.HaoLog("還活著 onReceivedHttpError 請求的詳細資訊= " + errorResponse.getData());
+                StringUtils.HaoLog("還活著 onReceivedHttpError 錯誤狀態碼= " + errorResponse.getStatusCode());
                 final int MIN_ERROR_STATUS_CODE = 500;
                 final int MAX_ERROR_STATUS_CODE = 600;
                 if (errorResponse.getStatusCode() >= MIN_ERROR_STATUS_CODE
@@ -955,7 +955,8 @@ public class MainWebActivity extends MainAppCompatActivity {
             public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
                 StringUtils.HaoLog("還活著 onReceivedSslError error=" + error.toString());
 
-//                handler.proceed();
+                StringUtils.HaoLog("還活著 SSL憑證過期" + error.toString());
+                //handler.proceed();
 
                 super.onReceivedSslError(view, handler, error);
             }
@@ -1076,39 +1077,39 @@ public class MainWebActivity extends MainAppCompatActivity {
                 if (getContext() == null) {
                     return false;
                 }
-                AlertDialog.Builder b = new AlertDialog.Builder((Context) MainWebActivity.this);
-                b.setTitle("Alert");
-                b.setMessage(message);
-                b.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                AlertDialog.Builder builder = new AlertDialog.Builder((Context) MainWebActivity.this);
+                builder.setTitle("Alert");
+                builder.setMessage(message);
+                builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         result.confirm();
                     }
                 });
-                b.setCancelable(false);
-                b.create().show();
+                builder.setCancelable(false);
+                builder.create().show();
                 return true;
             }
 
             @Override
             public boolean onJsConfirm(WebView view, String url, String message, final JsResult result) {
                 Log.e("hao", "onJsConfirm");
-                AlertDialog.Builder b = new AlertDialog.Builder((Context) MainWebActivity.this);
-                b.setTitle("Confirm");
-                b.setMessage(message);
-                b.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                AlertDialog.Builder builder = new AlertDialog.Builder((Context) MainWebActivity.this);
+                builder.setTitle("Confirm");
+                builder.setMessage(message);
+                builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         result.confirm();
                     }
                 });
-                b.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         result.cancel();
                     }
                 });
-                b.create().show();
+                builder.create().show();
                 return true;
             }
 

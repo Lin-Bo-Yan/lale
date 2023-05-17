@@ -2,10 +2,7 @@ package com.flowring.laleents.tools.pusher;
 
 import static android.app.ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND;
 import static android.app.ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE;
-import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
 import static android.app.PendingIntent.FLAG_IMMUTABLE;
-import static android.app.PendingIntent.FLAG_MUTABLE;
-import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 import static com.flowring.laleents.model.msg.MsgControlCenter.receiveMsg;
 
 import android.app.ActivityManager;
