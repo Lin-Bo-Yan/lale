@@ -259,4 +259,19 @@ public class EimLoginActivity extends MainAppCompatActivity {
             StringUtils.HaoLog("SharedPreferences 沒有值");
         }
     }
+
+    /**
+     * 額外自訂義推送資訊
+     * String customerProperties = HashMapToJson(UserControlCenter.getUserMinInfo().userId,AllData.getMainServer());
+     */
+    private static String HashMapToJson(String userId, String domain) {
+        JSONObject json = new JSONObject();
+        try{
+            json.put("userId",userId);
+            json.put("domain",domain);
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+        return json.toString();
+    }
 }
