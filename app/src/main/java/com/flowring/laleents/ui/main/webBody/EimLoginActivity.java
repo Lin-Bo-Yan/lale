@@ -70,33 +70,29 @@ public class EimLoginActivity extends MainAppCompatActivity {
             ActivityUtils.gotoQRcode(this, ScanCaptureType, ActivityResult);
         });
     }
-   static public void saveLog(MainAppCompatActivity activity)
-    {
+   static public void saveLog(MainAppCompatActivity activity) {
         activity.runOnUiThread(()->{
-            DialogUtils.showDialogMessage(activity, "登入失敗，您的QRCode已失效","存到down" ,new CallbackUtils.noReturn() {
-                        @Override
-                        public void Callback() {
-
-                            File downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-
-
-                            File targetFile = new File(downloadDir, "log.log");
-                            try {
-                                FileInputStream fis = new FileInputStream( Log.mLogFile);
-                                FileOutputStream fos = new FileOutputStream(targetFile);
-                                byte[] buffer = new byte[1024];
-                                int read;
-                                while ((read = fis.read(buffer)) != -1) {
-                                    fos.write(buffer, 0, read);
-                                }
-                                fis.close();
-                                fos.flush();
-                                fos.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
+            DialogUtils.showDialogMessage(activity, "登入失敗，您的QRCode已失效","請重新登入" ,new CallbackUtils.noReturn() {
+                @Override
+                    public void Callback() {
+                        File downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                        File targetFile = new File(downloadDir, "log.log");
+                        try {
+                            FileInputStream fis = new FileInputStream( Log.mLogFile);
+                            FileOutputStream fos = new FileOutputStream(targetFile);
+                            byte[] buffer = new byte[1024];
+                            int read;
+                            while ((read = fis.read(buffer)) != -1) {
+                                fos.write(buffer, 0, read);
                             }
+                            fis.close();
+                            fos.flush();
+                            fos.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
                     }
+                }
             );
         });
     }
