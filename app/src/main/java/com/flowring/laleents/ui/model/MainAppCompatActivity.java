@@ -50,48 +50,6 @@ public class MainAppCompatActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-
-            if (action.equals(LocalBroadcastControlCenter.ACTION_NOTIFI_AF)) {
-                MessageInfo messageInfo = null;
-                try {
-                    messageInfo = new MessageInfo(new JSONObject(intent.getStringExtra("data")));
-                    MessageItem.ReCardInfo reCardInfo = messageInfo.getMessage(new HashMap<>()).getCard();
-                    ArrayList<String> stringTaskArray = new ArrayList<>();
-                    stringTaskArray.add(reCardInfo.getAvatarUrl());
-                    stringTaskArray.add(reCardInfo.getUserName());
-                    stringTaskArray.add(reCardInfo.notifyType);
-                    stringTaskArray.add("" + reCardInfo.priority);
-                    stringTaskArray.add(reCardInfo.keyword);
-                    stringTaskArray.add(reCardInfo.processName);
-                    stringTaskArray.add(reCardInfo.rootUserName);
-                    stringTaskArray.add(reCardInfo.duedate);
-                    stringTaskArray.add(reCardInfo.url);
-                    ArrayList<String> formList = new ArrayList<>();
-                    formList.addAll(intent.getStringArrayListExtra("formList"));
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-            } else if (action.equals(Intent.ACTION_SEND)) {
-                StringUtils.HaoLog("testWebActivity 動作發送");
-            } else if (action.equals(Intent.ACTION_SEND_MULTIPLE)) {
-                StringUtils.HaoLog("testWebActivity ACTION_SEND_MULTIPLE");
-            } else if (action.equals(LocalBroadcastControlCenter.ACTION_MQTT_FRIEND)) {
-                String user_id = intent.getStringExtra("user_id");
-                String user_name = intent.getStringExtra("user_name");
-                String user_avatar_url = intent.getStringExtra("user_avatar_url");
-            } else if (action.equals(LocalBroadcastControlCenter.ACTION_MQTT_Error)) {
-                DialogUtils.showDialogMessage(MainAppCompatActivity.this, "伺服器連線異常");
-            }
-        }
-    };
-
-
-    protected BroadcastReceiver FireBaseMsgBroadcastReceiver_switch = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
             switch (action){
                 case LocalBroadcastControlCenter.ACTION_NOTIFI_AF:
                     MessageInfo messageInfo = null;
@@ -111,7 +69,6 @@ public class MainAppCompatActivity extends AppCompatActivity {
                         stringTaskArray.add(reCardInfo.url);
                         ArrayList<String> formList = new ArrayList<>();
                         formList.addAll(intent.getStringArrayListExtra("formList"));
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -124,30 +81,37 @@ public class MainAppCompatActivity extends AppCompatActivity {
                 case LocalBroadcastControlCenter.ACTION_MQTT_Error: //通訊連線異常
                     DialogUtils.showDialogMessage(MainAppCompatActivity.this, "伺服器連線異常");
                     break;
+            }
+        }
+    };
+
+    protected BroadcastReceiver shareActivityBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            switch (action){
                 case Intent.ACTION_SEND:
-                    StringUtils.HaoLog("testWebActivity 動作發送");
+                    StringUtils.HaoLog("ShareActivity ACTION_SEND");
                     break;
                 case Intent.ACTION_SEND_MULTIPLE:
-                    StringUtils.HaoLog("testWebActivity 動作發送多個");
+                    StringUtils.HaoLog("ShareActivity ACTION_SEND_MULTIPLE");
                     break;
             }
-
         }
     };
 
     protected IntentFilter itFilter = new IntentFilter();
+    protected IntentFilter itShareActivityFilter = new IntentFilter();
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         itFilter.addAction(DefinedUtils.ACTION_FIREBASE_MESSAGE);
         itFilter.addAction(DefinedUtils.ACTION_FRIEND_INVITE);
-        itFilter.addAction(Intent.ACTION_SEND);
-        itFilter.addAction(Intent.ACTION_SEND_MULTIPLE);
+        itShareActivityFilter.addAction(Intent.ACTION_SEND);
+        itShareActivityFilter.addAction(Intent.ACTION_SEND_MULTIPLE);
         itFilter.addAction("test");
         //保持亮起
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-
     }
 
     @Override

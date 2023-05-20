@@ -298,47 +298,68 @@ public class MainWebActivity extends MainAppCompatActivity {
     }
     //endregion
 
-    void initFireBaseMsgBroadcastReceiver() {
+    private void initFireBaseMsgBroadcastReceiver() {
         FireBaseMsgBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getAction();
                 StringUtils.HaoLog("BroadcastReceiver=" + action + " " + intent.getStringExtra("data"));
-                if (action.equals(LocalBroadcastControlCenter.ACTION_NOTIFI_AF)) {
-                    String data = intent.getStringExtra("data");
-                    if (data != null && data.contains("msgType") && (data.contains("AF_MEETING") || data.contains("AF_TASK")))
-                        try {
-                            sendToWeb("Notification", new JSONObject(data));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                } else if (action.equals(Intent.ACTION_SEND)) {
-                    shareToWeb(intent);
-                    StringUtils.HaoLog("testWebActivity ACTION_SEND");
-                } else if (action.equals(Intent.ACTION_SEND_MULTIPLE)) {
-                    multipleShareToWeb(intent);
-                    StringUtils.HaoLog("testWebActivity ACTION_SEND_MULTIPLE");
-                } else if (action.equals(LocalBroadcastControlCenter.ACTION_MQTT_FRIEND)) {
-                    String user_id = intent.getStringExtra("user_id");
-                    String user_name = intent.getStringExtra("user_name");
-                    String user_avatar_url = intent.getStringExtra("user_avatar_url");
-                } else if (action.equals(LocalBroadcastControlCenter.ACTION_MQTT_Error)) {
-                    DialogUtils.showDialogMessage(MainWebActivity.this, "伺服器連線異常");
+                switch (action){
+                    case LocalBroadcastControlCenter.ACTION_NOTIFI_AF:
+                        String data = intent.getStringExtra("data");
+                        if (data != null && data.contains("msgType") && (data.contains("AF_MEETING") || data.contains("AF_TASK")))
+                            try {
+                                sendToWeb("Notification", new JSONObject(data));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        break;
+                    case LocalBroadcastControlCenter.ACTION_MQTT_FRIEND:
+                        String user_id = intent.getStringExtra("user_id");
+                        String user_name = intent.getStringExtra("user_name");
+                        String user_avatar_url = intent.getStringExtra("user_avatar_url");
+                        break;
+                    case LocalBroadcastControlCenter.ACTION_MQTT_Error:
+                        DialogUtils.showDialogMessage(MainWebActivity.this, "伺服器連線異常");
+                        break;
                 }
             }
         };
         itFilter.addAction(DefinedUtils.ACTION_FIREBASE_MESSAGE);
         itFilter.addAction(DefinedUtils.ACTION_FRIEND_INVITE);
         itFilter.addAction(LocalBroadcastControlCenter.ACTION_NOTIFI_AF);
-        itFilter.addAction(Intent.ACTION_SEND);
-        itFilter.addAction(Intent.ACTION_SEND_MULTIPLE);
+        itFilter.addAction(LocalBroadcastControlCenter.ACTION_MQTT_FRIEND);
+        itFilter.addAction(LocalBroadcastControlCenter.ACTION_MQTT_Error);
+        LocalBroadcastManager.getInstance((Context) this).registerReceiver(FireBaseMsgBroadcastReceiver, itFilter); //註冊廣播接收器
+    }
+
+    private void initShareActivityBroadcastReceiver(){
+        shareActivityBroadcastReceiver = new BroadcastReceiver(){
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                StringUtils.HaoLog("ShareActivityBroadcastReceiver= " + action + " " + intent.getStringExtra("data"));
+                switch (action){
+                    case Intent.ACTION_SEND:
+                        shareToWeb(intent);
+                        StringUtils.HaoLog("ShareActivity ACTION_SEND");
+                        break;
+                    case Intent.ACTION_SEND_MULTIPLE:
+                        multipleShareToWeb(intent);
+                        StringUtils.HaoLog("ShareActivity ACTION_SEND_MULTIPLE");
+                        break;
+                }
+            }
+        };
+        itShareActivityFilter.addAction(Intent.ACTION_SEND);
+        itShareActivityFilter.addAction(Intent.ACTION_SEND_MULTIPLE);
         try {
-            itFilter.addDataType("*/*");
+            itShareActivityFilter.addDataType("*/*");
         }catch (IntentFilter.MalformedMimeTypeException e){
             StringUtils.HaoLog( e.toString());
             e.printStackTrace();
         }
-        LocalBroadcastManager.getInstance((Context) this).registerReceiver(FireBaseMsgBroadcastReceiver, itFilter); //註冊廣播接收器
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(shareActivityBroadcastReceiver, itShareActivityFilter); //註冊廣播接收器
     }
 
     @SuppressLint({"JavascriptInterface", "SetJavaScriptEnabled"})
@@ -347,6 +368,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_call);
         initFireBaseMsgBroadcastReceiver();
+        initShareActivityBroadcastReceiver();
         com.flowring.laleents.tools.Log.setContext(getApplicationContext());
         AllData.init(getApplicationContext());
         if (!init) {
@@ -381,6 +403,8 @@ public class MainWebActivity extends MainAppCompatActivity {
     @Override
     protected void onDestroy() {
         StringUtils.HaoLog("onDestroy " + webView);
+        LocalBroadcastControlCenter.unregisterReceiver(this,shareActivityBroadcastReceiver);
+        LocalBroadcastControlCenter.unregisterReceiver(this,FireBaseMsgBroadcastReceiver);
         if (webView != null) {
             webView.loadUrl("about:blank");
             webView.destroy();
