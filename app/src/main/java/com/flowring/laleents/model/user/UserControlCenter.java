@@ -11,10 +11,12 @@ import com.flowring.laleents.model.HttpAfReturn;
 import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.CommonUtils;
+import com.flowring.laleents.tools.SharedPreferencesUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.cloud.api.CloudUtils;
 import com.flowring.laleents.tools.cloud.mqtt.MqttService;
 import com.flowring.laleents.tools.phone.AllData;
+import com.flowring.laleents.ui.main.webBody.EimLoginActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
@@ -402,6 +404,22 @@ public class UserControlCenter {
             }
         });
 
+    }
+
+    public static void wasLoggedOut(CallbackUtils.deviceReturn deviceReturn){
+        new Thread(() -> {
+            String loginType = SharedPreferencesUtils.getGeneralType();
+            String thirdPartyIdentifier = SharedPreferencesUtils.getThirdPartyIdentifier();
+            String userId = UserControlCenter.getUserMinInfo().userId;
+            String deviceID = Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID);
+            StringUtils.HaoLog("檢查是否已被登出 "+"\nloginType=" + loginType + "\nuserId=" + userId + "\nthirdPartyIdentifier=" + thirdPartyIdentifier + "\ndeviceId=" + deviceID);
+            if(loginType != null && !loginType.isEmpty() &&
+                    userId!= null && !userId.isEmpty()){
+                Boolean isRepeatDevice = EimLoginActivity.alreadyLoddedIn(loginType, userId, thirdPartyIdentifier,deviceID);
+                SharedPreferencesUtils.isRepeatDevice(isRepeatDevice);
+                deviceReturn.Callback(isRepeatDevice);
+            }
+        }).start();
     }
 
     public static void setLogout(CallbackUtils.ReturnHttp callback) {

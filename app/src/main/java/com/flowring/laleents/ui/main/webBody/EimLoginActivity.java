@@ -25,6 +25,7 @@ import com.flowring.laleents.tools.ActivityUtils;
 import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.DialogUtils;
 import com.flowring.laleents.tools.Log;
+import com.flowring.laleents.tools.SharedPreferencesUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.cloud.api.CloudUtils;
 import com.flowring.laleents.tools.phone.AllData;
@@ -170,9 +171,14 @@ public class EimLoginActivity extends MainAppCompatActivity {
                     });
                 } else {
                     loginSimpleThirdParty(activity,eimUserData);
-                    StringUtils.HaoLog("isRepeatDevice= "+"登入");
                 }
             } else if ( eimUserData.isLaleAppWork == true) {
+                //String deviceID = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
+                //Boolean isRepeatDevice = alreadyLoddedIn("6","",eimUserData.af_mem_id,deviceID);
+                //StringUtils.HaoLog("isRepeatDevice= "+isRepeatDevice);
+
+
+
                 FirebasePusher_AF_push_registration(activity);
             }
         } else {
@@ -293,6 +299,9 @@ public class EimLoginActivity extends MainAppCompatActivity {
     }
 
     private void loginSimpleThirdParty(MainAppCompatActivity activity, EimUserData eimUserData){
+        //存loginType
+        SharedPreferencesUtils.generalType();
+        SharedPreferencesUtils.thirdPartyIdentifier(eimUserData.af_mem_id);
         HttpReturn httpReturn2 = CloudUtils.iCloudUtils.loginSimpleThirdParty(eimUserData.af_mem_id, Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID));
 
         if (httpReturn2.status == 200) {

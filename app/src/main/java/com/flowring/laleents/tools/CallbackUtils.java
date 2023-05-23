@@ -130,4 +130,9 @@ public class CallbackUtils {
         void Callback();
 
     }
+
+    public interface deviceReturn{
+        void Callback(Boolean deviceReturn);
+
+    }
 }

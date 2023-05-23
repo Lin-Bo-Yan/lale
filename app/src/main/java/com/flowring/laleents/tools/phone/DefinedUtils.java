@@ -135,6 +135,7 @@ public class DefinedUtils {
     public static final int LOGIN_TYPE_GOOGLE = 2;
     public static final int LOGIN_TYPE_LINE = 3;
     public static final int LOGIN_TYPE_WECHAT = 4;
+    public static final int LOGIN_TYPE_AGENT_FLOW = 6;
 
     public static final float MSG_WIDTH_WEIGHT = 0.58f;
     public static final int MAX_FILE_SIZE = 100000000;
