@@ -152,6 +152,11 @@ public interface ICloudUtils {
     @WorkerThread
     HttpReturn closeAfPusher(String WFCI_URL, String userId, String FCM_token, String uuid);
 
+    /**
+     * 使用者登出 userLogout
+     */
+    @WorkerThread
+    HttpReturn userLogout();
 
     /**
      * token過期或是被失效之後重要

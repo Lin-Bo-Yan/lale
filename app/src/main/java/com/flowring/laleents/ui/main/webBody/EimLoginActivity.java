@@ -123,7 +123,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
         }).start();
     }
 
-    public static void connection_server_get_httpReturn(MainAppCompatActivity activity, JSONObject result){
+    public void connection_server_get_httpReturn(MainAppCompatActivity activity, JSONObject result){
         String af_token = result.optString("af_token");
         String qrcode_info_url = result.optString("qrcode_info_url");
         HttpAfReturn httpReturn = CloudUtils.iCloudUtils.getEimQRcode(activity, af_token, qrcode_info_url);
@@ -151,35 +151,37 @@ public class EimLoginActivity extends MainAppCompatActivity {
             }
 
             if(eimUserData.isLaleAppEim) {
-                HttpReturn httpReturn2 = CloudUtils.iCloudUtils.loginSimpleThirdParty(eimUserData.af_mem_id, Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID));
-
-                if (httpReturn2.status == 200) {
-
-                    String userMinString = new Gson().toJson(httpReturn2.data);
-                    UserMin userMin = new Gson().fromJson(userMinString, UserMin.class);
-                    StringUtils.HaoLog("httpReturn2.data=" + new Gson().toJson(httpReturn2.data));
-                    userMin.eimUserData = eimUserData;
-
-                    userMin.eimUserData.lale_token = userMin.token;
-                    userMin.eimUserData.refresh_token = userMin.refreshToken;
-                    UserControlCenter.setLogin(userMin);
-                    UserControlCenter.updateUserMinInfo(userMin);
-                    FirebasePusher_LaleAppEim(activity);
+                String deviceID = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
+                Boolean isRepeatDevice = alreadyLoddedIn("6","",eimUserData.af_mem_id,deviceID);
+                StringUtils.HaoLog("isRepeatDevice= "+isRepeatDevice);
+                if(isRepeatDevice){
+                    //跳出 dialog
+                    StringUtils.HaoLog("是否重複登入? "+"登入");
+                    DialogUtils.showDialogCheckMessage(activity, "是否登入此裝置", "您之前未正常登出或已於其他裝置登入，請確認是否登入此裝置(將登出其他裝置)", new CallbackUtils.noReturn() {
+                        @Override
+                        public void Callback() {
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    loginSimpleThirdParty(activity,eimUserData);
+                                }
+                            }).start();
+                        }
+                    });
                 } else {
-                    saveLog(activity);
-                    activity.cancelWait();
+                    loginSimpleThirdParty(activity,eimUserData);
+                    StringUtils.HaoLog("isRepeatDevice= "+"登入");
                 }
-            }else if ( eimUserData.isLaleAppWork == true) {
+            } else if ( eimUserData.isLaleAppWork == true) {
                 FirebasePusher_AF_push_registration(activity);
             }
         } else {
             activity.cancelWait();
             saveLog(activity);
-
         }
     }
 
-    public static void FirebasePusher_AF_push_registration(MainAppCompatActivity activity){
+    public void FirebasePusher_AF_push_registration(MainAppCompatActivity activity){
         StringUtils.HaoLog("AF_push_registration");
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
             @Override
@@ -288,5 +290,26 @@ public class EimLoginActivity extends MainAppCompatActivity {
             }
         }
         return false;
+    }
+
+    private void loginSimpleThirdParty(MainAppCompatActivity activity, EimUserData eimUserData){
+        HttpReturn httpReturn2 = CloudUtils.iCloudUtils.loginSimpleThirdParty(eimUserData.af_mem_id, Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID));
+
+        if (httpReturn2.status == 200) {
+
+            String userMinString = new Gson().toJson(httpReturn2.data);
+            UserMin userMin = new Gson().fromJson(userMinString, UserMin.class);
+            StringUtils.HaoLog("httpReturn2.data=" + new Gson().toJson(httpReturn2.data));
+            userMin.eimUserData = eimUserData;
+
+            userMin.eimUserData.lale_token = userMin.token;
+            userMin.eimUserData.refresh_token = userMin.refreshToken;
+            UserControlCenter.setLogin(userMin);
+            UserControlCenter.updateUserMinInfo(userMin);
+            FirebasePusher_LaleAppEim(activity);
+        } else {
+            saveLog(activity);
+            activity.cancelWait();
+        }
     }
 }

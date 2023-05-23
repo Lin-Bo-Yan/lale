@@ -380,24 +380,26 @@ public class DialogUtils {
     }
 
     static public void showDialogCheckMessage(Context context, String title, String text, CallbackUtils.noReturn callback) {
-        new AlertDialog.Builder(context)
-                .setTitle(title)
-                .setMessage(text)
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
+        runOnUiThread(() -> {
+            new AlertDialog.Builder(context)
+                    .setTitle(title)
+                    .setMessage(text)
+                    .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
 
-                })
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        callback.Callback();
-                    }
-                })
-                .create().show();
+                    })
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            callback.Callback();
+                        }
+                    })
+                    .create().show();
+        });
     }
 
     public static AlertDialog showOneDialog(Activity activity, String title, String negative, String positive, DialogInterface.OnClickListener positiveClick) {

@@ -262,7 +262,7 @@ public class CloudUtils implements ICloudUtils {
         try {
             jbody.put("loginType",6);
             jbody.put("thirdPartyIdentifier",thirdPartyIdentifier);
-            jbody.put("displayName",UserControlCenter.getUserMinInfo().displayName);
+            jbody.put("displayName",UserControlCenter.getUserMinInfo().userId);
             jbody.put("deviceId",deviceId);
             jbody.put("devicePlatform","android");
         }catch (JSONException e){
@@ -464,6 +464,17 @@ public class CloudUtils implements ICloudUtils {
                 .method("PUT", body);
         return gethttp2Return(request);
 
+    }
+
+    @Override
+    public HttpReturn userLogout() {
+        MediaType mediaType = MediaType.parse("text/plain");
+        RequestBody body = RequestBody.create(mediaType, "");
+        Request.Builder request = new Request.Builder()
+                .url(AllData.getMainServer() + "/user/logout")
+                .method("POST", body)
+                .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
+        return getJhttpReturn(request);
     }
 
     @Override

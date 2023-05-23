@@ -412,7 +412,7 @@ public class UserControlCenter {
                     StringUtils.HaoLog("登出 3");
                     HttpReturn httpReturn = new HttpReturn();
                     httpReturn = CloudUtils.iCloudUtils.closePusher(UserControlCenter.getUserMinInfo().eimUserData.af_login_id, Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID));
-
+                    HttpReturn httpReturn2 = CloudUtils.iCloudUtils.userLogout();
                     SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
                     pref.edit().putString("nowUserId", "").apply();
                     pref.edit().putString("UserIds", "{}").apply();
@@ -420,6 +420,7 @@ public class UserControlCenter {
                     userMin = null;
                     cleanUser();
                     delectAll();
+                    StringUtils.HaoLog("登出 4 httpReturn2 "+httpReturn2.status);
                     callback.Callback(httpReturn);
                 }).start();
             } else {
