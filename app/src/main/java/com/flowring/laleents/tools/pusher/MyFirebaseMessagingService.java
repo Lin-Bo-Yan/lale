@@ -64,6 +64,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
+        StringUtils.HaoLog("FirebaseService= "+AllData.context);
+        StringUtils.HaoLog("FirebaseService= "+UserControlCenter.getUserMinInfo());
+        StringUtils.HaoLog("FirebaseService= "+remoteMessage.getData());
+
         if (AllData.context == null)
             AllData.context = getApplicationContext();
         if (UserControlCenter.getUserMinInfo() != null) {

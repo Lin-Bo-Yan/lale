@@ -31,11 +31,12 @@ public class EimUserData {
 
         if (!isLaleAppEim){
             userMin.userId = af_mem_id;
+            AllData.setMainServer(af_url);
+        } else {
+            AllData.setMainServer(lale_server);
         }
         userMin.token = lale_token;
         userMin.refreshToken = refresh_token;
-
-        AllData.setMainServer(lale_server);
         if (lale_external_server_info != null) {
             userMin.externalServerSetting = new ExternalServerSetting();
 
