@@ -62,6 +62,12 @@ public interface ICloudUtils {
     HttpReturn loginThirdParty(String displayName, String deviceID, int type, String sID, File image);
 
     /**
+     * 確認使用者是否已有登入過的行動裝置
+     */
+    @WorkerThread
+    HttpReturn alreadyLoddedIn(String loginType, String userId, String thirdPartyIdentifier, String deviceId);
+
+    /**
      * 接收到第三方登入token 發起登入
      */
     @WorkerThread

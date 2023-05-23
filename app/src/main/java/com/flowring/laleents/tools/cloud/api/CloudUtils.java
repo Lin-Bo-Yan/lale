@@ -180,7 +180,7 @@ public class CloudUtils implements ICloudUtils {
     public HttpReturn login(Context context, String deviceID, String account, String password) {
 
         MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(mediaType, "{\"deviceId\": \"" + deviceID + "\",  \"password\": \"" + password + "\",  \"userId\": \"" + account + "\"}");
+        RequestBody body = RequestBody.create(mediaType, "{\"deviceId\": \"" + deviceID + "\",  \"password\": \"" + password + "\",  \"userId\": \"" + account + "\", \"devicePlatform\": \"android\"}");
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/user/login")
                 .method("POST", body)
@@ -193,17 +193,15 @@ public class CloudUtils implements ICloudUtils {
 
     @Override
     public HttpReturn loginThirdParty(String displayName, String deviceID, int type, String sID, File image) {
-
-
-        OkHttpClient client = getUnsafeOkHttpClient().newBuilder().build();
-
         JSONObject jbody = new JSONObject();
         try {
             jbody.put("loginType", type);
             jbody.put("thirdPartyIdentifier", sID);
-            if (displayName != null && !displayName.isEmpty())
+            if (displayName != null && !displayName.isEmpty()){
                 jbody.put("displayName", displayName);
+            }
             jbody.put("deviceId", deviceID);
+            jbody.put("devicePlatform","android");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -228,9 +226,49 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
+    public HttpReturn alreadyLoddedIn(String loginType, String userId, String thirdPartyIdentifier, String deviceId) {
+        MediaType mediaType = MediaType.parse("application/json");
+        JSONObject jbody = new JSONObject();
+        try {
+            if(loginType != null && !loginType.isEmpty()){
+                jbody.put("loginType",loginType);
+                jbody.put("deviceId",deviceId);
+                if("0".equals(loginType)){
+                    jbody.put("userId",userId);
+                } else {
+                    jbody.put("thirdPartyIdentifier",thirdPartyIdentifier);
+                }
+            } else {
+                StringUtils.HaoLog("alreadyLoddedIn loginType 為空");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        StringUtils.HaoLog("alreadyLoddedIn= "+jbody.toString());
+        RequestBody body = RequestBody.create(mediaType,jbody.toString());
+        Request.Builder request = new Request.Builder()
+                .url(AllData.getMainServer() + "/user/mobile/logged")
+                .method("POST", body)
+                .addHeader("Content-Type", "application/json");
+
+        return gethttpReturn(request);
+    }
+
+    @Override
     public HttpReturn loginSimpleThirdParty(String thirdPartyIdentifier, String deviceId) {
         MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(mediaType, "{\"thirdPartyIdentifier\": \"" + thirdPartyIdentifier + "\",  \"deviceId\": \"" + deviceId + "\",  \"loginType\":6 }");
+        //RequestBody body = RequestBody.create(mediaType, "{\"thirdPartyIdentifier\": \"" + thirdPartyIdentifier + "\",  \"deviceId\": \"" + deviceId + "\",  \"loginType\":6 }");
+        JSONObject jbody = new JSONObject();
+        try {
+            jbody.put("loginType",6);
+            jbody.put("thirdPartyIdentifier",thirdPartyIdentifier);
+            jbody.put("displayName",UserControlCenter.getUserMinInfo().displayName);
+            jbody.put("deviceId",deviceId);
+            jbody.put("devicePlatform","android");
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+        RequestBody body = RequestBody.create(mediaType,jbody.toString());
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/user/thirdparty/simple-login")
                 .method("POST", body)
