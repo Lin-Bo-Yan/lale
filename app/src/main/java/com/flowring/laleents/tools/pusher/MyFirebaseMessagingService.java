@@ -24,16 +24,20 @@ import android.service.notification.StatusBarNotification;
 import androidx.core.app.NotificationCompat;
 
 import com.flowring.laleents.R;
+import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.model.msg.MessageInfo;
 import com.flowring.laleents.model.msg.MsgControlCenter;
+import com.flowring.laleents.model.notifi.SilenceNotifi;
 import com.flowring.laleents.model.notifi.workNotifi;
 import com.flowring.laleents.model.room.RoomControlCenter;
 import com.flowring.laleents.model.room.RoomMinInfo;
 import com.flowring.laleents.model.room.RoomSettingControlCenter;
 import com.flowring.laleents.model.room.UserInRoom;
 import com.flowring.laleents.model.user.UserControlCenter;
+import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.CommonUtils;
 import com.flowring.laleents.tools.FileUtils;
+import com.flowring.laleents.tools.SharedPreferencesUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.phone.AllData;
 import com.flowring.laleents.tools.phone.LocalBroadcastControlCenter;
@@ -108,13 +112,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 boolean isAppForeground = CommonUtils.foregrounded();
                 if(isAFBoolean){
                     //是 AF
-                    if (!isAppForeground) {
-                        sendNoChatNotification(remoteMessage);
-                    } else {
-                        LocalBroadcastControlCenter.send(this, LocalBroadcastControlCenter.ACTION_NOTIFI_AF, remoteMessage.getData().get("body"));
-                    }
-                } else {
-                    //不是 AF
                     StringUtils.HaoLog("是否在前景"+isAppForeground);
                     if (!isAppForeground) {
                         sendNoChatNotification(remoteMessage);
@@ -191,6 +188,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 }
 
                 notificationManager.notify(afid++, notificationBuilder.build());
+            }
+            if (body.contains("command")){
+                SilenceNotifi silenceNotifi = new Gson().fromJson(body, SilenceNotifi.class);
+                if("logout".equals(silenceNotifi.command)){
+                    StringUtils.HaoLog("推播登出");
+                    UserControlCenter.setLogout(new CallbackUtils.ReturnHttp() {
+                        @Override
+                        public void Callback(HttpReturn httpReturn) {
+                            SharedPreferencesUtils.isRepeatDevice(true);
+                        }
+                    });
+                }
             }
         }
     }
