@@ -402,14 +402,6 @@ public class MainWebActivity extends MainAppCompatActivity {
         StringUtils.HaoLog("onResume=" + userMin);
         if (userMin != null && !userMin.userId.isEmpty()) {
             checkPermission();
-            UserControlCenter.wasLoggedOut(new CallbackUtils.deviceReturn() {
-                @Override
-                public void Callback(Boolean deviceReturn) {
-                    if(deviceReturn){
-                        Logout();
-                    }
-                }
-            });
         } else {
             goLogin();
         }

@@ -71,6 +71,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         StringUtils.HaoLog("FirebaseService= "+AllData.context);
         StringUtils.HaoLog("FirebaseService= "+UserControlCenter.getUserMinInfo());
         StringUtils.HaoLog("FirebaseService= "+remoteMessage.getData());
+        String isAF = remoteMessage.getData().get("isAF");
+        boolean isAFBoolean = Boolean.parseBoolean(isAF);
 
         if (AllData.context == null){
             AllData.context = getApplicationContext();
@@ -99,7 +101,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         StringUtils.HaoLog("是否在前景"+isAppForeground);
                         if(messageInfo != null) {
                             if (!isAppForeground ) {
-                                sendNotification(messageInfo, remoteMessage.getData().get("body"));
+                                //檢查 commit 是不是logout，如果不是就執行sendNotification
+                                if(!commandLogout(remoteMessage.getData().get("body"))){
+                                    sendNotification(messageInfo, remoteMessage.getData().get("body"));
+                                }
                             } else {
                                 LocalBroadcastControlCenter.send(this, LocalBroadcastControlCenter.ACTION_NOTIFI_AF, remoteMessage.getData().get("body"));
                             }
@@ -107,8 +112,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     }
                 }
             } else {
-                String isAF = remoteMessage.getData().get("isAF");
-                boolean isAFBoolean = Boolean.parseBoolean(isAF);
                 boolean isAppForeground = CommonUtils.foregrounded();
                 if(isAFBoolean){
                     //是 AF
@@ -366,6 +369,22 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         return (appProcessInfo.importance == IMPORTANCE_FOREGROUND || appProcessInfo.importance == IMPORTANCE_VISIBLE);
     }
 
+    private boolean commandLogout(String body){
+        if (body.contains("command")){
+            SilenceNotifi silenceNotifi = new Gson().fromJson(body, SilenceNotifi.class);
+            if("logout".equals(silenceNotifi.command)){
+                StringUtils.HaoLog("推播登出");
+                UserControlCenter.setLogout(new CallbackUtils.ReturnHttp() {
+                    @Override
+                    public void Callback(HttpReturn httpReturn) {
+                        SharedPreferencesUtils.isRepeatDevice(true);
+                    }
+                });
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Override
     public void onNewToken(String token) {
