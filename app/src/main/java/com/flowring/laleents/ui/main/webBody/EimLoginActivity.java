@@ -52,7 +52,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_eim);
         getPref();
-
+        loggedInDialog();
         btn_login = findViewById(R.id.btn_login);
         btn_login.setOnClickListener(view -> {
             activityReturn = new CallbackUtils.ActivityReturn() {
@@ -187,20 +187,44 @@ public class EimLoginActivity extends MainAppCompatActivity {
         }
     }
 
+    private void loginSimpleThirdParty(MainAppCompatActivity activity, EimUserData eimUserData){
+        //存loginType
+        SharedPreferencesUtils.generalType();
+        SharedPreferencesUtils.thirdPartyIdentifier(eimUserData.af_mem_id);
+        HttpReturn httpReturn2 = CloudUtils.iCloudUtils.loginSimpleThirdParty(eimUserData.af_mem_id, Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID));
+
+        if (httpReturn2.status == 200) {
+
+            String userMinString = new Gson().toJson(httpReturn2.data);
+            UserMin userMin = new Gson().fromJson(userMinString, UserMin.class);
+            StringUtils.HaoLog("httpReturn2.data=" + new Gson().toJson(httpReturn2.data));
+            userMin.eimUserData = eimUserData;
+
+            userMin.eimUserData.lale_token = userMin.token;
+            userMin.eimUserData.refresh_token = userMin.refreshToken;
+            UserControlCenter.setLogin(userMin);
+            UserControlCenter.updateUserMinInfo(userMin);
+            FirebasePusher_LaleAppEim(activity);
+        } else {
+            saveLog(activity);
+            activity.cancelWait();
+        }
+    }
+
     public void FirebasePusher_AF_push_registration(MainAppCompatActivity activity){
         StringUtils.HaoLog("AF_push_registration");
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
             @Override
             public void onSuccess(InstanceIdResult instanceIdResult) {
                 String deviceToken = instanceIdResult.getToken();
-                StringUtils.HaoLog("deviceToken:"+deviceToken);
+                StringUtils.HaoLog("deviceToken: "+deviceToken);
                 new Thread(() -> {
                     String WFCI_URL = UserControlCenter.getUserMinInfo().eimUserData.af_wfci_service_url;
                     String memId = UserControlCenter.getUserMinInfo().eimUserData.af_mem_id;
                     String userId = UserControlCenter.getUserMinInfo().eimUserData.af_login_id;
                     String uuid = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
-                    HttpAfReturn pu = CloudUtils.iCloudUtils.setAfPusher(WFCI_URL, memId,userId, deviceToken, uuid);
-
+                    String customerProperties = HashMapToJson(userId,WFCI_URL,true);
+                    HttpAfReturn pu = CloudUtils.iCloudUtils.setAfPusher(WFCI_URL, memId,userId, deviceToken, uuid, customerProperties);
                     StringUtils.HaoLog("AF推播註冊:", pu);
                     activity.runOnUiThread(() -> {
                         activity.finish();
@@ -221,13 +245,14 @@ public class EimLoginActivity extends MainAppCompatActivity {
                     HttpReturn pu;
                     try {
                         JSONObject UserIds = new JSONObject(pref.getString("UserIds", "{}"));
-                        StringUtils.HaoLog("UserIds=" + UserIds.toString());
-                        StringUtils.HaoLog("deviceToken=" + deviceToken);
+                        StringUtils.HaoLog("UserIds= " + UserIds);
+                        StringUtils.HaoLog("deviceToken= " + deviceToken);
 
                         if (UserIds.length() <= 1){
                             String userId = UserControlCenter.getUserMinInfo().userId;
                             String uuid = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
-                            pu = CloudUtils.iCloudUtils.setPusher(userId, deviceToken, uuid);
+                            String customerProperties = HashMapToJson(userId,AllData.getMainServer(),false);
+                            pu = CloudUtils.iCloudUtils.setPusher(userId, deviceToken, uuid, customerProperties);
                         } else {
                             String userId = UserControlCenter.getUserMinInfo().userId;
                             String uuid = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -264,15 +289,28 @@ public class EimLoginActivity extends MainAppCompatActivity {
         }
     }
 
+    private void loggedInDialog(){
+        Boolean wasLoggedOut = SharedPreferencesUtils.getRepeatDevice(EimLoginActivity.this);
+        StringUtils.HaoLog("已被已有其他設備登出 "+wasLoggedOut);
+        StringUtils.HaoLog("已被已有其他設備登出 "+Thread.currentThread().getName());
+        if(wasLoggedOut){
+            DialogUtils.showDialogMessage(EimLoginActivity.this,getString(R.string.single_device_sign_out_title),getString(R.string.single_device_sign_out_text));
+            SharedPreferencesUtils.clearRepeatDevice(EimLoginActivity.this);
+            SharedPreferencesUtils.clearGeneralType(EimLoginActivity.this);
+            SharedPreferencesUtils.clearThirdPartyIdentifier(EimLoginActivity.this);
+        }
+    }
+
     /**
      * 額外自訂義推送資訊
      * String customerProperties = HashMapToJson(UserControlCenter.getUserMinInfo().userId,AllData.getMainServer());
      */
-    private static String HashMapToJson(String userId, String domain) {
+    private static String HashMapToJson(String userId, String domain, Boolean isAF) {
         JSONObject json = new JSONObject();
         try{
             json.put("userId",userId);
             json.put("domain",domain);
+            json.put("isAF",isAF);
         }catch (JSONException e){
             e.printStackTrace();
         }
@@ -296,29 +334,5 @@ public class EimLoginActivity extends MainAppCompatActivity {
             }
         }
         return false;
-    }
-
-    private void loginSimpleThirdParty(MainAppCompatActivity activity, EimUserData eimUserData){
-        //存loginType
-        SharedPreferencesUtils.generalType();
-        SharedPreferencesUtils.thirdPartyIdentifier(eimUserData.af_mem_id);
-        HttpReturn httpReturn2 = CloudUtils.iCloudUtils.loginSimpleThirdParty(eimUserData.af_mem_id, Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID));
-
-        if (httpReturn2.status == 200) {
-
-            String userMinString = new Gson().toJson(httpReturn2.data);
-            UserMin userMin = new Gson().fromJson(userMinString, UserMin.class);
-            StringUtils.HaoLog("httpReturn2.data=" + new Gson().toJson(httpReturn2.data));
-            userMin.eimUserData = eimUserData;
-
-            userMin.eimUserData.lale_token = userMin.token;
-            userMin.eimUserData.refresh_token = userMin.refreshToken;
-            UserControlCenter.setLogin(userMin);
-            UserControlCenter.updateUserMinInfo(userMin);
-            FirebasePusher_LaleAppEim(activity);
-        } else {
-            saveLog(activity);
-            activity.cancelWait();
-        }
     }
 }

@@ -7,6 +7,10 @@
     <string name="scan_qrcode">掃描QR Code</string>
     <string name="scan_qrcode_desc">將掃描框對準QR Code後會自動進行掃描</string>
     <string name="unused_account_logged_out">App過久未使用您的帳號已被登出</string>
+    <string name="single_device_title">是否登入此裝置</string>
+    <string name="single_device_text">您之前未正常登出或已於其他裝置登入，請確認是否登入此裝置(將登出其他裝置)</string>
+    <string name="single_device_sign_out_title">此裝置已被登出</string>
+    <string name="single_device_sign_out_text">您的帳號已在其他行動裝置登入，此裝置已被登出</string>
 
     <string name="other_apps_open">其他應用程式開啟</string>
     <string name="file_not_supported_title">標題</string>

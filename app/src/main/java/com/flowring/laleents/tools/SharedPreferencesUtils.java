@@ -21,8 +21,8 @@ public class SharedPreferencesUtils {
         return generalType;
     }
 
-    public static void clearGeneralType(){
-        pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
+    public static void clearGeneralType(Activity activity){
+        pref = PreferenceManager.getDefaultSharedPreferences(activity);
         pref.edit().remove("loginType").apply();
     }
 

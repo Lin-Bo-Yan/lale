@@ -68,8 +68,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         StringUtils.HaoLog("FirebaseService= "+UserControlCenter.getUserMinInfo());
         StringUtils.HaoLog("FirebaseService= "+remoteMessage.getData());
 
-        if (AllData.context == null)
+        if (AllData.context == null){
             AllData.context = getApplicationContext();
+        }
+        //有使用者登入才會處理推播
         if (UserControlCenter.getUserMinInfo() != null) {
             if (UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim) {
                 if (AllData.dbHelper == null)
@@ -101,15 +103,30 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     }
                 }
             } else {
+                String isAF = remoteMessage.getData().get("isAF");
+                boolean isAFBoolean = Boolean.parseBoolean(isAF);
                 boolean isAppForeground = CommonUtils.foregrounded();
-                StringUtils.HaoLog("是否在前景"+isAppForeground);
-                if (!isAppForeground) {
-                    sendNoChatNotification(remoteMessage);
+                if(isAFBoolean){
+                    //是 AF
+                    if (!isAppForeground) {
+                        sendNoChatNotification(remoteMessage);
+                    } else {
+                        LocalBroadcastControlCenter.send(this, LocalBroadcastControlCenter.ACTION_NOTIFI_AF, remoteMessage.getData().get("body"));
+                    }
                 } else {
-                    LocalBroadcastControlCenter.send(this, LocalBroadcastControlCenter.ACTION_NOTIFI_AF, remoteMessage.getData().get("body"));
+                    //不是 AF
+                    StringUtils.HaoLog("是否在前景"+isAppForeground);
+                    if (!isAppForeground) {
+                        sendNoChatNotification(remoteMessage);
+                    } else {
+                        LocalBroadcastControlCenter.send(this, LocalBroadcastControlCenter.ACTION_NOTIFI_AF, remoteMessage.getData().get("body"));
+                    }
                 }
             }
 
+        } else {
+            //沒有使用者詳細資訊，表示離線登出，推播server沒有關閉的情況
+            StringUtils.HaoLog("closure_pusher= "+remoteMessage.getData());
         }
 
     }

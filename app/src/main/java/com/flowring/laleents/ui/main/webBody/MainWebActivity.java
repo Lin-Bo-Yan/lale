@@ -92,6 +92,7 @@ import com.flowring.laleents.tools.DialogUtils;
 import com.flowring.laleents.tools.DownloadUtils;
 import com.flowring.laleents.tools.FileUtils;
 import com.flowring.laleents.tools.FormatUtils;
+import com.flowring.laleents.tools.SharedPreferencesUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.TimeUtils;
 import com.flowring.laleents.tools.cloud.api.CloudUtils;
@@ -307,12 +308,18 @@ public class MainWebActivity extends MainAppCompatActivity {
                 switch (action){
                     case LocalBroadcastControlCenter.ACTION_NOTIFI_AF:
                         String data = intent.getStringExtra("data");
-                        if (data != null && data.contains("msgType") && (data.contains("AF_MEETING") || data.contains("AF_TASK")))
+                        if (data != null && data.contains("msgType") && (data.contains("AF_MEETING") || data.contains("AF_TASK"))){
                             try {
                                 sendToWeb("Notification", new JSONObject(data));
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                        }
+                        if (data != null && data.contains("userId") && (data.contains("command"))){
+                            StringUtils.HaoLog("設備被登出");
+                            Logout();
+                            SharedPreferencesUtils.isRepeatDevice(true);
+                        }
                         break;
                     case LocalBroadcastControlCenter.ACTION_MQTT_FRIEND:
                         String user_id = intent.getStringExtra("user_id");

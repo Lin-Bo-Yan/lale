@@ -31,7 +31,6 @@ public class EimUserData {
 
         if (!isLaleAppEim){
             userMin.userId = af_mem_id;
-            AllData.setMainServer(af_url);
         } else {
             AllData.setMainServer(lale_server);
         }

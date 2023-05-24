@@ -126,7 +126,7 @@ public interface ICloudUtils {
      * 登入後啟動推播
      */
     @WorkerThread
-    HttpReturn setPusher(String userId, String FCM_token, String uuid);
+    HttpReturn setPusher(String userId, String FCM_token, String uuid, String customerProperties);
 
     /**
      * 切換帳號時切換推播
@@ -144,7 +144,7 @@ public interface ICloudUtils {
      * 登入後啟動推播
      */
     @WorkerThread
-    HttpAfReturn setAfPusher(String WFCI_URL, String memId, String userId,String FCM_token, String uuid);
+    HttpAfReturn setAfPusher(String WFCI_URL, String memId, String userId,String FCM_token, String uuid, String customerProperties);
 
     /**
      * 登入後啟動推播

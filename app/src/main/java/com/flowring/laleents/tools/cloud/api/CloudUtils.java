@@ -365,7 +365,7 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
-    public HttpReturn setPusher(String userId, String FCM_token, String uuid) {
+    public HttpReturn setPusher(String userId, String FCM_token, String uuid, String customerProperties) {
         MediaType mediaType = MediaType.parse("application/json");
 
         Map<String, Object> map = new HashMap();
@@ -378,6 +378,7 @@ public class CloudUtils implements ICloudUtils {
         map.put("deviceModel", "android");
         map.put("token", FCM_token);
         map.put("allowed", true);
+        map.put("customerProperties",customerProperties);
 
         RequestBody body = RequestBody.create(mediaType, new JSONObject(map).toString());
         Request.Builder request = new Request.Builder()
@@ -420,7 +421,7 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
-    public HttpAfReturn setAfPusher(String WFCI_URL, String memId,String userId, String FCM_token, String uuid) {
+    public HttpAfReturn setAfPusher(String WFCI_URL, String memId,String userId, String FCM_token, String uuid, String customerProperties) {
         if (WFCI_URL == null || WFCI_URL.isEmpty())
             return new HttpAfReturn();
         MediaType mediaType = MediaType.parse("application/json");
@@ -435,6 +436,7 @@ public class CloudUtils implements ICloudUtils {
         map.put("deviceVersion", MainWebActivity.getVersionName(AllData.context));
         map.put("deviceModel", "Android");
         map.put("allowed", true);
+        map.put("customerProperties",customerProperties);
         StringUtils.HaoLog("setAfPusher json=" + new JSONObject(map).toString());
         StringUtils.HaoLog("setAfPusher URL=" + WFCI_URL + "/api/app-pusher");
         StringUtils.HaoLog("setAfPusher method=POST");
