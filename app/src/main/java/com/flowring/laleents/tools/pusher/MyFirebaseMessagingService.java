@@ -19,6 +19,7 @@ import android.media.AudioAttributes;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.Settings;
 import android.service.notification.StatusBarNotification;
 
 import androidx.core.app.NotificationCompat;
@@ -39,6 +40,7 @@ import com.flowring.laleents.tools.CommonUtils;
 import com.flowring.laleents.tools.FileUtils;
 import com.flowring.laleents.tools.SharedPreferencesUtils;
 import com.flowring.laleents.tools.StringUtils;
+import com.flowring.laleents.tools.cloud.api.CloudUtils;
 import com.flowring.laleents.tools.phone.AllData;
 import com.flowring.laleents.tools.phone.LocalBroadcastControlCenter;
 import com.flowring.laleents.ui.main.webBody.MainWebActivity;
@@ -101,7 +103,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         StringUtils.HaoLog("是否在前景"+isAppForeground);
                         if(messageInfo != null) {
                             if (!isAppForeground ) {
-                                //檢查 commit 是不是logout，如果不是就執行sendNotification
+                                //檢查 EIM commit 是不是logout，如果不是就執行sendNotification
                                 if(!commandLogout(remoteMessage.getData().get("body"))){
                                     sendNotification(messageInfo, remoteMessage.getData().get("body"));
                                 }
@@ -127,6 +129,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         } else {
             //沒有使用者詳細資訊，表示離線登出，推播server沒有關閉的情況
             StringUtils.HaoLog("closure_pusher= "+remoteMessage.getData());
+            if(isAFBoolean){
+
+            } else {
+                //EIM 關閉推播
+                String domain = remoteMessage.getData().get("domain");
+                String userid = remoteMessage.getData().get("userId");
+                if(AllData.getMainServer().equals(domain)){
+                    String uuid = Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID);
+                    HttpReturn httpReturn = CloudUtils.iCloudUtils.closePusher(userid, uuid);
+                    StringUtils.HaoLog("關閉推播成功 "+httpReturn.status);
+                }
+            }
         }
 
     }
