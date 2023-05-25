@@ -173,12 +173,6 @@ public class EimLoginActivity extends MainAppCompatActivity {
                     loginSimpleThirdParty(activity,eimUserData);
                 }
             } else if ( eimUserData.isLaleAppWork == true) {
-                //String deviceID = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
-                //Boolean isRepeatDevice = alreadyLoddedIn("6","",eimUserData.af_mem_id,deviceID);
-                //StringUtils.HaoLog("isRepeatDevice= "+isRepeatDevice);
-
-
-
                 FirebasePusher_AF_push_registration(activity);
             }
         } else {
@@ -223,7 +217,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
                     String memId = UserControlCenter.getUserMinInfo().eimUserData.af_mem_id;
                     String userId = UserControlCenter.getUserMinInfo().eimUserData.af_login_id;
                     String uuid = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
-                    String customerProperties = HashMapToJson(userId,WFCI_URL,true);
+                    String customerProperties = HashMapToJson(userId,WFCI_URL,true,deviceToken);
                     HttpAfReturn pu = CloudUtils.iCloudUtils.setAfPusher(WFCI_URL, memId,userId, deviceToken, uuid, customerProperties);
                     StringUtils.HaoLog("AF推播註冊:", pu);
                     activity.runOnUiThread(() -> {
@@ -251,7 +245,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
                         if (UserIds.length() <= 1){
                             String userId = UserControlCenter.getUserMinInfo().userId;
                             String uuid = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
-                            String customerProperties = HashMapToJson(userId,AllData.getMainServer(),false);
+                            String customerProperties = HashMapToJson(userId,AllData.getMainServer(),false, "");
                             pu = CloudUtils.iCloudUtils.setPusher(userId, deviceToken, uuid, customerProperties);
                         } else {
                             String userId = UserControlCenter.getUserMinInfo().userId;
@@ -303,14 +297,17 @@ public class EimLoginActivity extends MainAppCompatActivity {
 
     /**
      * 額外自訂義推送資訊
-     * String customerProperties = HashMapToJson(UserControlCenter.getUserMinInfo().userId,AllData.getMainServer());
      */
-    private static String HashMapToJson(String userId, String domain, Boolean isAF) {
+    private static String HashMapToJson(String userId, String domain, Boolean isAF, String deviceToken) {
         JSONObject json = new JSONObject();
         try{
             json.put("userId",userId);
             json.put("domain",domain);
             json.put("isAF",isAF);
+            if(isAF){
+                StringUtils.HaoLog("deviceToken= "+deviceToken);
+                json.put("deviceToken",deviceToken);
+            }
         }catch (JSONException e){
             e.printStackTrace();
         }

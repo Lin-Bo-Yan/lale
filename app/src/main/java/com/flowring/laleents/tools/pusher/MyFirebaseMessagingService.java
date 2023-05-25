@@ -75,6 +75,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         StringUtils.HaoLog("FirebaseService= "+remoteMessage.getData());
         String isAF = remoteMessage.getData().get("isAF");
         boolean isAFBoolean = Boolean.parseBoolean(isAF);
+        //UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim
 
         if (AllData.context == null){
             AllData.context = getApplicationContext();
@@ -129,8 +130,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         } else {
             //沒有使用者詳細資訊，表示離線登出，推播server沒有關閉的情況
             StringUtils.HaoLog("closure_pusher= "+remoteMessage.getData());
+            StringUtils.HaoLog("closure_pusher= "+isAFBoolean);
             if(isAFBoolean){
-
+                //AF 關閉推播
+                String domain = remoteMessage.getData().get("domain");
+                String userid = remoteMessage.getData().get("userId");
+                String deviceToken = remoteMessage.getData().get("deviceToken");
+                String uuid = Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID);
+                HttpReturn httpReturn = CloudUtils.iCloudUtils.closeAfPusher(domain,userid,deviceToken,uuid);
+                StringUtils.HaoLog("關閉AF推播成功 "+httpReturn.status);
             } else {
                 //EIM 關閉推播
                 String domain = remoteMessage.getData().get("domain");
@@ -138,7 +146,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 if(AllData.getMainServer().equals(domain)){
                     String uuid = Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID);
                     HttpReturn httpReturn = CloudUtils.iCloudUtils.closePusher(userid, uuid);
-                    StringUtils.HaoLog("關閉推播成功 "+httpReturn.status);
+                    StringUtils.HaoLog("關閉EIM推播成功 "+httpReturn.status);
                 }
             }
         }
