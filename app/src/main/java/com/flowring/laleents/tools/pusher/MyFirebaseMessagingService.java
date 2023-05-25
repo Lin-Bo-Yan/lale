@@ -394,15 +394,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private boolean commandLogout(String body){
         if (body.contains("command")){
             SilenceNotifi silenceNotifi = new Gson().fromJson(body, SilenceNotifi.class);
-            if("logout".equals(silenceNotifi.command)){
-                StringUtils.HaoLog("推播登出");
-                UserControlCenter.setLogout(new CallbackUtils.ReturnHttp() {
-                    @Override
-                    public void Callback(HttpReturn httpReturn) {
-                        SharedPreferencesUtils.isRepeatDevice(true);
-                    }
-                });
-                return true;
+            switch (silenceNotifi.command){
+                case "logout":
+                    StringUtils.HaoLog("推播登出");
+                    UserControlCenter.setLogout(new CallbackUtils.ReturnHttp() {
+                        @Override
+                        public void Callback(HttpReturn httpReturn) {
+                            SharedPreferencesUtils.isRepeatDevice(true);
+                        }
+                    });
+                    return true;
             }
         }
         return false;

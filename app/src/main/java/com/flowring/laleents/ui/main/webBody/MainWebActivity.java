@@ -79,6 +79,7 @@ import com.flowring.laleents.R;
 import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.model.explore.Microapp;
 import com.flowring.laleents.model.msg.MsgControlCenter;
+import com.flowring.laleents.model.notifi.SilenceNotifi;
 import com.flowring.laleents.model.room.RoomControlCenter;
 import com.flowring.laleents.model.room.RoomInfoInPhone;
 import com.flowring.laleents.model.user.UserControlCenter;
@@ -170,7 +171,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                 ServiceUtils.requestIgnoreBatteryOptimizations(this);
             }
             if (PermissionUtils.checkPermission(getApplicationContext(), Manifest.permission.FOREGROUND_SERVICE)) {
-
+                StringUtils.HaoLog("可以使用背景執行");
             } else {
                 PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.FOREGROUND_SERVICE, "背景執行權限");
             }
@@ -180,11 +181,11 @@ public class MainWebActivity extends MainAppCompatActivity {
                 StringUtils.HaoLog("詢問使用重啟");
                 PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.RECEIVE_BOOT_COMPLETED, "開機後重新啟動背景服務");
             }
-            if (PermissionUtils.checkPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) || (Build.VERSION.SDK_INT > Build.VERSION_CODES.R)) {
-                StringUtils.HaoLog("可以使用讀寫");
-            } else {
-                PermissionUtils.requestPermission(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, null, "該功能需要下載權限");
-            }
+            //if (PermissionUtils.checkPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) || (Build.VERSION.SDK_INT > Build.VERSION_CODES.R)) {
+            //    StringUtils.HaoLog("可以使用讀寫");
+            //} else {
+            //    PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE, "該功能需要下載權限");
+            //}
         });
 
     }
@@ -316,9 +317,14 @@ public class MainWebActivity extends MainAppCompatActivity {
                             }
                         }
                         if (data != null && data.contains("userId") && (data.contains("command"))){
-                            StringUtils.HaoLog("設備被登出");
-                            Logout();
-                            SharedPreferencesUtils.isRepeatDevice(true);
+                            SilenceNotifi silenceNotifi = new Gson().fromJson(data, SilenceNotifi.class);
+                            switch (silenceNotifi.command){
+                                case "logout":
+                                    StringUtils.HaoLog("設備被登出");
+                                    Logout();
+                                    SharedPreferencesUtils.isRepeatDevice(true);
+                                    break;
+                            }
                         }
                         break;
                     case LocalBroadcastControlCenter.ACTION_MQTT_FRIEND:
@@ -1923,22 +1929,26 @@ public class MainWebActivity extends MainAppCompatActivity {
     }
 
     private void hyperlinkSharingOrFileSharing(String inviteMessage){
-        String string = null;
-        String url = null;
-        try{
-            JSONArray jsonArray = new JSONArray(inviteMessage);
-            JSONObject jsonObject = jsonArray.getJSONObject(0);
-            string = jsonObject.optString("string");
-            url = jsonObject.optString("url");
-        }catch (JSONException e){
-            e.printStackTrace();
-        }
+        if(PermissionUtils.checkPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) || (Build.VERSION.SDK_INT > Build.VERSION_CODES.R)) {
+            String string = null;
+            String url = null;
+            try {
+                JSONArray jsonArray = new JSONArray(inviteMessage);
+                JSONObject jsonObject = jsonArray.getJSONObject(0);
+                string = jsonObject.optString("string");
+                url = jsonObject.optString("url");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
-        if(url != null && !url.isEmpty()){
-            judgmentFileName(inviteMessage);
-        } else if(string != null && !string.isEmpty()){
-            //文字超文本分享
-            textHypertextSharing(string);
+            if (url != null && !url.isEmpty()) {
+                judgmentFileName(inviteMessage);
+            } else if (string != null && !string.isEmpty()) {
+                //文字超文本分享
+                textHypertextSharing(string);
+            }
+        } else {
+            PermissionUtils.requestPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE , "該功能需要下載權限");
         }
     }
 
