@@ -402,12 +402,23 @@ public class MainWebActivity extends MainAppCompatActivity {
         if (AllData.context == null){
             AllData.context = getApplicationContext();
         }
-        checkAppNeedUpdate();
         UserMin userMin = UserControlCenter.getUserMinInfo();
         checkHasWebView();
-        StringUtils.HaoLog("onResume=" + userMin);
+        StringUtils.HaoLog("onResume= " + userMin);
         if (userMin != null && !userMin.userId.isEmpty()) {
             checkPermission();
+            if(userMin.eimUserData.isLaleAppEim){
+                UserControlCenter.wasLoggedOut(new CallbackUtils.deviceReturn() {
+                    @Override
+                    public void Callback(Boolean deviceReturn) {
+                        StringUtils.HaoLog("onResume= 重複登入? "+deviceReturn);
+                        if(deviceReturn){
+                            Logout();
+                            SharedPreferencesUtils.isRepeatDevice(true);
+                        }
+                    }
+                });
+            }
         } else {
             goLogin();
         }
@@ -510,10 +521,10 @@ public class MainWebActivity extends MainAppCompatActivity {
             }
         }
     }
-
     public void checkAppNeedUpdate() {
         new Thread(() -> {
-            if (CloudUtils.iCloudUtils.checkAppNeedUpdate())
+            Boolean appNeedUpdate = CloudUtils.iCloudUtils.checkAppNeedUpdate();
+            if (appNeedUpdate)
                 runOnUiThread(() -> {
                     showUpgradeDialog();
                 });
@@ -896,6 +907,8 @@ public class MainWebActivity extends MainAppCompatActivity {
                 shareToWeb(getIntent());
             } else if (getIntent().getAction() != null && getIntent().getAction().equals(Intent.ACTION_SEND_MULTIPLE)) {
                 multipleShareToWeb(getIntent());
+            } else if (UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim){
+                checkAppNeedUpdate();
             } else {
                 checkUpApp(getIntent());
             }
@@ -1585,7 +1598,9 @@ public class MainWebActivity extends MainAppCompatActivity {
     }
 
     private void webOk(JSONObject data) {
-        if(data == null){
+        if(data.has("webViewVersion")){
+            String webViewVersion = data.optString("webViewVersion");
+        } else {
             webRendered(3000);
         }
         UserMin userMin = UserControlCenter.getUserMinInfo();

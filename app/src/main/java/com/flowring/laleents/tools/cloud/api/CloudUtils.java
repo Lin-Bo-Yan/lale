@@ -88,6 +88,8 @@ public class CloudUtils implements ICloudUtils {
                 && appVersion != null && !appVersion.isEmpty()){
             int appVersionInt = StringUtils.version(appVersion);
             int dbVersionInt = StringUtils.version(dbVersion.version);
+            StringUtils.HaoLog("checkAppNeedUpdate= appVersionInt " + appVersionInt);
+            StringUtils.HaoLog("checkAppNeedUpdate= dbVersionInt " + dbVersionInt);
             Boolean newVersion = appVersionInt >= dbVersionInt;
             if(newVersion){
                 return false;
