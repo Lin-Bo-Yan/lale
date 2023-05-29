@@ -221,6 +221,9 @@ public class DefinedUtils {
     private static final String DOMAIN_FRIEND_TEST = "http://192.168.13.4:8092";
     public static IWXAPI WXapi = null;
 
+    //暫時存iframe網址，因為監聽url只會拿到domain，iframe網址會監聽不到
+    public static String URL = "";
+
     public static String getNewsURL(Context context) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         boolean isTest = pref.getBoolean(CommonUtils.PREF_FRIEND_TEST, false);

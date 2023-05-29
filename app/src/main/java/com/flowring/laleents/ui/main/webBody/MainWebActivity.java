@@ -60,6 +60,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -181,11 +182,11 @@ public class MainWebActivity extends MainAppCompatActivity {
                 StringUtils.HaoLog("詢問使用重啟");
                 PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.RECEIVE_BOOT_COMPLETED, "開機後重新啟動背景服務");
             }
-            //if (PermissionUtils.checkPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) || (Build.VERSION.SDK_INT > Build.VERSION_CODES.R)) {
-            //    StringUtils.HaoLog("可以使用讀寫");
-            //} else {
-            //    PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE, "該功能需要下載權限");
-            //}
+            if (PermissionUtils.checkPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) || (Build.VERSION.SDK_INT > Build.VERSION_CODES.R)) {
+                StringUtils.HaoLog("可以使用讀寫");
+            } else {
+                PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE, "該功能需要下載權限");
+            }
         });
 
     }
@@ -406,7 +407,6 @@ public class MainWebActivity extends MainAppCompatActivity {
         checkHasWebView();
         StringUtils.HaoLog("onResume= " + userMin);
         if (userMin != null && !userMin.userId.isEmpty()) {
-            checkPermission();
             if(userMin.eimUserData.isLaleAppEim){
                 UserControlCenter.wasLoggedOut(new CallbackUtils.deviceReturn() {
                     @Override
@@ -607,7 +607,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         String state = Environment.getExternalStorageState();
         if (state.equals(Environment.MEDIA_MOUNTED)) {
             if (!PermissionUtils.checkPermission(this, Manifest.permission.CAMERA)) {
-                StringUtils.HaoLog("前往相機或相簿 0");
+                StringUtils.HaoLog("前往相機或相簿");
                 PermissionUtils.requestPermission(this, Manifest.permission.CAMERA, "該功能需要相機權限");
                 mUploadMessage.onReceiveValue(null);
                 mUploadMessage = null;
@@ -716,6 +716,13 @@ public class MainWebActivity extends MainAppCompatActivity {
         startActivityForResult(chooser, FILE_CHOOSER_RESULT_CODE);
     }
 
+    private void chooseFileOnlyForRoom(){
+        Intent intentFile = new Intent(Intent.ACTION_GET_CONTENT);
+        intentFile.addCategory(Intent.CATEGORY_OPENABLE);
+        intentFile.setType("*/*");
+        startActivityForResult(intentFile, FILE_CHOOSER_RESULT_CODE);
+    }
+
     private String currentPhotoPath = "";
 
     //創建照片路徑
@@ -743,20 +750,59 @@ public class MainWebActivity extends MainAppCompatActivity {
     String fileName = null;
     File[] outputFiles = null;
     void shareToWeb(Intent intent) {
-
-        String type = intent.getType();
-        String action = intent.getAction();
-        Parcelable stream = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-        StringUtils.HaoLog("BroadcastReceiver EXTRA_TEXT=" + intent.getStringExtra(Intent.EXTRA_TEXT));
-        StringUtils.HaoLog("BroadcastReceiver EXTRA_STREAM=" + intent.getParcelableExtra(Intent.EXTRA_STREAM));
-        if (Intent.ACTION_SEND.equals(action) && type != null) {
-            //從手機分享純文字，但txt檔案會被當成純文字，txt檔案exteaStream會有值
-            if (type.startsWith("text/")) {
-                if(stream != null){
-                    StringUtils.HaoLog("txt檔分享");
-                    Uri txtUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
-                    fileName = FileUtils.getContentURIFileName(this,txtUri);
-                    outputFile = FileUtils.getFilePathFromUri(this,txtUri,fileName);
+        if (PermissionUtils.checkPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) || (Build.VERSION.SDK_INT > Build.VERSION_CODES.R)) {
+            String type = intent.getType();
+            String action = intent.getAction();
+            Parcelable stream = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+            StringUtils.HaoLog("BroadcastReceiver EXTRA_TEXT=" + intent.getStringExtra(Intent.EXTRA_TEXT));
+            StringUtils.HaoLog("BroadcastReceiver EXTRA_STREAM=" + intent.getParcelableExtra(Intent.EXTRA_STREAM));
+            if (Intent.ACTION_SEND.equals(action) && type != null) {
+                //從手機分享純文字，但txt檔案會被當成純文字，txt檔案exteaStream會有值
+                if (type.startsWith("text/")) {
+                    if(stream != null){
+                        StringUtils.HaoLog("txt檔分享");
+                        Uri txtUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                        fileName = FileUtils.getContentURIFileName(this,txtUri);
+                        outputFile = FileUtils.getFilePathFromUri(this,txtUri,fileName);
+                        try {
+                            JSONArray jsonArray = new JSONArray();
+                            JSONObject jsonObject = new JSONObject();
+                            jsonObject.put("onlyKey","hashcode");
+                            jsonObject.put("mimeType",type);
+                            jsonObject.put("name",fileName);
+                            jsonObject.put("thumbnail","thumbnail");//縮圖
+                            jsonArray.put(jsonObject);
+                            sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        StringUtils.HaoLog("文字分享");
+                        plainText(intent);
+                    }
+                }
+                //從手機分享單張圖片
+                else if (type.startsWith("image/")) {
+                    //需要下載權限
+                    Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                    fileName = FileUtils.getContentURIFileName(this,imageUri);
+                    outputFile = FileUtils.getFilePathFromUri(this,imageUri,fileName);
+                    try {
+                        JSONArray jsonArray = new JSONArray();
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("onlyKey","hashcode");
+                        jsonObject.put("mimeType",type);
+                        jsonObject.put("name",fileName);
+                        jsonObject.put("thumbnail", DefaultThumbnail.getImageThumbnail());//縮圖
+                        jsonArray.put(jsonObject);
+                        sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else if (type.startsWith("video/")) {
+                    Uri videoUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                    fileName = FileUtils.getContentURIFileName(this,videoUri);
+                    outputFile = FileUtils.getFilePathFromUri(this,videoUri,fileName);
                     try {
                         JSONArray jsonArray = new JSONArray();
                         JSONObject jsonObject = new JSONObject();
@@ -769,64 +815,28 @@ public class MainWebActivity extends MainAppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                } else {
-                    StringUtils.HaoLog("文字分享");
-                    plainText(intent);
+                }
+                //從手機其他檔案
+                else {
+                    Uri fileUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                    fileName = FileUtils.getContentURIFileName(this,fileUri);
+                    outputFile = FileUtils.getFilePathFromUri(this,fileUri,fileName);
+                    try {
+                        JSONArray jsonArray = new JSONArray();
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("onlyKey","hashcode");
+                        jsonObject.put("mimeType",type);
+                        jsonObject.put("name",fileName);
+                        jsonObject.put("thumbnail","thumbnail");//縮圖
+                        jsonArray.put(jsonObject);
+                        sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
-            //從手機分享單張圖片
-            else if (type.startsWith("image/")) {
-                //需要下載權限
-                Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
-                fileName = FileUtils.getContentURIFileName(this,imageUri);
-                outputFile = FileUtils.getFilePathFromUri(this,imageUri,fileName);
-                try {
-                    JSONArray jsonArray = new JSONArray();
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("onlyKey","hashcode");
-                    jsonObject.put("mimeType",type);
-                    jsonObject.put("name",fileName);
-                    jsonObject.put("thumbnail", DefaultThumbnail.getImageThumbnail());//縮圖
-                    jsonArray.put(jsonObject);
-                    sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } else if (type.startsWith("video/")) {
-                Uri videoUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
-                fileName = FileUtils.getContentURIFileName(this,videoUri);
-                outputFile = FileUtils.getFilePathFromUri(this,videoUri,fileName);
-                try {
-                    JSONArray jsonArray = new JSONArray();
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("onlyKey","hashcode");
-                    jsonObject.put("mimeType",type);
-                    jsonObject.put("name",fileName);
-                    jsonObject.put("thumbnail","thumbnail");//縮圖
-                    jsonArray.put(jsonObject);
-                    sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-            //從手機其他檔案
-            else {
-                Uri fileUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
-                fileName = FileUtils.getContentURIFileName(this,fileUri);
-                outputFile = FileUtils.getFilePathFromUri(this,fileUri,fileName);
-                try {
-                    JSONArray jsonArray = new JSONArray();
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("onlyKey","hashcode");
-                    jsonObject.put("mimeType",type);
-                    jsonObject.put("name",fileName);
-                    jsonObject.put("thumbnail","thumbnail");//縮圖
-                    jsonArray.put(jsonObject);
-                    sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
+        } else {
+            PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE, "該功能需要權限");
         }
     }
 
@@ -884,12 +894,11 @@ public class MainWebActivity extends MainAppCompatActivity {
                     }
                 }
             }
-
             try{
                 //StringUtils.HaoLog("jsp postMessage:"+jsonArray);
                 sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
-            }catch (JSONException e){
-
+            } catch (JSONException e){
+                e.printStackTrace();
             }
         }
     }
@@ -975,8 +984,12 @@ public class MainWebActivity extends MainAppCompatActivity {
             public void onPageFinished(WebView view, String url) {
                 findViewById(R.id.logo).setVisibility(View.GONE);
                 view.setVisibility(View.VISIBLE);
-                StringUtils.HaoLog("還活著 onPageFinished=" + url);
 
+                CookieManager cookieManager = CookieManager.getInstance();
+                String CookieStr = cookieManager.getCookie(url);
+                StringUtils.HaoLog("還活著 onPageFinished= " + url);
+                StringUtils.HaoLog("監聽 CookieStr=  " + CookieStr);
+                DefinedUtils.URL = url;
                 super.onPageFinished(view, url);
             }
 
@@ -1095,29 +1108,40 @@ public class MainWebActivity extends MainAppCompatActivity {
                 Intent intent = fileChooserParams.createIntent();
 
                 MainWebActivity.this.webView = (MyWebView) webView;
-                if (mUploadMessage != null)
+                if (mUploadMessage != null){
                     mUploadMessage.onReceiveValue(null);
-                mUploadMessage = filePathCallback;
-                if (intent.getType().equals("image/*")) {
-                    if (fileChooserParams.isCaptureEnabled()) {
-                        chooseCAMERA();
-                    } else {
-                        CommonUtils.choosePicture(MainWebActivity.this, intent.getBooleanExtra("android.intent.extra.ALLOW_MULTIPLE", false) ? 9 : 1, PickerConfig.PICKER_IMAGE_VIDEO, new CallbackUtils.APIReturn() {
-                            @Override
-                            public void Callback(boolean isok, String DataOrErrorMsg) {
-                                if (mUploadMessage != null) {
-                                    mUploadMessage.onReceiveValue(null);
-                                    mUploadMessage = null;
-                                }
-                            }
-                        });
-
-
-                    }
-                } else {
-                    chooseFile();
                 }
-
+                mUploadMessage = filePathCallback;
+                String type = intent.getType();
+                StringUtils.HaoLog("ddd= "+type);
+                switch(type){
+                    case "image/*":
+                        if (fileChooserParams.isCaptureEnabled()) {
+                            chooseCAMERA();
+                        } else {
+                            CommonUtils.choosePicture(MainWebActivity.this, intent.getBooleanExtra("android.intent.extra.ALLOW_MULTIPLE", false) ? 9 : 1, PickerConfig.PICKER_IMAGE_VIDEO, new CallbackUtils.APIReturn() {
+                                @Override
+                                public void Callback(boolean isok, String DataOrErrorMsg) {
+                                    if (mUploadMessage != null) {
+                                        mUploadMessage.onReceiveValue(null);
+                                        mUploadMessage = null;
+                                    }
+                                }
+                            });
+                        }
+                        break;
+                    case "*/*":
+                        String str = DefinedUtils.URL.substring(getMainWebURL().length());
+                        Boolean isRoom = str.matches("^chatroom\\/(.*)");
+                        if(isRoom){
+                            StringUtils.HaoLog("onShowFileChooser "+"直接開檔案");
+                            chooseFileOnlyForRoom();
+                        } else {
+                            StringUtils.HaoLog("onShowFileChooser "+"檔案選擇器");
+                            chooseFile();
+                        }
+                        break;
+                }
                 return true;
             }
 
@@ -1598,10 +1622,10 @@ public class MainWebActivity extends MainAppCompatActivity {
     }
 
     private void webOk(JSONObject data) {
-        if(data.has("webViewVersion")){
-            String webViewVersion = data.optString("webViewVersion");
-        } else {
+        if(data == null){
             webRendered(3000);
+        } else if(data.has("webViewVersion")){
+            String webViewVersion = data.optString("webViewVersion");
         }
         UserMin userMin = UserControlCenter.getUserMinInfo();
 
