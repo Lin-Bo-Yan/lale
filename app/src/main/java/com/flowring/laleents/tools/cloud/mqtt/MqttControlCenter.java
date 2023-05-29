@@ -128,9 +128,9 @@ public class MqttControlCenter {
                 e.printStackTrace();
             }
             try {
-                Boolean correct = CloudUtils.iCloudUtils.checkToken();
-                StringUtils.HaoLog("測試 "+"Token 是否正確"+" "+correct);
-                if(correct){
+                Boolean isTrue = checkToken();
+                StringUtils.HaoLog("測試 "+"Token 是否正確 "+isTrue);
+                if(isTrue){
                     connection();
                 } else {
                     tokenRefresh();
@@ -298,6 +298,25 @@ public class MqttControlCenter {
             StringUtils.HaoLog("tokenRefresh "+httpReturn.msg);
             connection();
         }
+    }
+
+    private boolean checkToken(){
+        HttpReturn correct = CloudUtils.iCloudUtils.checkToken();
+        String msg = correct.msg;
+        if(correct.status == 200){
+            switch (msg){
+                case "Success":
+                    return (boolean)correct.data;
+            }
+        } else if(correct.status == 400){
+            switch (msg){
+                case "token 不存在":
+                case "token 逾時":
+                case "token 資料錯誤":
+                    return false;
+            }
+        }
+        return false;
     }
 }
 

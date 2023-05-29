@@ -187,7 +187,7 @@ public interface ICloudUtils {
      * 驗證 token 是否正確
      */
     @WorkerThread
-    boolean checkToken();
+    HttpReturn checkToken();
 
     /**
      * 更新 token

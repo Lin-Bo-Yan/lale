@@ -1828,15 +1828,14 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
-    public boolean checkToken() {
+    public HttpReturn checkToken() {
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(mediaType, "{\r\n    \"token\":\"" + UserControlCenter.getUserMinInfo().token + "\"\r\n}");
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/user/token/validation")
                 .method("POST", body)
-                .addHeader("Authorization", "Bearer" + UserControlCenter.getUserMinInfo().userId)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request).status == 200 && ((boolean) gethttpReturn(request).data);
+        return gethttpReturn(request);
 
     }
 
