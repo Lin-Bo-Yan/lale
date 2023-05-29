@@ -58,6 +58,9 @@ public class DefinedUtils {
     public static final int MSG_STATE_VOICE_IN = 9;             //別人傳音訊
     public static final int MSG_STATE_VOICE_OUT = 10;           //自己傳音訊
 
+    public static final int FILE_CHOOSER_RESULT_CODE = 1234;
+    public static final int ACCESS_FINE_LOCATION_CODE = 1235;
+
     public static final int DEFAULT_BUFFER_SIZE = 4096;
     public static final String FRIEND_TYPE_INVITE = "好友邀請";
     public static final String FRIEND_TYPE_FAVORITE = "我的最愛";
@@ -193,6 +196,7 @@ public class DefinedUtils {
     public static final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[a-zA-Z0-9]{6,20}$";
     public static final String PASSWORD_CASE = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[a-zA-Z0-9]{0,}$";
     public static final String PASSWORD_LENGTH = ".{6,}$";
+    public static final String CHATROOM = "^chatroom\\/(.*)";
 
     public static final String WEBAP_URL_SCHEMES = "lale://?weburl=";
     public static final String MICROAP_URL_SCHEMES = "lale://?appId=";
