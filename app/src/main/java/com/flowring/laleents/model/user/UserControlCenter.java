@@ -219,6 +219,22 @@ public class UserControlCenter {
         }
     }
 
+    public static void tokenRefresh_noThread(CallbackUtils.ReturnHttp callback) {
+        if (UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim) {
+            StringUtils.HaoLog("tokenRefresh 開始");
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.reToken();
+            callback.Callback(httpReturn);
+            StringUtils.HaoLog("tokenRefresh 結束");
+        }
+    }
+
+
+    public static void checkToken(CallbackUtils.ReturnHttp callback){
+        StringUtils.HaoLog("checkToken 開始");
+        HttpReturn correct = CloudUtils.iCloudUtils.checkToken();
+        callback.Callback(correct);
+        StringUtils.HaoLog("checkToken 結束");
+    }
 
     public static UserInfo getMainUserInfo() {
 

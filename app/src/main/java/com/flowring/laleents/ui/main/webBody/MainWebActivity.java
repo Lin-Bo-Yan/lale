@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -33,6 +34,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
@@ -405,16 +407,19 @@ public class MainWebActivity extends MainAppCompatActivity {
         StringUtils.HaoLog("onResume= " + userMin);
         if (userMin != null && !userMin.userId.isEmpty()) {
             if(userMin.eimUserData.isLaleAppEim){
-                UserControlCenter.wasLoggedOut(new CallbackUtils.deviceReturn() {
-                    @Override
-                    public void Callback(Boolean deviceReturn) {
-                        StringUtils.HaoLog("onResume= 重複登入? "+deviceReturn);
-                        if(deviceReturn){
-                            Logout();
-                            SharedPreferencesUtils.isRepeatDevice(true);
-                        }
-                    }
-                });
+                new Thread(() -> {
+                    censorToken();
+                }).start();
+//                UserControlCenter.wasLoggedOut(new CallbackUtils.deviceReturn() {
+//                    @Override
+//                    public void Callback(Boolean deviceReturn) {
+//                        StringUtils.HaoLog("onResume= 重複登入? "+deviceReturn);
+//                        if(deviceReturn){
+//                            Logout();
+//                            SharedPreferencesUtils.isRepeatDevice(true);
+//                        }
+//                    }
+//                });
             }
         } else {
             goLogin();
@@ -1842,20 +1847,64 @@ public class MainWebActivity extends MainAppCompatActivity {
         });
     }
 
+    Boolean isFirstCheck = true;
     private void censorToken() {
-        UserControlCenter.tokenRefresh(new CallbackUtils.ReturnHttp() {
+        UserControlCenter.tokenRefresh_noThread(new CallbackUtils.ReturnHttp() {
             @Override
             public void Callback(HttpReturn httpReturn) {
-                StringUtils.HaoLog("censorToken= "+httpReturn.msg);
+                StringUtils.HaoLog("censorToken= 1 "+httpReturn.msg + " "+Thread.currentThread().getName());
                 if(httpReturn.status != 200){
+                    // token 和 refresh token 都過期 -> 登出
                     if ("refresh token 逾時".equals(httpReturn.msg)) {
                         DialogUtils.showDialog(MainWebActivity.this, new CallbackUtils.tokenReturn() {
                             @Override
                             public void Callback() {
                                 StringUtils.HaoLog("App過久未使用您的帳號已被登出");
+                                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
+                                pref.edit().putBoolean("isSignOut", true).apply();
                                 Logout();
                             }
                         });
+                    }
+                } else if(httpReturn.status == 200){
+                    StringUtils.HaoLog("censorToken= 2 "+httpReturn.msg + " "+Thread.currentThread().getName());
+                    // 驗證 token 是否正確
+                    if(isFirstCheck){
+                        checkToken();
+                    } else {
+                        isFirstCheck = true;
+                    }
+                }
+            }
+        });
+    }
+
+    private void checkToken(){
+        UserControlCenter.checkToken(new CallbackUtils.ReturnHttp() {
+            @Override
+            public void Callback(HttpReturn httpReturn) {
+                if(httpReturn.status != 400){
+                    //token有效
+                    StringUtils.HaoLog("censorToken= 3 "+Thread.currentThread().getName()+" token有效");
+                } else {
+                    String msg = httpReturn.msg;
+                    switch (msg){
+                        case "token 不存在":
+                            //登出
+                            StringUtils.HaoLog("censorToken= 4 "+Thread.currentThread().getName()+" token 不存在");
+                            SharedPreferencesUtils.isRepeatDevice(true);
+                            Logout();
+                            break;
+                        case "token 逾時":
+                            //更新token 要延遲
+                            StringUtils.HaoLog("censorToken= 5 "+Thread.currentThread().getName()+" token 逾時");
+                            isFirstCheck = false;
+                            censorToken();
+                            break;
+                        case "token 資料錯誤":
+                            StringUtils.HaoLog("censorToken= 5 "+Thread.currentThread().getName()+" token 資料錯誤");
+                            Logout();
+                            break;
                     }
                 }
             }

@@ -128,13 +128,7 @@ public class MqttControlCenter {
                 e.printStackTrace();
             }
             try {
-                Boolean isTrue = checkToken();
-                StringUtils.HaoLog("測試 "+"Token 是否正確 "+isTrue);
-                if(isTrue){
-                    connection();
-                } else {
-                    tokenRefresh();
-                }
+                connection();
             } catch (MqttException e) {
                 e.printStackTrace();
                 if (AllData.context != null) {
