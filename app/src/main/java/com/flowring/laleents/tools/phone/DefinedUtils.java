@@ -227,6 +227,7 @@ public class DefinedUtils {
 
     //暫時存iframe網址，因為監聽url只會拿到domain，iframe網址會監聽不到
     public static String URL = "";
+    public static String roomId = "";
 
     public static String getNewsURL(Context context) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);

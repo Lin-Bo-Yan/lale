@@ -18,7 +18,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.media.MediaMetadataRetriever;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -26,12 +25,17 @@ import android.preference.PreferenceManager;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
+import android.util.Base64;
 
 import androidx.annotation.WorkerThread;
 
 import com.flowring.laleents.R;
 import com.flowring.laleents.tools.cloud.api.AsynNetUtils;
 import com.flowring.laleents.tools.phone.DefinedUtils;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -639,6 +643,45 @@ public class FileUtils {
         return "";
     }
 
+    public static JSONArray getFileInfo(File[] files){
+        JSONArray jArray = new JSONArray();
+        try {
+            for(File file : files){
+                JSONObject jsonObject = new JSONObject();
+                BitmapFactory.Options options = getBitmapFactory(file);
+                String mimeType = String.format("image/%s",fileType(file.getName()));
+                Uri url = Uri.fromFile(file);
+                jsonObject.put("name",file.getName());
+                jsonObject.put("mimeType",mimeType);
+                jsonObject.put("url",url.toString());
+                Bitmap bitmap = ThumbnailUtils.getChatRoomThumbnail(file);
+                String dd = ThumbnailUtils.getBase64FromBitmap(bitmap);
+                jsonObject.put("thumbnail", ThumbnailUtils.getImageThumbnail());
+                StringUtils.HaoLog("編碼= "+dd);
+
+                if(limitFileSize(file)){
+                    jsonObject.put("errorMsg","檔案大小超過50MB，無法上傳");
+                } else {
+                    jsonObject.put("Width",options.outWidth);
+                    jsonObject.put("Height",options.outHeight);
+                }
+                jArray.put(jsonObject);
+            }
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+        StringUtils.HaoLog("fff= "+jArray);
+        return jArray;
+    }
+
+    public static BitmapFactory.Options getBitmapFactory(File file){
+        // 使用 BitmapFactory 讀取圖片檔案
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(file.getAbsolutePath(),options);
+        return options;
+    }
+
     public static Bitmap getUserPicRound(final Context context, final String userID, final String avatar_url, boolean isGroup) {
         final Bitmap[] bitmap = {null};
         if (userID.isEmpty() || avatar_url == null || avatar_url.isEmpty())
@@ -765,7 +808,7 @@ public class FileUtils {
             }
             Bitmap thumbBmp = mediaMetadataRetriever.getFrameAtTime(1000, MediaMetadataRetriever.OPTION_CLOSEST);
 
-            bitmap = ThumbnailUtils.extractThumbnail(thumbBmp, width, height);//Bitmap.createBitmap(thumbBmp, 0, 0, width, height);
+            bitmap = android.media.ThumbnailUtils.extractThumbnail(thumbBmp, width, height);//Bitmap.createBitmap(thumbBmp, 0, 0, width, height);
             //bitmap.recycle();
         } catch (Exception e) {
             e.printStackTrace();
@@ -796,7 +839,7 @@ public class FileUtils {
                     height = max;
                 }
             }
-            bitmap = ThumbnailUtils.extractThumbnail(resBmp, width, height);
+            bitmap = android.media.ThumbnailUtils.extractThumbnail(resBmp, width, height);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -1026,6 +1069,7 @@ public class FileUtils {
         return fileName;
     }
 
+    // 指定資料夾中不重複的檔案名稱
     public static String getNotDuplicFileName(String folder, String fileName) {
         int num = 1;
         String extension = fileName.substring(fileName.lastIndexOf(".") + 1);
@@ -1586,8 +1630,8 @@ public class FileUtils {
         long fileSize = file.length();
         long kiloBytes = fileSize/1024;
         long kilobytes = 52428800L;
-        //限制檔案大小50 MB，如果檔案小於50 MB
-        if(kiloBytes < kilobytes){
+        //限制檔案大小50 MB，如果檔案大於50 MB
+        if(kiloBytes > kilobytes){
             return true;
         }
         return false;

@@ -62,7 +62,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
-import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -91,7 +90,7 @@ import com.flowring.laleents.model.user.UserMin;
 import com.flowring.laleents.tools.ActivityUtils;
 import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.CommonUtils;
-import com.flowring.laleents.tools.DefaultThumbnail;
+import com.flowring.laleents.tools.ThumbnailUtils;
 import com.flowring.laleents.tools.DialogUtils;
 import com.flowring.laleents.tools.DownloadUtils;
 import com.flowring.laleents.tools.FileUtils;
@@ -144,21 +143,6 @@ import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 
 public class MainWebActivity extends MainAppCompatActivity {
-    public static String getBase64FromPath(String path) {
-        String base64 = "";
-        try {
-            File file = new File(path);
-            byte[] buffer = new byte[(int) file.length() + 100];
-            @SuppressWarnings("resource")
-            int length = new FileInputStream(file).read(buffer);
-            base64 = Base64.encodeToString(buffer, 0, length,
-                    Base64.DEFAULT);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return base64;
-    }
-
     //region  Permission
     AlertDialog requestDrawOverlaysDialog = null;
 
@@ -507,20 +491,24 @@ public class MainWebActivity extends MainAppCompatActivity {
             images = data.getParcelableArrayListExtra(PickerConfig.EXTRA_RESULT);
             if (images != null) {
                 // 宣告長度為0的陣列，做給 ValueCallback 讓他回傳，因為現在不用ValueCallback上傳檔案，但又需要重複開啟相簿
-                Uri[] uris = new Uri[0];
+                Uri[] uriFake = new Uri[0];
                 File[] files = new File[images.size()];
-                int fileCount = 0;
                 for (int i = 0; i < images.size(); i++) {
                     Media media = images.get(i);
                     File picture = new File(media.path);
-                    if(FileUtils.limitFileSize(picture)){
-                        files[fileCount] = picture;
-                        fileCount++;
-                    }
+                    files[i] = picture;
                 }
+                // sendFileInfo 通知選擇結果
+
+                // sendFile 逐筆回傳上傳結果
+
+                // 上傳失敗
+
+                sendFileInfo(files);
+
 
                 if (mUploadMessage != null) {
-                    mUploadMessage.onReceiveValue(uris);
+                    mUploadMessage.onReceiveValue(uriFake);
                     mUploadMessage = null;
                 }
             }
@@ -643,49 +631,6 @@ public class MainWebActivity extends MainAppCompatActivity {
         startActivityForResult(intentCamera, DefinedUtils.FILE_CHOOSER_RESULT_CODE);
     }
 
-    private void choosePhotos() {
-        //Intent開啟相簿
-        Intent intentFile = new Intent(Intent.ACTION_GET_CONTENT);
-        intentFile.addCategory(Intent.CATEGORY_OPENABLE);
-        intentFile.setType("*/*");
-
-        //Intent開啟相機
-        Intent intentCamera = null;
-        //判斷是否有載入儲存空間
-        String state = Environment.getExternalStorageState();
-        if (state.equals(Environment.MEDIA_MOUNTED)) {
-            if (!PermissionUtils.checkPermission(this, Manifest.permission.CAMERA)) {
-                PermissionUtils.requestPermission(this, Manifest.permission.CAMERA, "該功能需要相機權限");
-                return;
-            }
-            intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (Exception ex) {
-
-            }
-            if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.flowring.laleents.fileprovider", photoFile);
-                intentCamera.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                intentCamera.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-            }
-
-        }
-
-
-        Intent chooser = new Intent(Intent.ACTION_CHOOSER);
-        //設定title，放入兩種intent
-        chooser.putExtra(Intent.EXTRA_TITLE, "選擇添加項目");
-        chooser.putExtra(Intent.EXTRA_INTENT, intentFile);
-        if (intentCamera != null) {
-            chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{intentCamera});
-        }
-        //跳出選擇拍照或是相簿
-        startActivityForResult(intentFile, DefinedUtils.FILE_CHOOSER_RESULT_CODE);
-    }
-
     private void chooseFile() {
         //Intent開啟相簿
         Intent intentFile = new Intent(Intent.ACTION_GET_CONTENT);
@@ -802,7 +747,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     jsonObject.put("onlyKey","hashcode");
                     jsonObject.put("mimeType",type);
                     jsonObject.put("name",fileName);
-                    jsonObject.put("thumbnail", DefaultThumbnail.getImageThumbnail());//縮圖
+                    jsonObject.put("thumbnail", ThumbnailUtils.getImageThumbnail());//縮圖
                     jsonArray.put(jsonObject);
                     sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
                 } catch (JSONException e) {
@@ -1631,10 +1576,9 @@ public class MainWebActivity extends MainAppCompatActivity {
     }
 
     private void getPhotoLibrary(JSONObject data){
-        String roomId = null;
         String count = null;
         if(data.has("roomId")){
-            roomId = data.optString("roomId");
+            DefinedUtils.roomId = data.optString("roomId");
             count = data.optString("count");
         } else {
             StringUtils.HaoLog("資料不存在");
@@ -1643,6 +1587,18 @@ public class MainWebActivity extends MainAppCompatActivity {
             @Override
             public void Callback(boolean isok, String DataOrErrorMsg) {}
         });
+    }
+
+    private void sendFileInfo(File[] files){
+        try {
+            JSONObject jsonObject = new JSONObject();
+            JSONArray jsonArray= FileUtils.getFileInfo(files);
+            jsonObject.put("roomId",DefinedUtils.roomId);
+            jsonObject.put("files",jsonArray);
+            sendToWeb(new JSONObject().put("type","sendFileInfo").put("data",jsonObject).toString());
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
     }
 
     private void webOk(JSONObject data) {
