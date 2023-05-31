@@ -506,11 +506,19 @@ public class MainWebActivity extends MainAppCompatActivity {
             ArrayList<Media> images;
             images = data.getParcelableArrayListExtra(PickerConfig.EXTRA_RESULT);
             if (images != null) {
-                Uri[] uris = new Uri[images.size()];
+                // 宣告長度為0的陣列，做給 ValueCallback 讓他回傳，因為現在不用ValueCallback上傳檔案，但又需要重複開啟相簿
+                Uri[] uris = new Uri[0];
+                File[] files = new File[images.size()];
+                int fileCount = 0;
                 for (int i = 0; i < images.size(); i++) {
                     Media media = images.get(i);
-                    uris[i] = Uri.fromFile(new File(media.path));
+                    File picture = new File(media.path);
+                    if(FileUtils.limitFileSize(picture)){
+                        files[fileCount] = picture;
+                        fileCount++;
+                    }
                 }
+
                 if (mUploadMessage != null) {
                     mUploadMessage.onReceiveValue(uris);
                     mUploadMessage = null;
@@ -635,7 +643,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         startActivityForResult(intentCamera, DefinedUtils.FILE_CHOOSER_RESULT_CODE);
     }
 
-    private void chooseAlbum() {
+    private void choosePhotos() {
         //Intent開啟相簿
         Intent intentFile = new Intent(Intent.ACTION_GET_CONTENT);
         intentFile.addCategory(Intent.CATEGORY_OPENABLE);
@@ -1351,6 +1359,9 @@ public class MainWebActivity extends MainAppCompatActivity {
                 case "shareFileToCloud":
                     shareFileToCloud(data);
                     break;
+                case "getPhotoLibrary":
+                    getPhotoLibrary(data);
+                    break;
                 default:
                     unDo(json);
                     break;
@@ -1617,6 +1628,21 @@ public class MainWebActivity extends MainAppCompatActivity {
                 }
             }
         }
+    }
+
+    private void getPhotoLibrary(JSONObject data){
+        String roomId = null;
+        String count = null;
+        if(data.has("roomId")){
+            roomId = data.optString("roomId");
+            count = data.optString("count");
+        } else {
+            StringUtils.HaoLog("資料不存在");
+        }
+        CommonUtils.choosePicture(MainWebActivity.this, Integer.parseInt(count), PickerConfig.PICKER_IMAGE_VIDEO, new CallbackUtils.APIReturn() {
+            @Override
+            public void Callback(boolean isok, String DataOrErrorMsg) {}
+        });
     }
 
     private void webOk(JSONObject data) {

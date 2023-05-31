@@ -1581,4 +1581,15 @@ public class FileUtils {
             zis.close();
         }
     }
+
+    public static boolean limitFileSize(File file){
+        long fileSize = file.length();
+        long kiloBytes = fileSize/1024;
+        long kilobytes = 52428800L;
+        //限制檔案大小50 MB，如果檔案小於50 MB
+        if(kiloBytes < kilobytes){
+            return true;
+        }
+        return false;
+    }
 }
