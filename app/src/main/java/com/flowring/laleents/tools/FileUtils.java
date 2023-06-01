@@ -649,7 +649,8 @@ public class FileUtils {
             for(File file : files){
                 JSONObject jsonObject = new JSONObject();
                 BitmapFactory.Options options = getBitmapFactory(file);
-                String mimeType = String.format("image/%s",fileType(file.getName()));
+                String  imageType = StringUtils.replace(fileType(file.getName()));
+                String mimeType = String.format("image/%s",imageType);
                 Uri url = Uri.fromFile(file);
                 jsonObject.put("name",file.getName());
                 jsonObject.put("mimeType",mimeType);
@@ -668,7 +669,6 @@ public class FileUtils {
         }catch (JSONException e){
             e.printStackTrace();
         }
-        StringUtils.HaoLog("fff= "+jArray);
         return jArray;
     }
 

@@ -1979,13 +1979,8 @@ public class CloudUtils implements ICloudUtils {
                         }
                         //打印所有證書內容
                         for(Certificate certificate : localCertificates){
-                        StringUtils.HaoLog("dd= "+certificate.toString());
+                        StringUtils.HaoLog("打印所有證書內容= "+certificate.toString());
                         }
-//                        try{
-//                            createFileWithByte(localCertificates[0].getEncoded());
-//                        }catch (CertificateEncodingException e){
-//                                e.printStackTrace();
-//                        }
                     return true;
                     }
             });

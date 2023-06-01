@@ -499,13 +499,9 @@ public class MainWebActivity extends MainAppCompatActivity {
                     files[i] = picture;
                 }
                 // sendFileInfo 通知選擇結果
-
-                // sendFile 逐筆回傳上傳結果
-
-                // 上傳失敗
                 sendFileInfo(files);
-
-
+                // sendFile 逐筆回傳上傳結果
+                uploadFile(files);
                 if (mUploadMessage != null) {
                     mUploadMessage.onReceiveValue(uriFake);
                     mUploadMessage = null;
@@ -1533,43 +1529,49 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
         if(roomId != null && !roomId.isEmpty()){
             if(outputFile != null && outputFile.length() > 0){
-                HttpReturn httpReturn = MsgControlCenter.webSideSendFile(roomId,outputFile);
-                try {
-                    JSONArray jsonArray = new JSONArray();
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("onlyKey","hashcode");
-                    jsonObject.put("fileId",httpReturn.data);
-                    jsonObject.put("name",fileName);
-                    jsonObject.put("thumbnail","thumbnail");//縮圖
-                    jsonArray.put(jsonObject);
-                    sendToWeb(new JSONObject().put("type","shareFileToCloud").put("data",jsonArray).toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-            if(outputFiles != null && outputFiles.length > 0){
-                JSONArray jsonArray = new JSONArray();
-                for(File field : outputFiles){
-                    JSONObject jsonObject = new JSONObject();
-                    String name = field.getName();
-                    String lastPathComponent = name.substring(name.lastIndexOf('/') + 1);
-                    int hashCode = lastPathComponent.hashCode();
-                    HttpReturn httpReturn = MsgControlCenter.webSideSendFile(roomId,field);
+                final String finalRoomId = roomId;
+                new Thread(() -> {
+                    HttpReturn httpReturn = MsgControlCenter.webSideSendFile(finalRoomId,outputFile);
                     try {
+                        JSONArray jsonArray = new JSONArray();
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("onlyKey","hashcode");
                         jsonObject.put("fileId",httpReturn.data);
-                        jsonObject.put("onlyKey",String.valueOf(hashCode));
-                        jsonObject.put("name",name);
+                        jsonObject.put("name",fileName);
                         jsonObject.put("thumbnail","thumbnail");//縮圖
+                        jsonArray.put(jsonObject);
+                        sendToWeb(new JSONObject().put("type","shareFileToCloud").put("data",jsonArray).toString());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    jsonArray.put(jsonObject);
-                }
-                try{
-                    sendToWeb(new JSONObject().put("type","shareFileToCloud").put("data",jsonArray).toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                }).start();
+            }
+            if(outputFiles != null && outputFiles.length > 0){
+                final String finalRoomId = roomId;
+                new Thread(() -> {
+                    JSONArray jsonArray = new JSONArray();
+                    for(File field : outputFiles){
+                        JSONObject jsonObject = new JSONObject();
+                        String name = field.getName();
+                        String lastPathComponent = name.substring(name.lastIndexOf('/') + 1);
+                        int hashCode = lastPathComponent.hashCode();
+                        HttpReturn httpReturn = MsgControlCenter.webSideSendFile(finalRoomId,field);
+                        try {
+                            jsonObject.put("fileId",httpReturn.data);
+                            jsonObject.put("onlyKey",String.valueOf(hashCode));
+                            jsonObject.put("name",name);
+                            jsonObject.put("thumbnail","thumbnail");//縮圖
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        jsonArray.put(jsonObject);
+                    }
+                    try{
+                        sendToWeb(new JSONObject().put("type","shareFileToCloud").put("data",jsonArray).toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }).start();
             }
         }
     }
@@ -1586,18 +1588,6 @@ public class MainWebActivity extends MainAppCompatActivity {
             @Override
             public void Callback(boolean isok, String DataOrErrorMsg) {}
         });
-    }
-
-    private void sendFileInfo(File[] files){
-        try {
-            JSONObject jsonObject = new JSONObject();
-            JSONArray jsonArray= FileUtils.getFileInfo(files);
-            jsonObject.put("roomId",DefinedUtils.roomId);
-            jsonObject.put("files",jsonArray);
-            sendToWeb(new JSONObject().put("type","sendFileInfo").put("data",jsonObject).toString());
-        }catch (JSONException e){
-            e.printStackTrace();
-        }
     }
 
     private void webOk(JSONObject data) {
@@ -1718,6 +1708,63 @@ public class MainWebActivity extends MainAppCompatActivity {
         Intent intent = new Intent((Context) MainWebActivity.this, EimLoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
+    }
+
+    private void sendFileInfo(File[] files){
+        try {
+            JSONObject jsonObject = new JSONObject();
+            JSONArray jsonArray= FileUtils.getFileInfo(files);
+            jsonObject.put("roomId",DefinedUtils.roomId);
+            jsonObject.put("files",jsonArray);
+            sendToWeb(new JSONObject().put("type","sendFileInfo").put("data",jsonObject).toString());
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+    }
+
+    private void uploadFile(File[] files){
+        JSONObject dataObject = new JSONObject();
+        JSONObject fileObject = new JSONObject();
+        JSONObject errorMsg = new JSONObject();
+        if(DefinedUtils.roomId != null && !DefinedUtils.roomId.isEmpty()){
+            for(File file : files){
+                Uri url = Uri.fromFile(file);
+                MsgControlCenter.webSideSendFile(DefinedUtils.roomId, file, new CallbackUtils.ReturnHttp() {
+                    @Override
+                    public void Callback(HttpReturn httpReturn) {
+                        if(httpReturn.status == 200){
+                            // 上傳成功
+                            try {
+                                dataObject.put("roomId", DefinedUtils.roomId);
+                                fileObject.put("name", file.getName());
+                                fileObject.put("url", url);
+                                fileObject.put("fileId", httpReturn.data);
+                                dataObject.put("file", fileObject);
+                                sendToWeb(new JSONObject().put("type","sendFile").put("data",dataObject).toString());
+                            }catch(JSONException e){
+                                e.printStackTrace();
+                            }
+                        } else {
+                            // 上傳失敗
+                            try {
+                                dataObject.put("roomId", DefinedUtils.roomId);
+                                fileObject.put("name", file.getName());
+                                fileObject.put("url", url);
+                                fileObject.put("fileId", null);
+                                errorMsg.put("status",500);
+                                errorMsg.put("msg","使用者不是聊天室成員");
+                                errorMsg.put("data",null);
+                                fileObject.put("errorMsg", errorMsg);
+                                dataObject.put("file", fileObject);
+                                sendToWeb(new JSONObject().put("type","sendFile").put("data",dataObject).toString());
+                            }catch (JSONException e){
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
+            }
+        }
     }
 
     private void share(JSONObject data) {

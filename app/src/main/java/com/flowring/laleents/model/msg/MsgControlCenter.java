@@ -1,6 +1,7 @@
 package com.flowring.laleents.model.msg;
 
 import android.media.MediaPlayer;
+import android.net.Uri;
 
 import com.flowring.laleents.R;
 import com.flowring.laleents.model.HttpReturn;
@@ -318,21 +319,23 @@ public class MsgControlCenter {
     }
 //此段是上傳檔案到聊天室，走MQTT傳到server，檔案上傳是由app做的，未來會用到
     public static void sendFile(String roomId, File file) {
-        HttpReturn httpReturn = CloudUtils.iCloudUtils.sendFile(roomId, file);
-        if (httpReturn.status == 200) {
-            JSONObject msg = new JSONObject();
-            try {
-                msg.put("type", "lale.file.send");
-                JSONObject content = new JSONObject();
-                content.put("fileId", httpReturn.data);
-                msg.put("content", content);
-                msg.put("userId", UserControlCenter.getUserMinInfo().userId);
-                msg.put("roomId", roomId);
-            } catch (JSONException e) {
-                e.printStackTrace();
+        new Thread(() -> {
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.sendFile(roomId, file);
+            if (httpReturn.status == 200) {
+                JSONObject msg = new JSONObject();
+                try {
+                    msg.put("type", "lale.file.send");
+                    JSONObject content = new JSONObject();
+                    content.put("fileId", httpReturn.data);
+                    msg.put("content", content);
+                    msg.put("userId", UserControlCenter.getUserMinInfo().userId);
+                    msg.put("roomId", roomId);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                MqttService.mqttControlCenter.publishMessage(msg.toString());
             }
-            MqttService.mqttControlCenter.publishMessage(msg.toString());
-        }
+        }).start();
     }
 
     // 此段程式是回給web端fileId，檔案上傳是由web做的
@@ -340,7 +343,17 @@ public class MsgControlCenter {
         HttpReturn httpReturn = CloudUtils.iCloudUtils.sendFile(roomId, file);
         if (httpReturn.status == 200) {
             return httpReturn;
-        } else return httpReturn;
+        }
+        return httpReturn;
+    }
+
+    public static void webSideSendFile(String roomId, File file, CallbackUtils.ReturnHttp returnHttp) {
+        new Thread(() -> {
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.sendFile(roomId, file);
+            if(httpReturn.status == 200){
+                returnHttp.Callback(httpReturn);
+            }
+        }).start();
     }
 
     public static void sendCustomizeSticker(String roomId, String fileId) {

@@ -104,6 +104,7 @@ if(stes.length > showC)
 
     }
 
+    // 將字串中的特殊字符轉換為 URL 編碼的格式，以便在 URL 中使用
     static public String unsafeCode(String data) {
         if (data == null)
             return null;
@@ -132,6 +133,11 @@ if(stes.length > showC)
                 .replace("`", "%60")
                 .replace(" ", "%20");
 
+    }
+
+    //移除 .
+    public static String replace(String data){
+        return data.replace(".", "");
     }
 
     /**
