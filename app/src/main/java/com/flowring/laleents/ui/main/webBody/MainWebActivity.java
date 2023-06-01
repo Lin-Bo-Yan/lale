@@ -503,7 +503,6 @@ public class MainWebActivity extends MainAppCompatActivity {
                 // sendFile 逐筆回傳上傳結果
 
                 // 上傳失敗
-
                 sendFileInfo(files);
 
 
@@ -747,7 +746,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     jsonObject.put("onlyKey","hashcode");
                     jsonObject.put("mimeType",type);
                     jsonObject.put("name",fileName);
-                    jsonObject.put("thumbnail", ThumbnailUtils.getImageThumbnail());//縮圖
+                    jsonObject.put("thumbnail", ThumbnailUtils.resizeAndConvertToBase64(outputFile.getAbsolutePath(),50));//縮圖
                     jsonArray.put(jsonObject);
                     sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
                 } catch (JSONException e) {

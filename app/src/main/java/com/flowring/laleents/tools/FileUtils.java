@@ -654,10 +654,8 @@ public class FileUtils {
                 jsonObject.put("name",file.getName());
                 jsonObject.put("mimeType",mimeType);
                 jsonObject.put("url",url.toString());
-                Bitmap bitmap = ThumbnailUtils.getChatRoomThumbnail(file);
-                String dd = ThumbnailUtils.getBase64FromBitmap(bitmap);
-                jsonObject.put("thumbnail", ThumbnailUtils.getImageThumbnail());
-                StringUtils.HaoLog("編碼= "+dd);
+                String pic = ThumbnailUtils.resizeAndConvertToBase64(file.getPath(),50);
+                jsonObject.put("thumbnail",pic);
 
                 if(limitFileSize(file)){
                     jsonObject.put("errorMsg","檔案大小超過50MB，無法上傳");
