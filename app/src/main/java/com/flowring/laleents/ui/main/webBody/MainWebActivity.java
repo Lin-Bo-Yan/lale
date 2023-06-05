@@ -501,7 +501,8 @@ public class MainWebActivity extends MainAppCompatActivity {
                 // sendFileInfo 通知選擇結果
                 sendFileInfo(files);
                 // sendFile 逐筆回傳上傳結果
-                uploadFile(files);
+                recursiveUpload(DefinedUtils.roomId, files, 0);
+
                 if (mUploadMessage != null) {
                     mUploadMessage.onReceiveValue(uriFake);
                     mUploadMessage = null;
@@ -1722,48 +1723,57 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
-    private void uploadFile(File[] files){
-        JSONObject dataObject = new JSONObject();
-        JSONObject fileObject = new JSONObject();
-        JSONObject errorMsg = new JSONObject();
+    private void recursiveUpload(String roomId, File[] files, int index) {
         if(DefinedUtils.roomId != null && !DefinedUtils.roomId.isEmpty()){
-            for(File file : files){
-                Uri url = Uri.fromFile(file);
-                MsgControlCenter.webSideSendFile(DefinedUtils.roomId, file, new CallbackUtils.ReturnHttp() {
-                    @Override
-                    public void Callback(HttpReturn httpReturn) {
-                        if(httpReturn.status == 200){
-                            // 上傳成功
-                            try {
-                                dataObject.put("roomId", DefinedUtils.roomId);
-                                fileObject.put("name", file.getName());
-                                fileObject.put("url", url);
-                                fileObject.put("fileId", httpReturn.data);
-                                dataObject.put("file", fileObject);
-                                sendToWeb(new JSONObject().put("type","sendFile").put("data",dataObject).toString());
-                            }catch(JSONException e){
-                                e.printStackTrace();
-                            }
-                        } else {
-                            // 上傳失敗
-                            try {
-                                dataObject.put("roomId", DefinedUtils.roomId);
-                                fileObject.put("name", file.getName());
-                                fileObject.put("url", url);
-                                fileObject.put("fileId", null);
-                                errorMsg.put("status",500);
-                                errorMsg.put("msg","使用者不是聊天室成員");
-                                errorMsg.put("data",null);
-                                fileObject.put("errorMsg", errorMsg);
-                                dataObject.put("file", fileObject);
-                                sendToWeb(new JSONObject().put("type","sendFile").put("data",dataObject).toString());
-                            }catch (JSONException e){
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                });
+            JSONObject dataObject = new JSONObject();
+            JSONObject fileObject = new JSONObject();
+            JSONObject errorMsg = new JSONObject();
+            StringUtils.HaoLog("recursiveUpload= index "+index);
+            StringUtils.HaoLog("recursiveUpload= files.length "+files.length);
+            if (index >= files.length) {
+                // 所有檔案都已經上傳完成，結束遞迴
+                return;
             }
+            File file = files[index];
+            Uri url = Uri.fromFile(file);
+            MsgControlCenter.webSideSendFile(roomId, file, new CallbackUtils.ReturnHttp() {
+                @Override
+                public void Callback(HttpReturn httpReturn) {
+                    if (httpReturn.status == 200) {
+                        // 上傳成功
+                        try {
+                            dataObject.put("roomId", DefinedUtils.roomId);
+                            fileObject.put("name", file.getName());
+                            fileObject.put("url", url);
+                            fileObject.put("fileId", httpReturn.data);
+                            dataObject.put("file", fileObject);
+                            sendToWeb(new JSONObject().put("type","sendFile").put("data",dataObject).toString());
+                        }catch(JSONException e){
+                            e.printStackTrace();
+                        }
+                        // 遞迴調用，上傳下一個檔案
+                        recursiveUpload(roomId, files, index + 1);
+                    } else {
+                        // 上傳失敗
+                        try {
+                            dataObject.put("roomId", DefinedUtils.roomId);
+                            fileObject.put("name", file.getName());
+                            fileObject.put("url", url);
+                            fileObject.put("fileId", null);
+                            errorMsg.put("status",500);
+                            errorMsg.put("msg","使用者不是聊天室成員");
+                            errorMsg.put("data",null);
+                            fileObject.put("errorMsg", errorMsg);
+                            dataObject.put("file", fileObject);
+                            sendToWeb(new JSONObject().put("type","sendFile").put("data",dataObject).toString());
+                        }catch (JSONException e){
+                            e.printStackTrace();
+                        }
+                        // 遞迴調用，上傳下一個檔案
+                        recursiveUpload(roomId, files, index + 1);
+                    }
+                }
+            });
         }
     }
 
