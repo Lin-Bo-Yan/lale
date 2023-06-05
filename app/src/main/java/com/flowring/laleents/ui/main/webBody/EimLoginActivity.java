@@ -271,7 +271,10 @@ public class EimLoginActivity extends MainAppCompatActivity {
         Boolean signOut = pref.getBoolean("isSignOut",false);
         StringUtils.HaoLog("getPref 布林："+signOut);
         if(signOut){
-            DialogUtils.showDialogMessage(EimLoginActivity.this, String.valueOf(R.string.unused_account_logged_out));
+            DialogUtils.showDialog(EimLoginActivity.this, new CallbackUtils.tokenReturn() {
+                @Override
+                public void Callback() {}
+            });
             pref.edit().putBoolean("isSignOut", false).apply();
         } else {
             StringUtils.HaoLog("SharedPreferences 沒有值");

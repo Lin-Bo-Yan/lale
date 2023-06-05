@@ -1815,12 +1815,10 @@ public class MainWebActivity extends MainAppCompatActivity {
                 try {
                     if (httpReturn.status != 200) {
                         if ("refresh token 逾時".equals(httpReturn.msg)) {
-                            DialogUtils.showDialog(MainWebActivity.this, new CallbackUtils.tokenReturn() {
-                                @Override
-                                public void Callback() {
-                                    Logout();
-                                }
-                            });
+                            StringUtils.HaoLog("App過久未使用您的帳號已被登出");
+                            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
+                            pref.edit().putBoolean("isSignOut", true).apply();
+                            Logout();
                         } else {
                             DialogUtils.showDialogMessage(MainWebActivity.this, httpReturn.msg, "連線狀態異常，是否要登出？", new CallbackUtils.noReturn() {
                                 @Override
@@ -1856,15 +1854,10 @@ public class MainWebActivity extends MainAppCompatActivity {
                 if(httpReturn.status != 200){
                     // token 和 refresh token 都過期 -> 登出
                     if ("refresh token 逾時".equals(httpReturn.msg)) {
-                        DialogUtils.showDialog(MainWebActivity.this, new CallbackUtils.tokenReturn() {
-                            @Override
-                            public void Callback() {
-                                StringUtils.HaoLog("App過久未使用您的帳號已被登出");
-                                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
-                                pref.edit().putBoolean("isSignOut", true).apply();
-                                Logout();
-                            }
-                        });
+                        StringUtils.HaoLog("App過久未使用您的帳號已被登出");
+                        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
+                        pref.edit().putBoolean("isSignOut", true).apply();
+                        Logout();
                     }
                 } else if(httpReturn.status == 200){
                     StringUtils.HaoLog("censorToken= 2 "+httpReturn.msg + " "+Thread.currentThread().getName());
