@@ -3,6 +3,7 @@ package com.flowring.laleents.tools;
 import androidx.activity.result.ActivityResult;
 
 import com.flowring.laleents.model.HttpReturn;
+import com.flowring.laleents.model.ServerAnnouncement;
 import com.flowring.laleents.model.explore.FocusApp;
 import com.flowring.laleents.model.explore.Microapp;
 import com.flowring.laleents.model.explore.MicroappType;
@@ -134,5 +135,9 @@ public class CallbackUtils {
     public interface deviceReturn{
         void Callback(Boolean deviceReturn);
 
+    }
+
+    public interface announceReturn{
+        void Callback(ServerAnnouncement serverAnnouncement);
     }
 }

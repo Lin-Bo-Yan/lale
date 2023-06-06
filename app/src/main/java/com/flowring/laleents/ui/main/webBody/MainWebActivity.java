@@ -1303,6 +1303,9 @@ public class MainWebActivity extends MainAppCompatActivity {
                 case "getPhotoLibrary":
                     getPhotoLibrary(data);
                     break;
+                case "APIResponse":
+                    APIResponse(data);
+                    break;
                 default:
                     unDo(json);
                     break;
@@ -1589,6 +1592,27 @@ public class MainWebActivity extends MainAppCompatActivity {
             @Override
             public void Callback(boolean isok, String DataOrErrorMsg) {}
         });
+    }
+
+    private void APIResponse(JSONObject data){
+        String url = null;
+        String Method = null;
+        String code = null;
+        String error;
+        if(data.has("url") && data.has("Method") && data.has("code")){
+            url = data.optString("url");
+            Method = data.optString("Method");
+            code = data.optString("code");
+        }
+
+        if(code != null && !code.isEmpty()){
+            int codeInt = Integer.parseInt(code);
+            if(codeInt == 200){
+
+            } else {
+                error = data.optString("error");
+            }
+        }
     }
 
     private void webOk(JSONObject data) {

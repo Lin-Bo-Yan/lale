@@ -9,6 +9,7 @@ import android.provider.Settings;
 import com.flowring.laleents.model.AFtoken;
 import com.flowring.laleents.model.HttpAfReturn;
 import com.flowring.laleents.model.HttpReturn;
+import com.flowring.laleents.model.ServerAnnouncement;
 import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.CommonUtils;
 import com.flowring.laleents.tools.SharedPreferencesUtils;
@@ -21,8 +22,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.gson.Gson;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -194,6 +198,71 @@ public class UserControlCenter {
 
         }).start();
 
+    }
+
+    public static void getAnnounceServer(CallbackUtils.announceReturn announceReturn){
+        new Thread(() -> {
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.announceServer();
+            if(httpReturn.status == 200){
+                Gson gson = new Gson();
+                String date = gson.toJson(httpReturn.data);
+                StringUtils.HaoLog("getAnnounceServer= "+ date);
+                //回傳是一個jsonArray
+                if(httpReturn.data != null){
+                    ServerAnnouncement[] serverAnnouncements = gson.fromJson(date, ServerAnnouncement[].class);
+                    if (serverAnnouncements != null && serverAnnouncements.length > 0) {
+                        ServerAnnouncement serverAnnouncement = serverAnnouncements[0];
+                        announceReturn.Callback(serverAnnouncement);
+                    }
+                }
+            }
+        }).start();
+    }
+
+    public static void getAnnounceServerGivenTime(String givenTime, CallbackUtils.announceReturn announceReturn){
+        new Thread(() -> {
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.announceServerGivenTime(givenTime);
+            if(httpReturn.status == 200){
+                Gson gson = new Gson();
+                String date = gson.toJson(httpReturn.data);
+                //回傳是一個jsonArray
+                ServerAnnouncement[] serverAnnouncements = gson.fromJson(date, ServerAnnouncement[].class);
+                if (serverAnnouncements != null && serverAnnouncements.length > 0) {
+                    ServerAnnouncement serverAnnouncement = serverAnnouncements[0];
+                    announceReturn.Callback(serverAnnouncement);
+                }
+            }
+        }).start();
+    }
+
+    public static void getLatestAnnounce(CallbackUtils.announceReturn announceReturn){
+        new Thread(() -> {
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.latestAnnounce();
+            if(httpReturn.status == 200){
+                Gson gson = new Gson();
+                String data = gson.toJson(httpReturn.data);
+                ServerAnnouncement[] serverAnnouncements = gson.fromJson(data,ServerAnnouncement[].class);
+                if(serverAnnouncements != null && serverAnnouncements.length > 0){
+                    ServerAnnouncement serverAnnouncement = serverAnnouncements[0];
+                    announceReturn.Callback(serverAnnouncement);
+                }
+            }
+        }).start();
+    }
+
+    public static void getLatestAnnounceGivenTime(String givenTime,CallbackUtils.announceReturn announceReturn){
+        new Thread(() -> {
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.latestAnnounceGivenTime(givenTime);
+            if(httpReturn.status == 200){
+                Gson gson = new Gson();
+                String data = gson.toJson(httpReturn.data);
+                ServerAnnouncement[] serverAnnouncements = gson.fromJson(data,ServerAnnouncement[].class);
+                if(serverAnnouncements != null && serverAnnouncements.length > 0){
+                    ServerAnnouncement serverAnnouncement = serverAnnouncements[0];
+                    announceReturn.Callback(serverAnnouncement);
+                }
+            }
+        }).start();
     }
 
     public static String getAfToken() {

@@ -79,21 +79,21 @@ public class DBHelper extends SQLiteOpenHelper {
 
     void getTable(SQLiteDatabase sqLiteDatabase) {
         if (msgDao == null) {
-            msgDao = new BaseDao<>(new MessageInfo(), MessageInfo.getKey(), UserId + "_msgDao", sqLiteDatabase);
+            msgDao = new BaseDao<>(new MessageInfo(), MessageInfo.getKey(), "msgDao_" + UserId, sqLiteDatabase);
         }
         if (roomDao == null) {
-            roomDao = new BaseDao<>(new RoomMinInfo(), RoomMinInfo.getKey(), UserId + "roomDao", sqLiteDatabase);
+            roomDao = new BaseDao<>(new RoomMinInfo(), RoomMinInfo.getKey(), "roomDao_" + UserId, sqLiteDatabase);
         }
         if (roomInPhoneDao == null) {
-            roomInPhoneDao = new BaseDao<>(new RoomInfoInPhone(), RoomInfoInPhone.getKey(), UserId + "roomInPhoneDao", sqLiteDatabase);
+            roomInPhoneDao = new BaseDao<>(new RoomInfoInPhone(), RoomInfoInPhone.getKey(), "roomInPhoneDao_" + UserId, sqLiteDatabase);
         }
 
         if (friendDao == null) {
-            friendDao = new BaseDao<>(new FriendInfo(), FriendInfo.getKey(), UserId + "friendDao", sqLiteDatabase);
+            friendDao = new BaseDao<>(new FriendInfo(), FriendInfo.getKey(), "friendDao_" + UserId, sqLiteDatabase);
         }
 
         if (userInRoomDao == null) {
-            userInRoomDao = new MultipleKeyDao<>(new UserInRoom(), UserInRoom.getKeys(), UserId + "userInRoomDao", sqLiteDatabase);
+            userInRoomDao = new MultipleKeyDao<>(new UserInRoom(), UserInRoom.getKeys(), "userInRoomDao_" + UserId, sqLiteDatabase);
         }
 
     }

@@ -1850,6 +1850,38 @@ public class CloudUtils implements ICloudUtils {
         return gethttpReturn(request);
     }
 
+    @Override
+    public HttpReturn announceServer() {
+        Request.Builder request = new Request.Builder()
+                .url(AllData.getAnnouncementDomain() + "/announce/ann/in-range/")
+                .get();
+        return gethttpReturn(request);
+    }
+
+    @Override
+    public HttpReturn announceServerGivenTime(String givenTime) {
+        Request.Builder request = new Request.Builder()
+                .url(AllData.getAnnouncementDomain() + "/announce/ann/in-range/" + givenTime)
+                .get();
+        return gethttpReturn(request);
+    }
+
+    @Override
+    public HttpReturn latestAnnounce() {
+        Request.Builder request = new Request.Builder()
+                .url(AllData.getAnnouncementDomain() + "/announce/ann/closest/")
+                .get();
+        return gethttpReturn(request);
+    }
+
+    @Override
+    public HttpReturn latestAnnounceGivenTime(String givenTime) {
+        Request.Builder request = new Request.Builder()
+                .url(AllData.getAnnouncementDomain() + "/announce/ann/closest/" + givenTime)
+                .get();
+        return gethttpReturn(request);
+    }
+
     HttpReturn gethttpReturn(Request.Builder request) {
         OkHttpClient client = getUnsafeOkHttpClient().newBuilder().build();
 

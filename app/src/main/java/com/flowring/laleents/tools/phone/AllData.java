@@ -41,6 +41,8 @@ public class AllData {
     private static String newsDomain = "https://news.lale.im";
     private static String memiaDomain = "https://memia.lale.im";
 
+    private static String announcementDomain = "https://laledev10.flowring.com";
+
     public static void setMainServer(String mainServer) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         pref.edit().putString("MainServer", mainServer).apply();
@@ -60,6 +62,10 @@ public class AllData {
 
     public static String getNewsDomain() {
         return newsDomain;
+    }
+
+    public static String getAnnouncementDomain() {
+        return announcementDomain;
     }
 
     public static String getMemiaDomain() {
@@ -100,7 +106,9 @@ public class AllData {
             return;
         }
         final String dbName = "v"+userId.replace("@", "_").replace(":", "_").replace(".", "_");
-        if (m_database != null){m_database.close();}
+        if (m_database != null){
+            m_database.close();
+        }
         dbHelper = new DBHelper(context, dbName, FinalData.DBVersion);
         m_database = dbHelper.getWritableDatabase();
         dbHelper.setDB(m_database);

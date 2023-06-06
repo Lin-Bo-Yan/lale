@@ -758,6 +758,31 @@ public interface ICloudUtils {
     HttpAfReturn orgtreeuserimage(String afDomain, String[] UserIds);
     //endregion
 
+    /**
+     * 查詢伺服器維護公告 - 執行中的(區間內)
+     */
+    @WorkerThread
+    HttpReturn announceServer();
+
+    /**
+     * 查詢伺服器維護公告 - 執行中的(區間內) - 給定時間
+     */
+    @WorkerThread
+    HttpReturn announceServerGivenTime(String givenTime);
+
+
+    /**
+     * 查詢伺服器維護公告 - 所有類型最近的一筆資料
+     */
+    @WorkerThread
+    HttpReturn latestAnnounce();
+
+    /**
+     * 查詢伺服器維護公告 - 所有類型最近的一筆資料 - 給定時間
+     */
+    @WorkerThread
+    HttpReturn latestAnnounceGivenTime(String givenTime);
+
     byte[] getFile(String url);
 }
 
