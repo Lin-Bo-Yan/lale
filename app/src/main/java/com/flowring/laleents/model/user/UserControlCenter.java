@@ -22,11 +22,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.gson.Gson;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -213,6 +210,9 @@ public class UserControlCenter {
                     if (serverAnnouncements != null && serverAnnouncements.length > 0) {
                         ServerAnnouncement serverAnnouncement = serverAnnouncements[0];
                         announceReturn.Callback(serverAnnouncement);
+                    } else {
+                        ServerAnnouncement serverAnnouncement = new ServerAnnouncement();
+                        announceReturn.Callback(serverAnnouncement);
                     }
                 }
             }
@@ -230,6 +230,9 @@ public class UserControlCenter {
                 if (serverAnnouncements != null && serverAnnouncements.length > 0) {
                     ServerAnnouncement serverAnnouncement = serverAnnouncements[0];
                     announceReturn.Callback(serverAnnouncement);
+                } else {
+                    ServerAnnouncement serverAnnouncement = new ServerAnnouncement();
+                    announceReturn.Callback(serverAnnouncement);
                 }
             }
         }).start();
@@ -243,7 +246,12 @@ public class UserControlCenter {
                 String data = gson.toJson(httpReturn.data);
                 ServerAnnouncement[] serverAnnouncements = gson.fromJson(data,ServerAnnouncement[].class);
                 if(serverAnnouncements != null && serverAnnouncements.length > 0){
-                    ServerAnnouncement serverAnnouncement = serverAnnouncements[0];
+                    for(ServerAnnouncement serverAnnounc : serverAnnouncements){
+                        ServerAnnouncement serverAnnouncement = serverAnnounc;
+                        announceReturn.Callback(serverAnnouncement);
+                    }
+                } else {
+                    ServerAnnouncement serverAnnouncement = new ServerAnnouncement();
                     announceReturn.Callback(serverAnnouncement);
                 }
             }
@@ -258,7 +266,12 @@ public class UserControlCenter {
                 String data = gson.toJson(httpReturn.data);
                 ServerAnnouncement[] serverAnnouncements = gson.fromJson(data,ServerAnnouncement[].class);
                 if(serverAnnouncements != null && serverAnnouncements.length > 0){
-                    ServerAnnouncement serverAnnouncement = serverAnnouncements[0];
+                    for(ServerAnnouncement serverAnnounc : serverAnnouncements){
+                        ServerAnnouncement serverAnnouncement = serverAnnounc;
+                        announceReturn.Callback(serverAnnouncement);
+                    }
+                } else {
+                    ServerAnnouncement serverAnnouncement = new ServerAnnouncement();
                     announceReturn.Callback(serverAnnouncement);
                 }
             }

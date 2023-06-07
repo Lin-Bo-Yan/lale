@@ -327,16 +327,18 @@ public class DialogUtils {
     }
 
     static public void showDialogMessage(Context context, String title, String text) {
-        new AlertDialog.Builder(context)
-                .setTitle(title)
-                .setMessage(text)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                })
-                .create().show();
+        runOnUiThread(()->{
+            new AlertDialog.Builder(context)
+                    .setTitle(title)
+                    .setMessage(text)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .create().show();
+        });
     }
 
     static public AlertDialog showDialogMessage(Context context, String title, String text, CallbackUtils.noReturn callback) {

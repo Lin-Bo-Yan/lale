@@ -79,6 +79,7 @@ import com.dmcbig.mediapicker.PickerConfig;
 import com.dmcbig.mediapicker.entity.Media;
 import com.flowring.laleents.R;
 import com.flowring.laleents.model.HttpReturn;
+import com.flowring.laleents.model.ServerAnnouncement;
 import com.flowring.laleents.model.explore.Microapp;
 import com.flowring.laleents.model.msg.MsgControlCenter;
 import com.flowring.laleents.model.notifi.SilenceNotifi;
@@ -871,6 +872,47 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //查詢公告 - 所有類型最近的一筆資料
+    public void latestAnnounceDialog(){
+        UserControlCenter.getLatestAnnounceGivenTime("2023-12-28 23:00:00", new CallbackUtils.announceReturn() {
+            @Override
+            public void Callback(ServerAnnouncement serverAnnouncement) {
+                if(serverAnnouncement.enabled){
+                    String result = TimeUtils.yearMonthDay(serverAnnouncement.startTime,serverAnnouncement.endTime);
+                    StringUtils.HaoLog("latestAnnounceDialog= "+result);
+                    String formatDate = TimeUtils.formatDate(result,serverAnnouncement.startTime,serverAnnouncement.endTime);
+                    DialogUtils.showDialogMessage(MainWebActivity.this,"伺服器維護通知",formatDate);
+                }
+            }
+        });
+    }
+
+    //查詢伺服器維護公告 - 執行中的(區間內)
+    public void announceServerDialog(){
+        UserControlCenter.getAnnounceServerGivenTime( "2023-12-29 23:00:00",new CallbackUtils.announceReturn() {
+            @Override
+            public void Callback(ServerAnnouncement serverAnnouncement) {
+                StringUtils.HaoLog("announceServerDialog= 啟用? "+serverAnnouncement.enabled);
+                if(serverAnnouncement.enabled){
+                    String time = TimeUtils.formatDateTime(serverAnnouncement.endTime);
+                    String text = String.format("伺服器維護中\n預計在%s\r維護完成",time);
+                    runOnUiThread(()->{
+                        DialogUtils.showDialogMessage(MainWebActivity.this, "伺服器維護通知", text, new CallbackUtils.noReturn() {
+                            @Override
+                            public void Callback() {
+                                //App關閉
+                                finish();
+                            }
+                        });
+                    });
+                } else {
+                    //問題回報
+                    StringUtils.HaoLog("announceServerDialog= "+"問題回報");
+                }
+            }
+        });
+    }
+
     void checkUpApp(Intent intent) {
 
         if (init) {
@@ -954,9 +996,8 @@ public class MainWebActivity extends MainAppCompatActivity {
                 final int MIN_ERROR_STATUS_CODE = 500;
                 final int MAX_ERROR_STATUS_CODE = 600;
                 if (errorResponse.getStatusCode() >= MIN_ERROR_STATUS_CODE
-                        && errorResponse.getStatusCode() < MAX_ERROR_STATUS_CODE
-                        && getMainWebURL().equals(request.getUrl().toString())) {
-                    Logout();
+                        && errorResponse.getStatusCode() < MAX_ERROR_STATUS_CODE) {
+                    announceServerDialog();
                 }
                 super.onReceivedHttpError(view, request, errorResponse);
             }
