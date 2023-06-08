@@ -381,6 +381,30 @@ public class DialogUtils {
 
     }
 
+    static public void feedbackDialogMessage(Context context, String title, String text, CallbackUtils.noReturn ok, CallbackUtils.noReturn cancel) {
+        runOnUiThread(()->{
+            new AlertDialog.Builder(context)
+                    .setTitle(title)
+                    .setMessage(text)
+                    .setPositiveButton(R.string.problem_report, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            ok.Callback();
+                        }
+                    })
+                    .setNegativeButton(R.string.closure, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            cancel.Callback();
+                        }
+                    })
+                    .create().show();
+        });
+
+    }
+
     static public void showDialogCheckMessage(Context context, String title, String text, CallbackUtils.noReturn callback) {
         runOnUiThread(() -> {
             new AlertDialog.Builder(context)

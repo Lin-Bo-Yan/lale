@@ -343,7 +343,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                         StringUtils.HaoLog("ShareActivity ACTION_SEND");
                         break;
                     case Intent.ACTION_SEND_MULTIPLE:
-                        multipleShareToWeb(intent);
+                        multipleShare(intent);
                         StringUtils.HaoLog("ShareActivity ACTION_SEND_MULTIPLE");
                         break;
                 }
@@ -802,7 +802,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
-    private void multipleShareToWeb(Intent intent){
+    private void multipleShare(Intent intent){
         JSONArray jsonArray = new JSONArray();
         String type = intent.getType();
         Bundle extras = intent.getExtras();
@@ -843,7 +843,6 @@ public class MainWebActivity extends MainAppCompatActivity {
                 }
             }
             try{
-                //StringUtils.HaoLog("jsp postMessage:"+jsonArray);
                 sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
             } catch (JSONException e){
                 e.printStackTrace();
@@ -855,15 +854,10 @@ public class MainWebActivity extends MainAppCompatActivity {
         StringUtils.HaoLog("initOnMainWebPageFinished= tob 1"+init);
         if (!init) {
             init = true;
-//            if (UserControlCenter.getUserMinInfo() != null && !UserControlCenter.getUserMinInfo().userId.isEmpty()) {
-//                StringUtils.HaoLog("initOnMainWebPageFinished " + UserControlCenter.getUserMinInfo());
-//                Login();
-//
-//            }
             if (getIntent().getAction() != null && getIntent().getAction().equals(Intent.ACTION_SEND)) {
                 shareToWeb(getIntent());
             } else if (getIntent().getAction() != null && getIntent().getAction().equals(Intent.ACTION_SEND_MULTIPLE)) {
-                multipleShareToWeb(getIntent());
+                multipleShare(getIntent());
             } else if (UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim){
                 checkAppNeedUpdate();
             } else {
@@ -872,24 +866,33 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
-    //查詢公告 - 所有類型最近的一筆資料
+    //查詢伺服器最近公告
     public void latestAnnounceDialog(){
-        UserControlCenter.getLatestAnnounceGivenTime("2023-12-28 23:00:00", new CallbackUtils.announceReturn() {
+        UserControlCenter.getLatestAnnounce( new CallbackUtils.announceReturn() {
             @Override
             public void Callback(ServerAnnouncement serverAnnouncement) {
                 if(serverAnnouncement.enabled){
                     String result = TimeUtils.yearMonthDay(serverAnnouncement.startTime,serverAnnouncement.endTime);
                     StringUtils.HaoLog("latestAnnounceDialog= "+result);
                     String formatDate = TimeUtils.formatDate(result,serverAnnouncement.startTime,serverAnnouncement.endTime);
-                    DialogUtils.showDialogMessage(MainWebActivity.this,"伺服器維護通知",formatDate);
+                    runOnUiThread(()->{
+                        DialogUtils.showDialogMessage(MainWebActivity.this, getString(R.string.server_maintain_title), formatDate, new CallbackUtils.noReturn() {
+                            @Override
+                            public void Callback() {
+                                webRendered(700);
+                            }
+                        });
+                    });
+                } else {
+                    webRendered(700);
                 }
             }
         });
     }
 
-    //查詢伺服器維護公告 - 執行中的(區間內)
+    //查詢伺服器執行中維護公告
     public void announceServerDialog(){
-        UserControlCenter.getAnnounceServerGivenTime( "2023-12-29 23:00:00",new CallbackUtils.announceReturn() {
+        UserControlCenter.getAnnounceServer( new CallbackUtils.announceReturn() {
             @Override
             public void Callback(ServerAnnouncement serverAnnouncement) {
                 StringUtils.HaoLog("announceServerDialog= 啟用? "+serverAnnouncement.enabled);
@@ -897,7 +900,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     String time = TimeUtils.formatDateTime(serverAnnouncement.endTime);
                     String text = String.format("伺服器維護中\n預計在%s\r維護完成",time);
                     runOnUiThread(()->{
-                        DialogUtils.showDialogMessage(MainWebActivity.this, "伺服器維護通知", text, new CallbackUtils.noReturn() {
+                        DialogUtils.showDialogMessage(MainWebActivity.this, getString(R.string.server_maintain_title), text, new CallbackUtils.noReturn() {
                             @Override
                             public void Callback() {
                                 //App關閉
@@ -906,9 +909,23 @@ public class MainWebActivity extends MainAppCompatActivity {
                         });
                     });
                 } else {
-                    //問題回報
-                    StringUtils.HaoLog("announceServerDialog= "+"問題回報");
+                    problemReport();
                 }
+            }
+        });
+    }
+
+    private void problemReport(){
+        DialogUtils.feedbackDialogMessage(MainWebActivity.this, getString(R.string.server_exception_title), getString(R.string.server_exception_text), new CallbackUtils.noReturn() {
+            @Override
+            public void Callback() {
+                StringUtils.HaoLog("伺服器異常，問題回報");
+                feedback();
+            }
+        }, new CallbackUtils.noReturn() {
+            @Override
+            public void Callback() {
+                finish();
             }
         });
     }
@@ -995,8 +1012,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                 StringUtils.HaoLog("還活著 onReceivedHttpError 錯誤狀態碼= " + errorResponse.getStatusCode());
                 final int MIN_ERROR_STATUS_CODE = 500;
                 final int MAX_ERROR_STATUS_CODE = 600;
-                if (errorResponse.getStatusCode() >= MIN_ERROR_STATUS_CODE
-                        && errorResponse.getStatusCode() < MAX_ERROR_STATUS_CODE) {
+                if(errorResponse.getStatusCode() == 502 || errorResponse.getStatusCode() == 503){
                     announceServerDialog();
                 }
                 super.onReceivedHttpError(view, request, errorResponse);
@@ -1006,7 +1022,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
                 StringUtils.HaoLog("還活著 onReceivedSslError error=" + error.toString());
 
-                StringUtils.HaoLog("還活著 SSL憑證過期" + error.toString());
+                StringUtils.HaoLog("還活著 SSL憑證過期" + error);
                 //handler.proceed();
 
                 super.onReceivedSslError(view, handler, error);
@@ -1334,7 +1350,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     webLog(data);
                     break;
                 case "webRendered":
-                    webRendered(700);
+                    latestAnnounceDialog();
                     break;
                 case "webMessage":
                     break;
@@ -1648,17 +1664,33 @@ public class MainWebActivity extends MainAppCompatActivity {
 
         if(code != null && !code.isEmpty()){
             int codeInt = Integer.parseInt(code);
-            if(codeInt == 200){
-
-            } else {
-                error = data.optString("error");
+            switch (codeInt){
+                case 200:
+                    break;
+                case 502:
+                case 503:
+                    error = data.optString("error");
+                    StringUtils.HaoLog("Web APIResponse "+error);
+                    announceServerDialog();
+                    break;
             }
+        }
+    }
+
+    //這邊要過濾api，不然會呼叫兩次甚至多次 announceServerDialog()
+    private void APIDomainContains(String url){
+        if(url.contains("api/dau/personalData")){
+            announceServerDialog();
+        }else if(url.contains("room/")){
+            announceServerDialog();
+        } else if(url.contains("group/")){
+            announceServerDialog();
         }
     }
 
     private void webOk(JSONObject data) {
         if(data == null){
-            webRendered(3000);
+            latestAnnounceDialog();
         } else if(data.has("webViewVersion")){
             String webViewVersion = data.optString("webViewVersion");
         }

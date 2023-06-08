@@ -51,7 +51,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_eim);
-        getPref();
+        signOut();
         loggedInDialog();
         btn_login = findViewById(R.id.btn_login);
         btn_login.setOnClickListener(view -> {
@@ -71,7 +71,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
             ActivityUtils.gotoQRcode(this, ScanCaptureType, ActivityResult);
         });
     }
-   static public void saveLog(MainAppCompatActivity activity) {
+    public static void saveLog(MainAppCompatActivity activity) {
         activity.runOnUiThread(()->{
             DialogUtils.showDialogMessage(activity, "登入失敗，您的QRCode已失效","請重新登入" ,new CallbackUtils.noReturn() {
                 @Override
@@ -97,6 +97,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
             );
         });
     }
+
     public void Loginback(MainAppCompatActivity activity, final String resultData) {
         activity.showWait();
 
@@ -266,7 +267,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
         });
     }
 
-    private void getPref(){
+    private void signOut(){
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences((Context) EimLoginActivity.this);
         Boolean signOut = pref.getBoolean("isSignOut",false);
         StringUtils.HaoLog("getPref 布林："+signOut);

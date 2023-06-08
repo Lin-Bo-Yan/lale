@@ -11,6 +11,11 @@
     <string name="single_device_text">您之前未正常登出或已於其他裝置登入，請確認是否登入此裝置(將登出其他裝置)</string>
     <string name="single_device_sign_out_title">此裝置已被登出</string>
     <string name="single_device_sign_out_text">您的帳號已在其他行動裝置登入，此裝置已被登出</string>
+    <string name="problem_report">問題回報</string>
+    <string name="closure">關閉</string>
+    <string name="server_exception_title">伺服器異常通知</string>
+    <string name="server_exception_text">請稍後再嘗試使用</string>
+    <string name="server_maintain_title">伺服器維護通知</string>
 
     <string name="other_apps_open">其他應用程式開啟</string>
     <string name="file_not_supported_title">標題</string>

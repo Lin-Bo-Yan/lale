@@ -100,14 +100,13 @@ public class Log {
         appendLog("Release : " + android.os.Build.VERSION.RELEASE);
     }
 
-    public static void saveLog(Activity activity)
-    {
+    public static void saveLog(Activity activity) {
         activity.runOnUiThread(()->{
             DialogUtils.showDialogMessage(activity, "將log","存到down" ,new CallbackUtils.noReturn() {
                         @Override
                         public void Callback() {
 
-                            File downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                            File downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 
 
                             File targetFile = new File(downloadDir, "log.log");
