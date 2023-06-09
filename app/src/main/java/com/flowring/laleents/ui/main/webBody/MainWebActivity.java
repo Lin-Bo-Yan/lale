@@ -1007,13 +1007,18 @@ public class MainWebActivity extends MainAppCompatActivity {
 
             @Override
             public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
-                StringUtils.HaoLog("還活著 onReceivedHttpError getUrl= " + request.getUrl());
-                StringUtils.HaoLog("還活著 onReceivedHttpError 請求的詳細資訊= " + errorResponse.getData());
+                StringUtils.HaoLog("還活著 onReceivedHttpError getUrl= " + request.getUrl().toString());
+                StringUtils.HaoLog("還活著 onReceivedHttpError 請求的詳細資訊= " + errorResponse.getData().toString());
                 StringUtils.HaoLog("還活著 onReceivedHttpError 錯誤狀態碼= " + errorResponse.getStatusCode());
                 final int MIN_ERROR_STATUS_CODE = 500;
                 final int MAX_ERROR_STATUS_CODE = 600;
                 if(errorResponse.getStatusCode() == 502 || errorResponse.getStatusCode() == 503){
                     announceServerDialog();
+                }else if(errorResponse.getStatusCode() == 500 && request.getUrl().toString().contains("/api/messages/all/last")){
+                    //針對錯誤碼500 && url包含 字段做處理
+                    announceServerDialog();
+                } else {
+                  Logout();
                 }
                 super.onReceivedHttpError(view, request, errorResponse);
             }
@@ -1656,23 +1661,37 @@ public class MainWebActivity extends MainAppCompatActivity {
         String Method = null;
         String code = null;
         String error;
+        int responseCount = 0;
         if(data.has("url") && data.has("Method") && data.has("code")){
             url = data.optString("url");
             Method = data.optString("Method");
             code = data.optString("code");
+            StringUtils.HaoLog("APIResponse= "+url);
         }
 
         if(code != null && !code.isEmpty()){
             int codeInt = Integer.parseInt(code);
-            switch (codeInt){
-                case 200:
-                    break;
-                case 502:
-                case 503:
-                    error = data.optString("error");
-                    StringUtils.HaoLog("Web APIResponse "+error);
-                    announceServerDialog();
-                    break;
+            //針對錯誤碼500 && url包含 字段做處理
+            if(codeInt == 500 && url.contains("/api/messages/all/last")){
+                announceServerDialog();
+            } else {
+                switch (codeInt){
+                    case 200:
+                        break;
+                    case 502:
+                    case 503:
+                        error = data.optString("error");
+                        StringUtils.HaoLog("Web APIResponse= "+error +" 計數器： "+ responseCount);
+                        responseCount++; // 增加 Response 計數
+                        if (responseCount >= 1) {
+                            announceServerDialog();
+                            responseCount = 0; // 重置 Response 計數
+                        }
+                        break;
+                    default:
+                        Logout();
+                        break;
+                }
             }
         }
     }
@@ -1684,6 +1703,8 @@ public class MainWebActivity extends MainAppCompatActivity {
         }else if(url.contains("room/")){
             announceServerDialog();
         } else if(url.contains("group/")){
+            announceServerDialog();
+        } else {
             announceServerDialog();
         }
     }
