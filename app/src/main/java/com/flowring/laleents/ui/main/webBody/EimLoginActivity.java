@@ -162,10 +162,15 @@ public class EimLoginActivity extends MainAppCompatActivity {
                     DialogUtils.showDialogCheckMessage(activity, "是否登入此裝置", "您之前未正常登出或已於其他裝置登入，請確認是否登入此裝置(將登出其他裝置)", new CallbackUtils.noReturn() {
                         @Override
                         public void Callback() {
+                            activity.cancelWait();
+                        }
+                    }, new CallbackUtils.noReturn() {
+                        @Override
+                        public void Callback() {
                             new Thread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    loginSimpleThirdParty(activity,eimUserData);
+                                    loginSimpleThirdParty(activity, eimUserData);
                                 }
                             }).start();
                         }

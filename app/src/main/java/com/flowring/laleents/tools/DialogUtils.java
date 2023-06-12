@@ -405,7 +405,7 @@ public class DialogUtils {
 
     }
 
-    static public void showDialogCheckMessage(Context context, String title, String text, CallbackUtils.noReturn callback) {
+    static public void showDialogCheckMessage(Context context, String title, String text,CallbackUtils.noReturn cancelCallback, CallbackUtils.noReturn callback) {
         runOnUiThread(() -> {
             new AlertDialog.Builder(context)
                     .setTitle(title)
@@ -414,6 +414,7 @@ public class DialogUtils {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
+                            cancelCallback.Callback();
                         }
 
                     })
