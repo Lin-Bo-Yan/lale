@@ -50,4 +50,11 @@ public interface IMessage2 {
      * */
 
     boolean isAdm();
+
+    /**
+     *
+     * 判斷連結
+     * */
+
+    String isLink();
 }

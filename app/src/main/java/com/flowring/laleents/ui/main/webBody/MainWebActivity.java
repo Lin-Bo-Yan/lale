@@ -1007,8 +1007,8 @@ public class MainWebActivity extends MainAppCompatActivity {
 
             @Override
             public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
-                StringUtils.HaoLog("還活著 onReceivedHttpError getUrl= " + request.getUrl().toString());
-                StringUtils.HaoLog("還活著 onReceivedHttpError 請求的詳細資訊= " + errorResponse.getData().toString());
+                StringUtils.HaoLog("還活著 onReceivedHttpError getUrl= " + request.getUrl());
+                StringUtils.HaoLog("還活著 onReceivedHttpError 請求的詳細資訊= " + errorResponse.getData());
                 StringUtils.HaoLog("還活著 onReceivedHttpError 錯誤狀態碼= " + errorResponse.getStatusCode());
                 final int MIN_ERROR_STATUS_CODE = 500;
                 final int MAX_ERROR_STATUS_CODE = 600;

@@ -72,7 +72,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         StringUtils.HaoLog("FirebaseService= "+AllData.context);
         StringUtils.HaoLog("FirebaseService= "+UserControlCenter.getUserMinInfo());
-        StringUtils.HaoLog("FirebaseService= "+remoteMessage.getData());
+        StringUtils.HaoLog("FirebaseService= "+remoteMessage.getData().get("body"));
         String isAF = remoteMessage.getData().get("isAF");
         boolean isAFBoolean = Boolean.parseBoolean(isAF);
         //UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim
@@ -314,12 +314,19 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 }
 
             }
-            StringUtils.HaoLog("群組= " + room.type);
-            StringUtils.HaoLog("userInRoom=" + userInRoom.displayName);
+            StringUtils.HaoLog("userInRoom= " + room.type);
+            StringUtils.HaoLog("userInRoom= " + userInRoom.displayName);
+            StringUtils.HaoLog("userInRoom= " + body);
+            StringUtils.HaoLog("userInRoom= " + title);
+            StringUtils.HaoLog("userInRoom= " + data.room_id);
+
             //知道對方名稱
             if (userInRoom != null) {
                 //群組通知 room.type = 6，1對1 通知 room.type = 1
-                if (room.type == 1){
+                if (room.type != 1) {
+                    body = userInRoom.displayName + ": " + body;
+                }
+                if (room.type != 6){
                     avatar_url = userInRoom.avatarUrl;
                 }
             }

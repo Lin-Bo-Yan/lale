@@ -32,6 +32,7 @@ public class MessageInfo implements Serializable, IMessage2 {
     public String type = "lale.nomessage";
     public String content;
     public String room_id = "";
+    public String roomName;
     public String sender;         // sender user_id
     public String msg;
     public long timestamp = -1;
@@ -283,28 +284,37 @@ public class MessageInfo implements Serializable, IMessage2 {
     public MessageInfo(JSONObject jsonObj) {
         try {
             if (jsonObj != null) {
-                if (!jsonObj.isNull("id"))
+                if (!jsonObj.isNull("id")){
                     id = jsonObj.optString("id");
-                if (!jsonObj.isNull("roomId"))
+                }
+                if (!jsonObj.isNull("roomId")){
                     room_id = jsonObj.optString("roomId");
+                }
+                if(!jsonObj.isNull("roomName")){
+                    roomName = jsonObj.optString("roomName");
+                }
                 JSONObject _content = null;
-                if (!jsonObj.isNull("content")) {
+                if (!jsonObj.isNull("content")){
                     _content = jsonObj.optJSONObject("content");
                     content = _content.toString();
                 }
-                if (!jsonObj.isNull("sender"))
+                if (!jsonObj.isNull("sender")){
                     sender = jsonObj.optString("sender");
-                if (!jsonObj.isNull("type"))
-                    type = jsonObj.optString("type");
-                if (_content != null) {
-                    if (!_content.isNull("msg"))
-                        msg = _content.optString("msg");
-                    if (!_content.isNull("unreadCount"))
-                        unreadCount = _content.optInt("unreadCount");
                 }
-                if (!jsonObj.isNull("timestamp"))
+                if (!jsonObj.isNull("type")) {
+                    type = jsonObj.optString("type");
+                }
+                if (_content != null) {
+                    if (!_content.isNull("msg")){
+                        msg = _content.optString("msg");
+                    }
+                    if (!_content.isNull("unreadCount")){
+                        unreadCount = _content.optInt("unreadCount");
+                    }
+                }
+                if (!jsonObj.isNull("timestamp")){
                     timestamp = jsonObj.optLong("timestamp");
-
+                }
             }
         } catch (Exception e) {
             StringUtils.HaoLog(e.toString());
@@ -334,32 +344,32 @@ public class MessageInfo implements Serializable, IMessage2 {
         if (isGroup()) {
             switch (value) {
                 case "call":
-                    return "通話中";
+                    return "[通話中]";
                 case "reject":
-                    return "未接" + type + "通話";
+                    return "[未接" + type + "通話]";
                 case "cancel":
-                    return "取消" + type + "通話";
+                    return "[取消" + type + "通話]";
                 case "timeout":
-                    return "未接" + type + "通話";
+                    return "[未接" + type + "通話]";
                 case "end":
-                    return "已結束" + type + "通話";
+                    return "[已結束" + type + "通話]";
                 default:
-                    return "未接" + type + "通話";
+                    return "[未接" + type + "通話]";
             }
         } else {
             switch (value) {
                 case "call":
-                    return "通話中";
+                    return "[通話中]";
                 case "reject":
-                    return "拒絕" + type + "通話";
+                    return "[拒絕" + type + "通話]";
                 case "cancel":
-                    return "取消" + type + "通話";
+                    return "[取消" + type + "通話]";
                 case "timeout":
-                    return "未接" + type + "通話";
+                    return "[未接" + type + "通話]";
                 case "end":
-                    return "已結束" + type + "通話";
+                    return "[已結束" + type + "通話]";
                 default:
-                    return "未接" + type + "通話";
+                    return "[未接" + type + "通話]";
             }
         }
     }
@@ -378,18 +388,19 @@ public class MessageInfo implements Serializable, IMessage2 {
                 return "您有工作待辦通知";
             if (is_lale_nomessage())
                 return "";
-            if (is_lale_message_received())
-                return new JSONObject(content).optString("msg");
+            if (is_lale_message_received()){
+                return isLink();
+            }
             if (is_lale_bot_lami())
                 return new JSONObject(content).optString("msg");
             if (is_lale_location_received())
-                return "標記的位置";
+                return "已傳送位置資訊";
             if (is_lale_message_sticker())
-                return "一張貼圖";
+                return "[貼圖]";
             if (is_lale_message_announcement())
-                return "一則公告";
+                return "已設立公告";
             if (is_lale_message_announcement_cancel())
-                return "取消一則公告";
+                return "已取消公告";
             if (is_lale_reply())
                 return new JSONObject(content).optString("msg");
             if (is_lale_member_join()){
@@ -402,32 +413,32 @@ public class MessageInfo implements Serializable, IMessage2 {
                 return new JSONObject(content).optString("userName") + "已離開群組";
             }
             if (is_lale_file_received())
-                return "一個檔案";
+                return "[檔案]";
             if (is_lale_image_received())
-                return "一張圖片";
+                return "[圖片]";
             if (is_lale_audio_received())
-                return "一段音訊";
+                return "[語音]";
             if (is_lale_video_received())
-                return "一段影片";
+                return "[影片]";
             if (is_lale_call_request())
                 return CallRequest(getCallRequest().result);
             if (is_lale_call_spendtime())
                 return "通話/視訊已結束";
 
-            if  (is_lale_room_settings_name()){
-                return "聊天室名稱變更";
+            if (is_lale_room_settings_name()){
+                return String.format("已變更聊天室名稱至「%s」",roomName);
             }
             if ( is_lale_room_settings_desc()){
-                return "聊天室簡介變更";
+                return "已變更聊天室簡介";
             }
             if ( is_lale_room_settings_admin()){
-                return "聊天室管理員變更";
+                return "已變更管理員至";
             }
             if(  is_lale_room_settings_avatar()){
-                return "聊天室頭像變更";
+                return "已變更聊天室頭像";
             }
             if ( is_lale_room_created()){
-                return "建立了一個聊天室";
+                return "已建立聊天室";
             }
             if ( is_lale_bot_reply()){
                 return new JSONObject(content).optString("msg");
@@ -498,6 +509,22 @@ public class MessageInfo implements Serializable, IMessage2 {
             }
         }
         return true;
+    }
+
+    @Override
+    public String isLink() {
+        String msg = null;
+        try {
+            msg = new JSONObject(content).optString("msg");
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+        if(msg != null && !msg.isEmpty()){
+            if(msg.contains("http:") || msg.contains("https:")){
+                return String.format("[連結]%s",msg);
+            }
+        }
+        return msg;
     }
 
     @Override
