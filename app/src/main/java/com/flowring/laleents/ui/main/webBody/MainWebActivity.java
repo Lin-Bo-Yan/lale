@@ -1017,8 +1017,6 @@ public class MainWebActivity extends MainAppCompatActivity {
                 }else if(errorResponse.getStatusCode() == 500 && request.getUrl().toString().contains("/api/messages/all/last")){
                     //針對錯誤碼500 && url包含 字段做處理
                     announceServerDialog();
-                } else {
-                  Logout();
                 }
                 super.onReceivedHttpError(view, request, errorResponse);
             }
@@ -1656,12 +1654,12 @@ public class MainWebActivity extends MainAppCompatActivity {
         });
     }
 
+    int responseCount = 0;
     private void APIResponse(JSONObject data){
         String url = null;
         String Method = null;
         String code = null;
         String error;
-        int responseCount = 0;
         if(data.has("url") && data.has("Method") && data.has("code")){
             url = data.optString("url");
             Method = data.optString("Method");
@@ -1683,13 +1681,10 @@ public class MainWebActivity extends MainAppCompatActivity {
                         error = data.optString("error");
                         StringUtils.HaoLog("Web APIResponse= "+error +" 計數器： "+ responseCount);
                         responseCount++; // 增加 Response 計數
-                        if (responseCount >= 1) {
+                        if (responseCount >= 2) {
                             announceServerDialog();
                             responseCount = 0; // 重置 Response 計數
                         }
-                        break;
-                    default:
-                        Logout();
                         break;
                 }
             }
