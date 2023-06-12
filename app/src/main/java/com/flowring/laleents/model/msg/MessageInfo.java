@@ -381,79 +381,96 @@ public class MessageInfo implements Serializable, IMessage2 {
     @Override
     public String getText() {
         try {
-
-            if (is_lale_call_response())
+            if(is_lale_call_response()){
                 return CallRequest(getCallRequest().result);
-            if (is_lale_call_group_status())
+            }
+            if(is_lale_call_group_status()){
                 return "離開群組通話";
-            if (is_lale_retracted())
+            }
+            if(is_lale_retracted()){
                 return "一則訊息已被收回";
-            if (is_lale_ecosystem_af_notify())
+            }
+            if(is_lale_ecosystem_af_notify()){
                 return "您有工作待辦通知";
-            if (is_lale_nomessage())
+            }
+            if(is_lale_nomessage()){
                 return "";
-            if (is_lale_message_received()){
+            }
+            if(is_lale_bot_lami()){
+                return new JSONObject(content).optString("msg");
+            }
+            if(is_lale_location_received()){
+                return "已傳送位置資訊";
+            }
+            if(is_lale_message_sticker()){
+                return "[貼圖]";
+            }
+            if(is_lale_message_announcement()){
+                return "已設立公告";
+            }
+            if(is_lale_message_announcement_cancel()){
+                return "已取消公告";
+            }
+            if(is_lale_reply()){
+                return new JSONObject(content).optString("msg");
+            }
+            if(is_lale_file_received()){
+                return "[檔案]";
+            }
+            if(is_lale_image_received()){
+                return "[圖片]";
+            }
+            if(is_lale_audio_received()){
+                return "[語音]";
+            }
+            if(is_lale_video_received()){
+                return "[影片]";
+            }
+            if(is_lale_call_request()){
+                return CallRequest(getCallRequest().result);
+            }
+            if(is_lale_call_spendtime()){
+                return "通話/視訊已結束";
+            }
+            if(is_lale_message_received()){
                 return isLink();
             }
-            if (is_lale_bot_lami())
-                return new JSONObject(content).optString("msg");
-            if (is_lale_location_received())
-                return "已傳送位置資訊";
-            if (is_lale_message_sticker())
-                return "[貼圖]";
-            if (is_lale_message_announcement())
-                return "已設立公告";
-            if (is_lale_message_announcement_cancel())
-                return "已取消公告";
-            if (is_lale_reply())
-                return new JSONObject(content).optString("msg");
-            if (is_lale_member_join()){
+            if(is_lale_member_join()){
                 return new JSONObject(content).optString("userName") + "加入群組";
             }
-            if (is_lale_member_left()){
+            if(is_lale_member_left()){
                 if(isAdm()){
                     return new JSONObject(content).optString("userName")+ "已被管理員移出群組";
                 }
                 return new JSONObject(content).optString("userName") + "已離開群組";
             }
-            if (is_lale_file_received())
-                return "[檔案]";
-            if (is_lale_image_received())
-                return "[圖片]";
-            if (is_lale_audio_received())
-                return "[語音]";
-            if (is_lale_video_received())
-                return "[影片]";
-            if (is_lale_call_request())
-                return CallRequest(getCallRequest().result);
-            if (is_lale_call_spendtime())
-                return "通話/視訊已結束";
-
-            if (is_lale_room_settings_name()){
+            if(is_lale_room_settings_name()){
                 return String.format("已變更聊天室名稱至「%s」",roomName);
             }
-            if ( is_lale_room_settings_desc()){
+            if(is_lale_room_settings_desc()){
                 return "已變更聊天室簡介";
             }
-            if ( is_lale_room_settings_admin()){
+            if(is_lale_room_settings_admin()){
                 return "已變更管理員至";
             }
-            if(  is_lale_room_settings_avatar()){
+            if(is_lale_room_settings_avatar()){
                 return "已變更聊天室頭像";
             }
-            if ( is_lale_room_created()){
+            if(is_lale_room_created()){
                 return "已建立聊天室";
             }
-            if ( is_lale_bot_reply()){
+            if(is_lale_bot_reply()){
                 return new JSONObject(content).optString("msg");
             }
-            if ( is_lale_bot_send()){
+            if(is_lale_bot_send()){
                 return new JSONObject(content).optString("msg");
             }
-            if ( is_lale_message_share()){
+            if(is_lale_message_share()){
                 return "一則分享訊息";
             }
-
+            if(is_lale_message_retract()){
+                return "已收回訊息";
+            }
 
         } catch (JSONException e) {
             e.printStackTrace();
