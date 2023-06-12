@@ -9,8 +9,12 @@ import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.net.URL;
 import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
@@ -521,6 +525,19 @@ public class MessageInfo implements Serializable, IMessage2 {
         }
         if(msg != null && !msg.isEmpty()){
             if(msg.contains("http:") || msg.contains("https:")){
+                String title = null;
+                try {
+                    URL url = new URL(msg);
+                    //向網頁伺服發出請求，並將回應分析成document。
+                    Document doc = Jsoup.parse(url, 3000);
+                    title = doc.title();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+
+                if(title != null && !title.isEmpty()){
+                    return String.format("[連結]%s",title);
+                }
                 return String.format("[連結]%s",msg);
             }
         }

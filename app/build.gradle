@@ -193,9 +193,6 @@ dependencies {
 
     /************* jitsi **************/
 
-
-
-
     // use the last version
     implementation 'io.reactivex.rxjava2:rxjava:2.1.1'
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
@@ -211,16 +208,15 @@ dependencies {
     //crop cicle image preview
     implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
 
-
-
-
-
     //FirebaseDynamicLinks
     implementation 'com.google.firebase:firebase-dynamic-links'
     implementation 'com.google.firebase:firebase-analytics'
 
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0'
     implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
+
+    //爬蟲套件
+    implementation 'org.jsoup:jsoup:1.14.1'
 }
 
 apply plugin: 'com.google.gms.google-services'
