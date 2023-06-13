@@ -315,7 +315,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             }
             StringUtils.HaoLog("userInRoom= " + room.type);
-            StringUtils.HaoLog("userInRoom= " + userInRoom.displayName);
             StringUtils.HaoLog("userInRoom= " + body);
             StringUtils.HaoLog("userInRoom= " + title);
             StringUtils.HaoLog("userInRoom= " + data.room_id);
@@ -452,7 +451,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         }
         StringUtils.HaoLog("群組= " + room.type);
-        StringUtils.HaoLog("群組= " + userInRoom.displayName);
         StringUtils.HaoLog("群組= " + body);
         StringUtils.HaoLog("群組= " + title);
         StringUtils.HaoLog("群組= " + data.room_id);

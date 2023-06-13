@@ -3,8 +3,12 @@ package com.flowring.laleents.model.msg;
 import com.flowring.laleents.BuildConfig;
 import com.flowring.laleents.model.room.RoomMinInfo;
 import com.flowring.laleents.model.user.MemberInfo;
+import com.flowring.laleents.model.user.UserControlCenter;
+import com.flowring.laleents.model.user.UserInfo;
+import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.phone.AllData;
+import com.flowring.laleents.tools.phone.DefinedUtils;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -288,6 +292,7 @@ public class MessageInfo implements Serializable, IMessage2 {
     public MessageInfo(JSONObject jsonObj) {
         try {
             if (jsonObj != null) {
+                StringUtils.HaoLog("hhh= "+jsonObj);
                 if (!jsonObj.isNull("id")){
                     id = jsonObj.optString("id");
                 }
@@ -451,7 +456,8 @@ public class MessageInfo implements Serializable, IMessage2 {
                 return "已變更聊天室簡介";
             }
             if(is_lale_room_settings_admin()){
-                return "已變更管理員至";
+                // String.format("已變更管理員至「%s」",roomName);
+                return "聊天室管理員變更";
             }
             if(is_lale_room_settings_avatar()){
                 return "已變更聊天室頭像";
@@ -559,6 +565,19 @@ public class MessageInfo implements Serializable, IMessage2 {
             }
         }
         return msg;
+    }
+
+    @Override
+    public void newAdmin() {
+        UserControlCenter.getUserInfo(sender, new CallbackUtils.userReturn() {
+            @Override
+            public void Callback(UserInfo userInfo) {
+                DefinedUtils.displayName = userInfo.displayName;
+                StringUtils.HaoLog("ggg= "+userInfo.displayName);
+                StringUtils.HaoLog("ggg= DefinedUtils= "+DefinedUtils.displayName);
+
+            }
+        });
     }
 
     @Override

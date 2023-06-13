@@ -57,4 +57,11 @@ public interface IMessage2 {
      * */
 
     String isLink();
+
+    /**
+     *
+     * 取得新管理員
+     * */
+
+    void newAdmin();
 }

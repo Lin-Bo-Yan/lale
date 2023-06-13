@@ -24,7 +24,9 @@ public class workNotifi {
     public String totalTaskCount;
 
     // 會議 新增、修改、刪除、會議開始通知
-    public String title;
+    // oldTitle為後端給的push開頭，因設計需要故將原始開頭保留並改成oldTitle
+    public String oldTitle;
+    public String title = "系統管理員";
     public String content;
     public String button_link;
     public String img_url;
