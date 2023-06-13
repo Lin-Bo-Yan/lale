@@ -1853,7 +1853,7 @@ public class CloudUtils implements ICloudUtils {
     @Override
     public HttpReturn announceServer() {
         Request.Builder request = new Request.Builder()
-                .url(AllData.getAnnouncementDomain() + "/announce/ann/in-range/")
+                .url(AllData.getAnnouncementServer() + "/ann/in-range/")
                 .get();
         return gethttpReturn(request);
     }
@@ -1861,7 +1861,7 @@ public class CloudUtils implements ICloudUtils {
     @Override
     public HttpReturn announceServerGivenTime(String givenTime) {
         Request.Builder request = new Request.Builder()
-                .url(AllData.getAnnouncementDomain() + "/announce/ann/in-range/" + givenTime)
+                .url(AllData.getAnnouncementServer() + "/ann/in-range/" + givenTime)
                 .get();
         return gethttpReturn(request);
     }
@@ -1869,7 +1869,7 @@ public class CloudUtils implements ICloudUtils {
     @Override
     public HttpReturn latestAnnounce() {
         Request.Builder request = new Request.Builder()
-                .url(AllData.getAnnouncementDomain() + "/announce/ann/closest/")
+                .url(AllData.getAnnouncementServer() + "/ann/closest/")
                 .get();
         return gethttpReturn(request);
     }
@@ -1877,7 +1877,7 @@ public class CloudUtils implements ICloudUtils {
     @Override
     public HttpReturn latestAnnounceGivenTime(String givenTime) {
         Request.Builder request = new Request.Builder()
-                .url(AllData.getAnnouncementDomain() + "/announce/ann/closest/" + givenTime)
+                .url(AllData.getAnnouncementServer() + "/ann/closest/" + givenTime)
                 .get();
         return gethttpReturn(request);
     }

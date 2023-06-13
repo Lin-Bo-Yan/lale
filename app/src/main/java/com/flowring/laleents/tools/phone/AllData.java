@@ -41,7 +41,7 @@ public class AllData {
     private static String newsDomain = "https://news.lale.im";
     private static String memiaDomain = "https://memia.lale.im";
 
-    private static String announcementDomain = "https://laledev10.flowring.com";
+    private static String AnnounceServer = "https://laledev10.flowring.com/announce";
 
     public static void setMainServer(String mainServer) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
@@ -64,8 +64,15 @@ public class AllData {
         return newsDomain;
     }
 
-    public static String getAnnouncementDomain() {
-        return announcementDomain;
+    public static void setAnnouncementServer(String announceServer) {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        pref.edit().putString("AnnounceServer",announceServer).apply();
+        AnnounceServer = announceServer;
+    }
+
+    public static String getAnnouncementServer() {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        return pref.getString("AnnounceServer",AnnounceServer);
     }
 
     public static String getMemiaDomain() {

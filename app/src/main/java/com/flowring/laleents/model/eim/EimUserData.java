@@ -15,7 +15,6 @@ public class EimUserData {
     public String af_wfci_service_url = null;
 
 
-    public String lale_third_party_identifier = null;
     public String lale_server = null;
     public String lale_token = null;
     public String refresh_token = null;
@@ -23,6 +22,7 @@ public class EimUserData {
     public LaleExternalServerInfo lale_external_server_info = null;
     public boolean isLaleCall = false;
     public String call_service_url = "";
+    public String announceServerUrl = null;
 
 
     public UserMin getUserMin() {
@@ -33,6 +33,7 @@ public class EimUserData {
             userMin.userId = af_mem_id;
         } else {
             AllData.setMainServer(lale_server);
+            AllData.setAnnouncementServer(announceServerUrl);
         }
         userMin.token = lale_token;
         userMin.refreshToken = refresh_token;
