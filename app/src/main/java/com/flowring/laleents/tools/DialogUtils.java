@@ -4,6 +4,7 @@ package com.flowring.laleents.tools;
 import static android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
 import static com.flowring.laleents.tools.FileUtils.createImageFile;
 import static com.flowring.laleents.tools.UiThreadUtil.runOnUiThread;
+import static com.flowring.laleents.ui.main.webBody.MainWebActivity.smartServerDialogLock;
 
 import android.Manifest;
 import android.app.Activity;
@@ -46,6 +47,7 @@ import com.flowring.laleents.model.user.UserControlCenter;
 import com.flowring.laleents.tools.phone.AllData;
 import com.flowring.laleents.tools.phone.DefinedUtils;
 import com.flowring.laleents.tools.phone.PermissionUtils;
+import com.flowring.laleents.ui.main.webBody.MainWebActivity;
 import com.flowring.laleents.ui.widget.dialog.StringAdapter;
 import com.flowring.laleents.ui.widget.jitsiMeet.WaitAnswerActivity;
 
@@ -354,6 +356,7 @@ public class DialogUtils {
                 })
                 .create();
         alertDialog.show();
+        smartServerDialogLock = true;
         return alertDialog;
     }
 
@@ -401,6 +404,7 @@ public class DialogUtils {
                         }
                     })
                     .create().show();
+            smartServerDialogLock = true;
         });
 
     }

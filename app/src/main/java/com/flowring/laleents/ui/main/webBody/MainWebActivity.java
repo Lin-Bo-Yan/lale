@@ -146,7 +146,8 @@ import io.reactivex.functions.Consumer;
 public class MainWebActivity extends MainAppCompatActivity {
     //region  Permission
     AlertDialog requestDrawOverlaysDialog = null;
-
+    //防止伺服器公告Dialog重複顯示
+    public static boolean smartServerDialogLock = true;
     public void checkPermission() {
         StringUtils.HaoLog("checkPermission");
         runOnUiThread(() -> {
@@ -1013,10 +1014,16 @@ public class MainWebActivity extends MainAppCompatActivity {
                 final int MIN_ERROR_STATUS_CODE = 500;
                 final int MAX_ERROR_STATUS_CODE = 600;
                 if(errorResponse.getStatusCode() == 502 || errorResponse.getStatusCode() == 503){
-                    announceServerDialog();
+                    if(smartServerDialogLock){
+                        announceServerDialog();
+                        smartServerDialogLock = false;
+                    }
                 }else if(errorResponse.getStatusCode() == 500 && request.getUrl().toString().contains("/api/messages/all/last")){
                     //針對錯誤碼500 && url包含 字段做處理
-                    announceServerDialog();
+                    if(smartServerDialogLock){
+                        announceServerDialog();
+                        smartServerDialogLock = false;
+                    }
                 }
                 super.onReceivedHttpError(view, request, errorResponse);
             }
@@ -1654,7 +1661,6 @@ public class MainWebActivity extends MainAppCompatActivity {
         });
     }
 
-    int responseCount = 0;
     private void APIResponse(JSONObject data){
         String url = null;
         String Method = null;
@@ -1679,12 +1685,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     case 502:
                     case 503:
                         error = data.optString("error");
-                        StringUtils.HaoLog("Web APIResponse= "+error +" 計數器： "+ responseCount);
-                        responseCount++; // 增加 Response 計數
-                        if (responseCount >= 2) {
-                            announceServerDialog();
-                            responseCount = 0; // 重置 Response 計數
-                        }
+                        StringUtils.HaoLog("Web APIResponse= "+error);
                         break;
                 }
             }
