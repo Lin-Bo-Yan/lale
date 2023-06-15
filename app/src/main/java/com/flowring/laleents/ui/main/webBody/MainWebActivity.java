@@ -877,7 +877,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     StringUtils.HaoLog("latestAnnounceDialog= "+result);
                     String formatDate = TimeUtils.formatDate(result,serverAnnouncement.startTime,serverAnnouncement.endTime);
                     runOnUiThread(()->{
-                        DialogUtils.showDialogMessage(MainWebActivity.this, getString(R.string.server_maintain_title), formatDate, new CallbackUtils.noReturn() {
+                        DialogUtils.showDialogMessage(MainWebActivity.this, serverAnnouncement.content, formatDate, new CallbackUtils.noReturn() {
                             @Override
                             public void Callback() {
                                 webRendered(700);
@@ -901,7 +901,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     String time = TimeUtils.formatDateTime(serverAnnouncement.endTime);
                     String text = String.format("伺服器維護中\n預計在%s\r維護完成",time);
                     runOnUiThread(()->{
-                        DialogUtils.showDialogMessage(MainWebActivity.this, getString(R.string.server_maintain_title), text, new CallbackUtils.noReturn() {
+                        DialogUtils.showDialogMessage(MainWebActivity.this, serverAnnouncement.content, text, new CallbackUtils.noReturn() {
                             @Override
                             public void Callback() {
                                 //App關閉
@@ -1684,24 +1684,12 @@ public class MainWebActivity extends MainAppCompatActivity {
                         break;
                     case 502:
                     case 503:
+                        //於 onReceivedHttpError 處理錯誤碼
                         error = data.optString("error");
                         StringUtils.HaoLog("Web APIResponse= "+error);
                         break;
                 }
             }
-        }
-    }
-
-    //這邊要過濾api，不然會呼叫兩次甚至多次 announceServerDialog()
-    private void APIDomainContains(String url){
-        if(url.contains("api/dau/personalData")){
-            announceServerDialog();
-        }else if(url.contains("room/")){
-            announceServerDialog();
-        } else if(url.contains("group/")){
-            announceServerDialog();
-        } else {
-            announceServerDialog();
         }
     }
 

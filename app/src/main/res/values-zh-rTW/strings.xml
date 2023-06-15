@@ -15,7 +15,6 @@
     <string name="closure">關閉</string>
     <string name="server_exception_title">伺服器異常通知</string>
     <string name="server_exception_text">請稍後再嘗試使用</string>
-    <string name="server_maintain_title">伺服器維護通知</string>
 
     <string name="other_apps_open">其他應用程式開啟</string>
     <string name="file_not_supported_title">標題</string>
