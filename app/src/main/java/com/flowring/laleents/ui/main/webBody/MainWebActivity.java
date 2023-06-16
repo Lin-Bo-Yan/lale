@@ -2254,7 +2254,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         String sURL;
         if (data.has("url")) {
             sURL = data.optString("url");
-            webView.loadUrl(sURL);
+            ActivityUtils.gotoWebViewActivity(MainWebActivity.this, sURL);
         }
 
     }
