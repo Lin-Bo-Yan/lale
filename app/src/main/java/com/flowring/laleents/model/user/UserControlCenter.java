@@ -215,6 +215,10 @@ public class UserControlCenter {
                         announceReturn.Callback(serverAnnouncement);
                     }
                 }
+            } else {
+                StringUtils.HaoLog("查詢伺服器執行中維護公告api，錯誤碼：500");
+                ServerAnnouncement serverAnnouncement = new ServerAnnouncement();
+                announceReturn.Callback(serverAnnouncement);
             }
         }).start();
     }
@@ -234,6 +238,10 @@ public class UserControlCenter {
                     ServerAnnouncement serverAnnouncement = new ServerAnnouncement();
                     announceReturn.Callback(serverAnnouncement);
                 }
+            } else {
+                StringUtils.HaoLog("查詢伺服器執行中維護公告api，錯誤碼：500");
+                ServerAnnouncement serverAnnouncement = new ServerAnnouncement();
+                announceReturn.Callback(serverAnnouncement);
             }
         }).start();
     }
@@ -254,6 +262,10 @@ public class UserControlCenter {
                     ServerAnnouncement serverAnnouncement = new ServerAnnouncement();
                     announceReturn.Callback(serverAnnouncement);
                 }
+            } else {
+                StringUtils.HaoLog("查詢伺服器最近公告api，錯誤碼：500，錯誤碼：500");
+                ServerAnnouncement serverAnnouncement = new ServerAnnouncement();
+                announceReturn.Callback(serverAnnouncement);
             }
         }).start();
     }
@@ -274,6 +286,10 @@ public class UserControlCenter {
                     ServerAnnouncement serverAnnouncement = new ServerAnnouncement();
                     announceReturn.Callback(serverAnnouncement);
                 }
+            } else {
+                StringUtils.HaoLog("查詢伺服器最近公告api，錯誤碼：500");
+                ServerAnnouncement serverAnnouncement = new ServerAnnouncement();
+                announceReturn.Callback(serverAnnouncement);
             }
         }).start();
     }
