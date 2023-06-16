@@ -2262,21 +2262,30 @@ public class MainWebActivity extends MainAppCompatActivity {
         String type;
         if (data.has("type")) {
             type = data.optString("type");
-            if(type.equals("location"))
-            {
-                if(PermissionUtils.checkPermission(MainWebActivity.this,"android.permission.ACCESS_FINE_LOCATION"))
-                {
+            if(type.equals("location")) {
+                if(PermissionUtils.checkPermission(MainWebActivity.this,"android.permission.ACCESS_FINE_LOCATION")) {
                     try {
                         JSONObject j = new JSONObject().put("type", "authorize").put("data", new JSONObject().put("type","location").put("isSuccess",true));
                         sendToWeb(j.toString());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
-                }else PermissionUtils.requestPermission(MainWebActivity.this,"android.permission.ACCESS_FINE_LOCATION","需要您的位置權限");
+                } else {
+                    PermissionUtils.requestPermission(MainWebActivity.this,"android.permission.ACCESS_FINE_LOCATION","需要您的位置權限");
+                }
+            } else if (type.equals("audio")) {
+                if (PermissionUtils.checkPermission(MainWebActivity.this, "android.permission.RECORD_AUDIO")) {
+                    try {
+                        JSONObject j = new JSONObject().put("type", "authorize").put("data", new JSONObject().put("type", "audio").put("isSuccess", true));
+                        sendToWeb(j.toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    PermissionUtils.requestPermission(MainWebActivity.this, "android.permission.RECORD_AUDIO", DefinedUtils.RECORD_AUDIO_CODE, "需要您的麥可風權限");
+                }
             }
         }
-
     }
     void openChrome(JSONObject data) {
         String sURL;

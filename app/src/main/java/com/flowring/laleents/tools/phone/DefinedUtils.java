@@ -60,6 +60,12 @@ public class DefinedUtils {
 
     public static final int FILE_CHOOSER_RESULT_CODE = 1234;
     public static final int ACCESS_FINE_LOCATION_CODE = 1235;
+    public static final int READ_CONTACTS_CODE = 1236;          //16進字：4D4
+    public static final int RECORD_AUDIO_CODE = 1237;           //16進字：4D5
+    public static final int CAMERA_CODE = 1238;                 //16進字：4D6
+    public static final int PHOTOGRAPH_CODE = 1239;             //16進字：4D7
+    public static final int ALBUM_CODE = 1240;                  //16進字：4D8
+    public static final int TAKE_FILE_CODE = 1243;              //16進字：4DB
 
     public static final int DEFAULT_BUFFER_SIZE = 4096;
     public static final String FRIEND_TYPE_INVITE = "好友邀請";
