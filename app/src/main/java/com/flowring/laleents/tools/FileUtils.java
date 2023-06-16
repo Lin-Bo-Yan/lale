@@ -648,21 +648,30 @@ public class FileUtils {
         try {
             for(File file : files){
                 JSONObject jsonObject = new JSONObject();
-                BitmapFactory.Options options = getBitmapFactory(file);
-                String  imageType = StringUtils.replace(fileType(file.getName()));
-                String mimeType = String.format("image/%s",imageType);
                 Uri url = Uri.fromFile(file);
                 jsonObject.put("name",file.getName());
-                jsonObject.put("mimeType",mimeType);
+                jsonObject.put("mimeType",contentType(fileType(file.getName())));
                 jsonObject.put("url",url.toString());
-                String pic = ThumbnailUtils.resizeAndConvertToBase64(file.getPath(),50);
-                jsonObject.put("thumbnail",pic);
-
+                if(".jpg".equals(fileType(file.getName()))){
+                    String pic = ThumbnailUtils.resizeAndConvertToBase64(file.getPath(),50);
+                    jsonObject.put("thumbnail",pic);
+                }
                 if(limitFileSize(file)){
                     jsonObject.put("errorMsg","檔案大小超過50MB，無法上傳");
                 } else {
-                    jsonObject.put("Width",options.outWidth);
-                    jsonObject.put("Height",options.outHeight);
+                    //如果是圖片就取得圖片長寬，否則取得影片長寬
+                    if(".jpg".equals(fileType(file.getName()))){
+                        BitmapFactory.Options options = getBitmapFactory(file);
+                        jsonObject.put("Width",options.outWidth);
+                        jsonObject.put("Height",options.outHeight);
+                    } else {
+                        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+                        retriever.setDataSource(file.getPath());
+                        String width = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
+                        String height = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
+                        jsonObject.put("Width",width);
+                        jsonObject.put("Height",height);
+                    }
                 }
                 jArray.put(jsonObject);
             }
