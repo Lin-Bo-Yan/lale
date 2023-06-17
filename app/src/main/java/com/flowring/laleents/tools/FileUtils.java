@@ -1643,4 +1643,34 @@ public class FileUtils {
         }
         return false;
     }
+
+    public static void saveWebViewVersion(String data, File file) {
+        try {
+            FileOutputStream fos = new FileOutputStream(file,false); // 在保存文件之前需要先删除文件的内容，設置追加參數為 false
+            fos.write(data.getBytes());
+            fos.close();
+            StringUtils.HaoLog("getWebVersion= "+"文件保存成功");
+        } catch (IOException e) {
+            e.printStackTrace();
+            StringUtils.HaoLog("getWebVersion= "+"保存文件失敗"+e);
+        }
+    }
+
+    public static String readTextFromFile(File file) {
+        StringBuilder stringBuilder = new StringBuilder();
+        try {
+            FileInputStream fis = new FileInputStream(file);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader bufferedReader = new BufferedReader(isr);
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+            bufferedReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            StringUtils.HaoLog("readTextFromFile= "+e);
+        }
+        return stringBuilder.toString();
+    }
 }

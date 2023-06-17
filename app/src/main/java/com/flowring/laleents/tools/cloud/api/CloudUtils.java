@@ -1882,6 +1882,24 @@ public class CloudUtils implements ICloudUtils {
         return gethttpReturn(request);
     }
 
+    @Override
+    public String webVersion(String url) {
+        Request.Builder request = new Request.Builder()
+                .url(url)
+                .get();
+        OkHttpClient client = getUnsafeOkHttpClient().newBuilder().build();
+        try {
+            Response response = client.newCall(request.build()).execute();
+            if (response.code() == 200){
+                return response.body().string();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            StringUtils.HaoLog("getWebVersion error=" + request + " " + e);
+        }
+        return "";
+    }
+
     HttpReturn gethttpReturn(Request.Builder request) {
         OkHttpClient client = getUnsafeOkHttpClient().newBuilder().build();
 

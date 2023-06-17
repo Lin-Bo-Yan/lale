@@ -648,4 +648,11 @@ public class UserControlCenter {
             }
         }
     }
+
+    public static void getWebVersion(String url, CallbackUtils.messageReturn messageReturn){
+        new Thread(() -> {
+            String version = CloudUtils.iCloudUtils.webVersion(url);
+            messageReturn.Callback(version);
+        }).start();
+    }
 }

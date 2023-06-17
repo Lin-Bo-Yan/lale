@@ -784,5 +784,11 @@ public interface ICloudUtils {
     HttpReturn latestAnnounceGivenTime(String givenTime);
 
     byte[] getFile(String url);
+
+    /**
+     * 取得web版本
+     */
+    @WorkerThread
+    String webVersion(String url);
 }
 

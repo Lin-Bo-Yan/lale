@@ -46,6 +46,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.DownloadListener;
 import android.webkit.GeolocationPermissions;
 import android.webkit.JavascriptInterface;
@@ -550,22 +551,52 @@ public class MainWebActivity extends MainAppCompatActivity {
         if (webView == null) {
             StringUtils.HaoLog("init webView");
             webView = new MyWebView(this);
-            setWebView(webView, getMainWebURL());
+            setWebView(webView, getMainWebURL(true));
             backtoActivity();
         }
     }
 
 
-    public String getMainWebURL() {
+    public String getMainWebURL(Boolean isWebDomain) {
         UserMin userMin = UserControlCenter.getUserMinInfo();
         if (userMin != null &&
                 userMin.eimUserData != null &&
                 userMin.eimUserData.af_url != null){
-            return userMin.eimUserData.af_url + "/eimApp/index.html#/";
+            if(isWebDomain){
+                return userMin.eimUserData.af_url + "/eimApp/index.html#/";
+            } else {
+                return userMin.eimUserData.af_url + "/eimApp/version.txt";
+            }
         }
         return "";
     }
 
+    public void getWebVersion() {
+        UserControlCenter.getWebVersion(getMainWebURL(false), new CallbackUtils.messageReturn() {
+            @Override
+            public void Callback(String message) {
+                //取得版號，存到cash目錄下txt檔
+                String fileName = "webViewVersion.txt";
+                String filePath = getCacheDir().getAbsolutePath() + File.separator + fileName;
+                File file = new File(filePath);
+                if(file.exists()){
+                    //如果存在判斷檔案內版本是否不同，如果為true，則存檔以及清除cash
+                    String oldVersion = FileUtils.readTextFromFile(file);
+                    StringUtils.HaoLog("getWebVersion= 舊版本 "+oldVersion);
+                    StringUtils.HaoLog("getWebVersion= 新版本 "+message);
+                    if(!oldVersion.equals(message)){
+                        FileUtils.saveWebViewVersion(message,file);
+                        cleanWebviewCache();
+                    }
+                } else {
+                    StringUtils.HaoLog("getWebVersion= 第一次使用 "+message);
+                    //如果不存在表示為第一次使用app，則存檔以及清除cash
+                    FileUtils.saveWebViewVersion(message,file);
+                    cleanWebviewCache();
+                }
+            }
+        });
+    }
 
     private ValueCallback<Uri[]> mUploadMessage;
     boolean init = false;
@@ -575,20 +606,42 @@ public class MainWebActivity extends MainAppCompatActivity {
     private View overlay = null;
 
     void cleanWebviewCache() {
-        deleteDatabase("webview.db");
-        deleteDatabase("webviewCache.db");
-        //WebView 缓存文件
-        File appCacheDir = new File(getFilesDir().getAbsolutePath() + "/webcache");
-        File webviewCacheDir = new File(getCacheDir().getAbsolutePath() + "/webviewCache");
+        try {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+                CookieManager.getInstance().removeAllCookies(null);
+            } else {
+                CookieSyncManager.createInstance(getApplicationContext());
+                CookieManager.getInstance().removeAllCookie();
+                CookieSyncManager.getInstance().sync();
+            }
+            new WebView(getApplicationContext()).clearCache(true);
+            File cacheFile = new File(getCacheDir().getParent() + "/app_webview");
+            clearCacheFolder(cacheFile,System.currentTimeMillis());
+            StringUtils.HaoLog("clearCach= "+System.currentTimeMillis());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
-        //删除webview 缓存目录
-        if (webviewCacheDir.exists()) {
-            deleteFile(webviewCacheDir.getPath());
+    public static int clearCacheFolder(File dir, long time){
+        int deletedFiles = 0;
+        if(dir != null && dir.isDirectory()){
+            try {
+                for(File child : dir.listFiles()){
+                    if(child.isDirectory()){
+                        deletedFiles +=  clearCacheFolder(child, time);
+                    }
+                    if(child.lastModified() < time){
+                        if(child.delete()){
+                            deletedFiles++;
+                        }
+                    }
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
-        //删除webview 缓存 缓存目录
-        if (appCacheDir.exists()) {
-            deleteFile(appCacheDir.getPath());
-        }
+        return deletedFiles;
     }
 
     private void chooseCAMERA() {
@@ -992,7 +1045,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         if (webView == null){webView = new WebView(getApplicationContext());}
         webView.setVisibility(View.INVISIBLE);
         webView.setDownloadListener(mWebDownloadListener);
-        cleanWebviewCache();
+        getWebVersion();
         WebSettings webSettings = webView.getSettings();
         webView.setWebViewClient(new WebViewClient() {
             @Override
@@ -1153,7 +1206,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                         }
                         break;
                     case "*/*":
-                        String str = DefinedUtils.URL.substring(getMainWebURL().length());
+                        String str = DefinedUtils.URL.substring(getMainWebURL(true).length());
                         Boolean isRoom = str.matches(DefinedUtils.CHATROOM);
                         if(isRoom){
                             StringUtils.HaoLog("onShowFileChooser "+"直接開檔案");
@@ -1230,7 +1283,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             String roomInfo = getIntent().getStringExtra("roomInfo");
             boolean bFromPhone = getIntent().getBooleanExtra("bFromPhone", false);
             if(bFromPhone && roomInfo != null){
-                String urlToLoad = bFromPhone && roomInfo != null ? getMainWebURL() + "chatroom/" + roomInfo : url;
+                String urlToLoad = bFromPhone && roomInfo != null ? getMainWebURL(true) + "chatroom/" + roomInfo : url;
                 StringUtils.HaoLog("init setWebView 1 " + (init ? "true" : "false")+" urlToLoad= "+urlToLoad);
                 StringUtils.HaoLog("init setWebView 1 " + url);
                 StringUtils.HaoLog("init setWebView 1 " + roomInfo);
