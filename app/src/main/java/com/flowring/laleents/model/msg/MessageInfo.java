@@ -573,9 +573,6 @@ public class MessageInfo implements Serializable, IMessage2 {
             @Override
             public void Callback(UserInfo userInfo) {
                 DefinedUtils.displayName = userInfo.displayName;
-                StringUtils.HaoLog("ggg= "+userInfo.displayName);
-                StringUtils.HaoLog("ggg= DefinedUtils= "+DefinedUtils.displayName);
-
             }
         });
     }
