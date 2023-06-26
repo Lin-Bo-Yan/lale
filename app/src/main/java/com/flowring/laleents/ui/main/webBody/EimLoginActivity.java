@@ -155,7 +155,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
 
             if(eimUserData.isLaleAppEim) {
                 String deviceID = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
-                Boolean isRepeatDevice = alreadyLoddedIn("6","",eimUserData.af_mem_id,deviceID);
+                Boolean isRepeatDevice = UserControlCenter.alreadyLoddedIn("6","",eimUserData.af_mem_id,deviceID);
                 StringUtils.HaoLog("isRepeatDevice= "+isRepeatDevice);
                 if(isRepeatDevice){
                     //跳出 dialog
@@ -318,24 +318,5 @@ public class EimLoginActivity extends MainAppCompatActivity {
             e.printStackTrace();
         }
         return json.toString();
-    }
-
-    /**
-     * 確認使用者是否已有登入過的行動裝置
-     */
-    public static boolean alreadyLoddedIn(String loginType, String userId, String thirdPartyIdentifier, String deviceId){
-        StringUtils.HaoLog("loginType=" + loginType + "\nuserId=" + userId + "\nthirdPartyIdentifier=" + thirdPartyIdentifier + "\ndeviceId=" + deviceId);
-        HttpReturn httpReturn = CloudUtils.iCloudUtils.alreadyLoddedIn(loginType,userId,thirdPartyIdentifier,deviceId);
-        if(httpReturn.status == 200){
-            String msg = httpReturn.msg;
-            boolean data = (Boolean) httpReturn.data;
-            switch (msg){
-                case "Success":
-                case "用戶 ID 不得為空":
-                case "第三方登入 identifier 不可為空":
-                    return data;
-            }
-        }
-        return false;
     }
 }

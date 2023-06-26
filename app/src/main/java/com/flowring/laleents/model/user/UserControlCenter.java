@@ -2,6 +2,7 @@ package com.flowring.laleents.model.user;
 
 import static com.flowring.laleents.tools.phone.AllData.delectAll;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -12,12 +13,14 @@ import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.model.ServerAnnouncement;
 import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.CommonUtils;
+import com.flowring.laleents.tools.DialogUtils;
 import com.flowring.laleents.tools.SharedPreferencesUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.cloud.api.CloudUtils;
 import com.flowring.laleents.tools.cloud.mqtt.MqttService;
 import com.flowring.laleents.tools.phone.AllData;
 import com.flowring.laleents.ui.main.webBody.EimLoginActivity;
+import com.flowring.laleents.ui.main.webBody.MainWebActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
@@ -206,15 +209,13 @@ public class UserControlCenter {
                 String date = gson.toJson(httpReturn.data);
                 StringUtils.HaoLog("getAnnounceServer= "+ date);
                 //回傳是一個jsonArray
-                if(httpReturn.data != null){
-                    ServerAnnouncement[] serverAnnouncements = gson.fromJson(date, ServerAnnouncement[].class);
-                    if (serverAnnouncements != null && serverAnnouncements.length > 0) {
-                        ServerAnnouncement serverAnnouncement = serverAnnouncements[0];
-                        announceReturn.Callback(serverAnnouncement);
-                    } else {
-                        ServerAnnouncement serverAnnouncement = new ServerAnnouncement();
-                        announceReturn.Callback(serverAnnouncement);
-                    }
+                ServerAnnouncement[] serverAnnouncements = gson.fromJson(date, ServerAnnouncement[].class);
+                if (serverAnnouncements != null && serverAnnouncements.length > 0) {
+                    ServerAnnouncement serverAnnouncement = serverAnnouncements[0];
+                    announceReturn.Callback(serverAnnouncement);
+                } else {
+                    ServerAnnouncement serverAnnouncement = new ServerAnnouncement();
+                    announceReturn.Callback(serverAnnouncement);
                 }
             } else {
                 StringUtils.HaoLog("查詢伺服器執行中維護公告api，錯誤碼：500");
@@ -526,11 +527,30 @@ public class UserControlCenter {
             StringUtils.HaoLog("檢查是否已被登出 "+"\nloginType=" + loginType + "\nuserId=" + userId + "\nthirdPartyIdentifier=" + thirdPartyIdentifier + "\ndeviceId=" + deviceID);
             if(loginType != null && !loginType.isEmpty() &&
                     userId!= null && !userId.isEmpty()){
-                Boolean isRepeatDevice = EimLoginActivity.alreadyLoddedIn(loginType, userId, thirdPartyIdentifier,deviceID);
+                Boolean isRepeatDevice = alreadyLoddedIn(loginType, userId, thirdPartyIdentifier,deviceID);
                 SharedPreferencesUtils.isRepeatDevice(isRepeatDevice);
                 deviceReturn.Callback(isRepeatDevice);
             }
         }).start();
+    }
+
+    /**
+     * 確認使用者是否已有登入過的行動裝置
+     */
+    public static boolean alreadyLoddedIn(String loginType, String userId, String thirdPartyIdentifier, String deviceId){
+        StringUtils.HaoLog("loginType=" + loginType + "\nuserId=" + userId + "\nthirdPartyIdentifier=" + thirdPartyIdentifier + "\ndeviceId=" + deviceId);
+        HttpReturn httpReturn = CloudUtils.iCloudUtils.alreadyLoddedIn(loginType,userId,thirdPartyIdentifier,deviceId);
+        if(httpReturn.status == 200){
+            String msg = httpReturn.msg;
+            boolean data = (Boolean) httpReturn.data;
+            switch (msg){
+                case "Success":
+                case "用戶 ID 不得為空":
+                case "第三方登入 identifier 不可為空":
+                    return data;
+            }
+        }
+        return false;
     }
 
     public static void setLogout(CallbackUtils.ReturnHttp callback) {
@@ -651,6 +671,32 @@ public class UserControlCenter {
         new Thread(() -> {
             String version = CloudUtils.iCloudUtils.webVersion(url);
             messageReturn.Callback(version);
+            }).start();
+    }
+    
+    public static void googlePlatformVersion(Activity activity){
+        new Thread(() -> {
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.googlePlatformVersion();
+            Gson gson = new Gson();
+            String data = gson.toJson(httpReturn.data);
+            if(httpReturn.status == 200){
+                GetGooglePlatformVersion[] googlePlatformVersions = gson.fromJson(data,GetGooglePlatformVersion[].class);
+                String appVersion = MainWebActivity.getVersionName(AllData.context);
+                if(googlePlatformVersions != null && googlePlatformVersions.length > 0){
+                    for(GetGooglePlatformVersion googlePlatformVersion : googlePlatformVersions){
+                        if("android".equals(googlePlatformVersion.platformName)){
+                            int dbVersionInt = StringUtils.version(googlePlatformVersion.version);
+                            int appVersionInt = StringUtils.version(appVersion);
+                            Boolean needUpdated = appVersionInt < dbVersionInt;
+                            StringUtils.HaoLog("googlePlatformVersion= appVersionInt " + appVersionInt);
+                            StringUtils.HaoLog("googlePlatformVersion= dbVersionInt " + dbVersionInt);
+                            if(needUpdated){
+                                DialogUtils.showUpgradeDialog(activity);
+                            }
+                        }
+                    }
+                }
+            }
         }).start();
     }
 }

@@ -21,7 +21,9 @@ import java.util.Map;
 
 public interface ICloudUtils {
 
-    //region  未登入
+    /**
+     * 取的最新APP版本號
+     */
     boolean checkAppNeedUpdate();
 
 
@@ -78,12 +80,6 @@ public interface ICloudUtils {
      */
     @MainThread
     void gotoGooglePlay(Activity activity);
-
-    /**
-     * 取的最新APP版本號
-     */
-    @WorkerThread
-    String checkAppNeedUpdate(String server);
 
     /**
      * 取得EIM_QRcode登入資料
@@ -782,6 +778,13 @@ public interface ICloudUtils {
      */
     @WorkerThread
     HttpReturn latestAnnounceGivenTime(String givenTime);
+
+    /**
+     * 取得 Lale 使用平台最低可相容版本
+     */
+    @WorkerThread
+    HttpReturn googlePlatformVersion();
+
 
     byte[] getFile(String url);
 

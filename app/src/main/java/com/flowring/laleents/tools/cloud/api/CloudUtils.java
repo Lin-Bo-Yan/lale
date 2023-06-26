@@ -291,11 +291,6 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
-    public String checkAppNeedUpdate(String server) {
-        return null;
-    }
-
-    @Override
     public HttpAfReturn getEimQRcode(Context context, String af_token, String qrcode_info_url) {
         Request.Builder request = new Request.Builder()
                 .url(qrcode_info_url)
@@ -1898,6 +1893,14 @@ public class CloudUtils implements ICloudUtils {
             StringUtils.HaoLog("getWebVersion error=" + request + " " + e);
         }
         return "";
+    }
+
+    @Override
+    public HttpReturn googlePlatformVersion() {
+        Request.Builder request = new Request.Builder()
+                .url(AllData.getMainServer() + "/util/app/platform/tob")
+                .get();
+        return gethttpReturn(request);
     }
 
     HttpReturn gethttpReturn(Request.Builder request) {

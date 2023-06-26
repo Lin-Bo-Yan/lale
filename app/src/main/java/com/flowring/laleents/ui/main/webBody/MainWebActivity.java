@@ -529,28 +529,10 @@ public class MainWebActivity extends MainAppCompatActivity {
     public void checkAppNeedUpdate() {
         new Thread(() -> {
             Boolean appNeedUpdate = CloudUtils.iCloudUtils.checkAppNeedUpdate();
-            if (appNeedUpdate)
-                runOnUiThread(() -> {
-                    showUpgradeDialog();
-                });
+            if (appNeedUpdate){
+                DialogUtils.showUpgradeDialog(MainWebActivity.this);
+            }
         }).start();
-    }
-
-    public void showUpgradeDialog() {
-        AlertDialog.Builder alertDialogBuilder =
-                new AlertDialog.Builder((Context) this)
-                        .setMessage(getString(R.string.update_app_text))
-                        .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                            dialog.dismiss();
-                            CloudUtils.iCloudUtils.gotoGooglePlay(MainWebActivity.this);
-                            finish();
-                        })
-                        .setNegativeButton(android.R.string.cancel, (dialog, i) -> {
-                            dialog.dismiss();
-                            finish();
-                        })
-                        .setCancelable(false);
-        alertDialogBuilder.show();
     }
 
     //region   WebView
@@ -914,7 +896,8 @@ public class MainWebActivity extends MainAppCompatActivity {
             } else if (getIntent().getAction() != null && getIntent().getAction().equals(Intent.ACTION_SEND_MULTIPLE)) {
                 multipleShare(getIntent());
             } else if (UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim){
-                checkAppNeedUpdate();
+                //checkAppNeedUpdate();
+                UserControlCenter.googlePlatformVersion(MainWebActivity.this);
             } else {
                 checkUpApp(getIntent());
             }

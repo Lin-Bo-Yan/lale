@@ -44,6 +44,7 @@ import com.flowring.laleents.model.msg.MsgControlCenter;
 import com.flowring.laleents.model.room.RoomControlCenter;
 import com.flowring.laleents.model.room.RoomMinInfo;
 import com.flowring.laleents.model.user.UserControlCenter;
+import com.flowring.laleents.tools.cloud.api.CloudUtils;
 import com.flowring.laleents.tools.phone.AllData;
 import com.flowring.laleents.tools.phone.DefinedUtils;
 import com.flowring.laleents.tools.phone.PermissionUtils;
@@ -638,6 +639,25 @@ public class DialogUtils {
                     tokenReturn.Callback();
                 }
             });
+        });
+    }
+
+    public static void showUpgradeDialog(Activity activity) {
+        runOnUiThread(() -> {
+            AlertDialog.Builder alertDialogBuilder =
+                    new AlertDialog.Builder(activity)
+                            .setMessage(activity.getString(R.string.update_app_text))
+                            .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                                dialog.dismiss();
+                                CloudUtils.iCloudUtils.gotoGooglePlay(activity);
+                                activity.finish();
+                            })
+                            .setNegativeButton(android.R.string.cancel, (dialog, i) -> {
+                                dialog.dismiss();
+                                activity.finish();
+                            })
+                            .setCancelable(false);
+            alertDialogBuilder.show();
         });
     }
 }
