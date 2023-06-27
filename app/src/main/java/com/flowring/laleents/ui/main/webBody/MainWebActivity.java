@@ -526,14 +526,6 @@ public class MainWebActivity extends MainAppCompatActivity {
             }
         }
     }
-    public void checkAppNeedUpdate() {
-        new Thread(() -> {
-            Boolean appNeedUpdate = CloudUtils.iCloudUtils.checkAppNeedUpdate();
-            if (appNeedUpdate){
-                DialogUtils.showUpgradeDialog(MainWebActivity.this);
-            }
-        }).start();
-    }
 
     //region   WebView
     void checkHasWebView() {
@@ -896,7 +888,6 @@ public class MainWebActivity extends MainAppCompatActivity {
             } else if (getIntent().getAction() != null && getIntent().getAction().equals(Intent.ACTION_SEND_MULTIPLE)) {
                 multipleShare(getIntent());
             } else if (UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim){
-                //checkAppNeedUpdate();
                 UserControlCenter.googlePlatformVersion(MainWebActivity.this);
             } else {
                 checkUpApp(getIntent());

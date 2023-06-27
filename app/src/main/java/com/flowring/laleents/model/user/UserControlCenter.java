@@ -696,7 +696,16 @@ public class UserControlCenter {
                         }
                     }
                 }
+            } else {
+                checkAppNeedUpdate(activity);
             }
         }).start();
+    }
+
+    public static void checkAppNeedUpdate(Activity activity) {
+        Boolean appNeedUpdate = CloudUtils.iCloudUtils.checkAppNeedUpdate();
+        if (appNeedUpdate){
+            DialogUtils.showUpgradeDialog(activity);
+        }
     }
 }
