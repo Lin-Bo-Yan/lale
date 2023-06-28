@@ -1,11 +1,9 @@
 package com.flowring.laleents.ui.main.webBody;
 
-import static com.flowring.laleents.tools.UiThreadUtil.runOnUiThread;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -13,7 +11,7 @@ import android.provider.Settings;
 import android.widget.Button;
 
 import androidx.annotation.Nullable;
-import androidx.core.content.FileProvider;
+import androidx.appcompat.widget.AppCompatTextView;
 
 import com.flowring.laleents.R;
 import com.flowring.laleents.model.HttpAfReturn;
@@ -46,7 +44,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class EimLoginActivity extends MainAppCompatActivity {
-    public Button btn_login;
+    private Button btn_login;
+    private AppCompatTextView textView_login;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,8 +53,8 @@ public class EimLoginActivity extends MainAppCompatActivity {
         setContentView(R.layout.activity_login_eim);
         signOut();
         loggedInDialog();
-        btn_login = findViewById(R.id.btn_login);
-        btn_login.setOnClickListener(view -> {
+        textView_login = findViewById(R.id.textView_login);
+        textView_login.setOnClickListener(view -> {
             activityReturn = new CallbackUtils.ActivityReturn() {
                 @Override
                 public void Callback(androidx.activity.result.ActivityResult activityResult) {

@@ -9,13 +9,13 @@
 
     <color name="colorExploreTitle">#555555</color>
     <color name="colorText88">#888888</color>
+    <color name="colorLoginDarkGray">#E0E0E0</color>
     <color name="colorText33">#333333</color>
     <color name="colorExploreBlue">#2496BA</color>
 
     <color name="colorBlack50">#80000000</color>
     <color name="black">#000000</color>
 
-    <!--    <color name="colorTitleSelected">#A9C833</color>-->
     <color name="colorDateBg">#3BB4B7</color>
 
     <color name="colorLaleTonDisable">#CCCCCC</color>

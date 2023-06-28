@@ -24,5 +24,12 @@
     <string name="other_apps_open">其他應用程式開啟</string>
     <string name="file_not_supported_title">標題</string>
     <string name="file_not_supported_file_name">檔案名稱</string>
+    <string name="connection_position">連線位置</string>
+    <string name="connection_position_body">請輸入網址</string>
+    <string name="login_account">帳號</string>
+    <string name="login_account_body">請輸入您的帳號</string>
+    <string name="login_password">密碼</string>
+    <string name="login_password_body">請輸入您的密碼</string>
+    <string name="login_button_title">掃描 QR code 登入</string>
 
 </resources>
