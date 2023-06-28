@@ -362,6 +362,13 @@ public class MainWebActivity extends MainAppCompatActivity {
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(shareActivityBroadcastReceiver, itShareActivityFilter); //註冊廣播接收器
     }
 
+    static boolean cleanCache = false;
+    private ValueCallback<Uri[]> mUploadMessage;
+    boolean init = false;
+    MyWebView webView;
+    private ViewGroup viewGroup = null;
+    private View overlay = null;
+
     @SuppressLint({"JavascriptInterface", "SetJavaScriptEnabled"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -390,6 +397,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             AllData.context = getApplicationContext();
         }
         UserMin userMin = UserControlCenter.getUserMinInfo();
+        getWebVersion();
         checkHasWebView();
         StringUtils.HaoLog("onResume= " + userMin);
         if (userMin != null && !userMin.userId.isEmpty()) {
@@ -586,24 +594,17 @@ public class MainWebActivity extends MainAppCompatActivity {
                     StringUtils.HaoLog("getWebVersion= 新版本 "+message);
                     if(!oldVersion.equals(message)){
                         FileUtils.saveWebViewVersion(message,file);
-                        cleanWebviewCache();
+                        cleanCache = true;
                     }
                 } else {
                     StringUtils.HaoLog("getWebVersion= 第一次使用 "+message);
                     //如果不存在表示為第一次使用app，則存檔以及清除cash
                     FileUtils.saveWebViewVersion(message,file);
-                    cleanWebviewCache();
+                    cleanCache = true;
                 }
             }
         });
     }
-
-    private ValueCallback<Uri[]> mUploadMessage;
-    boolean init = false;
-
-    MyWebView webView;
-    private ViewGroup viewGroup = null;
-    private View overlay = null;
 
     void cleanWebviewCache() {
         try {
@@ -617,7 +618,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             new WebView(getApplicationContext()).clearCache(true);
             File cacheFile = new File(getCacheDir().getParent() + "/app_webview");
             clearCacheFolder(cacheFile,System.currentTimeMillis());
-            StringUtils.HaoLog("clearCach= "+System.currentTimeMillis());
+            cleanCache = false;
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -1045,7 +1046,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         if (webView == null){webView = new WebView(getApplicationContext());}
         webView.setVisibility(View.INVISIBLE);
         webView.setDownloadListener(mWebDownloadListener);
-        getWebVersion();
+        if(cleanCache){
+            cleanWebviewCache();
+        }
         WebSettings webSettings = webView.getSettings();
         webView.setWebViewClient(new WebViewClient() {
             @Override
