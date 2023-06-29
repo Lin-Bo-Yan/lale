@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/toolbar_color"
@@ -10,6 +11,7 @@
         android:layout_height="0dp"
         android:layout_weight="0.3"
         android:layout_alignParentTop="true"
+        android:onClick="close_Input_Board"
         android:visibility="visible">
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/txt_logo"
@@ -162,14 +164,31 @@
                     android:layout_weight="1"
                     android:background="@android:color/transparent"
                     android:hint="@string/login_password_body"
+                    android:inputType="textPassword"
                     android:nextFocusDown="@+id/btn_login"
-                    android:singleLine="true" />
+                    android:singleLine="true"
+                    android:textColor="@color/colorLoginDarkGray"/>
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/img_show_password"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="10dp"
+                    android:src="@drawable/btn_password_eye" />
             </LinearLayout>
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txt_desc_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/desc_password_rule"
+                android:textColor="@android:color/holo_red_light"
+                android:textSize="12sp"
+                android:visibility="invisible" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="150dp"
+            android:layout_marginTop="130dp"
             android:orientation="vertical">
 
             <Button

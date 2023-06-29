@@ -8,7 +8,13 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
@@ -27,6 +33,7 @@ import com.flowring.laleents.tools.SharedPreferencesUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.cloud.api.CloudUtils;
 import com.flowring.laleents.tools.phone.AllData;
+import com.flowring.laleents.ui.model.EimLogin.LoginFunction;
 import com.flowring.laleents.ui.model.MainAppCompatActivity;
 import com.flowring.laleents.ui.widget.qrCode.ScanCaptureActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -44,7 +51,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class EimLoginActivity extends MainAppCompatActivity {
-    private Button btn_login;
+    private static Button btn_login;
+    static LoginFunction password;
+    private EditText edit_url,edit_account,edit_password;
+    boolean isOpenEye = false;
     private AppCompatTextView textView_login;
 
     @Override
@@ -53,6 +63,19 @@ public class EimLoginActivity extends MainAppCompatActivity {
         setContentView(R.layout.activity_login_eim);
         signOut();
         loggedInDialog();
+        password = new LoginFunction(EimLoginActivity.this);
+        btn_login = findViewById(R.id.btn_login);
+        btn_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                StringUtils.HaoLog("ddd= "+password.values);
+                if(btn_login.isEnabled()){
+                    //如果true，則打api
+                }
+            }
+        });
+
+
         textView_login = findViewById(R.id.textView_login);
         textView_login.setOnClickListener(view -> {
             activityReturn = new CallbackUtils.ActivityReturn() {
@@ -317,5 +340,60 @@ public class EimLoginActivity extends MainAppCompatActivity {
             e.printStackTrace();
         }
         return json.toString();
+    }
+
+    /**
+     * 確認使用者是否已有登入過的行動裝置
+     */
+    public static boolean alreadyLoddedIn(String loginType, String userId, String thirdPartyIdentifier, String deviceId){
+        StringUtils.HaoLog("loginType=" + loginType + "\nuserId=" + userId + "\nthirdPartyIdentifier=" + thirdPartyIdentifier + "\ndeviceId=" + deviceId);
+        HttpReturn httpReturn = CloudUtils.iCloudUtils.alreadyLoddedIn(loginType,userId,thirdPartyIdentifier,deviceId);
+        if(httpReturn.status == 200){
+            String msg = httpReturn.msg;
+            boolean data = (Boolean) httpReturn.data;
+            switch (msg){
+                case "Success":
+                case "用戶 ID 不得為空":
+                case "第三方登入 identifier 不可為空":
+                    return data;
+            }
+        }
+        return false;
+    }
+
+    private void initElement(){
+        edit_url = findViewById(R.id.edit_url);
+        edit_account = findViewById(R.id.edit_account);
+        edit_password = findViewById(R.id.edit_password);
+        ImageView img_show_password = findViewById(R.id.img_show_password);
+        img_show_password.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!isOpenEye) {
+                    img_show_password.setSelected(true);
+                    isOpenEye = true;
+                    //密碼可見
+                    edit_password.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                } else {
+                    img_show_password.setSelected(false);
+                    isOpenEye = false;
+                    //密碼不可見
+                    edit_password.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                }
+                edit_password.setSelection(edit_password.getText().length());
+            }
+        });
+
+    }
+
+    public void close_Input_Board(View view) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(findViewById(R.id.toolbar_layout).getWindowToken(), 0);
+    }
+
+    public static void checkSignBtn() {
+        StringUtils.HaoLog("canSign=" + password.canSign);
+        //設置了一個登入按鈕的啟用狀態，如果兩個 canSign 都為 true，則登入按鈕將被啟用；否則，它將保持禁用狀態
+        btn_login.setEnabled(password.canSign);
     }
 }
