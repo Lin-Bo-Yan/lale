@@ -20,18 +20,34 @@ import java.util.regex.Pattern;
 
 public class LoginFunction {
     public EditText edit_url,edit_account,edit_password;
-    public TextView txt_desc_password;
     public ImageView show_password;
     public boolean canSign = false;
 
-    public static String values;
+    public static String passwordValid;
+    public static String accountValid;
 
     public LoginFunction(Activity activity) {
         edit_url = activity.findViewById(R.id.edit_url);
         edit_account = activity.findViewById(R.id.edit_account);
         edit_password = activity.findViewById(R.id.edit_password);
-        txt_desc_password = activity.findViewById(R.id.txt_desc_password);
 
+        edit_account.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                StringUtils.HaoLog("afterTextChanged:"+editable.toString());
+                accountIsValid(editable.toString());
+            }
+        });
         edit_password.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -46,7 +62,7 @@ public class LoginFunction {
             @Override
             public void afterTextChanged(Editable editable) {
                 StringUtils.HaoLog("afterTextChanged:"+editable.toString());
-                isValid(editable.toString());
+                passwordIsValid(editable.toString());
                 EimLoginActivity.checkSignBtn();
             }
         });
@@ -70,36 +86,35 @@ public class LoginFunction {
         });
     }
 
-    private void isValid(final String value) {
-        Pattern pattern;
-        Matcher matcher;
-        Pattern length;
-        Pattern pwd_case;
-        Matcher matcher_length;
-        Matcher matcher_case;
-
-
-        pattern = Pattern.compile(DefinedUtils.PASSWORD_PATTERN);
-        length = Pattern.compile(DefinedUtils.PASSWORD_LENGTH);
-        pwd_case = Pattern.compile(DefinedUtils.PASSWORD_CASE);
-        matcher = pattern.matcher(value);
-        matcher_length = length.matcher(value);
-        matcher_case = pwd_case.matcher(value);
-        if (matcher.matches()) {
-            txt_desc_password.setVisibility(View.INVISIBLE);
-            values = value;
-            canSign = true;
-        } else {
-            canSign = false;
-            if (matcher_case.matches() && !matcher_length.matches()) {
-                txt_desc_password.setText("密碼長度至少需6碼");
-                txt_desc_password.setVisibility(View.VISIBLE);
-            } else if (matcher_case.matches()) {
-                txt_desc_password.setText(R.string.desc_password_rule);
-                txt_desc_password.setVisibility(View.VISIBLE);
-            } else
-                txt_desc_password.setVisibility(View.VISIBLE);
+    private void accountIsValid(String value){
+        if(!value.isEmpty() && value != null){
+            Pattern pattern = Pattern.compile(DefinedUtils.ACCOUNT_PATTERN);
+            Matcher matcher = pattern.matcher(value);
+            if (matcher.matches()) {
+                accountValid = value;
+            } else {
+                if (value.length() > 0) {
+                    value = value.substring(0, value.length() - 1);
+                    edit_account.setText(value);
+                }
+            }
         }
+    }
 
+    private void passwordIsValid(String value) {
+        if(!value.isEmpty() && value != null){
+            Pattern pattern = Pattern.compile(DefinedUtils.PASSWORD_RULE);
+            Matcher matcher = pattern.matcher(value);
+            if (matcher.matches()) {
+                passwordValid = value;
+                canSign = true;
+            } else {
+                canSign = false;
+                if (value.length() > 0) {
+                    value = value.substring(0, value.length() - 1);
+                    edit_password.setText(value);
+                }
+            }
+        }
     }
 }

@@ -52,7 +52,7 @@ import java.io.IOException;
 
 public class EimLoginActivity extends MainAppCompatActivity {
     private static Button btn_login;
-    static LoginFunction password;
+    static LoginFunction loginFunction;
     private EditText edit_url,edit_account,edit_password;
     boolean isOpenEye = false;
     private AppCompatTextView textView_login;
@@ -63,14 +63,16 @@ public class EimLoginActivity extends MainAppCompatActivity {
         setContentView(R.layout.activity_login_eim);
         signOut();
         loggedInDialog();
-        password = new LoginFunction(EimLoginActivity.this);
+        loginFunction = new LoginFunction(EimLoginActivity.this);
         btn_login = findViewById(R.id.btn_login);
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                StringUtils.HaoLog("ddd= "+password.values);
+                StringUtils.HaoLog("btn_login= "+btn_login.isEnabled());
                 if(btn_login.isEnabled()){
                     //如果true，則打api
+                    StringUtils.HaoLog("btn_login= "+loginFunction.accountValid);
+                    StringUtils.HaoLog("btn_login= "+loginFunction.passwordValid);
                 }
             }
         });
@@ -361,39 +363,14 @@ public class EimLoginActivity extends MainAppCompatActivity {
         return false;
     }
 
-    private void initElement(){
-        edit_url = findViewById(R.id.edit_url);
-        edit_account = findViewById(R.id.edit_account);
-        edit_password = findViewById(R.id.edit_password);
-        ImageView img_show_password = findViewById(R.id.img_show_password);
-        img_show_password.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!isOpenEye) {
-                    img_show_password.setSelected(true);
-                    isOpenEye = true;
-                    //密碼可見
-                    edit_password.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                } else {
-                    img_show_password.setSelected(false);
-                    isOpenEye = false;
-                    //密碼不可見
-                    edit_password.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                }
-                edit_password.setSelection(edit_password.getText().length());
-            }
-        });
-
-    }
-
     public void close_Input_Board(View view) {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(findViewById(R.id.toolbar_layout).getWindowToken(), 0);
     }
 
     public static void checkSignBtn() {
-        StringUtils.HaoLog("canSign=" + password.canSign);
+        StringUtils.HaoLog("canSign= " + loginFunction.canSign);
         //設置了一個登入按鈕的啟用狀態，如果兩個 canSign 都為 true，則登入按鈕將被啟用；否則，它將保持禁用狀態
-        btn_login.setEnabled(password.canSign);
+        btn_login.setEnabled(loginFunction.canSign);
     }
 }
