@@ -869,51 +869,59 @@ public class MainWebActivity extends MainAppCompatActivity {
 
     //查詢伺服器最近公告
     public void latestAnnounceDialog(){
-        UserControlCenter.getLatestAnnounce( new CallbackUtils.announceReturn() {
-            @Override
-            public void Callback(ServerAnnouncement serverAnnouncement) {
-                if(serverAnnouncement.enabled){
-                    String result = TimeUtils.yearMonthDay(serverAnnouncement.startTime,serverAnnouncement.endTime);
-                    StringUtils.HaoLog("latestAnnounceDialog= "+result);
-                    String formatDate = TimeUtils.formatDate(result,serverAnnouncement.startTime,serverAnnouncement.endTime);
-                    runOnUiThread(()->{
-                        DialogUtils.showDialogMessage(MainWebActivity.this, serverAnnouncement.content, formatDate, new CallbackUtils.noReturn() {
-                            @Override
-                            public void Callback() {
-                                webRendered(700);
-                            }
+        if(AllData.getAnnouncementServer() != null && !AllData.getAnnouncementServer().isEmpty()){
+            UserControlCenter.getLatestAnnounce( new CallbackUtils.announceReturn() {
+                @Override
+                public void Callback(ServerAnnouncement serverAnnouncement) {
+                    if(serverAnnouncement.enabled){
+                        String result = TimeUtils.yearMonthDay(serverAnnouncement.startTime,serverAnnouncement.endTime);
+                        StringUtils.HaoLog("latestAnnounceDialog= "+result);
+                        String formatDate = TimeUtils.formatDate(result,serverAnnouncement.startTime,serverAnnouncement.endTime);
+                        runOnUiThread(()->{
+                            DialogUtils.showDialogMessage(MainWebActivity.this, serverAnnouncement.content, formatDate, new CallbackUtils.noReturn() {
+                                @Override
+                                public void Callback() {
+                                    webRendered(700);
+                                }
+                            });
                         });
-                    });
-                } else {
-                    webRendered(700);
+                    } else {
+                        webRendered(700);
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            webRendered(700);
+        }
     }
 
     //查詢伺服器執行中維護公告
     public void announceServerDialog(){
-        UserControlCenter.getAnnounceServer( new CallbackUtils.announceReturn() {
-            @Override
-            public void Callback(ServerAnnouncement serverAnnouncement) {
-                StringUtils.HaoLog("announceServerDialog= 啟用? "+serverAnnouncement.enabled);
-                if(serverAnnouncement.enabled){
-                    String time = TimeUtils.formatDateTime(serverAnnouncement.endTime);
-                    String text = String.format("伺服器維護中\n預計在%s\r維護完成",time);
-                    runOnUiThread(()->{
-                        DialogUtils.showDialogMessage(MainWebActivity.this, serverAnnouncement.content, text, new CallbackUtils.noReturn() {
-                            @Override
-                            public void Callback() {
-                                //App關閉
-                                finish();
-                            }
+        if(AllData.getAnnouncementServer() != null && !AllData.getAnnouncementServer().isEmpty()){
+            UserControlCenter.getAnnounceServer( new CallbackUtils.announceReturn() {
+                @Override
+                public void Callback(ServerAnnouncement serverAnnouncement) {
+                    StringUtils.HaoLog("announceServerDialog= 啟用? "+serverAnnouncement.enabled);
+                    if(serverAnnouncement.enabled){
+                        String time = TimeUtils.formatDateTime(serverAnnouncement.endTime);
+                        String text = String.format("伺服器維護中\n預計在%s\r維護完成",time);
+                        runOnUiThread(()->{
+                            DialogUtils.showDialogMessage(MainWebActivity.this, serverAnnouncement.content, text, new CallbackUtils.noReturn() {
+                                @Override
+                                public void Callback() {
+                                    //App關閉
+                                    finish();
+                                }
+                            });
                         });
-                    });
-                } else {
-                    problemReport();
+                    } else {
+                        problemReport();
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            problemReport();
+        }
     }
 
     private void problemReport(){

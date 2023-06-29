@@ -41,7 +41,7 @@ public class AllData {
     private static String newsDomain = "https://news.lale.im";
     private static String memiaDomain = "https://memia.lale.im";
 
-    private static String AnnounceServer = "https://laledev10.flowring.com/announce";
+    private static String AnnounceServer = null;
 
     public static void setMainServer(String mainServer) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
