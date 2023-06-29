@@ -34,6 +34,7 @@ import com.flowring.laleents.ui.widget.qrCode.ScanCaptureActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -213,61 +214,62 @@ public class EimLoginActivity extends MainAppCompatActivity {
 
     public void FirebasePusher_AF_push_registration(MainAppCompatActivity activity){
         StringUtils.HaoLog("AF_push_registration");
-        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+        FirebaseMessaging.getInstance().getToken().addOnSuccessListener(new OnSuccessListener<String>() {
             @Override
-            public void onSuccess(InstanceIdResult instanceIdResult) {
-                String deviceToken = instanceIdResult.getToken();
-                StringUtils.HaoLog("deviceToken: "+deviceToken);
-                new Thread(() -> {
-                    String WFCI_URL = UserControlCenter.getUserMinInfo().eimUserData.af_wfci_service_url;
-                    String memId = UserControlCenter.getUserMinInfo().eimUserData.af_mem_id;
-                    String userId = UserControlCenter.getUserMinInfo().eimUserData.af_login_id;
-                    String uuid = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
-                    String customerProperties = HashMapToJson(userId,WFCI_URL,true,deviceToken);
-                    HttpAfReturn pu = CloudUtils.iCloudUtils.setAfPusher(WFCI_URL, memId,userId, deviceToken, uuid, customerProperties);
-                    StringUtils.HaoLog("AF推播註冊:", pu);
-                    activity.runOnUiThread(() -> {
-                        activity.finish();
-                    });
-                }).start();
+            public void onSuccess(String deviceToken) {
+                if (!deviceToken.isEmpty() && deviceToken != null) {
+                    StringUtils.HaoLog("deviceToken: "+deviceToken);
+                    new Thread(() -> {
+                        String WFCI_URL = UserControlCenter.getUserMinInfo().eimUserData.af_wfci_service_url;
+                        String memId = UserControlCenter.getUserMinInfo().eimUserData.af_mem_id;
+                        String userId = UserControlCenter.getUserMinInfo().eimUserData.af_login_id;
+                        String uuid = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
+                        String customerProperties = HashMapToJson(userId,WFCI_URL,true,deviceToken);
+                        HttpAfReturn pu = CloudUtils.iCloudUtils.setAfPusher(WFCI_URL, memId,userId, deviceToken, uuid, customerProperties);
+                        StringUtils.HaoLog("AF推播註冊:", pu);
+                        activity.runOnUiThread(() -> {
+                            activity.finish();
+                        });
+                    }).start();
+                }
             }
         });
     }
 
     public static void FirebasePusher_LaleAppEim(MainAppCompatActivity activity){
         StringUtils.HaoLog("測試帳號登入會觸發");
-        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+        FirebaseMessaging.getInstance().getToken().addOnSuccessListener(new OnSuccessListener<String>() {
             @Override
-            public void onSuccess(InstanceIdResult instanceIdResult) {
-                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
-                String deviceToken = instanceIdResult.getToken();
-                new Thread(() -> {
-                    HttpReturn pu;
-                    try {
-                        JSONObject UserIds = new JSONObject(pref.getString("UserIds", "{}"));
-                        StringUtils.HaoLog("UserIds= " + UserIds);
-                        StringUtils.HaoLog("deviceToken= " + deviceToken);
+            public void onSuccess(String deviceToken) {
+                if (!deviceToken.isEmpty() && deviceToken != null) {
+                    SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
+                    new Thread(() -> {
+                        HttpReturn pu;
+                        try {
+                            JSONObject UserIds = new JSONObject(pref.getString("UserIds", "{}"));
+                            StringUtils.HaoLog("UserIds= " + UserIds);
+                            StringUtils.HaoLog("deviceToken= " + deviceToken);
+                            if (UserIds.length() <= 1){
+                                String userId = UserControlCenter.getUserMinInfo().userId;
+                                String uuid = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
+                                String customerProperties = HashMapToJson(userId,AllData.getMainServer(),false, "");
+                                pu = CloudUtils.iCloudUtils.setPusher(userId, deviceToken, uuid, customerProperties);
+                            } else {
+                                String userId = UserControlCenter.getUserMinInfo().userId;
+                                String uuid = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
+                                UserControlCenter.switchAccounts(userId);
+                                pu = CloudUtils.iCloudUtils.updatePusher(userId, uuid);
+                            }
+                            StringUtils.HaoLog("setPusher= " + pu);
 
-                        if (UserIds.length() <= 1){
-                            String userId = UserControlCenter.getUserMinInfo().userId;
-                            String uuid = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
-                            String customerProperties = HashMapToJson(userId,AllData.getMainServer(),false, "");
-                            pu = CloudUtils.iCloudUtils.setPusher(userId, deviceToken, uuid, customerProperties);
-                        } else {
-                            String userId = UserControlCenter.getUserMinInfo().userId;
-                            String uuid = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
-                            UserControlCenter.switchAccounts(userId);
-                            pu = CloudUtils.iCloudUtils.updatePusher(userId, uuid);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                        StringUtils.HaoLog("setPusher=" + pu);
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    activity.runOnUiThread(() -> {
-                        activity.finish();
-                    });
-                }).start();
+                        activity.runOnUiThread(() -> {
+                            activity.finish();
+                        });
+                    }).start();
+                }
             }
         });
     }

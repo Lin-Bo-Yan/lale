@@ -21,6 +21,7 @@ import com.flowring.laleents.ui.main.webBody.EimLoginActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -500,24 +501,20 @@ public class UserControlCenter {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
         pref.edit().putString("nowUserId", nowUserId).apply();
         userMin = getUserMinInfoByPhone();
-
         cleanUser();
         StringUtils.HaoLog("NewConnect");
         MqttService.mqttControlCenter.NewConnect();
-        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+        FirebaseMessaging.getInstance().getToken().addOnSuccessListener(new OnSuccessListener<String>() {
             @Override
-            public void onSuccess(InstanceIdResult instanceIdResult) {
-                String deviceToken = instanceIdResult.getToken();
+            public void onSuccess(String deviceToken) {
                 new Thread(() -> {
                     StringUtils.HaoLog("nowUserId=" + nowUserId);
                     StringUtils.HaoLog("uuid=" + Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID));
                     callback.Callback(CloudUtils.iCloudUtils.updatePusher(nowUserId, Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID)));
 
                 }).start();
-
             }
         });
-
     }
 
     public static void wasLoggedOut(CallbackUtils.deviceReturn deviceReturn){
@@ -557,21 +554,22 @@ public class UserControlCenter {
                 }).start();
             } else {
                 StringUtils.HaoLog("登出 2-1");
-                FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+                FirebaseMessaging.getInstance().getToken().addOnSuccessListener(new OnSuccessListener<String>() {
                     @Override
-                    public void onSuccess(InstanceIdResult instanceIdResult) {
-                        String deviceToken = instanceIdResult.getToken();
-                        new Thread(() -> {
-                            StringUtils.HaoLog("登出 3-1");
-                            HttpReturn httpReturn = CloudUtils.iCloudUtils.closeAfPusher(UserControlCenter.getUserMinInfo().eimUserData.af_url, UserControlCenter.getUserMinInfo().eimUserData.af_login_id, deviceToken, Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID));
-                            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
-                            pref.edit().putString("nowUserId", "").apply();
-                            pref.edit().putString("UserIds", "{}").apply();
-                            userMin = null;
-                            cleanUser();
-                            delectAll();
-                            callback.Callback(httpReturn);
-                        }).start();
+                    public void onSuccess(String deviceToken) {
+                        if (!deviceToken.isEmpty() && deviceToken != null) {
+                            new Thread(() -> {
+                                StringUtils.HaoLog("登出 3-1");
+                                HttpReturn httpReturn = CloudUtils.iCloudUtils.closeAfPusher(UserControlCenter.getUserMinInfo().eimUserData.af_url, UserControlCenter.getUserMinInfo().eimUserData.af_login_id, deviceToken, Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID));
+                                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
+                                pref.edit().putString("nowUserId", "").apply();
+                                pref.edit().putString("UserIds", "{}").apply();
+                                userMin = null;
+                                cleanUser();
+                                delectAll();
+                                callback.Callback(httpReturn);
+                            }).start();
+                        }
                     }
                 });
             }
