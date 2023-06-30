@@ -397,10 +397,10 @@ public class MainWebActivity extends MainAppCompatActivity {
             AllData.context = getApplicationContext();
         }
         UserMin userMin = UserControlCenter.getUserMinInfo();
-        getWebVersion();
-        checkHasWebView();
         StringUtils.HaoLog("onResume= " + userMin);
         if (userMin != null && !userMin.userId.isEmpty()) {
+            getWebVersion();
+            checkHasWebView();
             if(userMin.eimUserData.isLaleAppEim){
                 new Thread(() -> {
                     censorToken();
