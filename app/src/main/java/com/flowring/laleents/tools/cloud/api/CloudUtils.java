@@ -285,7 +285,7 @@ public class CloudUtils implements ICloudUtils {
     public void gotoGooglePlay(Activity activity) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(
-                "https://play.google.com/store/apps/details?id=com.flowring.laletoc"));
+                "https://play.google.com/store/apps/details?id=com.flowring.laleents"));
         intent.setPackage("com.android.vending");
         activity.startActivity(intent);
     }
