@@ -1644,15 +1644,15 @@ public class FileUtils {
         return false;
     }
 
-    public static void saveWebViewVersion(String data, File file) {
+    public static void saveTextInFile(String data, File file) {
         try {
             FileOutputStream fos = new FileOutputStream(file,false); // 在保存文件之前需要先删除文件的内容，設置追加參數為 false
             fos.write(data.getBytes());
             fos.close();
-            StringUtils.HaoLog("getWebVersion= "+"文件保存成功");
+            StringUtils.HaoLog("saveTextInFile= "+"文件保存成功");
         } catch (IOException e) {
             e.printStackTrace();
-            StringUtils.HaoLog("getWebVersion= "+"保存文件失敗"+e);
+            StringUtils.HaoLog("saveTextInFile= "+"保存文件失敗"+e);
         }
     }
 

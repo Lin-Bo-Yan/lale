@@ -34,9 +34,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.security.KeyStore;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
@@ -53,7 +51,6 @@ import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
 import okhttp3.MediaType;
@@ -1919,7 +1916,7 @@ public class CloudUtils implements ICloudUtils {
                     StringUtils.HaoLog(response.request().url() + " " + response.code() + " body=" + body);
             }
         } catch (IOException | IllegalStateException e) {
-            StringUtils.HaoLog("gethttpReturn error=" + request + " " + e.toString());
+            StringUtils.HaoLog("gethttpReturn error=" + request + " " + e);
             e.printStackTrace();
         }
         return new HttpReturn();
@@ -1927,9 +1924,9 @@ public class CloudUtils implements ICloudUtils {
 
     HttpReturn gethttp2Return(Request.Builder request) {
         OkHttpClient client = getUnsafeOkHttpClient().newBuilder().build();
-
         try {
             Response response = client.newCall(request.build()).execute();
+            StringUtils.HaoLog("gethttp2Return="+new Gson().toJson(response));
             if (response.code() == 200) {
                 String body = response.body().string();
                 StringUtils.HaoLog("body=" + body);
@@ -1939,11 +1936,14 @@ public class CloudUtils implements ICloudUtils {
                     httpReturn.status = 200;
                     StringUtils.HaoLog(response.request().url().toString(), httpReturn);
                     return httpReturn;
-                } else
+                } else{
+                    StringUtils.HaoLog("gethttp2Return");
                     StringUtils.HaoLog(response.request().url() + " " + response.code() + " body=" + body);
+                    StringUtils.HaoLog("gethttp2Return end");
+                }
             }
         } catch (IOException | IllegalStateException e) {
-            StringUtils.HaoLog("gethttpReturn error=" + request + " " + e.toString());
+            StringUtils.HaoLog("gethttp2Return error=" + request + " " + e);
             e.printStackTrace();
         }
         return new HttpReturn();
@@ -1960,15 +1960,14 @@ public class CloudUtils implements ICloudUtils {
             return httpReturn;
         } catch (IOException | JSONException | IllegalStateException | JsonSyntaxException e) {
             e.printStackTrace();
+            StringUtils.HaoLog("getJhttpReturn error=" + request + " " + e);
         }
         return new HttpReturn();
     }
 
     public HttpAfReturn getJhttpAfReturn(Request.Builder request) {
         OkHttpClient client = getUnsafeOkHttpClient().newBuilder().build();
-
         try {
-
             Response response = client.newCall(request.build()).execute();
             String body = response.body().string();
             StringUtils.HaoLog("body=" + body);
@@ -1979,6 +1978,7 @@ public class CloudUtils implements ICloudUtils {
             return httpReturn;
         } catch (IOException | JsonSyntaxException e) {
             e.printStackTrace();
+            StringUtils.HaoLog("getJhttpAfReturn error=" + request + " " + e);
         }
         return new HttpAfReturn();
     }

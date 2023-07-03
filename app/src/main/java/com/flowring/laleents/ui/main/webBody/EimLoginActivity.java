@@ -8,17 +8,11 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-import android.text.method.HideReturnsTransformationMethod;
-import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
-
 import com.flowring.laleents.R;
 import com.flowring.laleents.model.HttpAfReturn;
 import com.flowring.laleents.model.HttpReturn;
@@ -28,17 +22,16 @@ import com.flowring.laleents.model.user.UserMin;
 import com.flowring.laleents.tools.ActivityUtils;
 import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.DialogUtils;
+import com.flowring.laleents.tools.FileUtils;
 import com.flowring.laleents.tools.Log;
 import com.flowring.laleents.tools.SharedPreferencesUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.cloud.api.CloudUtils;
 import com.flowring.laleents.tools.phone.AllData;
-import com.flowring.laleents.ui.model.EimLogin.LoginFunction;
+import com.flowring.laleents.ui.model.EimLogin.LoginInAppFunc;
 import com.flowring.laleents.ui.model.MainAppCompatActivity;
 import com.flowring.laleents.ui.widget.qrCode.ScanCaptureActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 
@@ -52,9 +45,7 @@ import java.io.IOException;
 
 public class EimLoginActivity extends MainAppCompatActivity {
     private static Button btn_login;
-    static LoginFunction loginFunction;
-    private EditText edit_url,edit_account,edit_password;
-    boolean isOpenEye = false;
+    static LoginInAppFunc loginFunction;
     private AppCompatTextView textView_login;
 
     @Override
@@ -63,16 +54,20 @@ public class EimLoginActivity extends MainAppCompatActivity {
         setContentView(R.layout.activity_login_eim);
         signOut();
         loggedInDialog();
-        loginFunction = new LoginFunction(EimLoginActivity.this);
+        loginFunction = new LoginInAppFunc(EimLoginActivity.this);
+        readUrlValid();
         btn_login = findViewById(R.id.btn_login);
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                StringUtils.HaoLog("btn_login= "+btn_login.isEnabled());
                 if(btn_login.isEnabled()){
-                    //如果true，則打api
+                    //如果true，拿帳號密碼打api，會收到 json，
+                    //判斷資料後回傳data資料，然後呼叫Loginback傳入data，data資料格式為：qrcode_info_url 和 af_token
+                    StringUtils.HaoLog("btn_login= "+loginFunction.urlValid);
                     StringUtils.HaoLog("btn_login= "+loginFunction.accountValid);
                     StringUtils.HaoLog("btn_login= "+loginFunction.passwordValid);
+                    saveUrlValid(loginFunction.urlValid);
+
                 }
             }
         });
@@ -131,7 +126,6 @@ public class EimLoginActivity extends MainAppCompatActivity {
             if (resultData == null) {
                 activity.cancelWait();
                 saveLog(activity);
-
                 return;
             }
 
@@ -372,5 +366,28 @@ public class EimLoginActivity extends MainAppCompatActivity {
         StringUtils.HaoLog("canSign= " + loginFunction.canSign);
         //設置了一個登入按鈕的啟用狀態，如果兩個 canSign 都為 true，則登入按鈕將被啟用；否則，它將保持禁用狀態
         btn_login.setEnabled(loginFunction.canSign);
+    }
+
+    private void saveUrlValid(String value){
+        String fileName = "UrlValid.txt";
+        String filePath = getCacheDir().getAbsolutePath() + File.separator + fileName;
+        File file = new File(filePath);
+        if(file.exists()){
+            FileUtils.saveTextInFile(value,file);
+        }
+    }
+
+    private void readUrlValid(){
+        String fileName = "UrlValid.txt";
+        String filePath = getCacheDir().getAbsolutePath() + File.separator + fileName;
+        File file = new File(filePath);
+        if(file.exists()){
+            String urlText = FileUtils.readTextFromFile(file);
+            StringUtils.HaoLog("readUrlValid= 已有檔案 "+urlText);
+            loginFunction.edit_url.setText(urlText);
+        } else {
+            StringUtils.HaoLog("readUrlValid= 第一次使用");
+            FileUtils.saveTextInFile("",file);
+        }
     }
 }

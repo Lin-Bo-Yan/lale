@@ -8,7 +8,6 @@ import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.flowring.laleents.R;
 import com.flowring.laleents.tools.StringUtils;
@@ -18,19 +17,40 @@ import com.flowring.laleents.ui.main.webBody.EimLoginActivity;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class LoginFunction {
+public class LoginInAppFunc {
     public EditText edit_url,edit_account,edit_password;
     public ImageView show_password;
     public boolean canSign = false;
 
     public static String passwordValid;
     public static String accountValid;
+    public static String urlValid;
 
-    public LoginFunction(Activity activity) {
+    public LoginInAppFunc(Activity activity) {
         edit_url = activity.findViewById(R.id.edit_url);
         edit_account = activity.findViewById(R.id.edit_account);
         edit_password = activity.findViewById(R.id.edit_password);
 
+        edit_url.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(!editable.toString().isEmpty() && editable.toString() != null){
+                    urlIsValid(editable.toString());
+                } else {
+                    urlIsValid("");
+                }
+            }
+        });
         edit_account.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -44,7 +64,6 @@ public class LoginFunction {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                StringUtils.HaoLog("afterTextChanged:"+editable.toString());
                 accountIsValid(editable.toString());
             }
         });
@@ -61,7 +80,6 @@ public class LoginFunction {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                StringUtils.HaoLog("afterTextChanged:"+editable.toString());
                 passwordIsValid(editable.toString());
                 EimLoginActivity.checkSignBtn();
             }
@@ -86,9 +104,24 @@ public class LoginFunction {
         });
     }
 
+    private void urlIsValid(String value){
+        Pattern pattern = Pattern.compile(DefinedUtils.RULE);
+        Matcher matcher = pattern.matcher(value);
+        if(matcher.matches()){
+            urlValid = value;
+        } else {
+            if (value.length() > 0) {
+                value = value.substring(0, value.length() - 1);
+                edit_url.setText(value);
+            } else {
+                urlValid = value;
+            }
+        }
+    }
+
     private void accountIsValid(String value){
         if(!value.isEmpty() && value != null){
-            Pattern pattern = Pattern.compile(DefinedUtils.ACCOUNT_PATTERN);
+            Pattern pattern = Pattern.compile(DefinedUtils.RULE);
             Matcher matcher = pattern.matcher(value);
             if (matcher.matches()) {
                 accountValid = value;
@@ -103,7 +136,7 @@ public class LoginFunction {
 
     private void passwordIsValid(String value) {
         if(!value.isEmpty() && value != null){
-            Pattern pattern = Pattern.compile(DefinedUtils.PASSWORD_RULE);
+            Pattern pattern = Pattern.compile(DefinedUtils.RULE);
             Matcher matcher = pattern.matcher(value);
             if (matcher.matches()) {
                 passwordValid = value;

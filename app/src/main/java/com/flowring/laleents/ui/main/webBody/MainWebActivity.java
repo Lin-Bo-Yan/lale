@@ -567,13 +567,13 @@ public class MainWebActivity extends MainAppCompatActivity {
                     StringUtils.HaoLog("getWebVersion= 舊版本 "+oldVersion);
                     StringUtils.HaoLog("getWebVersion= 新版本 "+message);
                     if(!oldVersion.equals(message)){
-                        FileUtils.saveWebViewVersion(message,file);
+                        FileUtils.saveTextInFile(message,file);
                         cleanCache = true;
                     }
                 } else {
                     StringUtils.HaoLog("getWebVersion= 第一次使用 "+message);
                     //如果不存在表示為第一次使用app，則存檔以及清除cash
-                    FileUtils.saveWebViewVersion(message,file);
+                    FileUtils.saveTextInFile(message,file);
                     cleanCache = true;
                 }
             }
