@@ -43,6 +43,9 @@ public class EimUserData {
             userMin.externalServerSetting.jitsiServerUrl = lale_external_server_info.jitsiServerUrl;
             userMin.externalServerSetting.messageServerUrl = lale_external_server_info.messageServerUrl;
             userMin.externalServerSetting.mqttUrl = lale_external_server_info.mqttUrl;
+            userMin.externalServerSetting.callServiceUrl = lale_external_server_info.callServiceUrl;
+            userMin.externalServerSetting.applicationVersion = lale_external_server_info.applicationVersion;
+            userMin.externalServerSetting.ret = lale_external_server_info.ret;
         }
         userMin.eimUserData = this;
         return userMin;

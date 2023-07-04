@@ -73,9 +73,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         StringUtils.HaoLog("FirebaseService= "+AllData.context);
         StringUtils.HaoLog("FirebaseService= "+UserControlCenter.getUserMinInfo());
         StringUtils.HaoLog("FirebaseService= "+remoteMessage.getData().get("body"));
-        String isAF = remoteMessage.getData().get("isAF");
-        boolean isAFBoolean = Boolean.parseBoolean(isAF);
-        //UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim
 
         if (AllData.context == null){
             AllData.context = getApplicationContext();
@@ -130,41 +127,47 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 }
             } else {
                 boolean isAppForeground = CommonUtils.foregrounded();
-                if(isAFBoolean){
-                    //是 AF
-                    StringUtils.HaoLog("是否在前景"+isAppForeground);
-                    if (!isAppForeground) {
-                        sendNoChatNotification(remoteMessage);
-                    } else {
-                        LocalBroadcastControlCenter.send(this, LocalBroadcastControlCenter.ACTION_NOTIFI_AF, remoteMessage.getData().get("body"));
-                    }
+                //是 AF
+                StringUtils.HaoLog("是否在前景"+isAppForeground);
+                if (!isAppForeground) {
+                    sendNoChatNotification(remoteMessage);
+                } else {
+                    LocalBroadcastControlCenter.send(this, LocalBroadcastControlCenter.ACTION_NOTIFI_AF, remoteMessage.getData().get("body"));
                 }
             }
-
         } else {
             //沒有使用者詳細資訊，表示離線登出，推播server沒有關閉的情況
             StringUtils.HaoLog("closure_pusher= "+remoteMessage.getData());
-            StringUtils.HaoLog("closure_pusher= "+isAFBoolean);
-            if(isAFBoolean){
-                //AF 關閉推播
-                String domain = remoteMessage.getData().get("domain");
-                String userid = remoteMessage.getData().get("userId");
-                String deviceToken = remoteMessage.getData().get("deviceToken");
-                String uuid = Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID);
-                HttpReturn httpReturn = CloudUtils.iCloudUtils.closeAfPusher(domain,userid,deviceToken,uuid);
-                StringUtils.HaoLog("關閉AF推播成功 "+httpReturn.status);
-            } else {
-                //EIM 關閉推播
-                String domain = remoteMessage.getData().get("domain");
-                String userid = remoteMessage.getData().get("userId");
-                if(AllData.getMainServer().equals(domain)){
+            StringUtils.HaoLog("closure_pusher= "+remoteMessage.getData().containsKey("isAF"));
+            if (remoteMessage.getData().containsKey("domain") &&
+                    remoteMessage.getData().containsKey("userId") &&
+                    remoteMessage.getData().containsKey("isAF")) {
+
+                String isAF = remoteMessage.getData().get("isAF");
+                boolean isAFBoolean = Boolean.parseBoolean(isAF);
+
+                if(isAFBoolean){
+                    //AF 關閉推播
+                    String domain = remoteMessage.getData().get("domain");
+                    String userid = remoteMessage.getData().get("userId");
+                    String deviceToken = remoteMessage.getData().get("deviceToken");
                     String uuid = Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID);
-                    HttpReturn httpReturn = CloudUtils.iCloudUtils.closePusher(userid, uuid);
-                    StringUtils.HaoLog("關閉EIM推播成功 "+httpReturn.status);
+                    HttpReturn httpReturn = CloudUtils.iCloudUtils.closeAfPusher(domain,userid,deviceToken,uuid);
+                    StringUtils.HaoLog("關閉AF推播成功 "+httpReturn.status);
+                } else {
+                    //EIM 關閉推播
+                    String domain = remoteMessage.getData().get("domain");
+                    String userid = remoteMessage.getData().get("userId");
+                    if(AllData.getMainServer().equals(domain)){
+                        String uuid = Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID);
+                        HttpReturn httpReturn = CloudUtils.iCloudUtils.closePusher(userid, uuid);
+                        StringUtils.HaoLog("關閉EIM推播成功 "+httpReturn.status);
+                    }
                 }
+            } else {
+                StringUtils.HaoLog("沒有 domain 和 userId 和 isAF");
             }
         }
-
     }
 
 

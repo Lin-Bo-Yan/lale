@@ -594,6 +594,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             File cacheFile = new File(getCacheDir().getParent() + "/app_webview");
             clearCacheFolder(cacheFile,System.currentTimeMillis());
             cleanCache = false;
+            StringUtils.HaoLog("cleanCache= "+"已清除Cache "+cleanCache);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -1032,6 +1033,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         if (webView == null){webView = new WebView(getApplicationContext());}
         webView.setVisibility(View.INVISIBLE);
         webView.setDownloadListener(mWebDownloadListener);
+        StringUtils.HaoLog("cleanCache= "+"可以清除Cache嗎? "+cleanCache);
         if(cleanCache){
             cleanWebviewCache();
         }
@@ -1052,7 +1054,16 @@ public class MainWebActivity extends MainAppCompatActivity {
 
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                StringUtils.HaoLog("還活著 onReceivedError 請求超時= " + error.toString());
+                String errorDescription = error.getDescription().toString();
+                StringUtils.HaoLog("還活著 onReceivedError 請求超時= " + errorDescription);
+                StringUtils.HaoLog("還活著 onReceivedError getUrl= " + request.getUrl());
+                StringUtils.HaoLog("還活著 onReceivedError getMethod= " + request.getMethod());
+                if (error.getErrorCode() == ERROR_TIMEOUT) {
+                    // 處理連接超時邏輯
+                    StringUtils.HaoLog("還活著 onReceivedError 連接超時= "+error.getErrorCode());
+
+                }
+
                 super.onReceivedError(view, request, error);
             }
 
