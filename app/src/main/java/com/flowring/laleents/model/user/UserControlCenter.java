@@ -19,11 +19,10 @@ import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.cloud.api.CloudUtils;
 import com.flowring.laleents.tools.cloud.mqtt.MqttService;
 import com.flowring.laleents.tools.phone.AllData;
+import com.flowring.laleents.tools.phone.DefinedUtils;
 import com.flowring.laleents.ui.main.webBody.EimLoginActivity;
 import com.flowring.laleents.ui.main.webBody.MainWebActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -36,12 +35,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class UserControlCenter {
     static UserMin userMin = null;
     static UserInfo userInfo;
     static Company company = null;
     public static boolean hasInitUI = false;
+    static String afToken;
 
     public class Company {
         public String companyId;
@@ -296,12 +298,31 @@ public class UserControlCenter {
         }).start();
     }
 
+    public static void getAflogin(String account, String password, String url){
+        Pattern pattern = Pattern.compile(DefinedUtils.URL_RULE);
+        Matcher matcher = pattern.matcher(url);
+        if(matcher.matches()){
+
+
+//            new Thread(() -> {
+//                HttpAfReturn afReturn = CloudUtils.iCloudUtils.aflogin(account,password,url);
+//                StringUtils.HaoLog("getAflogin= "+afReturn.success);
+//                if(afReturn.success){
+//                    //String ss = new Gson().toJson(afReturn.data);
+//                    //StringUtils.HaoLog("getAflogin= "+new Gson().toJson(afReturn.data));
+//
+//                } else {
+//                    StringUtils.HaoLog("伺服器錯誤");
+//                }
+//            }).start();
+        } else {
+            StringUtils.HaoLog("getAflogin= "+"url 格式不正確");
+        }
+    }
+
     public static String getAfToken() {
         return afToken;
     }
-
-    static String afToken;
-
 
     public static Company getCompanyData() {
         return company;

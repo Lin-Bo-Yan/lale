@@ -793,5 +793,11 @@ public interface ICloudUtils {
      */
     @WorkerThread
     String webVersion(String url);
+
+    /**
+     * 帳號登入
+     */
+    @WorkerThread
+    HttpAfReturn aflogin(String account, String password, String url);
 }
 

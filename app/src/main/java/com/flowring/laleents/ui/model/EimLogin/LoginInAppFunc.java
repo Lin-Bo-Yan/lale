@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import androidx.appcompat.widget.AppCompatTextView;
+
 import com.flowring.laleents.R;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.phone.DefinedUtils;
@@ -18,9 +20,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class LoginInAppFunc {
-    public EditText edit_url,edit_account,edit_password;
-    public ImageView show_password;
+    public EditText edit_url;
+    private EditText edit_account,edit_password;
+    private ImageView show_password;
     public boolean canSign = false;
+    private AppCompatTextView txt_warn_url;
 
     public static String passwordValid;
     public static String accountValid;
@@ -30,6 +34,7 @@ public class LoginInAppFunc {
         edit_url = activity.findViewById(R.id.edit_url);
         edit_account = activity.findViewById(R.id.edit_account);
         edit_password = activity.findViewById(R.id.edit_password);
+        txt_warn_url = activity.findViewById(R.id.txt_warn_url);
 
         edit_url.addTextChangedListener(new TextWatcher() {
             @Override
@@ -105,17 +110,18 @@ public class LoginInAppFunc {
     }
 
     private void urlIsValid(String value){
-        Pattern pattern = Pattern.compile(DefinedUtils.RULE);
+        Pattern pattern = Pattern.compile(DefinedUtils.URL_RULE);
         Matcher matcher = pattern.matcher(value);
         if(matcher.matches()){
+            txt_warn_url.setVisibility(View.INVISIBLE);
             urlValid = value;
         } else {
             if (value.length() > 0) {
-                value = value.substring(0, value.length() - 1);
-                edit_url.setText(value);
+                txt_warn_url.setVisibility(View.VISIBLE);
             } else {
-                urlValid = value;
+                txt_warn_url.setVisibility(View.INVISIBLE);
             }
+            urlValid = value;
         }
     }
 

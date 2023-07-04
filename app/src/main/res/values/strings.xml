@@ -28,6 +28,7 @@
     <string name="connection_position_body">請輸入網址</string>
     <string name="login_account">帳號</string>
     <string name="login_account_body">請輸入您的帳號</string>
+    <string name="login_warn_url_title">請輸入正確格式</string>
     <string name="login_password">密碼</string>
     <string name="login_password_body">請輸入您的密碼</string>
     <string name="login_button_title">掃描 QR code 登入</string>

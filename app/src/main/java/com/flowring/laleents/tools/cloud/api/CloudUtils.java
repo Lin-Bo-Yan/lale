@@ -53,6 +53,7 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -1898,6 +1899,20 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/util/app/platform/tob")
                 .get();
         return gethttpReturn(request);
+    }
+    
+    public HttpAfReturn aflogin(String account, String password, String url) {
+
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, "{\r\n    \"loginId\":\"administrator\",\r\n    \"password\":\"adm\"\r\n}");
+        Request.Builder request = new Request.Builder()
+                .url("https://agentflow.flowring.com:8443/WebAgenda/api/dau/EIM/aflogin")
+                .method("GET", body)
+                .addHeader("Content-Type", "application/json");
+
+
+
+        return getJhttpAfReturn(request);
     }
 
     HttpReturn gethttpReturn(Request.Builder request) {

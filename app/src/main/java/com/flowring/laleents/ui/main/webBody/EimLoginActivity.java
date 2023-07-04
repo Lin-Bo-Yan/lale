@@ -63,11 +63,8 @@ public class EimLoginActivity extends MainAppCompatActivity {
                 if(btn_login.isEnabled()){
                     //如果true，拿帳號密碼打api，會收到 json，
                     //判斷資料後回傳data資料，然後呼叫Loginback傳入data，data資料格式為：qrcode_info_url 和 af_token
-                    StringUtils.HaoLog("btn_login= "+loginFunction.urlValid);
-                    StringUtils.HaoLog("btn_login= "+loginFunction.accountValid);
-                    StringUtils.HaoLog("btn_login= "+loginFunction.passwordValid);
                     saveUrlValid(loginFunction.urlValid);
-
+                    UserControlCenter.getAflogin(loginFunction.accountValid,loginFunction.passwordValid,loginFunction.urlValid);
                 }
             }
         });
@@ -163,6 +160,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
 
             String eimUserDataString = new Gson().toJson(httpReturn.data);
             EimUserData eimUserData = new Gson().fromJson(eimUserDataString, EimUserData.class);
+            saveUrlValid(eimUserData.af_url);
             {
                 UserMin userMin = eimUserData.getUserMin();
 
