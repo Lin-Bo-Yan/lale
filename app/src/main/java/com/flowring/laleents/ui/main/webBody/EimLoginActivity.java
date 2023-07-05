@@ -11,6 +11,8 @@ import android.provider.Settings;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+
+import androidx.activity.result.ActivityResult;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
 import com.flowring.laleents.R;
@@ -61,10 +63,14 @@ public class EimLoginActivity extends MainAppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(btn_login.isEnabled()){
-                    //如果true，拿帳號密碼打api，會收到 json，
-                    //判斷資料後回傳data資料，然後呼叫Loginback傳入data，data資料格式為：qrcode_info_url 和 af_token
                     saveUrlValid(loginFunction.urlValid);
-                    UserControlCenter.getAflogin(loginFunction.accountValid,loginFunction.passwordValid,loginFunction.urlValid);
+                    UserControlCenter.getAflogin(EimLoginActivity.this,loginFunction.accountValid, loginFunction.passwordValid, loginFunction.urlValid, new CallbackUtils.messageReturn() {
+                        @Override
+                        public void Callback(String message) {
+                            StringUtils.HaoLog("結果:" + message);
+                            Loginback(EimLoginActivity.this, message);
+                        }
+                    });
                 }
             }
         });
@@ -144,6 +150,18 @@ public class EimLoginActivity extends MainAppCompatActivity {
     public void connection_server_get_httpReturn(MainAppCompatActivity activity, JSONObject result){
         String af_token = result.optString("af_token");
         String qrcode_info_url = result.optString("qrcode_info_url");
+
+        if (af_token.isEmpty() || qrcode_info_url.isEmpty()) {
+            runOnUiThread(() -> {
+                if (dialogWait != null) {
+                    dialogWait.dismissDialog();
+                    dialogWait = null;
+                }
+            });
+            //activity.cancelWait();
+            return;
+        }
+
         HttpAfReturn httpReturn = CloudUtils.iCloudUtils.getEimQRcode(activity, af_token, qrcode_info_url);
         if (httpReturn.success) {
             StringUtils.HaoLog("掃描成功");
@@ -303,6 +321,9 @@ public class EimLoginActivity extends MainAppCompatActivity {
         } else {
             StringUtils.HaoLog("SharedPreferences 沒有值");
         }
+        //String message = pref.getString("message","");
+        //StringUtils.HaoLog("webMessage= "+message);
+
     }
 
     private void loggedInDialog(){

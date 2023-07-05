@@ -3,6 +3,7 @@ package com.flowring.laleents.model.user;
 import static com.flowring.laleents.tools.phone.AllData.delectAll;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -298,25 +299,22 @@ public class UserControlCenter {
         }).start();
     }
 
-    public static void getAflogin(String account, String password, String url){
+    public static void getAflogin(Context context, String account, String password, String url, CallbackUtils.messageReturn messageReturn){
         Pattern pattern = Pattern.compile(DefinedUtils.URL_RULE);
         Matcher matcher = pattern.matcher(url);
         if(matcher.matches()){
-
-
-//            new Thread(() -> {
-//                HttpAfReturn afReturn = CloudUtils.iCloudUtils.aflogin(account,password,url);
-//                StringUtils.HaoLog("getAflogin= "+afReturn.success);
-//                if(afReturn.success){
-//                    //String ss = new Gson().toJson(afReturn.data);
-//                    //StringUtils.HaoLog("getAflogin= "+new Gson().toJson(afReturn.data));
-//
-//                } else {
-//                    StringUtils.HaoLog("伺服器錯誤");
-//                }
-//            }).start();
+            new Thread(() -> {
+                HttpAfReturn afReturn = CloudUtils.iCloudUtils.aflogin(account,password,url);
+                if(afReturn.success){
+                    String info = new Gson().toJson(afReturn.data);
+                    messageReturn.Callback(info);
+                } else {
+                    StringUtils.HaoLog("伺服器錯誤");
+                }
+            }).start();
         } else {
             StringUtils.HaoLog("getAflogin= "+"url 格式不正確");
+            DialogUtils.showDialogMessage(context,"格式不正確");
         }
     }
 

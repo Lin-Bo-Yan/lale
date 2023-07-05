@@ -1902,16 +1902,19 @@ public class CloudUtils implements ICloudUtils {
     }
     
     public HttpAfReturn aflogin(String account, String password, String url) {
-
         MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(mediaType, "{\r\n    \"loginId\":\"administrator\",\r\n    \"password\":\"adm\"\r\n}");
+        JSONObject body_j = new JSONObject();
+        try {
+            body_j.put("loginId", account);
+            body_j.put("password", password);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody body = RequestBody.create(mediaType, body_j.toString());
         Request.Builder request = new Request.Builder()
-                .url("https://agentflow.flowring.com:8443/WebAgenda/api/dau/EIM/aflogin")
-                .method("GET", body)
+                .url(url + "/api/dau/EIM/aflogin")
+                .method("POST", body)
                 .addHeader("Content-Type", "application/json");
-
-
-
         return getJhttpAfReturn(request);
     }
 

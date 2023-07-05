@@ -909,17 +909,17 @@ public class MainWebActivity extends MainAppCompatActivity {
                             DialogUtils.showDialogMessage(MainWebActivity.this, serverAnnouncement.content, formatDate, new CallbackUtils.noReturn() {
                                 @Override
                                 public void Callback() {
-                                    webRendered(700);
+                                    webRendered();
                                 }
                             });
                         });
                     } else {
-                        webRendered(700);
+                        webRendered();
                     }
                 }
             });
         } else {
-            webRendered(700);
+            webRendered();
         }
     }
 
@@ -950,6 +950,17 @@ public class MainWebActivity extends MainAppCompatActivity {
         } else {
             problemReport();
         }
+    }
+
+    private void webMessage(JSONObject data){
+        String message = "";
+        if(data.has("message")){
+            message = data.optString("message");
+        } else {
+            StringUtils.HaoLog("資料不存在");
+        }
+        //SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences((Context) MainWebActivity.this);
+        //pref.edit().putString("message", message).apply();
     }
 
     private void problemReport(){
@@ -1296,9 +1307,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
-    private void webRendered(int second){
+    private void webRendered(){
         StringUtils.HaoLog("webRendered= "+Thread.currentThread().getName());
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
             public void run() {
                 LayoutTransition layoutTransition = new LayoutTransition();
                 PropertyValuesHolder aniChan = PropertyValuesHolder.ofFloat("rotation",0,50,0);
@@ -1308,7 +1319,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                 viewGroup.removeView(overlay);
                 StringUtils.HaoLog("webRendered= "+Thread.currentThread().getName());
             }
-        },second);
+        });
     }
     //endregion
 
@@ -1401,6 +1412,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     latestAnnounceDialog();
                     break;
                 case "webMessage":
+                    webMessage(data);
                     break;
                 case "shareFileToCloud":
                     shareFileToCloud(data);
