@@ -23,6 +23,14 @@ public class TimeUtils {
         return timeInterval;
     }
 
+    public static String NowTime(){
+        long timestamp = System.currentTimeMillis();
+        Date date = new Date(timestamp);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String dateString = sdf.format(date);
+        return dateString;
+    }
+
     public static long RoomTopToLong(String dateString) {
         if (dateString == null)
             return 0;

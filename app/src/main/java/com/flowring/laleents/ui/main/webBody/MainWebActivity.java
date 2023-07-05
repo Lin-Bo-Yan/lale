@@ -562,21 +562,50 @@ public class MainWebActivity extends MainAppCompatActivity {
                 String fileName = "webViewVersion.txt";
                 String filePath = getCacheDir().getAbsolutePath() + File.separator + fileName;
                 File file = new File(filePath);
-                if(file.exists()){
+                if (file.exists()) {
                     //如果存在判斷檔案內版本是否不同，如果為true，則存檔以及清除cash
                     String oldVersion = FileUtils.readTextFromFile(file);
-                    StringUtils.HaoLog("getWebVersion= 舊版本 "+oldVersion);
-                    StringUtils.HaoLog("getWebVersion= 新版本 "+message);
-                    if(!oldVersion.equals(message)){
-                        FileUtils.saveTextInFile(message,file);
+                    StringUtils.HaoLog("getWebVersion= 舊版本 " + oldVersion);
+                    StringUtils.HaoLog("getWebVersion= 新版本 " + message);
+                    if (!oldVersion.equals(message)) {
+                        FileUtils.saveTextInFile(message, file);
                         cleanCache = true;
                     }
                 } else {
-                    StringUtils.HaoLog("getWebVersion= 第一次使用 "+message);
+                    StringUtils.HaoLog("getWebVersion= 第一次使用 " + message);
                     //如果不存在表示為第一次使用app，則存檔以及清除cash
-                    FileUtils.saveTextInFile(message,file);
+                    FileUtils.saveTextInFile(message, file);
                     cleanCache = true;
                 }
+            }
+        }, new CallbackUtils.timeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                if(timeout instanceof java.net.SocketTimeoutException){
+                    showTimeoutDialog();
+                }
+            }
+        });
+    }
+
+    private void showTimeoutDialog(){
+        DialogUtils.showTimeoutDialog(MainWebActivity.this, new CallbackUtils.tokenReturn() {
+            @Override
+            public void Callback() {
+                //登出
+                Logout();
+            }
+        }, new CallbackUtils.tokenReturn() {
+            @Override
+            public void Callback() {
+                //關閉
+                finish();
+            }
+        }, new CallbackUtils.tokenReturn() {
+            @Override
+            public void Callback() {
+                //問題回報
+                feedback();
             }
         });
     }
@@ -1338,7 +1367,7 @@ public class MainWebActivity extends MainAppCompatActivity {
     //region  postMessage
     @JavascriptInterface
     public String postMessage(String json) {
-        StringUtils.HaoLog("jsp postMessage:" + TimeUtils.NowTimestamp() + "/" + json);
+        StringUtils.HaoLog("jsp postMessage:" + TimeUtils.NowTime() + "/" + json);
         if (json == null || json.isEmpty())
             return null;
         try {
@@ -2678,7 +2707,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         webView.post(new Runnable() {
             @Override
             public void run() {
-                StringUtils.HaoLog("jsp sendToWeb:" + TimeUtils.NowTimestamp() + "/" + json);
+                StringUtils.HaoLog("jsp sendToWeb:" + TimeUtils.NowTime() + "/" + json);
 
                 webView.evaluateJavascript("receiveAppMessage('" + json + "')", new ValueCallback<String>() {
                     @Override

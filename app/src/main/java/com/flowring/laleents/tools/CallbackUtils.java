@@ -16,6 +16,7 @@ import com.flowring.laleents.model.room.PasswordRoomMinInfo;
 import com.flowring.laleents.model.user.UserControlCenter;
 import com.flowring.laleents.model.user.UserInfo;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class CallbackUtils {
@@ -139,5 +140,9 @@ public class CallbackUtils {
 
     public interface announceReturn{
         void Callback(ServerAnnouncement serverAnnouncement);
+    }
+
+    public interface timeoutReturn{
+        void Callback(IOException timeout);
     }
 }

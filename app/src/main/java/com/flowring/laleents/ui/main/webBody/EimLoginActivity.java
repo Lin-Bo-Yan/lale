@@ -308,7 +308,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
         Boolean signOut = pref.getBoolean("isSignOut",false);
         StringUtils.HaoLog("getPref 布林："+signOut);
         if(signOut){
-            DialogUtils.showDialog(EimLoginActivity.this, new CallbackUtils.tokenReturn() {
+            DialogUtils.showSignOutDialog(EimLoginActivity.this, new CallbackUtils.tokenReturn() {
                 @Override
                 public void Callback() {}
             });

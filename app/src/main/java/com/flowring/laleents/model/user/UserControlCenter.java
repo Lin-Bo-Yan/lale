@@ -32,6 +32,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -688,9 +689,14 @@ public class UserControlCenter {
         }
     }
 
-    public static void getWebVersion(String url, CallbackUtils.messageReturn messageReturn){
+    public static void getWebVersion(String url, CallbackUtils.messageReturn messageReturn,CallbackUtils.timeoutReturn timeoutReturn){
         new Thread(() -> {
-            String version = CloudUtils.iCloudUtils.webVersion(url);
+            String version = CloudUtils.iCloudUtils.webVersion(url, new CallbackUtils.timeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    timeoutReturn.Callback(timeout);
+                }
+            });
             messageReturn.Callback(version);
             }).start();
     }

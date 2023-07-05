@@ -625,7 +625,7 @@ public class DialogUtils {
     }
 
 
-    public static void showDialog(Activity activity,CallbackUtils.tokenReturn tokenReturn){
+    public static void showSignOutDialog(Activity activity,CallbackUtils.tokenReturn tokenReturn){
         runOnUiThread(() -> {
             Dialog dialog = new Dialog(activity);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -660,4 +660,44 @@ public class DialogUtils {
             alertDialogBuilder.show();
         });
     }
+    
+    public static void showTimeoutDialog(Activity activity,CallbackUtils.tokenReturn signout, CallbackUtils.tokenReturn closed, CallbackUtils.tokenReturn problemReport){
+        runOnUiThread(() -> {
+            Dialog dialog = new Dialog(activity);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.dialog_timeout);
+            dialog.show();
+            Button signoutButton = dialog.findViewById(R.id.signoutButton);
+            signoutButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                    signout.Callback();
+                    //登出
+                }
+            });
+
+            Button closedButton = dialog.findViewById(R.id.closedButton);
+            closedButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                    closed.Callback();
+                    //關閉
+                }
+            });
+
+            Button problemReportButton = dialog.findViewById(R.id.problemReportButton);
+            problemReportButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                    problemReport.Callback();
+                    //問題回報
+                }
+            });
+
+        });
+    }
+
 }

@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -1876,19 +1877,27 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
-    public String webVersion(String url) {
+    public String webVersion(String url,CallbackUtils.timeoutReturn timeoutReturn) {
         Request.Builder request = new Request.Builder()
                 .url(url)
                 .get();
-        OkHttpClient client = getUnsafeOkHttpClient().newBuilder().build();
+        OkHttpClient client = getUnsafeOkHttpClient().newBuilder()
+                .connectTimeout(5, TimeUnit.SECONDS)
+                .writeTimeout(5, TimeUnit.SECONDS)
+                .readTimeout(5, TimeUnit.SECONDS)
+                .build();
         try {
             Response response = client.newCall(request.build()).execute();
             if (response.code() == 200){
                 return response.body().string();
             }
         } catch (IOException e) {
+            if(e instanceof java.net.SocketTimeoutException){
+                // 如果超時，通過回調通知主線程
+                timeoutReturn.Callback(e);
+            }
             e.printStackTrace();
-            StringUtils.HaoLog("getWebVersion error=" + request + " " + e);
+            StringUtils.HaoLog("getWebVersion error=" + request + " / " + e);
         }
         return "";
     }
