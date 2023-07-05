@@ -1090,7 +1090,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                 if (error.getErrorCode() == ERROR_TIMEOUT) {
                     // 處理連接超時邏輯
                     StringUtils.HaoLog("還活著 onReceivedError 連接超時= "+error.getErrorCode());
-
+                    showTimeoutDialog();
                 }
 
                 super.onReceivedError(view, request, error);
