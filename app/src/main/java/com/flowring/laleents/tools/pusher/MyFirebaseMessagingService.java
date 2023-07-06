@@ -177,7 +177,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String body = remoteMessage.getData().get("body");
         StringUtils.HaoLog("body="+body);
         if (body != null) {
-            if (body.contains("notifyType")) {
+            if (body.contains("command")){
+                SilenceNotifi silenceNotifi = new Gson().fromJson(body, SilenceNotifi.class);
+                if("logout".equals(silenceNotifi.command)){
+                    StringUtils.HaoLog("推播登出");
+                    UserControlCenter.setLogout(new CallbackUtils.ReturnHttp() {
+                        @Override
+                        public void Callback(HttpReturn httpReturn) {
+                            SharedPreferencesUtils.isRepeatDevice(true);
+                        }
+                    });
+                }
+            } else if (body.contains("msgType")) {
                 workNotifi workNotifi = new Gson().fromJson(body, workNotifi.class);
                 Intent intent = new Intent(this, MainWebActivity.class);
                 intent.putExtra("bFromPhone", true);
@@ -188,11 +199,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 if (workNotifi.notifyType != null && workNotifi.msgType.equals("AF_TASK")) {
                     title = workNotifi.frontUserName;
                     body = workNotifi.taskName + ":" + workNotifi.keyword + "\n您有一份工作需盡速處理";
-                } else if (workNotifi.notifyType != null && workNotifi.msgType.equals("AF_MEETING")) {
+                } else if (workNotifi.msgType != null && workNotifi.msgType.equals("AF_MEETING")) {
                     title = workNotifi.title;
                     body = workNotifi.content;
                 }
-                StringUtils.HaoLog("body="+body);
+                StringUtils.HaoLog("body= "+body);
                 PendingIntent pendingIntent = PendingIntent.getActivity(this, afid, intent,  FLAG_IMMUTABLE);
 
 
@@ -229,18 +240,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 }
 
                 notificationManager.notify(afid++, notificationBuilder.build());
-            }
-            if (body.contains("command")){
-                SilenceNotifi silenceNotifi = new Gson().fromJson(body, SilenceNotifi.class);
-                if("logout".equals(silenceNotifi.command)){
-                    StringUtils.HaoLog("推播登出");
-                    UserControlCenter.setLogout(new CallbackUtils.ReturnHttp() {
-                        @Override
-                        public void Callback(HttpReturn httpReturn) {
-                            SharedPreferencesUtils.isRepeatDevice(true);
-                        }
-                    });
-                }
             }
         }
     }
