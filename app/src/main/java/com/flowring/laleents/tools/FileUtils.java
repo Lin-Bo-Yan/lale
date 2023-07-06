@@ -1645,14 +1645,16 @@ public class FileUtils {
     }
 
     public static void saveTextInFile(String data, File file) {
-        try {
-            FileOutputStream fos = new FileOutputStream(file,false); // 在保存文件之前需要先删除文件的内容，設置追加參數為 false
-            fos.write(data.getBytes());
-            fos.close();
-            StringUtils.HaoLog("saveTextInFile= "+"文件保存成功");
-        } catch (IOException e) {
-            e.printStackTrace();
-            StringUtils.HaoLog("saveTextInFile= "+"保存文件失敗"+e);
+        if(!data.isEmpty() && data != null){
+            try {
+                FileOutputStream fos = new FileOutputStream(file,false); // 在保存文件之前需要先删除文件的内容，設置追加參數為 false
+                fos.write(data.getBytes());
+                fos.close();
+                StringUtils.HaoLog("saveTextInFile= "+"文件保存成功");
+            } catch (IOException e) {
+                e.printStackTrace();
+                StringUtils.HaoLog("saveTextInFile= "+"保存文件失敗"+e);
+            }
         }
     }
 

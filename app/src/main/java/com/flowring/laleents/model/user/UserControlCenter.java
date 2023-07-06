@@ -300,21 +300,23 @@ public class UserControlCenter {
     }
 
     public static void getAflogin(Context context, String account, String password, String url, CallbackUtils.messageReturn messageReturn){
-        Pattern pattern = Pattern.compile(DefinedUtils.URL_RULE);
-        Matcher matcher = pattern.matcher(url);
-        if(matcher.matches()){
-            new Thread(() -> {
-                HttpAfReturn afReturn = CloudUtils.iCloudUtils.aflogin(account,password,url);
-                if(afReturn.success){
-                    String info = new Gson().toJson(afReturn.data);
-                    messageReturn.Callback(info);
-                } else {
-                    StringUtils.HaoLog("伺服器錯誤");
-                }
-            }).start();
-        } else {
-            StringUtils.HaoLog("getAflogin= "+"url 格式不正確");
-            DialogUtils.showDialogMessage(context,"格式不正確");
+        if(account != null && password != null && url != null){
+            Pattern pattern = Pattern.compile(DefinedUtils.URL_RULE);
+            Matcher matcher = pattern.matcher(url);
+            if(matcher.matches()){
+                new Thread(() -> {
+                    HttpAfReturn afReturn = CloudUtils.iCloudUtils.aflogin(account,password,url);
+                    if(afReturn.success){
+                        String info = new Gson().toJson(afReturn.data);
+                        messageReturn.Callback(info);
+                    } else {
+                        StringUtils.HaoLog("伺服器錯誤");
+                    }
+                }).start();
+            } else {
+                StringUtils.HaoLog("getAflogin= "+"url 格式不正確");
+                DialogUtils.showDialogMessage(context,"格式不正確");
+            }
         }
     }
 
