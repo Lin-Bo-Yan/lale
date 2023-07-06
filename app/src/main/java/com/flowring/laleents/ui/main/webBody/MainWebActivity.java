@@ -1,5 +1,6 @@
 package com.flowring.laleents.ui.main.webBody;
 
+import static com.flowring.laleents.ui.main.webBody.EimLoginActivity.loginFunction;
 import static java.security.AccessController.getContext;
 
 import android.Manifest;
@@ -1850,6 +1851,8 @@ public class MainWebActivity extends MainAppCompatActivity {
 
             }
         });
+        loginFunction.accountValid = null;
+        loginFunction.passwordValid = null;
     }
 
     public void goLogin() {

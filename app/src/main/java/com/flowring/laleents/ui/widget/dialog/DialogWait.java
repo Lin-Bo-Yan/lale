@@ -80,12 +80,13 @@ public class DialogWait extends FixDialogFragment {
     }
 
     public void dismissDialog() {
-        if (m_dialog != null)
+        if (m_dialog != null && m_dialog.isShowing()){
             m_dialog.dismiss();
+        }
         m_dialog = null;
-
-        if (enableTimeout)
+        if (enableTimeout){
             timeoutHandler.removeCallbacks(timeoutRunnable);
+        }
     }
 
     private void timeoutReturn() {

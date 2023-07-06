@@ -132,7 +132,7 @@ public class MainAppCompatActivity extends AppCompatActivity {
     public void cancelWait() {
         runOnUiThread(() -> {
             if (dialogWait != null) {
-                dialogWait.dismissDialog();
+                dialogWait.dismiss();
                 dialogWait = null;
             }
         });

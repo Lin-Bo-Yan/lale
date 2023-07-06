@@ -152,13 +152,8 @@ public class EimLoginActivity extends MainAppCompatActivity {
         String qrcode_info_url = result.optString("qrcode_info_url");
 
         if (af_token.isEmpty() || qrcode_info_url.isEmpty()) {
-            runOnUiThread(() -> {
-                if (dialogWait != null) {
-                    dialogWait.dismissDialog();
-                    dialogWait = null;
-                }
-            });
-            //activity.cancelWait();
+            activity.cancelWait();
+            DialogUtils.showDialogMessage(EimLoginActivity.this,"請輸入正確的帳號和密碼");
             return;
         }
 
