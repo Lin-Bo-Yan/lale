@@ -1645,7 +1645,7 @@ public class FileUtils {
     }
 
     public static void saveTextInFile(String data, File file) {
-        if(!data.isEmpty() && data != null){
+        if(data != null){
             try {
                 FileOutputStream fos = new FileOutputStream(file,false); // 在保存文件之前需要先删除文件的内容，設置追加參數為 false
                 fos.write(data.getBytes());
