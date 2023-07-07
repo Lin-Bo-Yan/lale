@@ -56,13 +56,13 @@ public class NetUtils {
         }
     };
 
-    public static boolean isNetworkAvailable(Context ctx) {
+    public static boolean isNetworkAvailable(Context context) {
         try {
-            ConnectivityManager cm = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo activeNetworkInfo = cm.getActiveNetworkInfo();
             return activeNetworkInfo != null && activeNetworkInfo.isConnected();
         } catch (Exception e) {
-            Log.e(TAG, "Exception...", e);
+            StringUtils.HaoLog(TAG + "Exception... "+e);
             return false;
         }
     }

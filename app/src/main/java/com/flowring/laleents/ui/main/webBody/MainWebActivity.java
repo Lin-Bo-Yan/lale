@@ -40,7 +40,6 @@ import android.provider.ContactsContract;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,6 +92,7 @@ import com.flowring.laleents.model.user.UserMin;
 import com.flowring.laleents.tools.ActivityUtils;
 import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.CommonUtils;
+import com.flowring.laleents.tools.NetUtils;
 import com.flowring.laleents.tools.ThumbnailUtils;
 import com.flowring.laleents.tools.DialogUtils;
 import com.flowring.laleents.tools.DownloadUtils;
@@ -121,7 +121,6 @@ import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -400,22 +399,11 @@ public class MainWebActivity extends MainAppCompatActivity {
         UserMin userMin = UserControlCenter.getUserMinInfo();
         StringUtils.HaoLog("onResume= " + userMin);
         if (userMin != null && !userMin.userId.isEmpty()) {
-            getWebVersion();
-            checkHasWebView();
+            checkNetworkAndContinue();
             if(userMin.eimUserData.isLaleAppEim){
                 new Thread(() -> {
                     censorToken();
                 }).start();
-//                UserControlCenter.wasLoggedOut(new CallbackUtils.deviceReturn() {
-//                    @Override
-//                    public void Callback(Boolean deviceReturn) {
-//                        StringUtils.HaoLog("onResume= 重複登入? "+deviceReturn);
-//                        if(deviceReturn){
-//                            Logout();
-//                            SharedPreferencesUtils.isRepeatDevice(true);
-//                        }
-//                    }
-//                });
             }
         } else {
             goLogin();
@@ -552,6 +540,30 @@ public class MainWebActivity extends MainAppCompatActivity {
             }
         }
         return "";
+    }
+
+    private void checkNetworkAndContinue() {
+        if (!NetUtils.isNetworkAvailable(MainWebActivity.this)) {
+            StringUtils.HaoLog("沒有網路");
+            DialogUtils.showDialogMessage(MainWebActivity.this, "請確認網路連線", "", new CallbackUtils.noReturn() {
+                @Override
+                public void Callback() {
+                    checkNetworkAndContinue();
+                }
+            }, new CallbackUtils.noReturn() {
+                @Override
+                public void Callback() {
+                    finish();
+                }
+            });
+        } else {
+            executeNetworkOperations();
+        }
+    }
+
+    private void executeNetworkOperations() {
+        getWebVersion();
+        checkHasWebView();
     }
 
     public void getWebVersion() {
@@ -1101,8 +1113,6 @@ public class MainWebActivity extends MainAppCompatActivity {
                 StringUtils.HaoLog("還活著 onReceivedHttpError getUrl= " + request.getUrl());
                 StringUtils.HaoLog("還活著 onReceivedHttpError 請求的詳細資訊= " + errorResponse.getData());
                 StringUtils.HaoLog("還活著 onReceivedHttpError 錯誤狀態碼= " + errorResponse.getStatusCode());
-                final int MIN_ERROR_STATUS_CODE = 500;
-                final int MAX_ERROR_STATUS_CODE = 600;
                 if(errorResponse.getStatusCode() == 502 || errorResponse.getStatusCode() == 503){
                     if(smartServerDialogLock){
                         announceServerDialog();
@@ -1114,6 +1124,8 @@ public class MainWebActivity extends MainAppCompatActivity {
                         announceServerDialog();
                         smartServerDialogLock = false;
                     }
+                } else if(errorResponse.getStatusCode() == 400 && request.getUrl().toString().contains("/api/dau/personalData")){
+                    Logout();
                 }
                 super.onReceivedHttpError(view, request, errorResponse);
             }
