@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:text="確定"
         android:layout_marginTop="25dp"
-        android:background="@drawable/green_btn_bg"
+        android:background="@drawable/white_btn_bg"
         android:textColor="@color/colorDateBg"/>
 
 

@@ -23,6 +23,7 @@ import com.flowring.laleents.model.user.UserControlCenter;
 import com.flowring.laleents.model.user.UserMin;
 import com.flowring.laleents.tools.ActivityUtils;
 import com.flowring.laleents.tools.CallbackUtils;
+import com.flowring.laleents.tools.CommonUtils;
 import com.flowring.laleents.tools.DialogUtils;
 import com.flowring.laleents.tools.FileUtils;
 import com.flowring.laleents.tools.Log;
@@ -55,6 +56,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_eim);
         signOut();
+        showToast();
         loggedInDialog();
         loginFunction = new LoginInAppFunc(EimLoginActivity.this);
         readUrlValid();
@@ -94,6 +96,14 @@ public class EimLoginActivity extends MainAppCompatActivity {
             ActivityUtils.gotoQRcode(this, ScanCaptureType, ActivityResult);
         });
     }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        Boolean cleared = SharedPreferencesUtils.clearWebMessage(EimLoginActivity.this);
+        StringUtils.HaoLog("onDestroy= " + cleared);
+    }
+
     public static void saveLog(MainAppCompatActivity activity) {
         activity.runOnUiThread(()->{
             DialogUtils.showDialogMessage(activity, "登入失敗，您的QRCode已失效","請重新登入" ,new CallbackUtils.noReturn() {
@@ -321,15 +331,22 @@ public class EimLoginActivity extends MainAppCompatActivity {
 
     }
 
+    private void showToast(){
+        String webMessage = SharedPreferencesUtils.getWebMessage();
+        if(!webMessage.isEmpty()){
+            CommonUtils.showToast(EimLoginActivity.this,getLayoutInflater(),webMessage,false);
+        }
+    }
+
     private void loggedInDialog(){
         Boolean wasLoggedOut = SharedPreferencesUtils.getRepeatDevice(EimLoginActivity.this);
         StringUtils.HaoLog("已被已有其他設備登出 "+wasLoggedOut);
-        StringUtils.HaoLog("已被已有其他設備登出 "+Thread.currentThread().getName());
         if(wasLoggedOut){
             DialogUtils.showDialogMessage(EimLoginActivity.this,getString(R.string.single_device_sign_out_title),getString(R.string.single_device_sign_out_text));
-            SharedPreferencesUtils.clearRepeatDevice(EimLoginActivity.this);
-            SharedPreferencesUtils.clearGeneralType(EimLoginActivity.this);
-            SharedPreferencesUtils.clearThirdPartyIdentifier(EimLoginActivity.this);
+            Boolean clearRepeatDevice = SharedPreferencesUtils.clearRepeatDevice(EimLoginActivity.this);
+            Boolean clearGeneralType = SharedPreferencesUtils.clearGeneralType(EimLoginActivity.this);
+            Boolean clearThirdPartyIdentifier = SharedPreferencesUtils.clearThirdPartyIdentifier(EimLoginActivity.this);
+            StringUtils.HaoLog("已被已有其他設備登出 "+clearRepeatDevice + " / " + clearGeneralType + " / " + clearThirdPartyIdentifier);
         }
     }
 

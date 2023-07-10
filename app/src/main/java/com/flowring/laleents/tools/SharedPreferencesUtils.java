@@ -21,9 +21,11 @@ public class SharedPreferencesUtils {
         return generalType;
     }
 
-    public static void clearGeneralType(Activity activity){
+    public static boolean clearGeneralType(Activity activity){
         pref = PreferenceManager.getDefaultSharedPreferences(activity);
         pref.edit().remove("loginType").apply();
+        String value = pref.getString("loginType", "");
+        return value.isEmpty();
     }
 
     public static void thirdPartyIdentifier(String sID){
@@ -37,9 +39,11 @@ public class SharedPreferencesUtils {
         return thirdPartyIdentifier;
     }
 
-    public static void clearThirdPartyIdentifier(Activity activity){
+    public static boolean clearThirdPartyIdentifier(Activity activity){
         pref = PreferenceManager.getDefaultSharedPreferences(activity);
         pref.edit().remove("thirdPartyIdentifier").apply();
+        String value = pref.getString("thirdPartyIdentifier", "");
+        return value.isEmpty();
     }
 
     public static void isRepeatDevice(Boolean isRepeatDevice){
@@ -52,9 +56,28 @@ public class SharedPreferencesUtils {
         return pref.getBoolean("isRepeatDevice",false);
     }
 
-    public static void clearRepeatDevice(Activity activity){
+    public static boolean clearRepeatDevice(Activity activity){
         pref = PreferenceManager.getDefaultSharedPreferences(activity);
         pref.edit().remove("isRepeatDevice").apply();
+        String value = pref.getString("isRepeatDevice", "");
+        return value.isEmpty();
     }
 
+    public static void webMessage(String message){
+        pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
+        pref.edit().putString("message", message).apply();
+    }
+
+    public static String getWebMessage(){
+        pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
+        String message = pref.getString("message","");
+        return message;
+    }
+
+    public static boolean clearWebMessage(Activity activity){
+        pref = PreferenceManager.getDefaultSharedPreferences(activity);
+        pref.edit().remove("message").apply();
+        String value = pref.getString("message", "");
+        return value.isEmpty();
+    }
 }

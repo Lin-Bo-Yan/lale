@@ -1002,8 +1002,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         } else {
             StringUtils.HaoLog("資料不存在");
         }
-        //SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences((Context) MainWebActivity.this);
-        //pref.edit().putString("message", message).apply();
+        SharedPreferencesUtils.webMessage(message);
     }
 
     private void problemReport(){
