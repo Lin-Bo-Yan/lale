@@ -1942,44 +1942,48 @@ public class MainWebActivity extends MainAppCompatActivity {
             }
             File file = files[index];
             Uri url = Uri.fromFile(file);
-            MsgControlCenter.webSideSendFile(roomId, file, new CallbackUtils.ReturnHttp() {
-                @Override
-                public void Callback(HttpReturn httpReturn) {
-                    if (httpReturn.status == 200) {
-                        // 上傳成功
-                        try {
-                            dataObject.put("roomId", DefinedUtils.roomId);
-                            fileObject.put("name", file.getName());
-                            fileObject.put("url", url);
-                            fileObject.put("fileId", httpReturn.data);
-                            dataObject.put("file", fileObject);
-                            sendToWeb(new JSONObject().put("type","sendFile").put("data",dataObject).toString());
-                        }catch(JSONException e){
-                            e.printStackTrace();
+            if(!FileUtils.limitFileSize(file)){
+                MsgControlCenter.webSideSendFile(roomId, file, new CallbackUtils.ReturnHttp() {
+                    @Override
+                    public void Callback(HttpReturn httpReturn) {
+                        if (httpReturn.status == 200) {
+                            // 上傳成功
+                            try {
+                                dataObject.put("roomId", DefinedUtils.roomId);
+                                fileObject.put("name", file.getName());
+                                fileObject.put("url", url);
+                                fileObject.put("fileId", httpReturn.data);
+                                dataObject.put("file", fileObject);
+                                sendToWeb(new JSONObject().put("type","sendFile").put("data",dataObject).toString());
+                            }catch(JSONException e){
+                                e.printStackTrace();
+                            }
+                            // 遞迴調用，上傳下一個檔案
+                            recursiveUpload(roomId, files, index + 1);
+                        } else {
+                            // 上傳失敗
+                            try {
+                                dataObject.put("roomId", DefinedUtils.roomId);
+                                fileObject.put("name", file.getName());
+                                fileObject.put("url", url);
+                                fileObject.put("fileId", null);
+                                errorMsg.put("status",500);
+                                errorMsg.put("msg","使用者不是聊天室成員");
+                                errorMsg.put("data",null);
+                                fileObject.put("errorMsg", errorMsg);
+                                dataObject.put("file", fileObject);
+                                sendToWeb(new JSONObject().put("type","sendFile").put("data",dataObject).toString());
+                            }catch (JSONException e){
+                                e.printStackTrace();
+                            }
+                            // 遞迴調用，上傳下一個檔案
+                            recursiveUpload(roomId, files, index + 1);
                         }
-                        // 遞迴調用，上傳下一個檔案
-                        recursiveUpload(roomId, files, index + 1);
-                    } else {
-                        // 上傳失敗
-                        try {
-                            dataObject.put("roomId", DefinedUtils.roomId);
-                            fileObject.put("name", file.getName());
-                            fileObject.put("url", url);
-                            fileObject.put("fileId", null);
-                            errorMsg.put("status",500);
-                            errorMsg.put("msg","使用者不是聊天室成員");
-                            errorMsg.put("data",null);
-                            fileObject.put("errorMsg", errorMsg);
-                            dataObject.put("file", fileObject);
-                            sendToWeb(new JSONObject().put("type","sendFile").put("data",dataObject).toString());
-                        }catch (JSONException e){
-                            e.printStackTrace();
-                        }
-                        // 遞迴調用，上傳下一個檔案
-                        recursiveUpload(roomId, files, index + 1);
                     }
-                }
-            });
+                });
+            } else {
+                CommonUtils.showToast(MainWebActivity.this,getLayoutInflater(),"檔案過大",false);
+            }
         }
     }
 

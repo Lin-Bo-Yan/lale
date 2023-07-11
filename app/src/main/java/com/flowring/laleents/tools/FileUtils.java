@@ -5,6 +5,7 @@ import static android.content.Context.ACTIVITY_SERVICE;
 import static com.flowring.laleents.tools.phone.DefinedUtils.DEFAULT_BUFFER_SIZE;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -31,7 +32,9 @@ import androidx.annotation.WorkerThread;
 
 import com.flowring.laleents.R;
 import com.flowring.laleents.tools.cloud.api.AsynNetUtils;
+import com.flowring.laleents.tools.phone.AllData;
 import com.flowring.laleents.tools.phone.DefinedUtils;
+import com.flowring.laleents.ui.main.webBody.EimLoginActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -652,7 +655,8 @@ public class FileUtils {
                 jsonObject.put("name",file.getName());
                 jsonObject.put("mimeType",contentType(fileType(file.getName())));
                 jsonObject.put("url",url.toString());
-                if(".jpg".equals(fileType(file.getName()))){
+
+                if(isValidFileType(file.getName(), ".jpeg", ".jpg",".png",".gif")){
                     String pic = ThumbnailUtils.resizeAndConvertToBase64(file.getPath(),50);
                     jsonObject.put("thumbnail",pic);
                 }
@@ -660,11 +664,11 @@ public class FileUtils {
                     jsonObject.put("errorMsg","檔案大小超過50MB，無法上傳");
                 } else {
                     //如果是圖片就取得圖片長寬，否則取得影片長寬
-                    if(".jpg".equals(fileType(file.getName()))){
+                    if(isValidFileType(file.getName(), ".jpeg", ".jpg", ".png", ".gif")){
                         BitmapFactory.Options options = getBitmapFactory(file);
                         jsonObject.put("Width",options.outWidth);
                         jsonObject.put("Height",options.outHeight);
-                    } else {
+                    } else if(isValidFileType(file.getName(),".mp4")){
                         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
                         retriever.setDataSource(file.getPath());
                         String width = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
@@ -734,6 +738,16 @@ public class FileUtils {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private static boolean isValidFileType(String fileName, String... validFileTypes) {
+        String fileType = fileType(fileName);
+        for (String validType : validFileTypes) {
+            if (validType.equals(fileType)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static void savePicFile(Bitmap bitmap, String destFilePath, String fileName) {
