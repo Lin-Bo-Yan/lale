@@ -50,19 +50,16 @@ public class WebViewActivity extends MainAppCompatActivity {
         url.setText(getIntent().getStringExtra("url"));
 
         webview = findViewById(R.id.webview);
-        WebSettings webSettings = webview.getSettings();
-        webSettings.setAllowFileAccess(true);
-        webview.setWebViewClient(new WebViewClient()
-        {
-
+        webview.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 view.loadUrl(  request.getUrl().toString());
-
                 return false;
             }
         });
 
+        WebSettings webSettings = webview.getSettings();
+        webSettings.setAllowFileAccess(true);
         webSettings.setBuiltInZoomControls(true);
         webSettings.setDisplayZoomControls(false);
         webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
@@ -76,12 +73,10 @@ public class WebViewActivity extends MainAppCompatActivity {
         webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         webSettings.setTextZoom(100);
         webSettings.setUseWideViewPort(true);
-        webSettings.setDomStorageEnabled(true);
         webSettings.setGeolocationEnabled(true);
         webSettings.setSupportMultipleWindows(true);
         webSettings.setAppCacheEnabled(true);
         webSettings.setMediaPlaybackRequiresUserGesture(false);
-
 
         WebView.setWebContentsDebuggingEnabled(true);
         webview.loadUrl(url.getText().toString());

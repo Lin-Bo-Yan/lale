@@ -1512,15 +1512,13 @@ public class MainWebActivity extends MainAppCompatActivity {
         return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
     }
 
-    private void downloadFile(String url, String fileName) {
+    private void downloadFile(String url, String oldFileName) {
         DownloadManager.Request request;
         try {
-            request = new DownloadManager.Request(
-                    Uri.parse(url));
+            request = new DownloadManager.Request(Uri.parse(url));
         } catch (IllegalArgumentException e) {
             StringUtils.HaoLog("downloadFile Error=" + e);
             try {
-
                 sendToWeb(new JSONObject().put("type", "downloadFile").put("data", new JSONObject().put("isSuccess", false)).toString());
             } catch (JSONException e2) {
                 StringUtils.HaoLog("sendToWeb Error=" + e2);
@@ -1528,9 +1526,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             }
             return;
         }
-
         String cookies = CookieManager.getInstance().getCookie(url);
-
         URLConnection conection = null;
         try {
             conection = new URL(url).openConnection();
@@ -1544,12 +1540,11 @@ public class MainWebActivity extends MainAppCompatActivity {
         request.allowScanningByMediaScanner();
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH mm ss SSS");
-        request.setDestinationInExternalPublicDir(
-                Environment.DIRECTORY_DOWNLOADS, fileName == null ? sdf.format(new Date().getDate()) + FileUtils.toExtension(conection.getContentType()) : fileName);
+        String fileName = oldFileName == null ? sdf.format(new Date().getDate()) + FileUtils.toExtension(conection.getContentType()) : oldFileName;
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,fileName);
         DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
         dm.enqueue(request);
         try {
-
             sendToWeb(new JSONObject().put("type", "downloadFile").put("data", new JSONObject().put("isSuccess", true)).toString());
         } catch (JSONException | NullPointerException e) {
             e.printStackTrace();
@@ -2223,31 +2218,27 @@ public class MainWebActivity extends MainAppCompatActivity {
     }
 
     private void downloadByUrl(JSONObject data) {
-
         if (PermissionUtils.checkPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) || (Build.VERSION.SDK_INT > Build.VERSION_CODES.R)) {
             new Thread(() -> {
                 StringUtils.HaoLog(data.toString());
-                if (data.isNull("fileName"))
+                if (data.isNull("fileName")){
                     downloadFile(data.optString("url"), null);
-                else
+                } else {
                     downloadFile(data.optString("url"), data.optString("fileName"));
+                }
             }).start();
         } else {
             StringUtils.HaoLog("詢問權限");
             try {
-
                 sendToWeb(new JSONObject().put("type", "downloadFile").put("data", new JSONObject().put("isSuccess", false)).toString());
             } catch (JSONException e2) {
                 StringUtils.HaoLog("sendToWeb Error=" + e2);
                 e2.printStackTrace();
             }
             runOnUiThread(() -> {
-
                 PermissionUtils.requestPermission(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, null, "該功能需要下載權限");
-
             });
         }
-
     }
 
     private void hyperlinkSharingOrFileSharing(String inviteMessage){
