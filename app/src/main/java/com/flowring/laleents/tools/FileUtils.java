@@ -31,6 +31,7 @@ import android.util.Base64;
 import androidx.annotation.WorkerThread;
 
 import com.flowring.laleents.R;
+import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.tools.cloud.api.AsynNetUtils;
 import com.flowring.laleents.tools.phone.AllData;
 import com.flowring.laleents.tools.phone.DefinedUtils;
@@ -646,7 +647,8 @@ public class FileUtils {
         return "";
     }
 
-    public static JSONArray getFileInfo(File[] files){
+    public static JSONObject forSendFileInfo(File[] files){
+        JSONObject dataObject = new JSONObject();
         JSONArray jArray = new JSONArray();
         try {
             for(File file : files){
@@ -655,17 +657,14 @@ public class FileUtils {
                 jsonObject.put("name",file.getName());
                 jsonObject.put("mimeType",contentType(fileType(file.getName())));
                 jsonObject.put("url",url.toString());
-
-                if(isValidFileType(file.getName(), ".jpeg", ".jpg",".png",".gif")){
-                    String pic = ThumbnailUtils.resizeAndConvertToBase64(file.getPath(),50);
-                    jsonObject.put("thumbnail",pic);
-                }
                 if(limitFileSize(file)){
                     jsonObject.put("errorMsg","檔案大小超過50MB，無法上傳");
                 } else {
                     //如果是圖片就取得圖片長寬，否則取得影片長寬
                     if(isValidFileType(file.getName(), ".jpeg", ".jpg", ".png", ".gif")){
+                        String pic = ThumbnailUtils.resizeAndConvertToBase64(file.getPath(),50);
                         BitmapFactory.Options options = getBitmapFactory(file);
+                        jsonObject.put("thumbnail",pic);
                         jsonObject.put("Width",options.outWidth);
                         jsonObject.put("Height",options.outHeight);
                     } else if(isValidFileType(file.getName(),".mp4")){
@@ -679,10 +678,37 @@ public class FileUtils {
                 }
                 jArray.put(jsonObject);
             }
+            dataObject.put("roomId",DefinedUtils.roomId);
+            dataObject.put("files",jArray);
         }catch (JSONException e){
             e.printStackTrace();
         }
-        return jArray;
+        return dataObject;
+    }
+
+    public static JSONObject forRecursiveUpload(File file, HttpReturn httpReturn) {
+        Uri url = Uri.fromFile(file);
+        JSONObject dataObject = new JSONObject();
+        JSONObject fileObject = new JSONObject();
+        JSONObject errorMsg = new JSONObject();
+        try {
+            dataObject.put("roomId", DefinedUtils.roomId);
+            fileObject.put("name", file.getName());
+            fileObject.put("url", url);
+            if (httpReturn.status == 200) {
+                fileObject.put("fileId", httpReturn.data);
+            } else {
+                fileObject.put("fileId", null);
+                errorMsg.put("status", 500);
+                errorMsg.put("msg", "使用者不是聊天室成員");
+                errorMsg.put("data", null);
+                fileObject.put("errorMsg", errorMsg);
+            }
+            dataObject.put("file", fileObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return dataObject;
     }
 
     public static BitmapFactory.Options getBitmapFactory(File file){
@@ -1147,6 +1173,7 @@ public class FileUtils {
         }
         return "";
     }
+
     public static String fileType(String fileName){
         int lastDotIndex = fileName.lastIndexOf(".");
         if (lastDotIndex == -1 || lastDotIndex == 0) {
@@ -1185,8 +1212,6 @@ public class FileUtils {
                 return "image/gif";
             case ".pdf":
                 return "application/pdf";
-            case ".zip":
-                return "application/zip";
             case ".ppt":
                 return "application/vnd.ms-powerpoint";
             case ".pptx":

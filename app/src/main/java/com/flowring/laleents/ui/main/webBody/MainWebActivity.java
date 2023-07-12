@@ -487,26 +487,31 @@ public class MainWebActivity extends MainAppCompatActivity {
             }
         }
         if (requestCode == DefinedUtils.REQUEST_IMAGE_PICKER) {
-            ArrayList<Media> images;
-            images = data.getParcelableArrayListExtra(PickerConfig.EXTRA_RESULT);
-            if (images != null) {
-                // 宣告長度為0的陣列，做給 ValueCallback 讓他回傳，因為現在不用ValueCallback上傳檔案，但又需要重複開啟相簿
-                Uri[] uriFake = new Uri[0];
-                File[] files = new File[images.size()];
-                for (int i = 0; i < images.size(); i++) {
-                    Media media = images.get(i);
-                    File picture = new File(media.path);
-                    files[i] = picture;
-                }
+            ArrayList<Media> images = data.getParcelableArrayListExtra(PickerConfig.EXTRA_RESULT);
+            if (images == null) {
+                return;
+            }
+            int imageSize = images.size();
+            Uri[] uris = new Uri[imageSize];
+            File[] files = new File[imageSize];
+            for (int i = 0; i < imageSize; i++) {
+                Media media = images.get(i);
+                File picture = new File(media.path);
+                uris[i] = Uri.fromFile(picture);
+                files[i] = picture;
+            }
+            if (!DefinedUtils.roomId.isEmpty()) {
                 // sendFileInfo 通知選擇結果
                 sendFileInfo(files);
                 // sendFile 逐筆回傳上傳結果
                 recursiveUpload(DefinedUtils.roomId, files, 0);
+                // 假的 Uri 陣列以滿足 ValueCallback
+                uris = new Uri[0];
+            }
 
-                if (mUploadMessage != null) {
-                    mUploadMessage.onReceiveValue(uriFake);
-                    mUploadMessage = null;
-                }
+            if (mUploadMessage != null) {
+                mUploadMessage.onReceiveValue(uris);
+                mUploadMessage = null;
             }
         }
         if (requestCode == DefinedUtils.REQUEST_CHROME_TAB) {
@@ -1768,6 +1773,8 @@ public class MainWebActivity extends MainAppCompatActivity {
             Method = data.optString("Method");
             code = data.optString("code");
             StringUtils.HaoLog("APIResponse= "+url);
+            StringUtils.HaoLog("APIResponse= "+Method);
+            StringUtils.HaoLog("APIResponse= "+code);
         }
 
         if(code != null && !code.isEmpty()){
@@ -1914,10 +1921,7 @@ public class MainWebActivity extends MainAppCompatActivity {
 
     private void sendFileInfo(File[] files){
         try {
-            JSONObject jsonObject = new JSONObject();
-            JSONArray jsonArray= FileUtils.getFileInfo(files);
-            jsonObject.put("roomId",DefinedUtils.roomId);
-            jsonObject.put("files",jsonArray);
+            JSONObject jsonObject = FileUtils.forSendFileInfo(files);
             sendToWeb(new JSONObject().put("type","sendFileInfo").put("data",jsonObject).toString());
         }catch (JSONException e){
             e.printStackTrace();
@@ -1926,54 +1930,26 @@ public class MainWebActivity extends MainAppCompatActivity {
 
     private void recursiveUpload(String roomId, File[] files, int index) {
         if(DefinedUtils.roomId != null && !DefinedUtils.roomId.isEmpty()){
-            JSONObject dataObject = new JSONObject();
-            JSONObject fileObject = new JSONObject();
-            JSONObject errorMsg = new JSONObject();
             StringUtils.HaoLog("recursiveUpload= index "+index);
             StringUtils.HaoLog("recursiveUpload= files.length "+files.length);
             if (index >= files.length) {
-                // 所有檔案都已經上傳完成，結束遞迴
+                // 所有檔案都已經上傳完成，結束遞迴，清除 roomId
+                DefinedUtils.roomId = "";
                 return;
             }
             File file = files[index];
-            Uri url = Uri.fromFile(file);
             if(!FileUtils.limitFileSize(file)){
                 MsgControlCenter.webSideSendFile(roomId, file, new CallbackUtils.ReturnHttp() {
                     @Override
                     public void Callback(HttpReturn httpReturn) {
-                        if (httpReturn.status == 200) {
-                            // 上傳成功
-                            try {
-                                dataObject.put("roomId", DefinedUtils.roomId);
-                                fileObject.put("name", file.getName());
-                                fileObject.put("url", url);
-                                fileObject.put("fileId", httpReturn.data);
-                                dataObject.put("file", fileObject);
-                                sendToWeb(new JSONObject().put("type","sendFile").put("data",dataObject).toString());
-                            }catch(JSONException e){
-                                e.printStackTrace();
-                            }
-                            // 遞迴調用，上傳下一個檔案
-                            recursiveUpload(roomId, files, index + 1);
-                        } else {
-                            // 上傳失敗
-                            try {
-                                dataObject.put("roomId", DefinedUtils.roomId);
-                                fileObject.put("name", file.getName());
-                                fileObject.put("url", url);
-                                fileObject.put("fileId", null);
-                                errorMsg.put("status",500);
-                                errorMsg.put("msg","使用者不是聊天室成員");
-                                errorMsg.put("data",null);
-                                fileObject.put("errorMsg", errorMsg);
-                                dataObject.put("file", fileObject);
-                                sendToWeb(new JSONObject().put("type","sendFile").put("data",dataObject).toString());
-                            }catch (JSONException e){
-                                e.printStackTrace();
-                            }
-                            // 遞迴調用，上傳下一個檔案
-                            recursiveUpload(roomId, files, index + 1);
+                        try {
+                            JSONObject dataObject = FileUtils.forRecursiveUpload(file,httpReturn);
+                            sendToWeb(new JSONObject().put("type","sendFile").put("data",dataObject).toString());
+                        } catch (JSONException e){
+                            e.printStackTrace();
                         }
+                        // 遞迴調用，上傳下一個檔案
+                        recursiveUpload(roomId, files, index + 1);
                     }
                 });
             } else {

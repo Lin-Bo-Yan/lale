@@ -60,7 +60,7 @@ public class Log {
         if(mLogFile == null)
         {
             mLogFile = new File(FileUtils.getApplicationFolder(mContext, DefinedUtils.FOLDER_FILES) +
-                "/" + "laletoB_logs.log");
+                "/" + "laleToB_logs.log");
             if (!mLogFile.exists()) {
                 try {
                     mLogFile.createNewFile();

@@ -2054,9 +2054,9 @@ public class CloudUtils implements ICloudUtils {
                             e.printStackTrace();
                         }
                         //打印所有證書內容
-                        for(Certificate certificate : localCertificates){
-                        StringUtils.HaoLog("打印所有證書內容= "+certificate.toString());
-                        }
+                        //for(Certificate certificate : localCertificates){
+                        //StringUtils.HaoLog("打印所有證書內容= "+certificate.toString());
+                        //}
                     return true;
                     }
             });
