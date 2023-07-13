@@ -201,14 +201,23 @@ if(stes.length > showC)
 
     }
 
-    public static int version(String version){
-        String[] parts = version.split("\\."); // 將版本字符串拆分為多個部分
-        String versionNumber = ""; // 用於存儲版本數字
-        for (String part : parts) {
-            versionNumber += part; // 將部分連接成一個字符串
+    public static boolean version(String appVersion, String dbVersion) {
+        String[] appVersionParts = appVersion.split("\\.");
+        String[] dbVersionParts = dbVersion.split("\\.");
+        int length = Math.min(appVersionParts.length, dbVersionParts.length);
+        for (int i = 0; i < length; i++) {
+            int appPart = Integer.parseInt(appVersionParts[i]);
+            int dbPart = Integer.parseInt(dbVersionParts[i]);
+            if (dbPart > appPart) {
+                return true;
+            } else if (dbPart < appPart) {
+                return false;
+            }
         }
-        int versionInt = Integer.parseInt(versionNumber); // 將版本字符串轉換為整數
-        return versionInt;
+        if (dbVersionParts.length > appVersionParts.length) {
+            return true;
+        }
+        return false;
     }
 
     public static Bitmap drawBitmap(String data) {

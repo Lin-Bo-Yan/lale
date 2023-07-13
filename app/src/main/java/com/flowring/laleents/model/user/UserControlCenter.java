@@ -712,11 +712,10 @@ public class UserControlCenter {
                 if(googlePlatformVersions != null && googlePlatformVersions.length > 0){
                     for(GetGooglePlatformVersion googlePlatformVersion : googlePlatformVersions){
                         if("android".equals(googlePlatformVersion.platformName)){
-                            int dbVersionInt = StringUtils.version(googlePlatformVersion.version);
-                            int appVersionInt = StringUtils.version(appVersion);
-                            Boolean needUpdated = appVersionInt < dbVersionInt;
-                            StringUtils.HaoLog("googlePlatformVersion= appVersionInt " + appVersionInt);
-                            StringUtils.HaoLog("googlePlatformVersion= dbVersionInt " + dbVersionInt);
+                            StringUtils.HaoLog("googlePlatformVersion= appVersion " + appVersion);
+                            StringUtils.HaoLog("googlePlatformVersion= dbVersion " + googlePlatformVersion.version);
+                            Boolean needUpdated = StringUtils.version(appVersion,googlePlatformVersion.version);
+                            StringUtils.HaoLog("googlePlatformVersion= 需要更新嗎? " + needUpdated);
                             if(needUpdated){
                                 DialogUtils.showUpgradeDialog(activity);
                             }
