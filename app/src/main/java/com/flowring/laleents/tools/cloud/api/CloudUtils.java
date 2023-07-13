@@ -1934,10 +1934,11 @@ public class CloudUtils implements ICloudUtils {
                 if (httpReturn != null) {
                     StringUtils.HaoLog(response.request().url().toString(), httpReturn);
                     return httpReturn;
-                } else
+                } else{
                     StringUtils.HaoLog(response.request().url() + " " + response.code() + " body=" + body);
+                }
             }
-        } catch (IOException | IllegalStateException e) {
+        } catch (IOException | JsonSyntaxException | IllegalStateException e) {
             StringUtils.HaoLog("gethttpReturn error=" + request + " " + e);
             e.printStackTrace();
         }
@@ -1964,7 +1965,7 @@ public class CloudUtils implements ICloudUtils {
                     StringUtils.HaoLog("gethttp2Return end");
                 }
             }
-        } catch (IOException | IllegalStateException e) {
+        } catch (IOException | JsonSyntaxException | IllegalStateException e) {
             StringUtils.HaoLog("gethttp2Return error=" + request + " " + e);
             e.printStackTrace();
         }
@@ -1998,7 +1999,7 @@ public class CloudUtils implements ICloudUtils {
             StringUtils.HaoLog(response.header("url") + " " + httpReturn.success + " " + httpReturn.data);
             StringUtils.HaoLog("getJhttpAfReturn end");
             return httpReturn;
-        } catch (IOException | JsonSyntaxException e) {
+        } catch (IOException | JsonSyntaxException | IllegalStateException e) {
             e.printStackTrace();
             StringUtils.HaoLog("getJhttpAfReturn error=" + request + " " + e);
         }
