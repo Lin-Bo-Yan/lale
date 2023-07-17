@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.webkit.DownloadListener;
 import android.webkit.GeolocationPermissions;
 import android.webkit.JsResult;
 import android.webkit.PermissionRequest;
@@ -58,6 +59,7 @@ public class WebViewActivity extends MainAppCompatActivity {
             }
         });
 
+        webview.setDownloadListener(mWebDownloadListener);
         WebSettings webSettings = webview.getSettings();
         webSettings.setAllowFileAccess(true);
         webSettings.setBuiltInZoomControls(true);
@@ -81,4 +83,17 @@ public class WebViewActivity extends MainAppCompatActivity {
         WebView.setWebContentsDebuggingEnabled(true);
         webview.loadUrl(url.getText().toString());
     }
+
+    DownloadListener mWebDownloadListener = new DownloadListener() {
+        @Override
+        public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimeType, long contentLength) {
+            StringUtils.HaoLog("onDownloadStart url=" + url);
+            StringUtils.HaoLog("onDownloadStart userAgent=" + userAgent);
+            StringUtils.HaoLog("onDownloadStart contentDisposition=" + contentDisposition);
+            StringUtils.HaoLog("onDownloadStart mimeType=" + mimeType);
+            Uri uri = Uri.parse(url);
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(intent);
+        }
+    };
 }
