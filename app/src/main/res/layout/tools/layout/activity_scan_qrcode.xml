@@ -135,7 +135,7 @@
                 <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="55dp"
+                    android:layout_marginLeft="50dp"
                     android:layout_marginRight="17dp"
                     android:src="@drawable/nav_icon_picture"
                     app:tint="@color/white" />
@@ -146,7 +146,7 @@
                     android:gravity="center"
                     android:text="選擇相簿的中圖片"
                     android:textColor="@color/white"
-                    android:textSize="16sp" />
+                    android:textSize="16dp" />
             </LinearLayout>
         </LinearLayout>
     </FrameLayout>

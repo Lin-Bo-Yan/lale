@@ -1809,8 +1809,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         if (userMin != null && !userMin.userId.isEmpty()) {
            checkPermission();
            Login();
-        }else
-        {
+        } else {
             StringUtils.HaoLog("login 沒開始"+userMin+" "+userMin.userId);
         }
         initOnMainWebPageFinished();
