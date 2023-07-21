@@ -1078,10 +1078,6 @@ public class MainWebActivity extends MainAppCompatActivity {
         if (webView == null){webView = new WebView(getApplicationContext());}
         webView.setVisibility(View.INVISIBLE);
         webView.setDownloadListener(mWebDownloadListener);
-        StringUtils.HaoLog("cleanCache= "+"可以清除Cache嗎? "+cleanCache);
-        if(cleanCache){
-            cleanWebviewCache();
-        }
         WebSettings webSettings = webView.getSettings();
         webView.setWebViewClient(new WebViewClient() {
             @Override
@@ -1189,16 +1185,11 @@ public class MainWebActivity extends MainAppCompatActivity {
                 String[]  PermissionRequest=request.getResources();
                 for (int i = 0; i < PermissionRequest.length; i++) {
                     StringUtils.HaoLog("onPermissionRequest:"+PermissionRequest[i]);
-                    if(PermissionRequest[i].equals("android.webkit.resource.AUDIO_CAPTURE"))
-                    {
-                        if(   PermissionUtils.checkPermission(MainWebActivity.this,"android.permission.RECORD_AUDIO"))
-                        {
-                        }else
-                        {
+                    if(PermissionRequest[i].equals("android.webkit.resource.AUDIO_CAPTURE")) {
+                        if(!PermissionUtils.checkPermission(MainWebActivity.this,"android.permission.RECORD_AUDIO")) {
                             runOnUiThread(()->{
                                 requestPermissions(new String[]{"android.permission.RECORD_AUDIO"}, 466);
                             });
-
                         }
                     }
                 }
@@ -1329,22 +1320,27 @@ public class MainWebActivity extends MainAppCompatActivity {
             boolean bFromPhone = getIntent().getBooleanExtra("bFromPhone", false);
             if(bFromPhone && roomInfo != null){
                 String urlToLoad = bFromPhone && roomInfo != null ? getMainWebURL(true) + "chatroom/" + roomInfo : url;
-                StringUtils.HaoLog("init setWebView 1 " + (init ? "true" : "false")+" urlToLoad= "+urlToLoad);
-                StringUtils.HaoLog("init setWebView 1 " + url);
-                StringUtils.HaoLog("init setWebView 1 " + roomInfo);
-                StringUtils.HaoLog("init setWebView 1 " + bFromPhone);
+                StringUtils.HaoLog("init 點推播 " + (init ? "true" : "false")+" urlToLoad= "+urlToLoad);
+                StringUtils.HaoLog("init 點推播 " + url);
+                StringUtils.HaoLog("init 點推播 " + roomInfo);
+                StringUtils.HaoLog("init 點推播 " + bFromPhone);
                 webView.loadUrl(urlToLoad);
-                StringUtils.HaoLog("initOnMainWebPageFinished= tob 2"+init);
+                StringUtils.HaoLog("init 點推播 "+init);
                 init = true;
             } else {
                 NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                 manager.cancelAll();
+                StringUtils.HaoLog("init 點app "+init);
+                StringUtils.HaoLog("cleanCache= "+"可以清除Cache嗎? "+cleanCache);
+                if(cleanCache){
+                    cleanWebviewCache();
+                }
                 webView.loadUrl(url);
             }
         } else {
-            StringUtils.HaoLog("init setWebView 2");
+            StringUtils.HaoLog("init 開啟新分頁 1");
             webView.loadUrl(url);
-            StringUtils.HaoLog("init setWebView 3");
+            StringUtils.HaoLog("init 開啟新分頁 2");
         }
     }
 
