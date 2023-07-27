@@ -27,8 +27,10 @@ public class DeleteCache {
                         deleteExternalSharing(file);
                     }
                 }
+                download.delete();
             }else {
                 StringUtils.HaoLog("沒有檔案");
+                download.delete();
                 return;
             }
         }
@@ -56,8 +58,10 @@ public class DeleteCache {
                         deleteOpenfile(file);
                     }
                 }
+                download.delete();
             } else {
                 StringUtils.HaoLog("沒有檔案");
+                download.delete();
                 return;
             }
         }
@@ -85,8 +89,10 @@ public class DeleteCache {
                         deleteSharefile(file);
                     }
                 }
+                download.delete();
             }else {
                 StringUtils.HaoLog("沒有檔案");
+                download.delete();
                 return;
             }
         }

@@ -14,6 +14,7 @@ import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.model.ServerAnnouncement;
 import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.CommonUtils;
+import com.flowring.laleents.tools.DeleteCache;
 import com.flowring.laleents.tools.DialogUtils;
 import com.flowring.laleents.tools.SharedPreferencesUtils;
 import com.flowring.laleents.tools.StringUtils;
@@ -577,6 +578,10 @@ public class UserControlCenter {
 
     public static void setLogout(CallbackUtils.ReturnHttp callback) {
         if (UserControlCenter.getUserMinInfo() != null) {
+            //刪除實體檔案
+            DeleteCache.checkExternalSharing(AllData.context);
+            DeleteCache.checkSharefile(AllData.context);
+            DeleteCache.checkOpenfile(AllData.context);
             if (UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim) {
                 StringUtils.HaoLog("登出 2");
                 new Thread(() -> {
