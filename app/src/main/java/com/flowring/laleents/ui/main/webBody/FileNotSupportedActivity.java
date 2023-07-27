@@ -14,7 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.flowring.laleents.R;
-import com.flowring.laleents.tools.DownloadUtils;
+import com.flowring.laleents.tools.download.DownloadUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.phone.PermissionUtils;
 

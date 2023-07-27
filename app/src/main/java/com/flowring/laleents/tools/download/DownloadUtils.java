@@ -1,4 +1,4 @@
-package com.flowring.laleents.tools;
+package com.flowring.laleents.tools.download;
 
 import android.app.DownloadManager;
 import android.content.Context;
@@ -10,6 +10,7 @@ import android.os.Looper;
 import android.webkit.CookieManager;
 
 import com.flowring.laleents.R;
+import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.download.DownloadBroadcastReceiver;
 import com.flowring.laleents.ui.main.webBody.FileNotSupportedActivity;
 import com.flowring.laleents.ui.main.webBody.FileReaderActivity;

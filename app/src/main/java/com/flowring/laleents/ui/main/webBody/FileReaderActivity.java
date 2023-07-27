@@ -16,7 +16,7 @@ import android.webkit.WebViewClient;
 import android.widget.ImageView;
 
 import com.flowring.laleents.R;
-import com.flowring.laleents.tools.DownloadUtils;
+import com.flowring.laleents.tools.download.DownloadUtils;
 import com.flowring.laleents.tools.StringUtils;
 
 import org.json.JSONException;
