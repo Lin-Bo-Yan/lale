@@ -144,10 +144,7 @@ import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 
 public class MainWebActivity extends MainAppCompatActivity {
-    //region  Permission
-    AlertDialog requestDrawOverlaysDialog = null;
-    //防止伺服器公告Dialog重複顯示
-    public static boolean smartServerDialogLock = true;
+
     public void checkPermission() {
         StringUtils.HaoLog("checkPermission");
         runOnUiThread(() -> {
@@ -361,12 +358,24 @@ public class MainWebActivity extends MainAppCompatActivity {
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(shareActivityBroadcastReceiver, itShareActivityFilter); //註冊廣播接收器
     }
 
-    static boolean cleanCache = false;
+    //防止伺服器公告Dialog重複顯示
+    public static boolean smartServerDialogLock = true;
+    private boolean shownLock = true;
+    private boolean isFirstCheck = true;
+    private boolean urlsIsOk = true;
+    private boolean init = false;
+    private boolean cleanCache = false;
+    private boolean isLoggedIn = false;
+    private boolean needBack = false;
+    private String chromeCallbackUrl = "";
     private ValueCallback<Uri[]> mUploadMessage;
-    boolean init = false;
-    MyWebView webView;
+    private MyWebView webView;
+    private ArrayList<String> urlsError = new ArrayList<>();
     private ViewGroup viewGroup = null;
     private View overlay = null;
+    private int urlsMax = 0;
+    private int urlsNew = 0;
+    private AlertDialog requestDrawOverlaysDialog = null;
 
     @SuppressLint({"JavascriptInterface", "SetJavaScriptEnabled"})
     @Override
@@ -1830,8 +1839,6 @@ public class MainWebActivity extends MainAppCompatActivity {
         sendToWeb(json);
     }
 
-    boolean isLoggedIn = false;
-
     private void Login() {
         if(isLoggedIn){
             return;
@@ -2033,17 +2040,20 @@ public class MainWebActivity extends MainAppCompatActivity {
                             pref.edit().putBoolean("isSignOut", true).apply();
                             Logout();
                         } else {
-                            DialogUtils.showDialogMessage(MainWebActivity.this, httpReturn.msg, "連線狀態異常，是否要登出？", new CallbackUtils.noReturn() {
-                                @Override
-                                public void Callback() {
-                                    Logout();
-                                }
-                            }, new CallbackUtils.noReturn() {
-                                @Override
-                                public void Callback() {
+                            if(shownLock){
+                                shownLock = false;
+                                DialogUtils.showDialogMessage(MainWebActivity.this, httpReturn.msg, "連線狀態異常，是否要登出？", new CallbackUtils.noReturn() {
+                                    @Override
+                                    public void Callback() {
+                                        Logout();
+                                    }
+                                }, new CallbackUtils.noReturn() {
+                                    @Override
+                                    public void Callback() {
 
-                                }
-                            });
+                                    }
+                                });
+                            }
                         }
                     } else {
                         JSONObject j = new JSONObject().put("type", "tokenRefresh").put("data", new JSONObject(new Gson().toJson(httpReturn.data)));
@@ -2058,7 +2068,6 @@ public class MainWebActivity extends MainAppCompatActivity {
         });
     }
 
-    Boolean isFirstCheck = true;
     private void censorToken() {
         UserControlCenter.tokenRefresh_noThread(new CallbackUtils.ReturnHttp() {
             @Override
@@ -2120,11 +2129,6 @@ public class MainWebActivity extends MainAppCompatActivity {
     private void downloadByBytesBase64(JSONObject data) {
         unDo(data.toString());
     }
-
-    private int urlsMax = 0;
-    private boolean urlsIsOk = true;
-    private int urlsNew = 0;
-    private ArrayList<String> urlsError = new ArrayList<>();
 
     private void downloadByUrls(JSONObject data) {
 
@@ -2708,9 +2712,6 @@ public class MainWebActivity extends MainAppCompatActivity {
     //endregion
 
     //region  舊版webView JavascriptInterface
-
-    private String chromeCallbackUrl = "";
-    private boolean needBack = false;
 
     @JavascriptInterface
     public void openWebViewByChrome(String url) {
