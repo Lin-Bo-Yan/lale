@@ -63,6 +63,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -111,6 +112,7 @@ import com.flowring.laleents.tools.phone.ServiceUtils;
 import com.flowring.laleents.ui.model.MainAppCompatActivity;
 import com.flowring.laleents.ui.widget.qrCode.ScanCaptureActivity;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.google.zxing.BarcodeFormat;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
@@ -125,6 +127,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -558,7 +561,7 @@ public class MainWebActivity extends MainAppCompatActivity {
     private void checkNetworkAndContinue() {
         if (!NetUtils.isNetworkAvailable(MainWebActivity.this)) {
             StringUtils.HaoLog("沒有網路");
-            DialogUtils.showDialogMessage(MainWebActivity.this, "請確認網路連線", "", new CallbackUtils.noReturn() {
+            DialogUtils.showDialogMessage(MainWebActivity.this, "請確認網路連線", "", "確定","取消",new CallbackUtils.noReturn() {
                 @Override
                 public void Callback() {
                     checkNetworkAndContinue();
@@ -1009,17 +1012,78 @@ public class MainWebActivity extends MainAppCompatActivity {
     }
 
     private void webMessage(JSONObject data){
-        String message = "";
-        if(data.has("message")){
+        String message = null;
+        String id = null;
+        List<String> buttons = new ArrayList<>();
+        Gson gson = new Gson();
+        if(data.has("id")){
             message = data.optString("message");
-        } else {
-            StringUtils.HaoLog("資料不存在");
+            id = data.optString("id");
+            String buttonString = data.optString("button");
+            // 將字串轉成字串陣列
+            Type listType = new TypeToken<List<String>>(){}.getType();
+            buttons = gson.fromJson(buttonString, listType);
         }
-        SharedPreferencesUtils.webMessage(message);
+
+        if(id != null && !id.isEmpty()){
+            switch (id){
+                case "msg1":
+                    messageOne(message,buttons);
+                    break;
+                case "msg2":
+                    messageTwo(message,buttons);
+                    break;
+            }
+        }
+
+    }
+
+    private void messageOne(String message,List<String> buttons){
+        String okButton = buttons.get(0);
+        String cancelButton = buttons.get(1);
+        DialogUtils.showDialogMessage(MainWebActivity.this, message, "", okButton, cancelButton, new CallbackUtils.noReturn() {
+            @Override
+            public void Callback() {
+                problemReport();
+            }
+        }, new CallbackUtils.noReturn() {
+            @Override
+            public void Callback() {
+                Logout();
+            }
+        });
+    }
+
+    private void messageTwo(String message,List<String> buttons){
+        String okButton = buttons.get(0);
+        String cancelButton = buttons.get(1);
+        DialogUtils.showDialogMessage(MainWebActivity.this, message, "", okButton, cancelButton, new CallbackUtils.noReturn() {
+            @Override
+            public void Callback() {
+                //使用者按下ok發js回給webview
+                try {
+                    JSONObject jsonObject = new JSONObject().put("type", "webMessage").put("data", new JSONObject().put("click","ok").put("id","msg2"));
+                    sendToWeb(jsonObject.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new CallbackUtils.noReturn() {
+            @Override
+            public void Callback() {
+                //使用者按下取消發js回給webview
+                try {
+                    JSONObject jsonObject = new JSONObject().put("type", "webMessage").put("data", new JSONObject().put("click","cancel").put("id","msg2"));
+                    sendToWeb(jsonObject.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     private void problemReport(){
-        DialogUtils.feedbackDialogMessage(MainWebActivity.this, getString(R.string.server_exception_title), getString(R.string.server_exception_text), new CallbackUtils.noReturn() {
+        DialogUtils.showDialogMessage(MainWebActivity.this, getString(R.string.server_exception_title), getString(R.string.server_exception_text),"問題回報","關閉", new CallbackUtils.noReturn() {
             @Override
             public void Callback() {
                 StringUtils.HaoLog("伺服器異常，問題回報");
@@ -2042,7 +2106,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                         } else {
                             if(shownLock){
                                 shownLock = false;
-                                DialogUtils.showDialogMessage(MainWebActivity.this, httpReturn.msg, "連線狀態異常，是否要登出？", new CallbackUtils.noReturn() {
+                                DialogUtils.showDialogMessage(MainWebActivity.this, httpReturn.msg, "連線狀態異常，是否要登出？","確定","取消", new CallbackUtils.noReturn() {
                                     @Override
                                     public void Callback() {
                                         Logout();
@@ -2050,7 +2114,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                                 }, new CallbackUtils.noReturn() {
                                     @Override
                                     public void Callback() {
-
+                                
                                     }
                                 });
                             }

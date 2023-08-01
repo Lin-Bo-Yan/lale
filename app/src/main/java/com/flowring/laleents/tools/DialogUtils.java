@@ -361,19 +361,19 @@ public class DialogUtils {
         return alertDialog;
     }
 
-    static public void showDialogMessage(Context context, String title, String text, CallbackUtils.noReturn ok, CallbackUtils.noReturn cancel) {
+    static public void showDialogMessage(Context context, String title, String text,String okButton,String cancelButton, CallbackUtils.noReturn ok, CallbackUtils.noReturn cancel) {
         runOnUiThread(()->{
             new AlertDialog.Builder(context)
                     .setTitle(title)
                     .setMessage(text)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    .setPositiveButton(okButton, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
                             ok.Callback();
                         }
                     })
-                    .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    .setNegativeButton(cancelButton, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();

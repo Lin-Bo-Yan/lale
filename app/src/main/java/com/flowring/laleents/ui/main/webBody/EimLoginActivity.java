@@ -56,7 +56,6 @@ public class EimLoginActivity extends MainAppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_eim);
         signOut();
-        showToast();
         loggedInDialog();
         loginFunction = new LoginInAppFunc(EimLoginActivity.this);
         readUrlValid();
@@ -95,13 +94,6 @@ public class EimLoginActivity extends MainAppCompatActivity {
             ScanCaptureActivity.ScanCaptureType ScanCaptureType = ScanCaptureActivity.ScanCaptureType.Json;
             ActivityUtils.gotoQRcode(this, ScanCaptureType, ActivityResult);
         });
-    }
-
-    @Override
-    protected void onDestroy(){
-        super.onDestroy();
-        Boolean cleared = SharedPreferencesUtils.clearWebMessage(EimLoginActivity.this);
-        StringUtils.HaoLog("onDestroy= " + cleared);
     }
 
     public static void saveLog(MainAppCompatActivity activity) {
@@ -329,13 +321,6 @@ public class EimLoginActivity extends MainAppCompatActivity {
         //String message = pref.getString("message","");
         //StringUtils.HaoLog("webMessage= "+message);
 
-    }
-
-    private void showToast(){
-        String webMessage = SharedPreferencesUtils.getWebMessage();
-        if(!webMessage.isEmpty()){
-            CommonUtils.showToast(EimLoginActivity.this,getLayoutInflater(),webMessage,false);
-        }
     }
 
     private void loggedInDialog(){

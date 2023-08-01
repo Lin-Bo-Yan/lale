@@ -62,22 +62,4 @@ public class SharedPreferencesUtils {
         String value = pref.getString("isRepeatDevice", "");
         return value.isEmpty();
     }
-
-    public static void webMessage(String message){
-        pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
-        pref.edit().putString("message", message).apply();
-    }
-
-    public static String getWebMessage(){
-        pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
-        String message = pref.getString("message","");
-        return message;
-    }
-
-    public static boolean clearWebMessage(Activity activity){
-        pref = PreferenceManager.getDefaultSharedPreferences(activity);
-        pref.edit().remove("message").apply();
-        String value = pref.getString("message", "");
-        return value.isEmpty();
-    }
 }
