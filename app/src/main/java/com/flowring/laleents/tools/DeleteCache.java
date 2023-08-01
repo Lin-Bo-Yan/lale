@@ -24,22 +24,25 @@ public class DeleteCache {
                     if (file.isFile()) {
                         String fileName = file.getName();
                         StringUtils.HaoLog("checkExternalSharing " + fileName);
-                        deleteExternalSharing(file);
+                        boolean isDeleted = deleteExternalSharing(file);
+                        StringUtils.HaoLog("checkExternalSharing 刪除了嗎？" + isDeleted);
                     }
                 }
-                download.delete();
+                boolean isDeleted = download.delete();
             }else {
                 StringUtils.HaoLog("沒有檔案");
-                download.delete();
+                boolean isDeleted = download.delete();
                 return;
             }
         }
     }
 
-    private static void deleteExternalSharing(File file){
+    private static boolean deleteExternalSharing(File file){
+        boolean isDeleted = false;
         if(file.isFile()){
-            file.delete();
+            isDeleted = file.delete();
         }
+        return isDeleted;
     }
 
     public static void checkOpenfile(Context context){
@@ -55,22 +58,25 @@ public class DeleteCache {
                     if (file.isFile()) {
                         String fileName = file.getName();
                         StringUtils.HaoLog("checkOpenfile " + fileName);
-                        deleteOpenfile(file);
+                        boolean isDeleted = deleteOpenfile(file);
+                        StringUtils.HaoLog("checkOpenfile 刪除了嗎？" + isDeleted);
                     }
                 }
-                download.delete();
+                boolean isDeleted = download.delete();
             } else {
                 StringUtils.HaoLog("沒有檔案");
-                download.delete();
+                boolean isDeleted = download.delete();
                 return;
             }
         }
     }
 
-    private static void deleteOpenfile(File file){
+    private static boolean deleteOpenfile(File file){
+        boolean isDeleted = false;
         if(file.isFile()){
-            file.delete();
+            isDeleted = file.delete();
         }
+        return isDeleted;
     }
 
     public static void checkSharefile(Context context){
@@ -86,21 +92,24 @@ public class DeleteCache {
                     if (file.isFile()) {
                         String fileName = file.getName();
                         StringUtils.HaoLog("checkSharefile " + fileName);
-                        deleteSharefile(file);
+                        boolean isDeleted = deleteSharefile(file);
+                        StringUtils.HaoLog("checkSharefile 刪除了嗎？" + isDeleted);
                     }
                 }
-                download.delete();
+                boolean isDeleted = download.delete();
             }else {
                 StringUtils.HaoLog("沒有檔案");
-                download.delete();
+                boolean isDeleted = download.delete();
                 return;
             }
         }
     }
 
-    private static void deleteSharefile(File file){
+    private static boolean deleteSharefile(File file){
+        boolean isDeleted = false;
         if(file.isFile()){
-            file.delete();
+            isDeleted = file.delete();
         }
+        return isDeleted;
     }
 }

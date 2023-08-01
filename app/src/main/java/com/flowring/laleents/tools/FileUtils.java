@@ -1210,6 +1210,8 @@ public class FileUtils {
                 return "image/png";
             case ".gif":
                 return "image/gif";
+            case ".bmp":
+                return "image/bmp";
             case ".pdf":
                 return "application/pdf";
             case ".ppt":

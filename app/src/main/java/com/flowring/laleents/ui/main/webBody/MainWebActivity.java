@@ -2010,6 +2010,9 @@ public class MainWebActivity extends MainAppCompatActivity {
                         try {
                             JSONObject dataObject = FileUtils.forRecursiveUpload(file,httpReturn);
                             sendToWeb(new JSONObject().put("type","sendFile").put("data",dataObject).toString());
+                            if(file.getName().contains("heic_")){
+                                file.delete();
+                            }
                         } catch (JSONException e){
                             e.printStackTrace();
                         }
