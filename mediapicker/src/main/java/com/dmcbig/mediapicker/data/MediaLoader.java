@@ -10,10 +10,13 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 
 import com.dmcbig.mediapicker.R;
+import com.dmcbig.mediapicker.StringUtils;
 import com.dmcbig.mediapicker.entity.Folder;
 import com.dmcbig.mediapicker.entity.Media;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -83,19 +86,23 @@ public class MediaLoader extends LoaderM implements LoaderManager.LoaderCallback
                 if (dirName.equals(".background")) {
                     continue;
                 }
-                Media media = new Media(path, name, dateTime, mediaType, size, id, dirName, mimeType);
-                allFolder.addMedias(media);
-                if (mediaType == 3) {
-                    allVideoDir.addMedias(media);
-                }
+                List<String> acceptedMimeTypes = specificExtension();
+                if (acceptedMimeTypes.contains(mimeType)) {
+                    Media media = new Media(path, name, dateTime, mediaType, size, id, dirName, mimeType);
+                    allFolder.addMedias(media);
 
-                int index = hasDir(folders, dirName);
-                if (index != -1) {
-                    folders.get(index).addMedias(media);
-                } else {
-                    Folder folder = new Folder(dirName);
-                    folder.addMedias(media);
-                    folders.add(folder);
+                    if (mediaType == 3) {
+                        allVideoDir.addMedias(media);
+                    }
+
+                    int index = hasDir(folders, dirName);
+                    if (index != -1) {
+                        folders.get(index).addMedias(media);
+                    } else {
+                        Folder folder = new Folder(dirName);
+                        folder.addMedias(media);
+                        folders.add(folder);
+                    }
                 }
             }
             mLoader.onData(folders);
@@ -109,5 +116,10 @@ public class MediaLoader extends LoaderM implements LoaderManager.LoaderCallback
     @Override
     public void onLoaderReset(Loader loader) {
 
+    }
+
+    private List<String> specificExtension(){
+        List<String> acceptedMimeTypes = Arrays.asList("image/png", "image/x-ms-bmp", "video/mp4", "image/jpeg", "image/gif", "image/heic", "image/jpg","image/jpe");
+        return acceptedMimeTypes;
     }
 }
