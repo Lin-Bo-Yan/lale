@@ -11,6 +11,7 @@ import com.flowring.laleents.model.room.RoomSettingControlCenter;
 import com.flowring.laleents.model.user.UserControlCenter;
 import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.DialogUtils;
+import com.flowring.laleents.tools.FileUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.cloud.api.CloudUtils;
 import com.flowring.laleents.tools.cloud.mqtt.MqttService;
@@ -347,11 +348,20 @@ public class MsgControlCenter {
         return httpReturn;
     }
 
-    public static void webSideSendFile(String roomId, File file, CallbackUtils.ReturnHttp returnHttp) {
+    public static void webSideSendFile(String roomId, File file, CallbackUtils.FileReturn fileReturn) {
         new Thread(() -> {
-            HttpReturn httpReturn = CloudUtils.iCloudUtils.sendFile(roomId, file);
-            if(httpReturn.status == 200){
-                returnHttp.Callback(httpReturn);
+            String type = FileUtils.fileType(file.getName());
+            if(".heic".equalsIgnoreCase(type)){
+                File pngFile = FileUtils.convertHEICToPNG(file,AllData.context);
+                HttpReturn httpReturn = CloudUtils.iCloudUtils.sendFile(roomId, pngFile);
+                if(httpReturn.status == 200){
+                    fileReturn.Callback(httpReturn,pngFile);
+                }
+            } else {
+                HttpReturn httpReturn = CloudUtils.iCloudUtils.sendFile(roomId, file);
+                if(httpReturn.status == 200){
+                    fileReturn.Callback(httpReturn,file);
+                }
             }
         }).start();
     }

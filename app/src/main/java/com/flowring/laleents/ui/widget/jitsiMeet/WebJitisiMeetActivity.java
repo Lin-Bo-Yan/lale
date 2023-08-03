@@ -36,15 +36,13 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import com.flowring.laleents.ui.model.MainAppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.flowring.laleents.R;
 import com.flowring.laleents.model.msg.MsgControlCenter;
 import com.flowring.laleents.model.user.UserControlCenter;
 import com.flowring.laleents.tools.ActivityUtils;
-import com.flowring.laleents.tools.CommonUtils;
 import com.flowring.laleents.tools.StringUtils;
 
 import org.json.JSONException;
@@ -55,7 +53,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WebJitisiMeetActivity extends AppCompatActivity {
+public class WebJitisiMeetActivity extends MainAppCompatActivity {
 
 
     PermissionRequest myRequest;

@@ -206,7 +206,7 @@ public class UserControlCenter {
 
     }
 
-    public static void getAnnounceServer(CallbackUtils.announceReturn announceReturn){
+    public static void getAnnounceServer(CallbackUtils.AnnounceReturn announceReturn){
         new Thread(() -> {
             HttpReturn httpReturn = CloudUtils.iCloudUtils.announceServer();
             if(httpReturn.status == 200){
@@ -230,7 +230,7 @@ public class UserControlCenter {
         }).start();
     }
 
-    public static void getAnnounceServerGivenTime(String givenTime, CallbackUtils.announceReturn announceReturn){
+    public static void getAnnounceServerGivenTime(String givenTime, CallbackUtils.AnnounceReturn announceReturn){
         new Thread(() -> {
             HttpReturn httpReturn = CloudUtils.iCloudUtils.announceServerGivenTime(givenTime);
             if(httpReturn.status == 200){
@@ -253,7 +253,7 @@ public class UserControlCenter {
         }).start();
     }
 
-    public static void getLatestAnnounce(CallbackUtils.announceReturn announceReturn){
+    public static void getLatestAnnounce(CallbackUtils.AnnounceReturn announceReturn){
         new Thread(() -> {
             HttpReturn httpReturn = CloudUtils.iCloudUtils.latestAnnounce();
             if(httpReturn.status == 200){
@@ -277,7 +277,7 @@ public class UserControlCenter {
         }).start();
     }
 
-    public static void getLatestAnnounceGivenTime(String givenTime,CallbackUtils.announceReturn announceReturn){
+    public static void getLatestAnnounceGivenTime(String givenTime,CallbackUtils.AnnounceReturn announceReturn){
         new Thread(() -> {
             HttpReturn httpReturn = CloudUtils.iCloudUtils.latestAnnounceGivenTime(givenTime);
             if(httpReturn.status == 200){
@@ -541,7 +541,7 @@ public class UserControlCenter {
         });
     }
 
-    public static void wasLoggedOut(CallbackUtils.deviceReturn deviceReturn){
+    public static void wasLoggedOut(CallbackUtils.DeviceReturn deviceReturn){
         new Thread(() -> {
             String loginType = SharedPreferencesUtils.getGeneralType();
             String thirdPartyIdentifier = SharedPreferencesUtils.getThirdPartyIdentifier();
@@ -694,9 +694,9 @@ public class UserControlCenter {
         }
     }
 
-    public static void getWebVersion(String url, CallbackUtils.messageReturn messageReturn,CallbackUtils.timeoutReturn timeoutReturn){
+    public static void getWebVersion(String url, CallbackUtils.messageReturn messageReturn,CallbackUtils.TimeoutReturn timeoutReturn){
         new Thread(() -> {
-            String version = CloudUtils.iCloudUtils.webVersion(url, new CallbackUtils.timeoutReturn() {
+            String version = CloudUtils.iCloudUtils.webVersion(url, new CallbackUtils.TimeoutReturn() {
                 @Override
                 public void Callback(IOException timeout) {
                     timeoutReturn.Callback(timeout);

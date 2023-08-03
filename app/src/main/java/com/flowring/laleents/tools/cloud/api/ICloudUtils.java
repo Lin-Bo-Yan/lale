@@ -792,7 +792,7 @@ public interface ICloudUtils {
      * 取得web版本
      */
     @WorkerThread
-    String webVersion(String url,CallbackUtils.timeoutReturn timeoutReturn);
+    String webVersion(String url,CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 帳號登入

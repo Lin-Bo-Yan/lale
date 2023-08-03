@@ -22,6 +22,7 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
 import android.preference.PreferenceManager;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
@@ -46,6 +47,7 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -655,13 +657,18 @@ public class FileUtils {
                 JSONObject jsonObject = new JSONObject();
                 Uri url = Uri.fromFile(file);
                 jsonObject.put("name",file.getName());
-                jsonObject.put("mimeType",contentType(fileType(file.getName())));
+                //如果 fileType(file.getName()) 取得檔案類型是.heic則要改成.jpeg
+                if(".heic".equalsIgnoreCase(fileType(file.getName()))){
+                    jsonObject.put("mimeType","image/png");
+                } else {
+                    jsonObject.put("mimeType",contentType(fileType(file.getName())));
+                }
                 jsonObject.put("url",url.toString());
                 if(limitFileSize(file)){
                     jsonObject.put("errorMsg","檔案大小超過50MB，無法上傳");
                 } else {
                     //如果是圖片就取得圖片長寬，否則取得影片長寬
-                    if(isValidFileType(file.getName(), ".jpeg", ".jpg", ".png", ".gif")){
+                    if(isValidFileType(file.getName(), ".jpeg", ".jpg", ".png", ".gif",".bmp",".heic")){
                         String pic = ThumbnailUtils.resizeAndConvertToBase64(file.getPath(),50);
                         BitmapFactory.Options options = getBitmapFactory(file);
                         jsonObject.put("thumbnail",pic);
@@ -687,14 +694,26 @@ public class FileUtils {
     }
 
     public static JSONObject forRecursiveUpload(File file, HttpReturn httpReturn) {
-        Uri url = Uri.fromFile(file);
         JSONObject dataObject = new JSONObject();
         JSONObject fileObject = new JSONObject();
         JSONObject errorMsg = new JSONObject();
         try {
             dataObject.put("roomId", DefinedUtils.roomId);
             fileObject.put("name", file.getName());
-            fileObject.put("url", url);
+            if(file.getPath().contains("heic_") && file.getPath().contains(".png")){
+                String fileStr = file.getPath().replace("heic_", "").replace(".png", ".heic");
+                File newFilePath = new File(fileStr);
+                Uri url = Uri.fromFile(newFilePath);
+                fileObject.put("url", url);
+            } else if(file.getPath().contains("HEIC_") && file.getPath().contains(".png")){
+                String fileStr = file.getPath().replace("HEIC_", "").replace(".png", ".HEIC");
+                File newFilePath = new File(fileStr);
+                Uri url = Uri.fromFile(newFilePath);
+                fileObject.put("url", url);
+            } else {
+                Uri url = Uri.fromFile(file);
+                fileObject.put("url", url);
+            }
             if (httpReturn.status == 200) {
                 fileObject.put("fileId", httpReturn.data);
             } else {
@@ -709,6 +728,43 @@ public class FileUtils {
             e.printStackTrace();
         }
         return dataObject;
+    }
+
+    public static File convertHEICToPNG(File input, Context context){
+        try {
+            String filrName = "";
+            if (input.getName().endsWith(".HEIC")) {
+                //處理檔案名稱
+                String name = input.getName().substring(0,input.getName().length()-5);
+                filrName = String.format("HEIC_%s.png", name);
+            } else if(input.getName().endsWith(".heic")){
+                String name = input.getName().substring(0,input.getName().length()-5);
+                filrName = String.format("heic_%s.png", name);
+            }
+            // 將輸入文件轉換為 Uri
+            Uri heicUri = Uri.fromFile(input);
+            // 建立輸出文件
+            File output = new File(input.getParentFile(), filrName);
+            // 檢查檔案大小，如果大於1MB，就需要壓縮
+            long fileSizeInMB = input.length() / (1024 * 1024);
+            int quality = fileSizeInMB > 1 ? 50 : 100;  // 如果大於1MB，壓縮率設為50，否則100
+            // 開啟 HEIC 檔案並將其解碼成 Bitmap
+            try (ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(heicUri, "r")) {
+                if (pfd != null) {
+                    FileDescriptor fd = pfd.getFileDescriptor();
+                    Bitmap bitmap = BitmapFactory.decodeFileDescriptor(fd);
+                    // 壓縮 Bitmap 為 PNG 格式並將其保存在輸出文件中
+                    try (FileOutputStream out = new FileOutputStream(output)) {
+                        bitmap.compress(Bitmap.CompressFormat.PNG, quality, out);
+                    }
+                }
+            }
+            // 回傳轉換後的 PNG 文件
+            return output;
+        }catch (IOException e){
+            StringUtils.HaoLog("convertHEICToPNG= "+e);
+        }
+        return null;
     }
 
     public static BitmapFactory.Options getBitmapFactory(File file){
@@ -769,7 +825,7 @@ public class FileUtils {
     private static boolean isValidFileType(String fileName, String... validFileTypes) {
         String fileType = fileType(fileName);
         for (String validType : validFileTypes) {
-            if (validType.equals(fileType)) {
+            if (validType.equalsIgnoreCase(fileType)) {
                 return true;
             }
         }

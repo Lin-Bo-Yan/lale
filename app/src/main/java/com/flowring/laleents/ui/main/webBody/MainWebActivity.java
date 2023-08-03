@@ -606,7 +606,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     cleanCache = true;
                 }
             }
-        }, new CallbackUtils.timeoutReturn() {
+        }, new CallbackUtils.TimeoutReturn() {
             @Override
             public void Callback(IOException timeout) {
                 if(timeout instanceof java.net.SocketTimeoutException){
@@ -617,19 +617,19 @@ public class MainWebActivity extends MainAppCompatActivity {
     }
 
     private void showTimeoutDialog(){
-        DialogUtils.showTimeoutDialog(MainWebActivity.this, new CallbackUtils.tokenReturn() {
+        DialogUtils.showTimeoutDialog(MainWebActivity.this, new CallbackUtils.TokenReturn() {
             @Override
             public void Callback() {
                 //登出
                 Logout();
             }
-        }, new CallbackUtils.tokenReturn() {
+        }, new CallbackUtils.TokenReturn() {
             @Override
             public void Callback() {
                 //關閉
                 finish();
             }
-        }, new CallbackUtils.tokenReturn() {
+        }, new CallbackUtils.TokenReturn() {
             @Override
             public void Callback() {
                 //問題回報
@@ -720,7 +720,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         //Intent開啟相簿
         Intent intentFile = new Intent(Intent.ACTION_GET_CONTENT);
         intentFile.addCategory(Intent.CATEGORY_OPENABLE);
-        intentFile.setType("*/*");
+        intentFile.setType("application/*");
 
         //Intent開啟相機
         Intent intentCamera = null;
@@ -759,7 +759,7 @@ public class MainWebActivity extends MainAppCompatActivity {
     private void chooseFileOnlyForRoom(){
         Intent intentFile = new Intent(Intent.ACTION_GET_CONTENT);
         intentFile.addCategory(Intent.CATEGORY_OPENABLE);
-        intentFile.setType("*/*");
+        intentFile.setType("application/*");
         startActivityForResult(intentFile, DefinedUtils.FILE_CHOOSER_RESULT_CODE);
     }
 
@@ -957,7 +957,7 @@ public class MainWebActivity extends MainAppCompatActivity {
     //查詢伺服器最近公告
     public void latestAnnounceDialog(){
         if(AllData.getAnnouncementServer() != null && !AllData.getAnnouncementServer().isEmpty()){
-            UserControlCenter.getLatestAnnounce( new CallbackUtils.announceReturn() {
+            UserControlCenter.getLatestAnnounce( new CallbackUtils.AnnounceReturn() {
                 @Override
                 public void Callback(ServerAnnouncement serverAnnouncement) {
                     if(serverAnnouncement.enabled){
@@ -985,7 +985,7 @@ public class MainWebActivity extends MainAppCompatActivity {
     //查詢伺服器執行中維護公告
     public void announceServerDialog(){
         if(AllData.getAnnouncementServer() != null && !AllData.getAnnouncementServer().isEmpty()){
-            UserControlCenter.getAnnounceServer( new CallbackUtils.announceReturn() {
+            UserControlCenter.getAnnounceServer( new CallbackUtils.AnnounceReturn() {
                 @Override
                 public void Callback(ServerAnnouncement serverAnnouncement) {
                     StringUtils.HaoLog("announceServerDialog= 啟用? "+serverAnnouncement.enabled);
@@ -1168,15 +1168,12 @@ public class MainWebActivity extends MainAppCompatActivity {
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 String errorDescription = error.getDescription().toString();
-                StringUtils.HaoLog("還活著 onReceivedError 請求超時= " + errorDescription);
+                StringUtils.HaoLog("還活著 onReceivedError 錯誤碼= "+error.getErrorCode());
                 StringUtils.HaoLog("還活著 onReceivedError getUrl= " + request.getUrl());
                 StringUtils.HaoLog("還活著 onReceivedError getMethod= " + request.getMethod());
-                if (error.getErrorCode() == ERROR_TIMEOUT) {
-                    // 處理連接超時邏輯
-                    StringUtils.HaoLog("還活著 onReceivedError 連接超時= "+error.getErrorCode());
+                if (error.getErrorCode() == ERROR_TIMEOUT || error.getErrorCode() == ERROR_CONNECT) {
                     showTimeoutDialog();
                 }
-
                 super.onReceivedError(view, request, error);
             }
 
@@ -1188,13 +1185,11 @@ public class MainWebActivity extends MainAppCompatActivity {
                 if(errorResponse.getStatusCode() == 502 || errorResponse.getStatusCode() == 503){
                     if(smartServerDialogLock){
                         announceServerDialog();
-                        smartServerDialogLock = false;
                     }
                 }else if(errorResponse.getStatusCode() == 500 && request.getUrl().toString().contains("/api/messages/all/last")){
                     //針對錯誤碼500 && url包含 字段做處理
                     if(smartServerDialogLock){
                         announceServerDialog();
-                        smartServerDialogLock = false;
                     }
                 } else if(errorResponse.getStatusCode() == 400 && request.getUrl().toString().contains("/api/dau/personalData")){
                     Logout();
@@ -1296,7 +1291,6 @@ public class MainWebActivity extends MainAppCompatActivity {
                 }
                 mUploadMessage = filePathCallback;
                 String type = intent.getType();
-                StringUtils.HaoLog("ddd= "+type);
                 switch(type){
                     case "image/*":
                         if (fileChooserParams.isCaptureEnabled()) {
@@ -2004,13 +1998,13 @@ public class MainWebActivity extends MainAppCompatActivity {
             }
             File file = files[index];
             if(!FileUtils.limitFileSize(file)){
-                MsgControlCenter.webSideSendFile(roomId, file, new CallbackUtils.ReturnHttp() {
+                MsgControlCenter.webSideSendFile(roomId, file, new CallbackUtils.FileReturn() {
                     @Override
-                    public void Callback(HttpReturn httpReturn) {
+                    public void Callback(HttpReturn httpReturn, File file) {
                         try {
                             JSONObject dataObject = FileUtils.forRecursiveUpload(file,httpReturn);
                             sendToWeb(new JSONObject().put("type","sendFile").put("data",dataObject).toString());
-                            if(file.getName().contains("heic_")){
+                            if(file.getName().contains("heic_") || file.getName().contains("HEIC_")){
                                 file.delete();
                             }
                         } catch (JSONException e){

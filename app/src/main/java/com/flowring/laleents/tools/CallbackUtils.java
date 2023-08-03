@@ -16,6 +16,7 @@ import com.flowring.laleents.model.room.PasswordRoomMinInfo;
 import com.flowring.laleents.model.user.UserControlCenter;
 import com.flowring.laleents.model.user.UserInfo;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -128,21 +129,28 @@ public class CallbackUtils {
 
     }
 
-    public interface tokenReturn {
+    public interface TokenReturn {
         void Callback();
 
     }
 
-    public interface deviceReturn{
+    public interface DeviceReturn{
         void Callback(Boolean deviceReturn);
 
     }
 
-    public interface announceReturn{
+    public interface AnnounceReturn{
         void Callback(ServerAnnouncement serverAnnouncement);
+
     }
 
-    public interface timeoutReturn{
+    public interface TimeoutReturn{
         void Callback(IOException timeout);
+
+    }
+
+    public interface FileReturn {
+        void Callback(HttpReturn httpReturn, File file);
+
     }
 }

@@ -1,6 +1,6 @@
 package com.flowring.laleents.ui.main.webBody;
 
-import androidx.appcompat.app.AppCompatActivity;
+import com.flowring.laleents.ui.model.MainAppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import android.Manifest;
@@ -23,7 +23,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 
-public class FileNotSupportedActivity extends AppCompatActivity {
+public class FileNotSupportedActivity extends MainAppCompatActivity {
 
     Button shareButton;
     TextView fileNameTextView;

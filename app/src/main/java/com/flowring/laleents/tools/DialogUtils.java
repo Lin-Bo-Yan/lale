@@ -357,7 +357,7 @@ public class DialogUtils {
                 })
                 .create();
         alertDialog.show();
-        smartServerDialogLock = true;
+        smartServerDialogLock = false;
         return alertDialog;
     }
 
@@ -405,7 +405,7 @@ public class DialogUtils {
                         }
                     })
                     .create().show();
-            smartServerDialogLock = true;
+            smartServerDialogLock = false;
         });
 
     }
@@ -625,7 +625,7 @@ public class DialogUtils {
     }
 
 
-    public static void showSignOutDialog(Activity activity,CallbackUtils.tokenReturn tokenReturn){
+    public static void showSignOutDialog(Activity activity,CallbackUtils.TokenReturn tokenReturn){
         runOnUiThread(() -> {
             Dialog dialog = new Dialog(activity);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -661,7 +661,7 @@ public class DialogUtils {
         });
     }
     
-    public static void showTimeoutDialog(Activity activity,CallbackUtils.tokenReturn signout, CallbackUtils.tokenReturn closed, CallbackUtils.tokenReturn problemReport){
+    public static void showTimeoutDialog(Activity activity,CallbackUtils.TokenReturn signout, CallbackUtils.TokenReturn closed, CallbackUtils.TokenReturn problemReport){
         runOnUiThread(() -> {
             Dialog dialog = new Dialog(activity);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);

@@ -1,6 +1,6 @@
 package com.flowring.laleents.ui.main.webBody;
 
-import androidx.appcompat.app.AppCompatActivity;
+import com.flowring.laleents.ui.model.MainAppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import android.content.Context;
@@ -24,7 +24,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 
-public class FileReaderActivity extends AppCompatActivity {
+public class FileReaderActivity extends MainAppCompatActivity {
     public WebView webview;
     public ImageView share;
     @Override

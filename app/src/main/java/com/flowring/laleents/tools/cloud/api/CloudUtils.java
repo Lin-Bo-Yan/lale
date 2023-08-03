@@ -1872,7 +1872,7 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
-    public String webVersion(String url,CallbackUtils.timeoutReturn timeoutReturn) {
+    public String webVersion(String url,CallbackUtils.TimeoutReturn timeoutReturn) {
         Request.Builder request = new Request.Builder()
                 .url(url)
                 .get();
