@@ -261,56 +261,15 @@ public class MqttControlCenter {
 
     private void connection() throws MqttException{
         client = new MqttClient(getBroker(), getClientId(), new MemoryPersistence());
-        StringUtils.HaoLog("測試 "+"建立連線");
+        StringUtils.HaoLog("建立連線");
         client.setCallback(mqttCallback);
         StringUtils.HaoLog("mqttCallback");
         initConnOpts();
         client.connect(connOpts);
         StringUtils.HaoLog("connOpts");
         handler.post(subscribe);
-        StringUtils.HaoLog("測試 "+"重新連線成功");
+        StringUtils.HaoLog("重新連線成功");
     }
 
-    private void tokenRefresh() throws MqttException{
-        HttpReturn httpReturn = CloudUtils.iCloudUtils.reToken();
-        if(httpReturn.status != 200){
-            if ("refresh token 逾時".equals(httpReturn.msg)) {
-                UserControlCenter.setLogout(new CallbackUtils.ReturnHttp() {
-                    @Override
-                    public void Callback(HttpReturn httpReturn) {
-                        StringUtils.HaoLog("tokenRefresh 登出 "+httpReturn.msg);
-                        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
-                        pref.edit().putString("tokenRefresh","登出").apply();
-                        pref.edit().putBoolean("isSignOut", true);
-                    }
-                });
-            } else {
-                //恢復網路時間太久導致連線失敗，每支手機恢復網路速度不一樣，設計上斷網路delay 1 秒鐘執行NewCom
-                StringUtils.HaoLog("連線狀態異常 "+httpReturn.msg);
-            }
-        } else {
-            StringUtils.HaoLog("tokenRefresh "+httpReturn.msg);
-            connection();
-        }
-    }
-
-    private boolean checkToken(){
-        HttpReturn correct = CloudUtils.iCloudUtils.checkToken();
-        String msg = correct.msg;
-        if(correct.status == 200){
-            switch (msg){
-                case "Success":
-                    return (boolean)correct.data;
-            }
-        } else if(correct.status == 400){
-            switch (msg){
-                case "token 不存在":
-                case "token 逾時":
-                case "token 資料錯誤":
-                    return false;
-            }
-        }
-        return false;
-    }
 }
 

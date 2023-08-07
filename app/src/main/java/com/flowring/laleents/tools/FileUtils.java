@@ -730,41 +730,36 @@ public class FileUtils {
         return dataObject;
     }
 
-    public static File convertHEICToPNG(File input, Context context){
+    public static JSONObject forMultipleShareFile(File file, HttpReturn httpReturn){
+        JSONObject jsonObject = new JSONObject();
+        String name = file.getName();
+        String lastPathComponent = name.substring(name.lastIndexOf('/') + 1);
+        String pic = ThumbnailUtils.resizeAndConvertToBase64(file.getPath(),50);
+        int hashCode = lastPathComponent.hashCode();
         try {
-            String filrName = "";
-            if (input.getName().endsWith(".HEIC")) {
-                //處理檔案名稱
-                String name = input.getName().substring(0,input.getName().length()-5);
-                filrName = String.format("HEIC_%s.png", name);
-            } else if(input.getName().endsWith(".heic")){
-                String name = input.getName().substring(0,input.getName().length()-5);
-                filrName = String.format("heic_%s.png", name);
-            }
-            // 將輸入文件轉換為 Uri
-            Uri heicUri = Uri.fromFile(input);
-            // 建立輸出文件
-            File output = new File(input.getParentFile(), filrName);
-            // 檢查檔案大小，如果大於1MB，就需要壓縮
-            long fileSizeInMB = input.length() / (1024 * 1024);
-            int quality = fileSizeInMB > 1 ? 50 : 100;  // 如果大於1MB，壓縮率設為50，否則100
-            // 開啟 HEIC 檔案並將其解碼成 Bitmap
-            try (ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(heicUri, "r")) {
-                if (pfd != null) {
-                    FileDescriptor fd = pfd.getFileDescriptor();
-                    Bitmap bitmap = BitmapFactory.decodeFileDescriptor(fd);
-                    // 壓縮 Bitmap 為 PNG 格式並將其保存在輸出文件中
-                    try (FileOutputStream out = new FileOutputStream(output)) {
-                        bitmap.compress(Bitmap.CompressFormat.PNG, quality, out);
-                    }
-                }
-            }
-            // 回傳轉換後的 PNG 文件
-            return output;
-        }catch (IOException e){
-            StringUtils.HaoLog("convertHEICToPNG= "+e);
+            jsonObject.put("fileId",httpReturn.data);
+            jsonObject.put("onlyKey",String.valueOf(hashCode));
+            jsonObject.put("name",name);
+            jsonObject.put("thumbnail",pic);//縮圖
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        return null;
+        return jsonObject;
+    }
+
+    public static JSONObject forSingleShareFile(File file, HttpReturn httpReturn){
+        JSONObject jsonObject = new JSONObject();
+        String fileName = file.getName();
+        String pic = ThumbnailUtils.resizeAndConvertToBase64(file.getPath(),50);
+        try {
+            jsonObject.put("onlyKey","hashcode");
+            jsonObject.put("fileId",httpReturn.data);
+            jsonObject.put("name",fileName);
+            jsonObject.put("thumbnail",pic);//縮圖
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
     }
 
     public static BitmapFactory.Options getBitmapFactory(File file){

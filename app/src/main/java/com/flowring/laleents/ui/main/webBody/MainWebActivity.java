@@ -898,7 +898,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             String text = extras.getString(Intent.EXTRA_TEXT);
             ArrayList<Uri> uris = extras.getParcelableArrayList(Intent.EXTRA_STREAM);
             if(text != null && !text.isEmpty()){
-                Pattern pattern = Pattern.compile("(?<=\\n\\n)[^\\n]+");
+                Pattern pattern = Pattern.compile("(?<=\\n\\n)(?![\\p{L}\\d]+\\s+\\d{2}:\\d{2}|—+)\\S+");
                 Matcher matcher = pattern.matcher(text);
                 while (matcher.find()) {
                     try {
@@ -1769,11 +1769,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     HttpReturn httpReturn = MsgControlCenter.webSideSendFile(finalRoomId,outputFile);
                     try {
                         JSONArray jsonArray = new JSONArray();
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("onlyKey","hashcode");
-                        jsonObject.put("fileId",httpReturn.data);
-                        jsonObject.put("name",fileName);
-                        jsonObject.put("thumbnail","thumbnail");//縮圖
+                        JSONObject jsonObject = FileUtils.forSingleShareFile(outputFile,httpReturn);
                         jsonArray.put(jsonObject);
                         sendToWeb(new JSONObject().put("type","shareFileToCloud").put("data",jsonArray).toString());
                     } catch (JSONException e) {
@@ -1786,19 +1782,8 @@ public class MainWebActivity extends MainAppCompatActivity {
                 new Thread(() -> {
                     JSONArray jsonArray = new JSONArray();
                     for(File field : outputFiles){
-                        JSONObject jsonObject = new JSONObject();
-                        String name = field.getName();
-                        String lastPathComponent = name.substring(name.lastIndexOf('/') + 1);
-                        int hashCode = lastPathComponent.hashCode();
                         HttpReturn httpReturn = MsgControlCenter.webSideSendFile(finalRoomId,field);
-                        try {
-                            jsonObject.put("fileId",httpReturn.data);
-                            jsonObject.put("onlyKey",String.valueOf(hashCode));
-                            jsonObject.put("name",name);
-                            jsonObject.put("thumbnail","thumbnail");//縮圖
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                        JSONObject jsonObject = FileUtils.forMultipleShareFile(field,httpReturn);
                         jsonArray.put(jsonObject);
                     }
                     try{
@@ -2445,6 +2430,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                 String SCAN_QRCODE = null;
                 if (activityResult.getData() != null)
                     SCAN_QRCODE = activityResult.getData().getStringExtra("SCAN_QRCODE");
+                StringUtils.HaoLog("openQRcode= "+SCAN_QRCODE);
                 try {
                     JSONObject j = new JSONObject().put("type", "getQRcode").put("data", SCAN_QRCODE);
                     sendToWeb(j.toString());

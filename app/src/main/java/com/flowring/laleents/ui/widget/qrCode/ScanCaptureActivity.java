@@ -79,11 +79,6 @@ public class ScanCaptureActivity extends MainAppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //防止沒清除sp時，再清一次
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences((Context) ScanCaptureActivity.this);
-        pref.edit().remove("tokenRefresh").apply();
-        StringUtils.HaoLog("ScanCaptureActivity：" + pref.getString("tokenRefresh",""));
-
         scanCaptureType = (ScanCaptureType) getIntent().getExtras().get("ScanCaptureType");
         scanOnly = (boolean) getIntent().getBooleanExtra("scanOnly", false);
         setContentView(scanOnly ? R.layout.activity_scan_bind : R.layout.activity_scan_qrcode);
