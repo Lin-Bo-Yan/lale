@@ -143,7 +143,7 @@ public interface ICloudUtils {
     HttpAfReturn setAfPusher(String WFCI_URL, String memId, String userId,String FCM_token, String uuid, String customerProperties);
 
     /**
-     * 登入後啟動推播
+     * 登出時關掉通知
      */
     @WorkerThread
     HttpReturn closeAfPusher(String WFCI_URL, String userId, String FCM_token, String uuid);
@@ -192,7 +192,7 @@ public interface ICloudUtils {
     HttpReturn updateToken();
 
     /**
-     * 取得節慶資料
+     * 取得節慶資料 已廢棄
      */
     @WorkerThread
     HttpReturn getFestival();

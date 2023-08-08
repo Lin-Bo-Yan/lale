@@ -344,7 +344,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                         StringUtils.HaoLog("ShareActivity ACTION_SEND");
                         break;
                     case Intent.ACTION_SEND_MULTIPLE:
-                        multipleShare(intent);
+                        multipleShareToWeb(intent);
                         StringUtils.HaoLog("ShareActivity ACTION_SEND_MULTIPLE");
                         break;
                 }
@@ -890,7 +890,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
-    private void multipleShare(Intent intent){
+    private void multipleShareToWeb(Intent intent){
         JSONArray jsonArray = new JSONArray();
         String type = intent.getType();
         Bundle extras = intent.getExtras();
@@ -945,7 +945,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             if (getIntent().getAction() != null && getIntent().getAction().equals(Intent.ACTION_SEND)) {
                 shareToWeb(getIntent());
             } else if (getIntent().getAction() != null && getIntent().getAction().equals(Intent.ACTION_SEND_MULTIPLE)) {
-                multipleShare(getIntent());
+                multipleShareToWeb(getIntent());
             } else if (UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim){
                 UserControlCenter.googlePlatformVersion(MainWebActivity.this);
             } else {
@@ -1661,7 +1661,7 @@ public class MainWebActivity extends MainAppCompatActivity {
     public static String getVersionName(Context context) {
         String versionName = "";
         try {
-            //獲取軟件版本號，對應AndroidManifest.xml下android:versionName
+            //獲取軟體版本號
             versionName = context.getPackageManager().
                     getPackageInfo(context.getPackageName(), 0).versionName;
         } catch (PackageManager.NameNotFoundException e) {

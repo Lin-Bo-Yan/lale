@@ -79,19 +79,22 @@ public class CloudUtils implements ICloudUtils {
                 .get()
                 .addHeader("Content-Type", "application/json");
         HttpReturn httpReturn = gethttpReturn(request);
-        String data = new Gson().toJson(httpReturn.data);
-        GetMinVersion dbVersion = new Gson().fromJson(data,GetMinVersion.class);
-        String appVersion = MainWebActivity.getVersionName(AllData.context);
-
-        if(dbVersion != null && dbVersion.version != null && !dbVersion.version.isEmpty()
-                && appVersion != null && !appVersion.isEmpty()){
+        if(httpReturn.status != 200){
+            StringUtils.HaoLog("checkAppNeedUpdate= 錯誤碼 "+httpReturn.status);
+            return false;
+        }
+        try {
+            String data = new Gson().toJson(httpReturn.data);
+            GetMinVersion dbVersion = new Gson().fromJson(data,GetMinVersion.class);
+            String appVersion = MainWebActivity.getVersionName(AllData.context);
             StringUtils.HaoLog("checkAppNeedUpdate= appVersion " + appVersion);
             StringUtils.HaoLog("checkAppNeedUpdate= dbVersion " + dbVersion.version);
             Boolean needUpdated = StringUtils.version(appVersion,dbVersion.version);
             StringUtils.HaoLog("checkAppNeedUpdate= 需要更新嗎? " + needUpdated);
             return needUpdated;
-        } else {
-            StringUtils.HaoLog("googleVersion 為 null");
+        }catch (JsonSyntaxException e){
+            StringUtils.HaoLog("checkAppNeedUpdate error=" + request + " " + e);
+            e.printStackTrace();
             return false;
         }
     }
@@ -240,7 +243,7 @@ public class CloudUtils implements ICloudUtils {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        StringUtils.HaoLog("alreadyLoddedIn= "+jbody.toString());
+        StringUtils.HaoLog("alreadyLoddedIn= "+ jbody);
         RequestBody body = RequestBody.create(mediaType,jbody.toString());
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/user/mobile/logged")

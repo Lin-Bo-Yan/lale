@@ -710,8 +710,8 @@ public class UserControlCenter {
         new Thread(() -> {
             HttpReturn httpReturn = CloudUtils.iCloudUtils.googlePlatformVersion();
             Gson gson = new Gson();
-            String data = gson.toJson(httpReturn.data);
             if(httpReturn.status == 200){
+                String data = gson.toJson(httpReturn.data);
                 GetGooglePlatformVersion[] googlePlatformVersions = gson.fromJson(data,GetGooglePlatformVersion[].class);
                 String appVersion = MainWebActivity.getVersionName(AllData.context);
                 if(googlePlatformVersions != null && googlePlatformVersions.length > 0){

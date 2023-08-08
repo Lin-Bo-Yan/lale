@@ -86,7 +86,6 @@ public class LoginInAppFunc {
             @Override
             public void afterTextChanged(Editable editable) {
                 passwordIsValid(editable.toString());
-                EimLoginActivity.checkSignBtn();
             }
         });
 
