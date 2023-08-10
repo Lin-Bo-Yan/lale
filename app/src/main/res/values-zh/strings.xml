@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Lale 企業</string>
-    <string name="facebook_app_id" translatable="false">432444664127687</string>
     <string name="login">登入</string>
     <string name="more_edit_name_hint">請輸入暱稱</string>
     <string name="scan_qrcode">掃描QR Code</string>
@@ -103,4 +102,9 @@
     <string name="shared_message">一則分享訊息</string>
     <string name="retracted_message">已收回訊息</string>
     <string name="link_format">[連結]%s</string>
+
+    <string name="room_life" translatable="false">生活</string>
+    <string name="room_service" translatable="false">服務</string>
+    <string name="room_enterprise" translatable="false">工作</string>
+    <string name="facebook_app_id" translatable="false">432444664127687</string>
 </resources>
