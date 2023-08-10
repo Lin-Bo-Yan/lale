@@ -25,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -745,4 +746,39 @@ public class DialogUtils {
 
         });
     }
+
+    public static void showLanguageSelection(Activity activity, ArrayAdapter<String> arrayAdapter){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle(activity.getString(R.string.change_language));
+        builder.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String selectedItem = arrayAdapter.getItem(which);
+                List<String> buttons = new ArrayList<>();
+                buttons.add(activity.getString(R.string.sure_button));
+                buttons.add(activity.getString(R.string.cancel_button));
+                List<CallbackUtils.noReturn> callbacks = new ArrayList<>();
+                for(int i = 0; i < buttons.size(); i++){
+                    final int buttonIndex = i;
+                    CallbackUtils.noReturn callback = new CallbackUtils.noReturn() {
+                        @Override
+                        public void Callback() {
+                            String button = buttons.get(buttonIndex);
+                            switch (button){
+                                case "ok":
+                                case "cancel":
+
+                                    break;
+                            }
+                        }
+                    };
+                    callbacks.add(callback);
+                }
+                DialogUtils.showDialogCancelable(activity,activity.getString(R.string.change_language),activity.getString(R.string.language_selection_text),buttons,callbacks);
+            }
+        });
+        builder.setNegativeButton(activity.getString(R.string.cancel_button), null);
+        builder.show();
+    }
+
 }

@@ -12,9 +12,10 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 
 import com.auth0.android.jwt.JWT;
@@ -56,6 +57,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
     private static Button btn_login;
     static LoginInAppFunc loginFunction;
     private AppCompatTextView textView_login;
+    private AppCompatImageView ic_multilingual;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -85,7 +87,6 @@ public class EimLoginActivity extends MainAppCompatActivity {
             }
         });
 
-
         textView_login = findViewById(R.id.textView_login);
         textView_login.setOnClickListener(view -> {
             activityReturn = new CallbackUtils.ActivityReturn() {
@@ -103,6 +104,19 @@ public class EimLoginActivity extends MainAppCompatActivity {
             };
             ScanCaptureActivity.ScanCaptureType ScanCaptureType = ScanCaptureActivity.ScanCaptureType.Json;
             ActivityUtils.gotoQRcode(this, ScanCaptureType, ActivityResult);
+        });
+
+        ic_multilingual = findViewById(R.id.ic_multilingual);
+        ic_multilingual.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String[] languageSelector = new String[]{getString(R.string.traditional_chinese), getString(R.string.simplified_chinese), getString(R.string.english_language)};
+                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
+                        (Context) EimLoginActivity.this,
+                        android.R.layout.simple_list_item_1,
+                        languageSelector);
+                DialogUtils.showLanguageSelection(EimLoginActivity.this,arrayAdapter);
+            }
         });
     }
 

@@ -58,7 +58,11 @@
     <string name="saveLog_text">請重新登入</string>
     <string name="account_password_error">請輸入正確的帳號和密碼</string>
     <string name="work_notification_format">%s:%s\n您有一份工作需盡速處理</string>
-
+    <string name="change_language">變更語言</string>
+    <string name="traditional_chinese">繁體中文</string>
+    <string name="simplified_chinese">簡體中文</string>
+    <string name="english_language">English</string>
+    <string name="language_selection_text">需要重新啟動已變更語言\n確定變更語言？</string>
     <!-- FileUtils.java -->
     <string name="file_too_large">檔案大小超過50MB，無法上傳</string>
     <string name="not_member">使用者不是聊天室成員</string>
