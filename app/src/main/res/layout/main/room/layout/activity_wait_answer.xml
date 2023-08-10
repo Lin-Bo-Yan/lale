@@ -23,7 +23,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Name"
+                android:text="@string/wait_answer_title"
                 android:textColor="@color/white"
                 android:textSize="22sp" />
 
@@ -43,7 +43,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="Lale 企業語音..."
+                    android:text="@string/wait_answer_text"
                     android:textColor="#99FFFFFF"
                     android:textSize="15sp" />
             </LinearLayout>
@@ -77,7 +77,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="27dp"
-                    android:text="拒絕"
+                    android:text="@string/abnegation_button"
                     android:textAlignment="center"
                     android:textColor="@color/white"
                     android:textSize="12dp" />
@@ -103,7 +103,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="27dp"
-                    android:text="接聽"
+                    android:text="@string/answer_button"
                     android:textAlignment="center"
                     android:textColor="@color/white"
                     android:textSize="12dp" />

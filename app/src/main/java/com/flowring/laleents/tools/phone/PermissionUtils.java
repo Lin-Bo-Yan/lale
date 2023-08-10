@@ -20,6 +20,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.PermissionChecker;
 import androidx.fragment.app.Fragment;
 
+import com.flowring.laleents.R;
 import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.DialogUtils;
 import com.flowring.laleents.tools.StringUtils;
@@ -141,7 +142,7 @@ public class PermissionUtils {
                 StringUtils.HaoLog("checkLocation 距離屏東" + results[0] / 1000 + "公里");
             }
         } else {
-            Toast.makeText(context, "請開啟定位服務", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, context.getString(R.string.checkLocation_title), Toast.LENGTH_LONG).show();
 
             context.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
         }
@@ -151,9 +152,8 @@ public class PermissionUtils {
         if (Settings.canDrawOverlays(activity)) {
             return null;
         } else {
-            //若沒有權限，提示取得
-
-            return DialogUtils.showDialogMessage(activity, "請求懸浮視窗權限", "視訊/通話接通訊息需要此權限", new CallbackUtils.noReturn() {
+            //若沒有權限，提示獲取.
+            return DialogUtils.showDialogMessage(activity, activity.getString(R.string.requestDrawOverlays_title), activity.getString(R.string.requestDrawOverlays_text), new CallbackUtils.noReturn() {
                 @Override
                 public void Callback() {
                     runOnUiThread(() -> {
@@ -163,9 +163,6 @@ public class PermissionUtils {
                     });
                 }
             });
-
-
         }
-
     }
 }

@@ -547,7 +547,7 @@ public class DialogUtils {
 
     static public Dialog showGetImage(Activity activity, CallbackUtils.ReturnData<File> callback) {
         Map<String, View.OnClickListener> list = new HashMap<>();
-        list.put("拍照", new View.OnClickListener() {
+        list.put(activity.getString(R.string.dialog_showGetImage_photograph), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -572,11 +572,11 @@ public class DialogUtils {
                         }
                     }
                 } else {
-                    PermissionUtils.requestPermission(activity, Manifest.permission.CAMERA, "該功能需要相機權限");
+                    PermissionUtils.requestPermission(activity, Manifest.permission.CAMERA, activity.getString(R.string.dialog_camera_permissions));
                 }
             }
         });
-        list.put("相簿", new View.OnClickListener() {
+        list.put(activity.getString(R.string.dialog_showGetImage_album), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -599,7 +599,7 @@ public class DialogUtils {
 
     static public Dialog showGetImageOrDefault(Activity activity, String Default, CallbackUtils.ReturnData<File> callback, ActivityResultLauncher resultLauncher) {
         Map<String, View.OnClickListener> list = new HashMap<>();
-        list.put("拍照", new View.OnClickListener() {
+        list.put(activity.getString(R.string.dialog_showGetImage_photograph), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -616,7 +616,7 @@ public class DialogUtils {
                         }
 
                         if (photoFile != null) {
-                            callback.Callback(true, "拍照", photoFile);
+                            callback.Callback(true, activity.getString(R.string.dialog_showGetImage_photograph), photoFile);
                             Uri photoURI = FileProvider.getUriForFile(activity,
                                     "com.flowring.laleents.fileprovider", photoFile);
                             intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
@@ -624,11 +624,11 @@ public class DialogUtils {
                         }
                     }
                 } else {
-                    PermissionUtils.requestPermission(activity, Manifest.permission.CAMERA, "該功能需要相機權限");
+                    PermissionUtils.requestPermission(activity, Manifest.permission.CAMERA, activity.getString(R.string.dialog_camera_permissions));
                 }
             }
         });
-        list.put("相簿", new View.OnClickListener() {
+        list.put(activity.getString(R.string.dialog_showGetImage_album), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -639,7 +639,7 @@ public class DialogUtils {
                     long maxSize = 104857600L;//long long long long類型
                     intent.putExtra(PickerConfig.MAX_SELECT_SIZE, maxSize);
                     intent.putExtra(PickerConfig.MAX_SELECT_COUNT, 1);
-                    callback.Callback(true, "相簿", null);
+                    callback.Callback(true, activity.getString(R.string.dialog_showGetImage_album), null);
                     resultLauncher.launch(intent);
 
                 }
@@ -649,7 +649,7 @@ public class DialogUtils {
         list.put(Default, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                callback.Callback(true, "預設", null);
+                callback.Callback(true, activity.getString(R.string.dialog_showGetImage_preset), null);
 
             }
         });

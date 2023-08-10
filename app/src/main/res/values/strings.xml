@@ -1,7 +1,6 @@
 <resources>
-    <string name="app_name" translatable="false">Lale 企業</string>
+    <string name="app_name">Lale 企業</string>
     <string name="facebook_app_id" translatable="false">432444664127687</string>
-
     <string name="login">登入</string>
     <string name="more_edit_name_hint">請輸入暱稱</string>
     <string name="scan_qrcode">掃描QR Code</string>
@@ -11,15 +10,10 @@
     <string name="single_device_text">您之前未正常登出或已於其他裝置登入，請確認是否登入此裝置(將登出其他裝置)</string>
     <string name="single_device_sign_out_title">此裝置已被登出</string>
     <string name="single_device_sign_out_text">您的帳號已在其他行動裝置登入，此裝置已被登出</string>
-    <string name="update_app_text" translatable="false">已經發布新版本，請前往Google Play更新版本。</string>
-    <string name="problem_report">問題回報</string>
-    <string name="closure">關閉</string>
+    <string name="update_app_text">已經發布新版本，請前往Google Play更新版本。</string>
     <string name="server_exception_title">伺服器異常通知</string>
     <string name="server_exception_text">請稍後再嘗試使用</string>
-
-    <string name="room_life" translatable="false">生活</string>
-    <string name="room_service" translatable="false">服務</string>
-    <string name="room_enterprise" translatable="false">工作</string>
+    <string name="server_maintenance_title">伺服器維護通知</string>
 
     <string name="other_apps_open">其他應用程式開啟</string>
     <string name="file_not_supported_title">標題</string>
@@ -33,5 +27,83 @@
     <string name="login_password_body">請輸入您的密碼</string>
     <string name="login_button_title">掃描 QR code 登入</string>
     <string name="desc_password_rule">密碼至少包含大、小寫英文字母與數字；不得包含大寫英文字母、特殊符號、空格</string>
+    <string name="select_picture">選擇相簿的中圖片</string>
+    <string name="abnegation_button">拒絕</string>
+    <string name="answer_button">接聽</string>
+    <string name="wait_answer_title">Name</string>
+    <string name="wait_answer_text">Lale 企業語音...</string>
+    <string name="sure_button">確定</string>
+    <string name="cancel_button">取消</string>
+    <string name="dialog_call_title">邀請者</string>
+    <string name="dialog_call_text">lale企業語音</string>
+    <string name="sign_out_button">登出</string>
+    <string name="closure_button">關閉</string>
+    <string name="problem_report_button">問題回報</string>
+    <string name="dialog_wait">請稍後</string>
+    <string name="toast_layout">再按一次返回以離開APP</string>
+    <string name="dialog_abnormal_text">連線狀態異常，是否要登出？</string>
     <string name="dialog_check_network_text">請確認網路連線</string>
+    <string name="dialog_showGetImage_photograph">拍照</string>
+    <string name="dialog_showGetImage_album">相簿</string>
+    <string name="dialog_showGetImage_preset">預設</string>
+    <string name="dialog_camera_permissions">該功能需要相機權限</string>
+    <string name="dialog_download_permissions">該功能需要下載權限</string>
+    <string name="dialog_background_execution_permissions">背景執行權限</string>
+    <string name="dialog_reboot_permissions">開機後重新啟動背景服務</string>
+    <string name="dialog_access_permissions">拿取相簿中的QRcode圖片需要檔案存取權限</string>
+    <string name="dialog_QRcodeCamera_permissions">掃描QRcode功能需要相機權限</string>
+    <string name="requestDrawOverlays_title">請求懸浮視窗權限</string>
+    <string name="requestDrawOverlays_text">視訊/通話接通訊息需要此權限</string>
+    <string name="checkLocation_title">請開啟定位服務</string>
+    <string name="saveLog_title">登入失敗，您的QRCode已失效</string>
+    <string name="saveLog_text">請重新登入</string>
+    <string name="account_password_error">請輸入正確的帳號和密碼</string>
+    <string name="work_notification_format">%s: %s\n您有一份工作需盡速處理</string>
+
+
+
+    <!-- FileUtils.java -->
+    <string name="file_too_large">檔案大小超過50MB，無法上傳</string>
+    <string name="not_member">使用者不是聊天室成員</string>
+    <string name="server_maintenance">伺服器維護中\n預計在%s維護完成</string>
+
+    <!-- MessageInfo.java -->
+    <string name="inviting_call">通話邀請中</string>
+    <string name="call">[通話中]</string>
+    <string name="call_missed_text">[未接%s通話]</string>
+    <string name="call_cancel_text">[取消%s通話]</string>
+    <string name="call_over_text">[已結束%s通話]</string>
+    <string name="call_reject_text">[拒絕%s通話]</string>
+    <string name="call_voice_text">語音</string>
+    <string name="call_video_text">視訊</string>
+    <string name="leave_group_call">離開群組通話</string>
+    <string name="message_retracted">一則訊息已被收回</string>
+    <string name="work_notification">您有工作待辦通知</string>
+    <string name="send_location_information">已傳送位置資訊</string>
+    <string name="stickers">[貼圖]</string>
+    <string name="file">[檔案]</string>
+    <string name="picture">[圖片]</string>
+    <string name="voice">[語音]</string>
+    <string name="film">[影片]</string>
+    <string name="announcement_set_up">已設立公告</string>
+    <string name="announcement_canceled">已取消公告</string>
+    <string name="video_call_ended">通話/視訊已結束</string>
+    <string name="join_group_format">%s加入群組</string>
+    <string name="removed_by_admin_format">%s已被管理員移出群組</string>
+    <string name="left_group_format">%s已離開群組</string>
+    <string name="change_chatroom_format">已變更聊天室名稱至「%s」</string>
+    <string name="chatroom_profile_changed">已變更聊天室簡介</string>
+    <string name="chatroom_administrator_change">聊天室管理員變更</string>
+    <string name="change_chatroom_avatar">已變更聊天室頭像</string>
+    <string name="chatroom_created">已建立聊天室</string>
+    <string name="shared_message">一則分享訊息</string>
+    <string name="retracted_message">已收回訊息</string>
+    <string name="link_format">[連結]%s</string>
+
+
+
+    <string name="room_life" translatable="false">生活</string>
+    <string name="room_service" translatable="false">服務</string>
+    <string name="room_enterprise" translatable="false">工作</string>
+
 </resources>

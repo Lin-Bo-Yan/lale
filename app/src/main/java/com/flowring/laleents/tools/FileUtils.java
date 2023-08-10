@@ -667,7 +667,7 @@ public class FileUtils {
                 }
                 jsonObject.put("url",url.toString());
                 if(limitFileSize(file)){
-                    jsonObject.put("errorMsg","檔案大小超過50MB，無法上傳");
+                    jsonObject.put("errorMsg",AllData.context.getString(R.string.file_too_large));
                 } else {
                     //如果是圖片就取得圖片長寬，否則取得影片長寬
                     if(isValidFileType(file.getName(), ".jpeg", ".jpg", ".png", ".gif",".bmp",".heic")){
@@ -721,7 +721,7 @@ public class FileUtils {
             } else {
                 fileObject.put("fileId", null);
                 errorMsg.put("status", 500);
-                errorMsg.put("msg", "使用者不是聊天室成員");
+                errorMsg.put("msg", AllData.context.getString(R.string.not_member));
                 errorMsg.put("data", null);
                 fileObject.put("errorMsg", errorMsg);
             }

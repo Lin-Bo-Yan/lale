@@ -1,6 +1,7 @@
 package com.flowring.laleents.model.msg;
 
 import com.flowring.laleents.BuildConfig;
+import com.flowring.laleents.R;
 import com.flowring.laleents.model.room.RoomMinInfo;
 import com.flowring.laleents.model.user.MemberInfo;
 import com.flowring.laleents.model.user.UserControlCenter;
@@ -358,41 +359,54 @@ public class MessageInfo implements Serializable, IMessage2 {
     String CallRequest(String value) {
         String type = "";
         if (getCallRequest() != null && getCallRequest().type != null){
-            type = getCallRequest().type.equals("audio") ? "語音" : "視訊";
+            type = getCallRequest().type.equals("audio") ? AllData.context.getString(R.string.call_voice_text) : AllData.context.getString(R.string.call_video_text);
         }
 
         if (value == null){
-            return "通話邀請中";
+            // 通話邀請中
+            return AllData.context.getString(R.string.inviting_call);
         }
         if (isGroup()) {
             switch (value) {
                 case "call":
-                    return "[通話中]";
+                    // [通話中]
+                    return AllData.context.getString(R.string.call);
                 case "reject":
-                    return "[未接" + type + "通話]";
+                    // [未接" + type + "通話]
+                    return String.format(AllData.context.getString(R.string.call_missed_text), type);
                 case "cancel":
-                    return "[取消" + type + "通話]";
+                    // [取消" + type + "通話]
+                    return String.format(AllData.context.getString(R.string.call_cancel_text), type);
                 case "timeout":
-                    return "[未接" + type + "通話]";
+                    // [未接" + type + "通話]
+                    return String.format(AllData.context.getString(R.string.call_missed_text), type);
                 case "end":
-                    return "[已結束" + type + "通話]";
+                    // [已結束" + type + "通話]
+                    return String.format(AllData.context.getString(R.string.call_over_text), type);
                 default:
-                    return "[未接" + type + "通話]";
+                    // [未接" + type + "通話]
+                    return String.format(AllData.context.getString(R.string.call_missed_text), type);
             }
         } else {
             switch (value) {
                 case "call":
-                    return "[通話中]";
+                    // [通話中]
+                    return AllData.context.getString(R.string.call);
                 case "reject":
-                    return "[拒絕" + type + "通話]";
+                    // [拒絕" + type + "通話]
+                    return String.format(AllData.context.getString(R.string.call_reject_text), type);
                 case "cancel":
-                    return "[取消" + type + "通話]";
+                    // [取消" + type + "通話]
+                    return String.format(AllData.context.getString(R.string.call_cancel_text), type);
                 case "timeout":
-                    return "[未接" + type + "通話]";
+                    // [未接" + type + "通話]
+                    return String.format(AllData.context.getString(R.string.call_missed_text), type);
                 case "end":
-                    return "[已結束" + type + "通話]";
+                    // [已結束" + type + "通話]
+                    return String.format(AllData.context.getString(R.string.call_over_text), type);
                 default:
-                    return "[未接" + type + "通話]";
+                    // [未接" + type + "通話]
+                    return String.format(AllData.context.getString(R.string.call_missed_text), type);
             }
         }
     }
@@ -404,13 +418,13 @@ public class MessageInfo implements Serializable, IMessage2 {
                 return CallRequest(getCallRequest().result);
             }
             if(is_lale_call_group_status()){
-                return "離開群組通話";
+                return AllData.context.getString(R.string.leave_group_call);
             }
             if(is_lale_retracted()){
-                return "一則訊息已被收回";
+                return AllData.context.getString(R.string.message_retracted);
             }
             if(is_lale_ecosystem_af_notify()){
-                return "您有工作待辦通知";
+                return AllData.context.getString(R.string.work_notification);
             }
             if(is_lale_nomessage()){
                 return "";
@@ -419,65 +433,73 @@ public class MessageInfo implements Serializable, IMessage2 {
                 return new JSONObject(content).optString("msg");
             }
             if(is_lale_location_received()){
-                return "已傳送位置資訊";
+                return AllData.context.getString(R.string.send_location_information);
             }
             if(is_lale_message_sticker()){
-                return "[貼圖]";
+                return AllData.context.getString(R.string.stickers);
             }
             if(is_lale_message_announcement()){
-                return "已設立公告";
+                return AllData.context.getString(R.string.announcement_set_up);
             }
             if(is_lale_message_announcement_cancel()){
-                return "已取消公告";
+                return AllData.context.getString(R.string.announcement_canceled);
             }
             if(is_lale_reply()){
                 return new JSONObject(content).optString("msg");
             }
             if(is_lale_file_received()){
-                return "[檔案]";
+                return AllData.context.getString(R.string.file);
             }
             if(is_lale_image_received()){
-                return "[圖片]";
+                return AllData.context.getString(R.string.picture);
             }
             if(is_lale_audio_received()){
-                return "[語音]";
+                return AllData.context.getString(R.string.voice);
             }
             if(is_lale_video_received()){
-                return "[影片]";
+                return AllData.context.getString(R.string.film);
             }
             if(is_lale_call_request()){
                 return CallRequest(getCallRequest().result);
             }
             if(is_lale_call_spendtime()){
-                return "通話/視訊已結束";
+                return AllData.context.getString(R.string.video_call_ended);
             }
             if(is_lale_message_received()){
                 return isLink();
             }
             if(is_lale_member_join()){
-                return new JSONObject(content).optString("userName") + "加入群組";
+                String userName = new JSONObject(content).optString("userName");
+                String result = String.format(AllData.context.getString(R.string.join_group_format), userName);
+                return result;
             }
             if(is_lale_member_left()){
                 if(isAdm()){
-                    return new JSONObject(content).optString("userName")+ "已被管理員移出群組";
+                    String userName = new JSONObject(content).optString("userName");
+                    String result = String.format(AllData.context.getString(R.string.removed_by_admin_format), userName);
+                    return result;
                 }
-                return new JSONObject(content).optString("userName") + "已離開群組";
+                String userName = new JSONObject(content).optString("userName");
+                String result = String.format(AllData.context.getString(R.string.left_group_format), userName);
+                return result;
             }
             if(is_lale_room_settings_name()){
-                return String.format("已變更聊天室名稱至「%s」",roomName);
+                String chatroomFormat = AllData.context.getString(R.string.change_chatroom_format);
+                String result = String.format(chatroomFormat,roomName);
+                return result;
             }
             if(is_lale_room_settings_desc()){
-                return "已變更聊天室簡介";
+                return AllData.context.getString(R.string.chatroom_profile_changed);
             }
             if(is_lale_room_settings_admin()){
                 // String.format("已變更管理員至「%s」",roomName);
-                return "聊天室管理員變更";
+                return AllData.context.getString(R.string.chatroom_administrator_change);
             }
             if(is_lale_room_settings_avatar()){
-                return "已變更聊天室頭像";
+                return AllData.context.getString(R.string.change_chatroom_avatar);
             }
             if(is_lale_room_created()){
-                return "已建立聊天室";
+                return AllData.context.getString(R.string.chatroom_created);
             }
             if(is_lale_bot_reply()){
                 return new JSONObject(content).optString("msg");
@@ -486,10 +508,10 @@ public class MessageInfo implements Serializable, IMessage2 {
                 return new JSONObject(content).optString("msg");
             }
             if(is_lale_message_share()){
-                return "一則分享訊息";
+                return AllData.context.getString(R.string.shared_message);
             }
             if(is_lale_message_retract()){
-                return "已收回訊息";
+                return AllData.context.getString(R.string.retracted_message);
             }
 
         } catch (JSONException e) {
@@ -571,11 +593,11 @@ public class MessageInfo implements Serializable, IMessage2 {
                 }catch (IOException e){
                     e.printStackTrace();
                 }
-
+                String linkFormat = AllData.context.getString(R.string.link_format);
                 if(title != null && !title.isEmpty()){
-                    return String.format("[連結]%s",title);
+                    return String.format(linkFormat,title);
                 }
-                return String.format("[連結]%s",msg);
+                return String.format(linkFormat,msg);
             }
         }
         return msg;

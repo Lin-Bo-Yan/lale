@@ -10,6 +10,8 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import static com.flowring.laleents.ui.main.webBody.MainWebActivity.isThreadStarted;
 import static com.flowring.laleents.ui.main.webBody.MainWebActivity.isFirstDisplay;
+
+import com.flowring.laleents.R;
 import com.flowring.laleents.model.AFtoken;
 import com.flowring.laleents.model.Http2Return;
 import com.flowring.laleents.model.HttpAfReturn;
@@ -360,7 +362,7 @@ public class UserControlCenter {
                             String info = new Gson().toJson(afReturn.data);
                             callback.Callback(info);
                         } else {
-                            DialogUtils.showDialogMessage(context,"請輸入正確的帳號和密碼");
+                            DialogUtils.showDialogMessage(context,AllData.context.getString(R.string.account_password_error));
                         }
                     }
                 }).start();

@@ -161,13 +161,13 @@ public class MainWebActivity extends MainAppCompatActivity {
             if (PermissionUtils.checkPermission(getApplicationContext(), Manifest.permission.FOREGROUND_SERVICE)) {
                 StringUtils.HaoLog("可以使用背景執行");
             } else {
-                PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.FOREGROUND_SERVICE, "背景執行權限");
+                PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.FOREGROUND_SERVICE, getString(R.string.dialog_background_execution_permissions));
             }
             if (PermissionUtils.checkPermission(getApplicationContext(), Manifest.permission.RECEIVE_BOOT_COMPLETED)) {
                 StringUtils.HaoLog("可以使用重啟");
             } else {
                 StringUtils.HaoLog("詢問使用重啟");
-                PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.RECEIVE_BOOT_COMPLETED, "開機後重新啟動背景服務");
+                PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.RECEIVE_BOOT_COMPLETED, getString(R.string.dialog_reboot_permissions));
             }
 
             if((Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)){
@@ -736,7 +736,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         if (state.equals(Environment.MEDIA_MOUNTED)) {
             if (!PermissionUtils.checkPermission(this, Manifest.permission.CAMERA)) {
                 StringUtils.HaoLog("前往相機或相簿");
-                PermissionUtils.requestPermission(this, Manifest.permission.CAMERA, "該功能需要相機權限");
+                PermissionUtils.requestPermission(this, Manifest.permission.CAMERA, getString(R.string.dialog_camera_permissions));
                 mUploadMessage.onReceiveValue(null);
                 mUploadMessage = null;
                 return;
@@ -1010,7 +1010,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                         StringUtils.HaoLog("latestAnnounceDialog= "+result);
                         String formatDate = TimeUtils.formatDate(result,serverAnnouncement.startTime,serverAnnouncement.endTime);
                         runOnUiThread(()->{
-                            DialogUtils.showDialogMessage(MainWebActivity.this, serverAnnouncement.content, formatDate, new CallbackUtils.noReturn() {
+                            DialogUtils.showDialogMessage(MainWebActivity.this, getString(R.string.server_maintenance_title), formatDate, new CallbackUtils.noReturn() {
                                 @Override
                                 public void Callback() {
                                     webRendered();
@@ -1036,7 +1036,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     StringUtils.HaoLog("announceServerDialog= 啟用? "+serverAnnouncement.enabled);
                     if(serverAnnouncement.enabled){
                         String time = TimeUtils.formatDateTime(serverAnnouncement.endTime);
-                        String text = String.format("伺服器維護中\n預計在%s\r維護完成",time);
+                        String text = String.format(getString(R.string.server_maintenance),time);
                         runOnUiThread(()->{
                             DialogUtils.showDialogMessage(MainWebActivity.this, serverAnnouncement.content, text, new CallbackUtils.noReturn() {
                                 @Override
@@ -1761,7 +1761,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     }
                     break;
             }
-            PermissionUtils.requestPermission(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, null, "該功能需要下載權限");
+            PermissionUtils.requestPermission(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, null, getString(R.string.dialog_download_permissions));
         }
     }
 
@@ -2642,7 +2642,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             StringUtils.HaoLog("詢問權限");
             runOnUiThread(() -> {
                 downloadByUrlsReturn(false, null);
-                PermissionUtils.requestPermission(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, null, "該功能需要下載權限");
+                PermissionUtils.requestPermission(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, null, getString(R.string.dialog_download_permissions));
 
             });
         }
@@ -2690,7 +2690,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                 e2.printStackTrace();
             }
             runOnUiThread(() -> {
-                PermissionUtils.requestPermission(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, null, "該功能需要下載權限");
+                PermissionUtils.requestPermission(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, null, getString(R.string.dialog_download_permissions));
             });
         }
     }
@@ -2715,7 +2715,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                 textHypertextSharing(string);
             }
         } else {
-            PermissionUtils.requestPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE , "該功能需要下載權限");
+            PermissionUtils.requestPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE , getString(R.string.dialog_download_permissions));
         }
     }
 

@@ -28,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="14dp"
                 android:lines="1"
-                android:text="邀請者"
+                android:text="@string/dialog_call_title"
                 android:textColor="#FFFFFF"
                 android:textSize="22dp" />
 
@@ -48,7 +48,7 @@
                 android:layout_below="@+id/title"
                 android:layout_marginStart="34dp"
                 android:lines="1"
-                android:text="lale企業語音"
+                android:text="@string/dialog_call_text"
                 android:textColor="#FFFFFF"
                 android:textSize="18dp" />
         </RelativeLayout>

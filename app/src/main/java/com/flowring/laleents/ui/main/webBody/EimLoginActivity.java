@@ -119,7 +119,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
 
     public static void saveLog(MainAppCompatActivity activity) {
         activity.runOnUiThread(()->{
-            DialogUtils.showDialogMessage(activity, "登入失敗，您的QRCode已失效","請重新登入" ,new CallbackUtils.noReturn() {
+            DialogUtils.showDialogMessage(activity, activity.getString(R.string.saveLog_title), activity.getString(R.string.saveLog_text),new CallbackUtils.noReturn() {
                 @Override
                     public void Callback() {
                     downloadDir();

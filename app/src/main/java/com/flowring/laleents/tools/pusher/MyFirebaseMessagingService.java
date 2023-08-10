@@ -350,7 +350,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             StringUtils.HaoLog("到關通知= " + workNotifi.msgType);
             if (workNotifi.msgType.contains("AF_TASK")) {
                 title = workNotifi.frontUserName;
-                body = workNotifi.taskName + ":" + workNotifi.keyword + "\n您有一份工作需盡速處理";
+                String notificationFormat = AllData.context.getString(R.string.work_notification_format);
+                body = String.format(notificationFormat, workNotifi.taskName, workNotifi.keyword);
             }
             if (workNotifi.msgType.contains("AF_MEETING")) {
                 title = workNotifi.title;

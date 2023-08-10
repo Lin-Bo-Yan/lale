@@ -107,14 +107,14 @@ public class ScanCaptureActivity extends MainAppCompatActivity {
                         intent.putExtra(PickerConfig.MAX_SELECT_COUNT, 1);
                         startActivityForResult(intent, DefinedUtils.REQUEST_IMAGE_PICKER);
                     } else {
-                        PermissionUtils.requestPermission(ScanCaptureActivity.this, read_external_storage_permission, "拿取相簿中的QRcode圖片需要檔案存取權限");
+                        PermissionUtils.requestPermission(ScanCaptureActivity.this, read_external_storage_permission, getString(R.string.dialog_access_permissions));
                     }
                 }
             });
         }
         String permission_camera = Manifest.permission.CAMERA;
         if (ContextCompat.checkSelfPermission(this, permission_camera) != PackageManager.PERMISSION_GRANTED){
-            PermissionUtils.requestPermission(this, permission_camera, "掃描QRcode功能需要相機權限");
+            PermissionUtils.requestPermission(this, permission_camera, getString(R.string.dialog_QRcodeCamera_permissions));
         }
 
 //        capture = new CaptureManager(this, barcodeScannerView);

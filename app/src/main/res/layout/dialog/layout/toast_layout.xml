@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="12dp"
-        android:text="再按一次返回以離開APP"
+        android:text="@string/toast_layout"
         android:textColor="@android:color/white"
         android:textSize="13sp" />
 
