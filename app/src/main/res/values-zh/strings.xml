@@ -1,5 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Lale 企業</string>
+    <string name="facebook_app_id" translatable="false">432444664127687</string>
     <string name="login">登入</string>
     <string name="more_edit_name_hint">請輸入暱稱</string>
     <string name="scan_qrcode">掃描QR Code</string>
@@ -19,7 +21,7 @@
     <string name="file_not_supported_file_name">檔案名稱</string>
     <string name="connection_position">連線位置</string>
     <string name="connection_position_body">請輸入網址</string>
-    <string name="login_account">帳號</string>
+    <string name="login_account">帳號(zh)</string>
     <string name="login_account_body">請輸入您的帳號</string>
     <string name="login_warn_url_title">請輸入正確格式</string>
     <string name="login_password">密碼</string>
@@ -63,6 +65,7 @@
     <string name="simplified_chinese">簡體中文</string>
     <string name="english_language">English</string>
     <string name="language_selection_text">需要重新啟動已變更語言\n確定變更語言？</string>
+
     <!-- FileUtils.java -->
     <string name="file_too_large">檔案大小超過50MB，無法上傳</string>
     <string name="not_member">使用者不是聊天室成員</string>
@@ -100,7 +103,4 @@
     <string name="shared_message">一則分享訊息</string>
     <string name="retracted_message">已收回訊息</string>
     <string name="link_format">[連結]%s</string>
-
-
-
 </resources>

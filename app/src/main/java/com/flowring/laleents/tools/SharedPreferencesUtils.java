@@ -183,4 +183,14 @@ public class SharedPreferencesUtils {
             pref.edit().remove("isDownloadWatermark").apply();
         }
     }
+    
+    public static void saveLanguageChoice(String languageCode){
+        pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
+        pref.edit().putString("chosen_language", languageCode).apply();
+    }
+
+    public static String getLanguageChoice(Activity activity){
+        pref = PreferenceManager.getDefaultSharedPreferences(activity);
+        return pref.getString("chosen_language", "zh");
+    }
 }

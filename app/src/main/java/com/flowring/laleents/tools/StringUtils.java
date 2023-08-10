@@ -1,5 +1,6 @@
 package com.flowring.laleents.tools;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,6 +12,8 @@ import android.net.wifi.WifiManager;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 
+import com.flowring.laleents.BuildConfig;
+import com.flowring.laleents.R;
 import com.flowring.laleents.model.HttpAfReturn;
 import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.model.user.UserControlCenter;
@@ -337,4 +340,15 @@ public class StringUtils {
         }
     }
 
+    public static String languageRegionCode(Activity activity, String language){
+        if (language.equals(activity.getString(R.string.traditional_chinese))) {
+            return "zh";
+        } else if (language.equals(activity.getString(R.string.simplified_chinese))) {
+            return "zh-CN";
+        } else if (language.equals(activity.getString(R.string.english_language))) {
+            return "en";
+        } else {
+            return "zh";
+        }
+    }
 }

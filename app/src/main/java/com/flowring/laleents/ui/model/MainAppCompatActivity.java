@@ -23,6 +23,7 @@ import com.flowring.laleents.tools.SharedPreferencesUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.phone.DefinedUtils;
 import com.flowring.laleents.tools.phone.LocalBroadcastControlCenter;
+import com.flowring.laleents.tools.phone.MultilingualControlCenter;
 import com.flowring.laleents.ui.widget.dialog.DialogWait;
 
 import org.json.JSONException;
@@ -113,6 +114,12 @@ public class MainAppCompatActivity extends AppCompatActivity {
         itFilter.addAction("test");
         //保持亮起
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        //設定語言後回傳給 web
+        String language = SharedPreferencesUtils.getLanguageChoice(MainAppCompatActivity.this);
+        StringUtils.HaoLog("ddd= 切換語言 2 "+language);
+        MultilingualControlCenter.setLocaleForMainAppCompat(MainAppCompatActivity.this,language);
+
     }
 
     @Override
