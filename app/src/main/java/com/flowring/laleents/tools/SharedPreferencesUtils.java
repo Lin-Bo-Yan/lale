@@ -1,6 +1,7 @@
 package com.flowring.laleents.tools;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
@@ -189,8 +190,8 @@ public class SharedPreferencesUtils {
         pref.edit().putString("chosen_language", languageCode).apply();
     }
 
-    public static String getLanguageChoice(Activity activity){
-        pref = PreferenceManager.getDefaultSharedPreferences(activity);
+    public static String getLanguageChoice(Context context){
+        pref = PreferenceManager.getDefaultSharedPreferences(context);
         return pref.getString("chosen_language", "zh");
     }
 }

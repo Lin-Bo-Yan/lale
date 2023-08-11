@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Lale Enterprise</string>
+    <string name="app_name">Lale Business</string>
+    <string name="app_name_text">Chat &amp; Work</string>
     <string name="login">Login</string>
     <string name="more_edit_name_hint">Please enter a nickname</string>
     <string name="scan_qrcode">Scan QR Code</string>
@@ -20,10 +21,10 @@
     <string name="file_not_supported_file_name">File name</string>
     <string name="connection_position">Connection position</string>
     <string name="connection_position_body">Please enter URL</string>
-    <string name="login_account">Account number</string>
+    <string name="login_account">Account</string>
     <string name="login_account_body">Please enter your account number</string>
     <string name="login_warn_url_title">Please enter the correct format</string>
-    <string name="login_password">password</string>
+    <string name="login_password">Password</string>
     <string name="login_password_body">please enter your password</string>
     <string name="login_button_title">Scan QR code to login</string>
     <string name="desc_password_rule">The password contains at least uppercase and lowercase English letters and numbers; it cannot contain uppercase English letters, special symbols, and spaces</string>
@@ -31,11 +32,11 @@
     <string name="abnegation_button">Reject</string>
     <string name="answer_button">Answer</string>
     <string name="wait_answer_title">Name</string>
-    <string name="wait_answer_text">Lale Enterprise Voice...</string>
+    <string name="wait_answer_text">Lale Business Voice...</string>
     <string name="sure_button">Sure</string>
     <string name="cancel_button">Cancel</string>
     <string name="dialog_call_title">Inviter</string>
-    <string name="dialog_call_text">lale Enterprise Voice</string>
+    <string name="dialog_call_text">lale Business Voice</string>
     <string name="sign_out_button">sign out</string>
     <string name="closure_button">closure</string>
     <string name="problem_report_button">Problem Report</string>

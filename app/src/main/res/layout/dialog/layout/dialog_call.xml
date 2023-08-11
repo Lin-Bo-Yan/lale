@@ -50,7 +50,7 @@
                 android:lines="1"
                 android:text="@string/dialog_call_text"
                 android:textColor="#FFFFFF"
-                android:textSize="18dp" />
+                android:textSize="16dp" />
         </RelativeLayout>
 
         <androidx.appcompat.widget.AppCompatImageView

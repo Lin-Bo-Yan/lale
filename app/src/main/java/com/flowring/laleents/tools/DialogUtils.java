@@ -154,9 +154,9 @@ public class DialogUtils {
 
                 TextView text = callDialog.findViewById(R.id.text);
                 if ((callMessageInfo.getCallRequest().type.equals("audio"))) {
-                    text.setText("lale 企業語音...");
+                    text.setText(context.getString(R.string.wait_answer_text));
                 } else {
-                    text.setText("lale 企業視訊...");
+                    text.setText(context.getString(R.string.wait_answer_text));
 
                 }
                 ImageView call_light = callDialog.findViewById(R.id.call_light);

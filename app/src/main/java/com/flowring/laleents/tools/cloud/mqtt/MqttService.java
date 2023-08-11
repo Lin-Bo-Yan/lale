@@ -17,8 +17,10 @@ import androidx.core.app.NotificationCompat;
 
 import com.flowring.laleents.R;
 import com.flowring.laleents.model.user.UserControlCenter;
+import com.flowring.laleents.tools.SharedPreferencesUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.phone.AllData;
+import com.flowring.laleents.tools.phone.MultilingualControlCenter;
 
 public class MqttService extends Service {
     public static MqttControlCenter mqttControlCenter = null;
@@ -69,6 +71,9 @@ public class MqttService extends Service {
     public void onCreate() {
         super.onCreate();
         StringUtils.HaoLog("onCreate");
+        //設定語系
+        String language = SharedPreferencesUtils.getLanguageChoice(MqttService.this);
+        MultilingualControlCenter.setLocaleForMainAppCompat(MqttService.this,language);
     }
 
     @Override

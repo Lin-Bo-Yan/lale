@@ -41,8 +41,10 @@ import com.flowring.laleents.tools.FileUtils;
 import com.flowring.laleents.tools.SharedPreferencesUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.cloud.api.CloudUtils;
+import com.flowring.laleents.tools.cloud.mqtt.MqttService;
 import com.flowring.laleents.tools.phone.AllData;
 import com.flowring.laleents.tools.phone.LocalBroadcastControlCenter;
+import com.flowring.laleents.tools.phone.MultilingualControlCenter;
 import com.flowring.laleents.ui.main.webBody.MainWebActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -69,6 +71,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
+        //設定語系
+        String language = SharedPreferencesUtils.getLanguageChoice(MyFirebaseMessagingService.this);
+        MultilingualControlCenter.setLocaleForMainAppCompat(MyFirebaseMessagingService.this,language);
 
         StringUtils.HaoLog("FirebaseService= "+AllData.context);
         StringUtils.HaoLog("FirebaseService= "+UserControlCenter.getUserMinInfo());

@@ -21,8 +21,8 @@ public class MultilingualControlCenter {
         res.updateConfiguration(config, res.getDisplayMetrics());
         // 將語言設置保存到 SharedPreferences
         SharedPreferencesUtils.saveLanguageChoice(languageCode);
-        //activity.finishAffinity();
-        activity.finish();
+        activity.finishAffinity();
+        //activity.finish();
     }
 
     public static void setLocaleForMainAppCompat(Context context, String languageCode) {

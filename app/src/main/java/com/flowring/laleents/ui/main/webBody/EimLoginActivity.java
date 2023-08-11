@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.TextView;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
@@ -58,6 +60,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
     static LoginInAppFunc loginFunction;
     private AppCompatTextView textView_login;
     private AppCompatImageView ic_multilingual;
+    TextView app_name;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,6 +70,12 @@ public class EimLoginActivity extends MainAppCompatActivity {
         loggedInDialog();
         loginFunction = new LoginInAppFunc(EimLoginActivity.this);
         readUrlValid();
+        app_name = findViewById(R.id.app_name);
+        String language = SharedPreferencesUtils.getLanguageChoice(EimLoginActivity.this);
+        if("en".equals(language)){
+            app_name.setTextSize(33);
+        }
+
         btn_login = findViewById(R.id.btn_login);
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -115,9 +115,8 @@ public class MainAppCompatActivity extends AppCompatActivity {
         //保持亮起
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        //設定語言後回傳給 web
+        //設定語系
         String language = SharedPreferencesUtils.getLanguageChoice(MainAppCompatActivity.this);
-        StringUtils.HaoLog("ddd= 切換語言 2 "+language);
         MultilingualControlCenter.setLocaleForMainAppCompat(MainAppCompatActivity.this,language);
 
     }
