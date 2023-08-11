@@ -60,7 +60,7 @@ public class PermissionUtils {
 
         new AlertDialog.Builder(activity)
                 .setMessage(requestText)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                .setPositiveButton(activity.getString(R.string.sure_button), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
@@ -71,8 +71,7 @@ public class PermissionUtils {
                         }
                     }
                 })
-                .setCancelable(true)
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                .setNegativeButton(activity.getString(R.string.cancel_button), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
@@ -93,7 +92,7 @@ public class PermissionUtils {
         StringUtils.HaoLog("fragment=" + fragment);
         new AlertDialog.Builder(fragment.getContext())
                 .setMessage(requestText)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                .setPositiveButton(fragment.getContext().getString(R.string.sure_button), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
@@ -104,8 +103,7 @@ public class PermissionUtils {
                         }
                     }
                 })
-                .setCancelable(true)
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                .setNegativeButton(fragment.getContext().getString(R.string.cancel_button), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();

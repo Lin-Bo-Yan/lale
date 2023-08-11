@@ -212,7 +212,7 @@ public class DialogUtils {
         runOnUiThread(()->{
             new AlertDialog.Builder(context)
                     .setMessage(text)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    .setPositiveButton(context.getString(R.string.sure_button), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
@@ -228,7 +228,7 @@ public class DialogUtils {
             new AlertDialog.Builder(context)
                     .setTitle(title)
                     .setMessage(text)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    .setPositiveButton(context.getString(R.string.sure_button), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
@@ -242,7 +242,7 @@ public class DialogUtils {
         AlertDialog alertDialog = new AlertDialog.Builder(context)
                 .setTitle(title)
                 .setMessage(text)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                .setPositiveButton(context.getString(R.string.sure_button), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
@@ -665,12 +665,12 @@ public class DialogUtils {
             AlertDialog.Builder alertDialogBuilder =
                     new AlertDialog.Builder(activity)
                             .setMessage(activity.getString(R.string.update_app_text))
-                            .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                            .setPositiveButton(activity.getString(R.string.sure_button), (dialog, which) -> {
                                 dialog.dismiss();
                                 CloudUtils.iCloudUtils.gotoGooglePlay(activity);
                                 activity.finish();
                             })
-                            .setNegativeButton(android.R.string.cancel, (dialog, i) -> {
+                            .setNegativeButton(activity.getString(R.string.cancel_button), (dialog, i) -> {
                                 dialog.dismiss();
                                 activity.finish();
                             })

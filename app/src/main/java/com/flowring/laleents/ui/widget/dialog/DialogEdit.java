@@ -100,13 +100,13 @@ public class DialogEdit extends FixDialogFragment {
 
         AlertDialog dialog = new AlertDialog.Builder(context)
                 .setTitle(sTitle)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                .setPositiveButton(context.getString(R.string.sure_button), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         editDone();
                     }
                 })
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                .setNegativeButton(context.getString(R.string.cancel_button), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         editCancel();

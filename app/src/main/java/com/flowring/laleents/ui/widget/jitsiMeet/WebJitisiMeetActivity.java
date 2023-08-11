@@ -151,7 +151,7 @@ public class WebJitisiMeetActivity extends MainAppCompatActivity {
                 AlertDialog.Builder b = new AlertDialog.Builder(WebJitisiMeetActivity.this);
                 b.setTitle("Alert");
                 b.setMessage(message);
-                b.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                b.setPositiveButton(context.getString(R.string.sure_button), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         result.confirm();
@@ -168,13 +168,13 @@ public class WebJitisiMeetActivity extends MainAppCompatActivity {
                 AlertDialog.Builder b = new AlertDialog.Builder(WebJitisiMeetActivity.this);
                 b.setTitle("Confirm");
                 b.setMessage(message);
-                b.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                b.setPositiveButton(context.getString(R.string.sure_button), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         result.confirm();
                     }
                 });
-                b.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                b.setNegativeButton(context.getString(R.string.cancel_button), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         result.cancel();

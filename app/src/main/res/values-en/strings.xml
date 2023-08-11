@@ -33,7 +33,7 @@
     <string name="answer_button">Answer</string>
     <string name="wait_answer_title">Name</string>
     <string name="wait_answer_text">Lale Business Voice...</string>
-    <string name="sure_button">Sure</string>
+    <string name="sure_button">OK</string>
     <string name="cancel_button">Cancel</string>
     <string name="dialog_call_title">Inviter</string>
     <string name="dialog_call_text">lale Business Voice</string>
@@ -58,7 +58,7 @@
     <string name="checkLocation_title">Please enable location services</string>
     <string name="saveLog_title">Login failed, your QRCode has expired</string>
     <string name="saveLog_text">Please log in again</string>
-    <string name="account_password_error">Please enter the correct account and password</string>
+    <string name="account_password_error">Wrong Password！</string>
     <string name="work_notification_format">%s:%s\nYou have a task to handle promptly</string>
     <string name="change_language">Change Language</string>
     <string name="traditional_chinese">Traditional Chinese</string>

@@ -57,7 +57,7 @@
     <string name="checkLocation_title">請開啟定位服務</string>
     <string name="saveLog_title">登入失敗，您的QRCode已失效</string>
     <string name="saveLog_text">請重新登入</string>
-    <string name="account_password_error">請輸入正確的帳號和密碼</string>
+    <string name="account_password_error">密碼錯誤!</string>
     <string name="work_notification_format">%s:%s\n您有一份工作需盡速處理</string>
     <string name="change_language">變更語言</string>
     <string name="traditional_chinese">繁體中文</string>

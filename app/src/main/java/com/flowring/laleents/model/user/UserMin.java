@@ -15,6 +15,7 @@ public class UserMin implements Serializable {
     public long expiration;//token到期時間
     public long refreshExpiration;      // 刷新號令有效秒數
     public ExternalServerSetting externalServerSetting; // 外部 SERVER 資料
+    public String language;            // 應用程式語系
 
     public String _type;              // 判斷是不是官方帳號 boolean isOfficialAccount
 

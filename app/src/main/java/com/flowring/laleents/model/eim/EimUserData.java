@@ -30,6 +30,7 @@ public class EimUserData {
     public boolean isLaleCall = false;
     public String call_service_url = "";
     public String announceServerUrl = null;
+    public String language = null;
 
 
     public UserMin getUserMin() {
@@ -54,6 +55,7 @@ public class EimUserData {
             userMin.externalServerSetting.applicationVersion = lale_external_server_info.applicationVersion;
             userMin.externalServerSetting.ret = lale_external_server_info.ret;
         }
+        userMin.language = language;
         userMin.eimUserData = this;
         return userMin;
 

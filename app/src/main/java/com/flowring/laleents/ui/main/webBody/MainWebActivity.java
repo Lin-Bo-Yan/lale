@@ -106,6 +106,7 @@ import com.flowring.laleents.tools.phone.AllData;
 import com.flowring.laleents.tools.phone.BootBroadcastReceiver;
 import com.flowring.laleents.tools.phone.DefinedUtils;
 import com.flowring.laleents.tools.phone.LocalBroadcastControlCenter;
+import com.flowring.laleents.tools.phone.MultilingualControlCenter;
 import com.flowring.laleents.tools.phone.PermissionUtils;
 import com.flowring.laleents.tools.phone.ServiceUtils;
 import com.flowring.laleents.ui.model.MainAppCompatActivity;
@@ -1567,6 +1568,12 @@ public class MainWebActivity extends MainAppCompatActivity {
                 case "getPhotoLibrary":
                     getPhotoLibrary(data);
                     break;
+                case "setLanguage":
+                    setLanguage(data);
+                    break;
+                case "getLanguage":
+                    getLanguage();
+                    break;
                 case "APIResponse":
                     APIResponse(data);
                     break;
@@ -1825,6 +1832,28 @@ public class MainWebActivity extends MainAppCompatActivity {
             @Override
             public void Callback(boolean isok, String DataOrErrorMsg) {}
         });
+    }
+
+    private void setLanguage(JSONObject data){
+        if(data.has("language")){
+            String language = data.optString("language");
+            StringUtils.HaoLog("設定語言= "+language);
+            //設定多語系
+            SharedPreferencesUtils.saveLanguageChoice(language);
+            MultilingualControlCenter.setLocaleForMainAppCompat(MainWebActivity.this,language);
+        }
+    }
+
+    private void getLanguage(){
+        String language = SharedPreferencesUtils.getLanguageChoice(MainWebActivity.this);
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("type","getLanguage");
+            jsonObject.put("data",new JSONObject().put("language",language));
+            sendToWeb(jsonObject.toString());
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
     }
 
     private void APIResponse(JSONObject data){
