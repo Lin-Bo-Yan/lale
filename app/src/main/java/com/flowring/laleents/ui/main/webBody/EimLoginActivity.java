@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -54,13 +55,18 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class EimLoginActivity extends MainAppCompatActivity {
     private static Button btn_login;
     static LoginInAppFunc loginFunction;
     private AppCompatTextView textView_login;
     private AppCompatImageView ic_multilingual;
-    TextView app_name;
+    private TextView app_name;
+    private EditText edit_password, edit_account;
+    private String language;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,9 +77,13 @@ public class EimLoginActivity extends MainAppCompatActivity {
         loginFunction = new LoginInAppFunc(EimLoginActivity.this);
         readUrlValid();
         app_name = findViewById(R.id.app_name);
-        String language = SharedPreferencesUtils.getLanguageChoice(EimLoginActivity.this);
+        edit_password = findViewById(R.id.edit_password);
+        edit_account = findViewById(R.id.edit_account);
+        language = SharedPreferencesUtils.getLanguageChoice(EimLoginActivity.this);
         if("en".equals(language)){
             app_name.setTextSize(33);
+            edit_account.setTextSize(15);
+            edit_password.setTextSize(13);
         }
 
         btn_login = findViewById(R.id.btn_login);
@@ -174,6 +184,10 @@ public class EimLoginActivity extends MainAppCompatActivity {
                 String errMsg = result.optString("errMsg");
                 if (!errMsg.isEmpty()) {
                     activity.cancelWait();
+                    // 根據語言設定替換錯誤訊息
+                    if (Arrays.asList("zh-CN", "zh", "en").contains(language)) {
+                        errMsg = getErrorMessage(errMsg);
+                    }
                     DialogUtils.showDialogMessage(EimLoginActivity.this,errMsg);
                     return;
                 }
@@ -479,6 +493,19 @@ public class EimLoginActivity extends MainAppCompatActivity {
             StringUtils.HaoLog("readUrlValid= 第一次使用");
             FileUtils.saveTextInFile("",file);
         }
+    }
+
+    private String getErrorMessage(String errMsg) {
+        Map<String, Integer> errorMessages = new HashMap<>();
+        errorMessages.put("密碼錯誤!", R.string.account_password_error);
+        errorMessages.put("使用者不存在!", R.string.account_password_errMsg);
+        errorMessages.put("不允許登入!",R.string.account_password_errMsg_notAllowed);
+        errorMessages.put("無法找到 webAgendaUrl4LaleAuth 路徑設定!",R.string.account_password_errMsg_unableFind);
+        Integer resId = errorMessages.get(errMsg);
+        if (resId != null) {
+            return getString(resId);
+        }
+        return errMsg;
     }
 
     private boolean checkNetworkAndContinue() {

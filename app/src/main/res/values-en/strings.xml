@@ -19,10 +19,10 @@
     <string name="other_apps_open">Other apps open</string>
     <string name="file_not_supported_title">Title</string>
     <string name="file_not_supported_file_name">File name</string>
-    <string name="connection_position">Connection position</string>
+    <string name="connection_position">Connection URL</string>
     <string name="connection_position_body">Please enter URL</string>
     <string name="login_account">Account</string>
-    <string name="login_account_body">Please enter your account number</string>
+    <string name="login_account_body">Please enter your account</string>
     <string name="login_warn_url_title">Please enter the correct format</string>
     <string name="login_password">Password</string>
     <string name="login_password_body">please enter your password</string>
@@ -59,6 +59,9 @@
     <string name="saveLog_title">Login failed, your QRCode has expired</string>
     <string name="saveLog_text">Please log in again</string>
     <string name="account_password_error">Wrong Password！</string>
+    <string name="account_password_errMsg">User does not exist!</string>
+    <string name="account_password_errMsg_notAllowed">Not allowed to log in !</string>
+    <string name="account_password_errMsg_unableFind">Unable to find webAgendaUrl4LaleAuth path setting !</string>
     <string name="work_notification_format">%s:%s\nYou have a task to handle promptly</string>
     <string name="change_language">Change Language</string>
     <string name="traditional_chinese">Traditional Chinese</string>
