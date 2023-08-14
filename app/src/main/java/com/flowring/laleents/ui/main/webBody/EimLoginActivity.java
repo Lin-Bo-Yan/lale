@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.util.ArrayMap;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
@@ -56,8 +57,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 public class EimLoginActivity extends MainAppCompatActivity {
     private static Button btn_login;
@@ -82,6 +81,8 @@ public class EimLoginActivity extends MainAppCompatActivity {
         language = SharedPreferencesUtils.getLanguageChoice(EimLoginActivity.this);
         if("en".equals(language)){
             app_name.setTextSize(33);
+            app_name.setTranslationX(-90f);
+            app_name.setTranslationY(20f);
             edit_account.setTextSize(15);
             edit_password.setTextSize(13);
         }
@@ -496,7 +497,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
     }
 
     private String getErrorMessage(String errMsg) {
-        Map<String, Integer> errorMessages = new HashMap<>();
+        ArrayMap<String, Integer> errorMessages = new ArrayMap<>();
         errorMessages.put("密碼錯誤!", R.string.account_password_error);
         errorMessages.put("使用者不存在!", R.string.account_password_errMsg);
         errorMessages.put("不允許登入!",R.string.account_password_errMsg_notAllowed);

@@ -12,8 +12,9 @@ import com.flowring.laleents.tools.StringUtils;
 import java.util.Locale;
 
 public class MultilingualControlCenter {
-    public static void setLocale(Activity activity, String languageCode) {
-        Resources res = activity.getResources();
+
+    public static void setLocaleForMainAppCompat(Context context, String languageCode) {
+        Resources res = context.getResources();
         Configuration config = new Configuration(res.getConfiguration());
         Locale newLocale;
         String[] langCountry = languageCode.split("-");
@@ -22,18 +23,6 @@ public class MultilingualControlCenter {
         } else {
             newLocale = new Locale(languageCode);
         }
-        config.setLocale(newLocale);
-        activity.createConfigurationContext(config);
-        res.updateConfiguration(config, res.getDisplayMetrics());
-        // 將語言設置保存到 SharedPreferences
-        SharedPreferencesUtils.saveLanguageChoice(languageCode);
-        activity.finishAffinity();
-    }
-
-    public static void setLocaleForMainAppCompat(Context context, String languageCode) {
-        Resources res = context.getResources();
-        Configuration config = new Configuration(res.getConfiguration());
-        Locale newLocale = new Locale(languageCode);
         config.setLocale(newLocale);
         context.createConfigurationContext(config);
         res.updateConfiguration(config, res.getDisplayMetrics());
