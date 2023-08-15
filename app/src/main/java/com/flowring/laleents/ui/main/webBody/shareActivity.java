@@ -8,10 +8,13 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.flowring.laleents.tools.CommonUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.phone.AllData;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class shareActivity extends Activity {
     @Override
@@ -44,9 +47,20 @@ public class shareActivity extends Activity {
             intent1.putExtras(getIntent());
         }
         intent1.putExtra(Intent.EXTRA_TEXT, extraText);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent1); //發送廣播訊息
-
-        startActivity(intent);
+        List<String> acceptedMimeTypes = specificExtension();
+        boolean support = !acceptedMimeTypes.contains(getIntent().getType());
+        if(support){
+            LocalBroadcastManager.getInstance(this).sendBroadcast(intent1); //發送廣播訊息
+            startActivity(intent);
+        } else {
+            CommonUtils.showToast(shareActivity.this,getLayoutInflater(),"檔案類型不支援",false);
+        }
         finish();
     }
+
+    private List<String> specificExtension(){
+        List<String> acceptedMimeTypes = Arrays.asList("image/svg+xml");
+        return acceptedMimeTypes;
+    }
+
 }
