@@ -18,6 +18,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
@@ -25,6 +27,7 @@ import com.dmcbig.mediapicker.PickerActivity;
 import com.dmcbig.mediapicker.PickerConfig;
 import com.dmcbig.mediapicker.entity.Media;
 import com.flowring.laleents.R;
+import com.flowring.laleents.tools.SharedPreferencesUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.phone.DefinedUtils;
 import com.flowring.laleents.tools.phone.PermissionUtils;
@@ -137,6 +140,14 @@ public class ScanCaptureActivity extends MainAppCompatActivity {
                 finish();
             }
         });
+        AppCompatTextView select_picture = findViewById(R.id.select_picture);
+        AppCompatImageView nav_icon_picture = findViewById(R.id.nav_icon_picture);
+        String language = SharedPreferencesUtils.getLanguageChoice(ScanCaptureActivity.this);
+        if("en".equals(language)){
+            select_picture.setTranslationX(-80f);
+            select_picture.setTextSize(12);
+            nav_icon_picture.setTranslationX(-80f);
+        }
     }
 
     private void handleDecode_switchJudge(String result) {

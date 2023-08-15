@@ -2,6 +2,7 @@ package com.flowring.laleents.model.eim;
 
 import com.flowring.laleents.model.user.ExternalServerSetting;
 import com.flowring.laleents.model.user.UserMin;
+import com.flowring.laleents.tools.SharedPreferencesUtils;
 import com.flowring.laleents.tools.phone.AllData;
 
 public class EimUserData {
@@ -30,7 +31,7 @@ public class EimUserData {
     public boolean isLaleCall = false;
     public String call_service_url = "";
     public String announceServerUrl = null;
-    public String language = null;
+    public String language = SharedPreferencesUtils.getLanguageChoice(AllData.context); //多語系
 
 
     public UserMin getUserMin() {
@@ -55,7 +56,6 @@ public class EimUserData {
             userMin.externalServerSetting.applicationVersion = lale_external_server_info.applicationVersion;
             userMin.externalServerSetting.ret = lale_external_server_info.ret;
         }
-        userMin.language = language;
         userMin.eimUserData = this;
         return userMin;
 

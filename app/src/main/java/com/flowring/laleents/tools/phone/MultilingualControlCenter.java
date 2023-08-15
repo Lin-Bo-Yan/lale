@@ -17,7 +17,8 @@ public class MultilingualControlCenter {
         Resources res = context.getResources();
         Configuration config = new Configuration(res.getConfiguration());
         Locale newLocale;
-        String[] langCountry = languageCode.split("-");
+        String delimiter = languageCode.contains("_") ? "_" : "-";
+        String[] langCountry = languageCode.split(delimiter);
         if (langCountry.length == 2) {
             newLocale = new Locale(langCountry[0], langCountry[1]);
         } else {

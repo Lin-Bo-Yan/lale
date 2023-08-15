@@ -342,13 +342,13 @@ public class StringUtils {
 
     public static String languageRegionCode(Activity activity, String language){
         if (language.equals(activity.getString(R.string.traditional_chinese))) {
-            return "zh";
+            return "zh-TW";
         } else if (language.equals(activity.getString(R.string.simplified_chinese))) {
             return "zh-CN";
         } else if (language.equals(activity.getString(R.string.english_language))) {
             return "en";
         } else {
-            return "zh";
+            return "zh-TW";
         }
     }
 }

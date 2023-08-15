@@ -89,7 +89,9 @@ public class EimLoginActivity extends MainAppCompatActivity {
                             @Override
                             public void Callback(String message) {
                                 StringUtils.HaoLog("結果:" + message);
-                                Loginback(EimLoginActivity.this, message);
+                                if(message != null){
+                                    Loginback(EimLoginActivity.this, message);
+                                }
                             }
                         });
                     }

@@ -192,6 +192,6 @@ public class SharedPreferencesUtils {
 
     public static String getLanguageChoice(Context context){
         pref = PreferenceManager.getDefaultSharedPreferences(context);
-        return pref.getString("chosen_language", "zh");
+        return pref.getString("chosen_language", "zh-TW");
     }
 }
