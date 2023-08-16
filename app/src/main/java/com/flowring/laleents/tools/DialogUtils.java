@@ -750,23 +750,16 @@ public class DialogUtils {
         });
     }
 
-    public static void showLanguageSelection(MainAppCompatActivity activity, ArrayAdapter<String> arrayAdapter){
-        AlertDialog.Builder builder = new AlertDialog.Builder((Context) activity);
+    public static void showLanguageSelection(Activity activity, ArrayAdapter<String> arrayAdapter){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(activity.getString(R.string.change_language));
         builder.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String selectedItem = arrayAdapter.getItem(which);
-                activity.showWait();
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        String languageRegionCode = StringUtils.languageRegionCode(activity,selectedItem);
-                        SharedPreferencesUtils.saveLanguageChoice(languageRegionCode);
-                        activity.recreate();
-                        activity.cancelWait();
-                    }
-                }, 500); // 延遲0.5秒
+                String languageRegionCode = StringUtils.languageRegionCode(activity,selectedItem);
+                SharedPreferencesUtils.saveLanguageChoice(languageRegionCode);
+                activity.recreate();
             }
         });
         builder.setNegativeButton(activity.getString(R.string.cancel_button), null);

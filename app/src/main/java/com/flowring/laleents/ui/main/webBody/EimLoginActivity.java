@@ -124,7 +124,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
             public void onClick(View view) {
                 String[] languageSelector = new String[]{getString(R.string.traditional_chinese), getString(R.string.simplified_chinese), getString(R.string.english_language)};
                 ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
-                        (Context) EimLoginActivity.this,
+                        EimLoginActivity.this,
                         android.R.layout.simple_list_item_1,
                         languageSelector);
                 DialogUtils.showLanguageSelection(EimLoginActivity.this,arrayAdapter);
@@ -492,8 +492,8 @@ public class EimLoginActivity extends MainAppCompatActivity {
         ArrayMap<String, Integer> errorMessages = new ArrayMap<>();
         errorMessages.put("密碼錯誤!", R.string.account_password_error);
         errorMessages.put("使用者不存在!", R.string.account_password_errMsg);
-        errorMessages.put("不允許登入!",R.string.account_password_errMsg_notAllowed);
-        errorMessages.put("無法找到 webAgendaUrl4LaleAuth 路徑設定!",R.string.account_password_errMsg_unableFind);
+        errorMessages.put("不允許登入!",R.string.login_not_allowed);
+        errorMessages.put("無法找到 webAgendaUrl4LaleAuth 路徑設定!",R.string.unable_find_path);
         Integer resId = errorMessages.get(errMsg);
         if (resId != null) {
             return getString(resId);
@@ -508,8 +508,8 @@ public class EimLoginActivity extends MainAppCompatActivity {
         language = SharedPreferencesUtils.getLanguageChoice(EimLoginActivity.this);
         if("en".equals(language)){
             app_name.setTextSize(33);
-            app_name.setTranslationX(-90f);
-            app_name.setTranslationY(20f);
+            app_name.setTranslationX(-80);
+            app_name.setTranslationY(20);
             edit_account.setTextSize(15);
             edit_password.setTextSize(13);
         }

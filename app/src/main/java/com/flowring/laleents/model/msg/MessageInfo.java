@@ -492,7 +492,9 @@ public class MessageInfo implements Serializable, IMessage2 {
                 return AllData.context.getString(R.string.chatroom_profile_changed);
             }
             if(is_lale_room_settings_admin()){
-                // String.format("已變更管理員至「%s」",roomName);
+                //String changedAdmin = AllData.context.getString(R.string.chatroom_administrator_change);
+                //StringUtils.HaoLog("新管理員 "+roomName);
+                //String.format(changedAdmin,roomName); 還拿不到新管理員，所以這段先不放
                 return AllData.context.getString(R.string.chatroom_administrator_change);
             }
             if(is_lale_room_settings_avatar()){

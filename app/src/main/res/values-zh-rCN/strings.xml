@@ -2,11 +2,11 @@
 <resources>
     <string name="app_name">Lale 企业</string>
     <string name="app_name_text">Chat &amp; Work</string>
-    <string name="login">登录</string>
+    <string name="login">登入</string>
     <string name="more_edit_name_hint">请输入昵称</string>
-    <string name="scan_qrcode">扫描QR Code</string>
+    <string name="scan_qrcode">扫描 QR Code</string>
     <string name="scan_qrcode_desc">将扫描框对准QR Code后会自动进行扫描</string>
-    <string name="unused_account_logged_out">App过久未使用您的账号已被登出</string>
+    <string name="unused_account_logged_out">您的应用程序长时间未使用，系统已将您的帐号登出。</string>
     <string name="single_device_title">是否登录此装置</string>
     <string name="single_device_text">您之前未正常登出或已于其他装置登录， 请确认是否登录此装置(将登出其他装置))</string>
     <string name="single_device_sign_out_title">此装置已被登出</string>
@@ -24,6 +24,8 @@
     <string name="login_account">帐号</string>
     <string name="login_account_body">请输入您的帐号</string>
     <string name="login_warn_url_title">请输入正确格式</string>
+    <string name="dialog_login_warn_url">格式不正确</string>
+    <string name="dialog_login_error">请输入正确的帐号和密码</string>
     <string name="login_password">密码</string>
     <string name="login_password_body">请输入您的密码</string>
     <string name="login_button_title">扫描 QR code 登入</string>
@@ -36,14 +38,14 @@
     <string name="sure_button">确定</string>
     <string name="cancel_button">取消</string>
     <string name="dialog_call_title">邀请者</string>
-    <string name="dialog_call_text">lale企业语音</string>
+    <string name="dialog_call_text">Lale 企业语音</string>
     <string name="sign_out_button">登出</string>
     <string name="closure_button">关闭</string>
     <string name="problem_report_button">问题回报</string>
     <string name="dialog_wait">请稍后</string>
     <string name="toast_layout">再按一次返回以离开APP</string>
     <string name="dialog_abnormal_text">连线状态异常，是否要登出？</string>
-    <string name="dialog_check_network_text">请确认网路连线</string>
+    <string name="dialog_check_network_text">请检查网络是否连接。</string>
     <string name="dialog_showGetImage_photograph">拍照</string>
     <string name="dialog_showGetImage_album">相册</string>
     <string name="dialog_showGetImage_preset">预设</string>
@@ -56,12 +58,12 @@
     <string name="requestDrawOverlays_title">请求悬浮窗权限</string>
     <string name="requestDrawOverlays_text">视频/通话接通信息需要此权限</string>
     <string name="checkLocation_title">请开启定位服务</string>
-    <string name="saveLog_title">登录失败，您的QRCode已失效</string>
+    <string name="saveLog_title">登录失败，请更新 QR code</string>
     <string name="saveLog_text">请重新登录</string>
     <string name="account_password_error">密码错误!</string>
     <string name="account_password_errMsg">用户不存在!</string>
-    <string name="account_password_errMsg_notAllowed">不允许登入!</string>
-    <string name="account_password_errMsg_unableFind">无法找到 webAgendaUrl4LaleAuth 路径设定!</string>
+    <string name="login_not_allowed">不允许登入!</string>
+    <string name="unable_find_path">无法找到 webAgendaUrl4LaleAuth 路径设定!</string>
     <string name="work_notification_format">%s:%s\n您有一份工作需尽速处理</string>
     <string name="change_language">变更语言</string>
     <string name="traditional_chinese">繁体中文</string>
@@ -71,10 +73,10 @@
     <!-- FileUtils.java -->
     <string name="file_too_large">文件大小超过50MB，无法上传</string>
     <string name="not_member">用户不是聊天室成员</string>
-    <string name="server_maintenance">服务器维护中\n预计在%s维护完成</string>
+    <string name="maintain_complete">服务器维护中\n预计在%s维护完成</string>
 
     <!-- MessageInfo.java -->
-    <string name="inviting_call">通话邀请中</string>
+    <string name="inviting_call">[通话邀请中]</string>
     <string name="call">[通话中]</string>
     <string name="call_missed_text">[未接%s通话]</string>
     <string name="call_cancel_text">[取消%s通话]</string>
@@ -85,26 +87,26 @@
     <string name="leave_group_call">离开群组通话</string>
     <string name="message_retracted">一则消息已被收回</string>
     <string name="work_notification">您有工作待办通知</string>
-    <string name="send_location_information">已传送位置资讯</string>
+    <string name="send_location_information">已发送位置信息</string>
     <string name="stickers">[贴图]</string>
     <string name="file">[文件]</string>
     <string name="picture">[图片]</string>
     <string name="voice">[语音]</string>
-    <string name="film">[影片]</string>
+    <string name="film">[视频]</string>
     <string name="announcement_set_up">已设立公告</string>
     <string name="announcement_canceled">已取消公告</string>
     <string name="video_call_ended">通话/视频已结束</string>
     <string name="join_group_format">%s加入群组</string>
     <string name="removed_by_admin_format">%s已被管理员移出群组</string>
     <string name="left_group_format">%s已离开群组</string>
-    <string name="change_chatroom_format">已变更聊天室名称至「%s」</string>
+    <string name="change_chatroom_format">已将聊天室名称更改为「%s」</string>
     <string name="chatroom_profile_changed">已变更聊天室简介</string>
-    <string name="chatroom_administrator_change">聊天室管理员变更</string>
+    <string name="chatroom_administrator_change">已将管理员更改为「%s」</string>
     <string name="change_chatroom_avatar">已变更聊天室头像</string>
     <string name="chatroom_created">已建立聊天室</string>
     <string name="shared_message">一则分享讯息</string>
-    <string name="retracted_message">已收回讯息</string>
-    <string name="link_format">[连结]%s</string>
+    <string name="retracted_message">已撤回消息</string>
+    <string name="link_format">[链接]%s</string>
 
 
 

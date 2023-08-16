@@ -4,9 +4,9 @@
     <string name="app_name_text">Chat &amp; Work</string>
     <string name="login">登入</string>
     <string name="more_edit_name_hint">請輸入暱稱</string>
-    <string name="scan_qrcode">掃描QR Code</string>
+    <string name="scan_qrcode">掃描 QR Code</string>
     <string name="scan_qrcode_desc">將掃描框對準QR Code後會自動進行掃描</string>
-    <string name="unused_account_logged_out">應用程式過久未使用您的帳號已被登出</string>
+    <string name="unused_account_logged_out">您的應用程式長時間未使用，系統已將您的帳號登出。</string>
     <string name="single_device_title">是否登入此裝置</string>
     <string name="single_device_text">您之前未正常登出或已於其他裝置登入，請確認是否登入此裝置(將登出其他裝置)</string>
     <string name="single_device_sign_out_title">此裝置已被登出</string>
@@ -24,6 +24,8 @@
     <string name="login_account">帳號</string>
     <string name="login_account_body">請輸入您的帳號</string>
     <string name="login_warn_url_title">請輸入正確格式</string>
+    <string name="dialog_login_warn_url">格式不正確</string>
+    <string name="dialog_login_error">請輸入正確的帳號和密碼</string>
     <string name="login_password">密碼</string>
     <string name="login_password_body">請輸入您的密碼</string>
     <string name="login_button_title">掃描 QR code 登入</string>
@@ -36,14 +38,14 @@
     <string name="sure_button">確定</string>
     <string name="cancel_button">取消</string>
     <string name="dialog_call_title">邀請者</string>
-    <string name="dialog_call_text">lale企業語音</string>
+    <string name="dialog_call_text">Lale 企業語音</string>
     <string name="sign_out_button">登出</string>
     <string name="closure_button">關閉</string>
     <string name="problem_report_button">問題回報</string>
     <string name="dialog_wait">請稍後</string>
     <string name="toast_layout">再按一次返回以離開APP</string>
     <string name="dialog_abnormal_text">連線狀態異常，是否要登出？</string>
-    <string name="dialog_check_network_text">請確認網路連線</string>
+    <string name="dialog_check_network_text">請檢查網路是否連線。</string>
     <string name="dialog_showGetImage_photograph">拍照</string>
     <string name="dialog_showGetImage_album">相簿</string>
     <string name="dialog_showGetImage_preset">預設</string>
@@ -56,12 +58,12 @@
     <string name="requestDrawOverlays_title">請求懸浮視窗權限</string>
     <string name="requestDrawOverlays_text">視訊/通話接通訊息需要此權限</string>
     <string name="checkLocation_title">請開啟定位服務</string>
-    <string name="saveLog_title">登入失敗，您的QRCode已失效</string>
+    <string name="saveLog_title">登入失敗，請更新 QR code</string>
     <string name="saveLog_text">請重新登入</string>
     <string name="account_password_error">密碼錯誤!</string>
     <string name="account_password_errMsg">使用者不存在!</string>
-    <string name="account_password_errMsg_notAllowed">不允許登入!</string>
-    <string name="account_password_errMsg_unableFind">無法找到 webAgendaUrl4LaleAuth 路徑設定!</string>
+    <string name="login_not_allowed">不允許登入!</string>
+    <string name="unable_find_path">無法找到 webAgendaUrl4LaleAuth 路徑設定!</string>
     <string name="work_notification_format">%s:%s\n您有一份工作需盡速處理</string>
     <string name="change_language">變更語言</string>
     <string name="traditional_chinese">繁體中文</string>
@@ -72,10 +74,10 @@
     <!-- FileUtils.java -->
     <string name="file_too_large">檔案大小超過50MB，無法上傳</string>
     <string name="not_member">使用者不是聊天室成員</string>
-    <string name="server_maintenance">伺服器維護中\n預計在%s維護完成</string>
+    <string name="maintain_complete">伺服器維護中\n預計在%s維護完成</string>
 
     <!-- MessageInfo.java -->
-    <string name="inviting_call">通話邀請中</string>
+    <string name="inviting_call">[通話邀請中]</string>
     <string name="call">[通話中]</string>
     <string name="call_missed_text">[未接%s通話]</string>
     <string name="call_cancel_text">[取消%s通話]</string>
@@ -100,7 +102,7 @@
     <string name="left_group_format">%s已離開群組</string>
     <string name="change_chatroom_format">已變更聊天室名稱至「%s」</string>
     <string name="chatroom_profile_changed">已變更聊天室簡介</string>
-    <string name="chatroom_administrator_change">聊天室管理員變更</string>
+    <string name="chatroom_administrator_change">已變更管理員至「%s」</string>
     <string name="change_chatroom_avatar">已變更聊天室頭像</string>
     <string name="chatroom_created">已建立聊天室</string>
     <string name="shared_message">一則分享訊息</string>

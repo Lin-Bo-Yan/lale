@@ -48,9 +48,6 @@ public class DialogWait extends FixDialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-
-        }
 
         m_view = getActivity().getLayoutInflater().inflate(R.layout.dialog_wait, null);
         m_dialog = new Dialog(getActivity(), R.style.DialogWait);

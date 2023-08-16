@@ -10,7 +10,8 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import static com.flowring.laleents.ui.main.webBody.MainWebActivity.isThreadStarted;
 import static com.flowring.laleents.ui.main.webBody.MainWebActivity.isFirstDisplay;
-
+import static com.flowring.laleents.ui.main.webBody.MainWebActivity.smartServerDialogLock;
+import static com.flowring.laleents.ui.main.webBody.MainWebActivity.executorService;
 import com.flowring.laleents.R;
 import com.flowring.laleents.model.AFtoken;
 import com.flowring.laleents.model.Http2Return;
@@ -28,8 +29,6 @@ import com.flowring.laleents.tools.cloud.api.CloudUtils;
 import com.flowring.laleents.tools.cloud.mqtt.MqttService;
 import com.flowring.laleents.tools.phone.AllData;
 import com.flowring.laleents.tools.phone.DefinedUtils;
-import static com.flowring.laleents.ui.main.webBody.MainWebActivity.smartServerDialogLock;
-import static com.flowring.laleents.ui.main.webBody.MainWebActivity.executorService;
 
 import com.flowring.laleents.ui.main.webBody.MainWebActivity;
 import com.flowring.laleents.ui.model.EimLogin.LoginInAppFunc;
@@ -362,13 +361,13 @@ public class UserControlCenter {
                             String info = new Gson().toJson(afReturn.data);
                             callback.Callback(info);
                         } else {
-                            DialogUtils.showDialogMessage(context,AllData.context.getString(R.string.account_password_error));
+                            DialogUtils.showDialogMessage(context,context.getString(R.string.account_password_error));
                         }
                     }
                 }).start();
             } else {
                 StringUtils.HaoLog("getAflogin= "+"url 格式不正確");
-                DialogUtils.showDialogMessage(context,"格式不正確");
+                DialogUtils.showDialogMessage(context,context.getString(R.string.dialog_login_warn_url));
             }
         }
     }

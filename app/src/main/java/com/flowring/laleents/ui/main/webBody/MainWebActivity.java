@@ -1037,7 +1037,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     StringUtils.HaoLog("announceServerDialog= 啟用? "+serverAnnouncement.enabled);
                     if(serverAnnouncement.enabled){
                         String time = TimeUtils.formatDateTime(serverAnnouncement.endTime);
-                        String text = String.format(getString(R.string.server_maintenance),time);
+                        String text = String.format(getString(R.string.maintain_complete),time);
                         runOnUiThread(()->{
                             DialogUtils.showDialogMessage(MainWebActivity.this, serverAnnouncement.content, text, new CallbackUtils.noReturn() {
                                 @Override
@@ -2025,7 +2025,10 @@ public class MainWebActivity extends MainAppCompatActivity {
         try {
             StringUtils.HaoLog("Login 成功=" + UserControlCenter.getUserMinInfo());
             StringUtils.HaoLog("Login=" + new Gson().toJson(UserControlCenter.getUserMinInfo().eimUserData));
-            String json = new JSONObject().put("type", "loginEim").put("data", new JSONObject(new Gson().toJson(UserControlCenter.getUserMinInfo().eimUserData))).toString();
+            JSONObject data = new JSONObject(new Gson().toJson(UserControlCenter.getUserMinInfo().eimUserData));
+            String language = SharedPreferencesUtils.getLanguageChoice(MainWebActivity.this);
+            data.put("language",language); // 多塞多國語言json
+            String json = new JSONObject().put("type", "loginEim").put("data",data).toString();
             sendToWeb(json);
         } catch (JSONException e) {
             StringUtils.HaoLog("Login 失敗=" + UserControlCenter.getUserMinInfo());
