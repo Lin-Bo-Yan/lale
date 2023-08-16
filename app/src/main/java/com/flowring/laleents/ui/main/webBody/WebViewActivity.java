@@ -77,7 +77,7 @@ public class WebViewActivity extends MainAppCompatActivity {
         webSettings.setUseWideViewPort(true);
         webSettings.setGeolocationEnabled(true);
         webSettings.setSupportMultipleWindows(true);
-        webSettings.setAppCacheEnabled(true);
+        webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
         webSettings.setMediaPlaybackRequiresUserGesture(false);
 
         WebView.setWebContentsDebuggingEnabled(true);

@@ -1224,7 +1224,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         webSettings.setDomStorageEnabled(true);
         webSettings.setGeolocationEnabled(true);
         webSettings.setSupportMultipleWindows(true);
-        webSettings.setAppCacheEnabled(true);
+        webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
         webSettings.setMediaPlaybackRequiresUserGesture(false);
 
         WebChromeClient mWebChromeClient = new WebChromeClient() {

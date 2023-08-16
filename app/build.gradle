@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
     buildToolsVersion "28.0.3"
     defaultConfig {
         applicationId "com.flowring.laleents"
         minSdkVersion 28
-        targetSdkVersion 31
+        targetSdkVersion 33
         versionCode 166
         versionName "1.2.2.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

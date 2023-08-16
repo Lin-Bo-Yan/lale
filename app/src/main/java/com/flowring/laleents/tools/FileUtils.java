@@ -911,8 +911,13 @@ public class FileUtils {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            if (mediaMetadataRetriever != null)
-                mediaMetadataRetriever.release();
+            if (mediaMetadataRetriever != null) {
+                try {
+                    mediaMetadataRetriever.release();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return bitmap;
     }

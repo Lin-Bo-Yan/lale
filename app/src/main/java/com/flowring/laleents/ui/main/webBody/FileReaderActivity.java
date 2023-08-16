@@ -85,7 +85,7 @@ public class FileReaderActivity extends MainAppCompatActivity {
         webSettings.setDomStorageEnabled(true);
         webSettings.setGeolocationEnabled(true);
         webSettings.setSupportMultipleWindows(true);
-        webSettings.setAppCacheEnabled(true);
+        webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
         webSettings.setMediaPlaybackRequiresUserGesture(false);
 
         WebView.setWebContentsDebuggingEnabled(true);
