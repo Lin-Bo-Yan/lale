@@ -2,18 +2,15 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 33
-    buildToolsVersion "28.0.3"
+    buildToolsVersion "33.0.0"
     defaultConfig {
         applicationId "com.flowring.laleents"
         minSdkVersion 28
         targetSdkVersion 33
-        versionCode 166
-        versionName "1.2.2.0"
+        versionCode 167
+        versionName "1.2.3.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         ndkVersion "21.3.6528147"
-//        ndk {
-//            debugSymbolLevel 'SYMBOL_TABLE'
-//        }
     }
     sourceSets {
 
@@ -199,8 +196,8 @@ dependencies {
 
     implementation  'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:1.0.2'
 
-    // control between activity sending huge data
-    implementation 'org.greenrobot:eventbus:3.2.0'
+    // 發送大量數據的活動之間的控制，用於解耦組件間的通信
+    implementation 'org.greenrobot:eventbus:3.3.1'
 
     // color picker
     implementation 'com.github.duanhong169:colorpicker:1.1.6'
