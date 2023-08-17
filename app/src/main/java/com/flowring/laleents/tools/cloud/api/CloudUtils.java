@@ -2792,6 +2792,12 @@ public class CloudUtils implements ICloudUtils {
     
     public HttpAfReturn aflogin(String account, String password, String url, CallbackUtils.TimeoutReturn timeoutReturn) {
         MediaType mediaType = MediaType.parse("application/json");
+        if (account == null) {
+            account = "";
+        }
+        if (password == null) {
+            password = "";
+        }
         JSONObject body_j = new JSONObject();
         try {
             body_j.put("loginId", account);

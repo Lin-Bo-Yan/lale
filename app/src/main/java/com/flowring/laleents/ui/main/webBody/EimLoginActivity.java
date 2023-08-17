@@ -75,17 +75,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
         loggedInDialog();
         loginFunction = new LoginInAppFunc(EimLoginActivity.this);
         readUrlValid();
-        app_name = findViewById(R.id.app_name);
-        edit_password = findViewById(R.id.edit_password);
-        edit_account = findViewById(R.id.edit_account);
-        language = SharedPreferencesUtils.getLanguageChoice(EimLoginActivity.this);
-        if("en".equals(language)){
-            app_name.setTextSize(33);
-            app_name.setTranslationX(-90f);
-            app_name.setTranslationY(20f);
-            edit_account.setTextSize(15);
-            edit_password.setTextSize(13);
-        }
+        englishVersionScreen();
 
         btn_login = findViewById(R.id.btn_login);
         btn_login.setOnClickListener(new View.OnClickListener() {
@@ -507,6 +497,20 @@ public class EimLoginActivity extends MainAppCompatActivity {
             return getString(resId);
         }
         return errMsg;
+    }
+
+    private void englishVersionScreen(){
+        app_name = findViewById(R.id.app_name);
+        edit_password = findViewById(R.id.edit_password);
+        edit_account = findViewById(R.id.edit_account);
+        language = SharedPreferencesUtils.getLanguageChoice(EimLoginActivity.this);
+        if("en".equals(language)){
+            app_name.setTextSize(33);
+            app_name.setTranslationX(-90f);
+            app_name.setTranslationY(20f);
+            edit_account.setTextSize(15);
+            edit_password.setTextSize(13);
+        }
     }
 
     private boolean checkNetworkAndContinue() {
