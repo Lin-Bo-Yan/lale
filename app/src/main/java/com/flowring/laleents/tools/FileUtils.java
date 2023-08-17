@@ -1249,10 +1249,13 @@ public class FileUtils {
             case ".jfif":
                 return "image/jfif";
             case ".jpe":
+            case ".JPE":
                 return "image/jpe";
             case ".jpeg":
+            case ".JPEG":
                 return "image/jpeg";
             case ".jpg":
+            case ".JPG":
                 return "image/jpg";
             case ".m4e":
                 return "video/mpeg4";

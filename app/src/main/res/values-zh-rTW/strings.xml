@@ -28,4 +28,5 @@
     <string name="login_password_body">請輸入您的密碼</string>
     <string name="login_button_title">掃描 QR code 登入</string>
     <string name="desc_password_rule">密碼至少包含大、小寫英文字母與數字；不得包含大寫英文字母、特殊符號、空格</string>
+    <string name="dialog_check_network_text">請檢查網路是否連線。</string>
 </resources>

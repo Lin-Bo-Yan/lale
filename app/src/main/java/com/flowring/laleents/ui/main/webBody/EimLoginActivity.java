@@ -27,6 +27,7 @@ import com.flowring.laleents.tools.CommonUtils;
 import com.flowring.laleents.tools.DialogUtils;
 import com.flowring.laleents.tools.FileUtils;
 import com.flowring.laleents.tools.Log;
+import com.flowring.laleents.tools.NetUtils;
 import com.flowring.laleents.tools.SharedPreferencesUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.cloud.api.CloudUtils;
@@ -65,13 +66,16 @@ public class EimLoginActivity extends MainAppCompatActivity {
             public void onClick(View view) {
                 if(btn_login.isEnabled()){
                     saveUrlValid(loginFunction.urlValid);
-                    UserControlCenter.getAflogin(EimLoginActivity.this,loginFunction.accountValid, loginFunction.passwordValid, loginFunction.urlValid, new CallbackUtils.messageReturn() {
-                        @Override
-                        public void Callback(String message) {
-                            StringUtils.HaoLog("結果:" + message);
-                            Loginback(EimLoginActivity.this, message);
-                        }
-                    });
+                    boolean haveInternet = checkNetworkAndContinue();
+                    if(haveInternet){
+                        UserControlCenter.getAflogin(EimLoginActivity.this,loginFunction.accountValid, loginFunction.passwordValid, loginFunction.urlValid, new CallbackUtils.messageReturn() {
+                            @Override
+                            public void Callback(String message) {
+                                StringUtils.HaoLog("結果:" + message);
+                                Loginback(EimLoginActivity.this, message);
+                            }
+                        });
+                    }
                 }
             }
         });
@@ -85,7 +89,8 @@ public class EimLoginActivity extends MainAppCompatActivity {
                     if (activityResult.getResultCode() == Activity.RESULT_OK) {
                         String SCAN_QRCODE = activityResult.getData().getStringExtra("SCAN_QRCODE");
                         StringUtils.HaoLog("結果:" + SCAN_QRCODE);
-                        if (SCAN_QRCODE != null){
+                        boolean haveInternet = checkNetworkAndContinue();
+                        if(haveInternet && SCAN_QRCODE != null){
                             Loginback(EimLoginActivity.this, SCAN_QRCODE);
                         }
                     }
@@ -406,5 +411,19 @@ public class EimLoginActivity extends MainAppCompatActivity {
             StringUtils.HaoLog("readUrlValid= 第一次使用");
             FileUtils.saveTextInFile("",file);
         }
+    }
+
+    private boolean checkNetworkAndContinue() {
+        if(NetUtils.isNetworkAvailable(EimLoginActivity.this)){
+            return true;
+        } else {
+            DialogUtils.showDialogMessage(EimLoginActivity.this, getString(R.string.dialog_check_network_text), "", new CallbackUtils.noReturn() {
+                @Override
+                public void Callback() {
+                    checkNetworkAndContinue();
+                }
+            });
+        }
+        return false;
     }
 }
