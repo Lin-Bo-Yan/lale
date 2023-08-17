@@ -1193,6 +1193,10 @@ public class MainWebActivity extends MainAppCompatActivity {
                     }
                 } else if(errorResponse.getStatusCode() == 400 && request.getUrl().toString().contains("/api/dau/personalData")){
                     Logout();
+                } else if(errorResponse.getStatusCode() == 401){
+                    new Thread(() -> {
+                        censorToken();
+                    }).start();
                 }
                 super.onReceivedHttpError(view, request, errorResponse);
             }
@@ -2119,12 +2123,15 @@ public class MainWebActivity extends MainAppCompatActivity {
             @Override
             public void Callback(HttpReturn httpReturn) {
                 StringUtils.HaoLog("censorToken= 1 "+httpReturn.msg + " "+Thread.currentThread().getName());
-                if(httpReturn.status != 200){
+                if(httpReturn.status == 500){
                     // token 和 refresh token 都過期 -> 登出
                     if ("refresh token 逾時".equals(httpReturn.msg)) {
                         StringUtils.HaoLog("App過久未使用您的帳號已被登出");
                         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
                         pref.edit().putBoolean("isSignOut", true).apply();
+                        Logout();
+                    } else if("token 無效".equals(httpReturn.msg)){
+                        StringUtils.HaoLog("censorToken= 6 "+httpReturn.msg + " "+Thread.currentThread().getName());
                         Logout();
                     }
                 } else if(httpReturn.status == 200){

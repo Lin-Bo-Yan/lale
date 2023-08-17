@@ -328,8 +328,6 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/user")
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-
-
         return getJhttpReturn(request);
     }
 
@@ -1733,11 +1731,6 @@ public class CloudUtils implements ICloudUtils {
 
     @Override
     public HttpReturn reToken() {
-//        if (UserControlCenter.getUserMinInfo().refreshExpiration < new Date().getTime()) {
-//
-//            return new HttpReturn().putMsg("token過期");
-//        }
-
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(mediaType, "{\r\n        \"token\": \"" + UserControlCenter.getUserMinInfo().token + "\",\r\n        \"refreshToken\": \"" + UserControlCenter.getUserMinInfo().refreshToken + "\"\r\n}");
         Request.Builder request = new Request.Builder()
@@ -1747,10 +1740,9 @@ public class CloudUtils implements ICloudUtils {
 
         HttpReturn httpReturn = gethttpReturn(request);
         if (httpReturn.status == 200) {
-            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
             UserMin userMin = UserControlCenter.getUserMinInfo();
             TokenInfo tokenInfo = new Gson().fromJson(new Gson().toJson(httpReturn.data), TokenInfo.class);
-            if (tokenInfo != null&&userMin!=null) {
+            if (tokenInfo != null && userMin!=null) {
                 userMin.token = tokenInfo.token;
                 userMin.refreshExpiration = tokenInfo.refreshExpiration;
                 userMin.expiration = tokenInfo.expiration;
@@ -1763,7 +1755,6 @@ public class CloudUtils implements ICloudUtils {
             UserControlCenter.updateUserMinInfo(userMin);
         }
         return httpReturn;
-
     }
 
     @Override
