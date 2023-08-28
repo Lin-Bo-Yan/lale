@@ -118,11 +118,11 @@ public class RoomSettingControlCenter {
             try {
 
                 if (roomMinInfo.groupId == null || roomMinInfo.groupId.isEmpty()) {
-                    HttpReturn h = CloudUtils.iCloudUtils.updateRoom(roomMinInfo.id, new JSONObject().put("roomId", roomMinInfo.id).put("status", status));
-                    callback.Callback(h);
+                    HttpReturn httpReturn = CloudUtils.iCloudUtils.updateRoom(roomMinInfo.id, new JSONObject().put("roomId", roomMinInfo.id).put("status", status));
+                    callback.Callback(httpReturn);
                 } else {
-                    HttpReturn h = CloudUtils.iCloudUtils.updateGroup(roomMinInfo.groupId, new JSONObject().put("groupId", roomMinInfo.groupId).put("roomId", roomMinInfo.id).put("status", status));
-                    callback.Callback(h);
+                    HttpReturn httpReturn = CloudUtils.iCloudUtils.updateGroup(roomMinInfo.groupId, new JSONObject().put("groupId", roomMinInfo.groupId).put("roomId", roomMinInfo.id).put("status", status));
+                    callback.Callback(httpReturn);
                 }
 
             } catch (JSONException e) {

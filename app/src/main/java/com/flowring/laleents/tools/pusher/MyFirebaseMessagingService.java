@@ -308,10 +308,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     StringUtils.HaoLog("userInRoom !=null");
                 } else {
                     StringUtils.HaoLog("room.type =" + room.type);
-                    if (room.type == 6 || room.type == 4)
+                    if (room.type == 6 || room.type == 4){
                         AllData.setUserInRoom(room.id, RoomSettingControlCenter.getGroupMembers(room.groupId));
-                    else
+                    } else{
                         AllData.setUserInRoom(room.id, RoomSettingControlCenter.getRoomMembers(room.id));
+                    }
                     userInRoom = AllData.getUserInRoom(room.id, data.sender);
                 }
 
@@ -356,7 +357,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             }
 
         }
-
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channel_id)
                 .setSmallIcon(R.drawable.ic_launcher)

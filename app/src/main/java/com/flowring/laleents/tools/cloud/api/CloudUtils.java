@@ -81,7 +81,7 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/util/app/version/android")
                 .get()
                 .addHeader("Content-Type", "application/json");
-        HttpReturn httpReturn = gethttpReturn(request);
+        HttpReturn httpReturn = gethttpReturn(request,15);
         if(httpReturn.status != 200){
             StringUtils.HaoLog("checkAppNeedUpdate= 錯誤碼 "+httpReturn.status);
             return false;
@@ -104,11 +104,8 @@ public class CloudUtils implements ICloudUtils {
 
     @Override
     public HttpReturn changePassword(String verifyCode, String UserId, String password) {
-
-
         MediaType mediaType = MediaType.parse("application/json");
         JSONObject body_j = new JSONObject();
-
         try {
             body_j.put("userId", UserId);
             body_j.put("verificationCode", verifyCode);
@@ -116,49 +113,40 @@ public class CloudUtils implements ICloudUtils {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         RequestBody body = RequestBody.create(mediaType, body_j.toString());
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/user/resetpassword")
                 .method("POST", body)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request);
-
+        return gethttpReturn(request,0);
     }
 
     @Override
     public HttpReturn forgetPasswordCheckEmail(String userAccount) {
-
-
         JSONObject body_j = new JSONObject();
-
         try {
             body_j.put("userId", userAccount);
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         RequestBody body = RequestBody.create(MediaType.parse("application/json"), body_j.toString());
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/user/forgetpassword")
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer brice004")
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
     public HttpReturn signup(JSONObject body) {
-
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody requestBody = RequestBody.create(mediaType, body.toString());
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/user/register")
                 .method("POST", requestBody)
                 .addHeader("Content-Type", "application/json");
-
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -168,19 +156,16 @@ public class CloudUtils implements ICloudUtils {
         map.put("userId", userId);
         map.put("phone", phone);
         map.put("email", email);
-
         RequestBody requestBody = RequestBody.create(mediaType, new JSONObject(map).toString());
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/user/info/duplicate")
                 .method("POST", requestBody)
                 .addHeader("Content-Type", "application/json");
-
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
     public HttpReturn login(Context context, String deviceID, String account, String password) {
-
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(mediaType, "{\"deviceId\": \"" + deviceID + "\",  \"password\": \"" + password + "\",  \"userId\": \"" + account + "\", \"devicePlatform\": \"android\"}");
         Request.Builder request = new Request.Builder()
@@ -188,9 +173,7 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("charset", "utf-8")
                 .addHeader("Content-Type", "application/json");
-
-        return gethttpReturn(request);
-
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -214,17 +197,14 @@ public class CloudUtils implements ICloudUtils {
                     .addFormDataPart("image", image.getName(),
                             RequestBody.create(MediaType.parse("application/octet-stream"),
                                     image)).build();
-
         } else {
             body = new MultipartBody.Builder().setType(MultipartBody.FORM)
                     .addFormDataPart("user", jbody.toString()).build();
-
         }
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/user/thirdparty/login")
                 .method("POST", body);
-
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -252,8 +232,7 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/user/mobile/logged")
                 .method("POST", body)
                 .addHeader("Content-Type", "application/json");
-
-        return gethttpReturn(request);
+        return gethttpReturn(request,15);
     }
 
     @Override
@@ -276,8 +255,7 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("charset", "utf-8")
                 .addHeader("Content-Type", "application/json");
-
-        return gethttpReturn(request);
+        return gethttpReturn(request,15);
     }
 
 
@@ -320,18 +298,16 @@ public class CloudUtils implements ICloudUtils {
 
     @Override
     public HttpReturn getFestival() {
-
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/util//festival/" + new Date().getTime())
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
 
     }
 
     @Override
     public HttpReturn changeNewPassword(String oldPassword, String newPassword) {
-
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(mediaType, "{\r\n    \"oldPassword\" : \"" + oldPassword + "\",\r\n    \"newPassword\" : \"" + newPassword + "\"\r\n}");
         Request.Builder request = new Request.Builder()
@@ -339,8 +315,7 @@ public class CloudUtils implements ICloudUtils {
                 .method("PUT", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request);
-
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -355,13 +330,11 @@ public class CloudUtils implements ICloudUtils {
 
     @Override
     public HttpReturn getUserInfo(String UserId) {
-
         StringUtils.HaoLog("getUserInfo UserId=" + UserId);
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/user/id/" + UserId)
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-
         return getJhttpReturn(request);
     }
 
@@ -369,19 +342,17 @@ public class CloudUtils implements ICloudUtils {
     public HttpReturn uploadUserInfo(Map<String, Object> map) {
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(mediaType, new JSONObject(map).toString());
-
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/user")
                 .method("PUT", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
     public HttpReturn setPusher(String userId, String FCM_token, String uuid, String customerProperties) {
         MediaType mediaType = MediaType.parse("application/json");
-
         Map<String, Object> map = new HashMap();
         map.put("apId", "Lale");
         map.put("userId", userId);
@@ -400,8 +371,7 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request);
-
+        return gethttpReturn(request,15);
     }
 
     @Override
@@ -415,8 +385,7 @@ public class CloudUtils implements ICloudUtils {
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/push/device/user/allowed")
                 .method("PUT", body);
-        return gethttpReturn(request);
-
+        return gethttpReturn(request,15);
     }
 
     @Override
@@ -431,7 +400,7 @@ public class CloudUtils implements ICloudUtils {
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/push/device/allowed")
                 .method("PUT", body);
-        return gethttpReturn(request);
+        return gethttpReturn(request,15);
     }
 
     @Override
@@ -459,13 +428,13 @@ public class CloudUtils implements ICloudUtils {
                 .url(WFCI_URL + "/api/app-pusher")
                 .method("POST", body);
         return getJhttpAfReturn(request);
-
     }
 
     @Override
     public HttpReturn closeAfPusher(String WFCI_URL, String memId, String FCM_token, String uuid) {
-        if (WFCI_URL == null || WFCI_URL.isEmpty())
+        if (WFCI_URL == null || WFCI_URL.isEmpty()){
             return new HttpReturn();
+        }
         MediaType mediaType = MediaType.parse("application/json");
         Map<String, Object> map = new HashMap();
         map.put("memId", memId);
@@ -479,7 +448,6 @@ public class CloudUtils implements ICloudUtils {
                 .url(WFCI_URL + "/api/app-pusher")
                 .method("PUT", body);
         return gethttp2Return(request);
-
     }
 
     @Override
@@ -499,8 +467,7 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/friend/list/status/-1")
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request);
-
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -509,8 +476,7 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/friend/" + FriendId)
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request);
-
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -525,8 +491,7 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/friend/")
                 .put(body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request);
-
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -541,7 +506,7 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/friend/")
                 .put(body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
 
@@ -551,8 +516,7 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/user/keyword/" + StringUtils.unsafeCode(PhoneOrAccountOrEmail))
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request);
-
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -573,7 +537,7 @@ public class CloudUtils implements ICloudUtils {
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request).status == 200;
+        return gethttpReturn(request,0).status == 200;
     }
 
     @Override
@@ -587,7 +551,7 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -600,7 +564,7 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
 
     }
 
@@ -614,7 +578,7 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -623,14 +587,11 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/room/album/list/" + roomId)
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-
-        return gethttpReturn(request);
-
+        return gethttpReturn(request,0);
     }
 
     @Override
     public HttpReturn newAlbum(String roomId, String name) {
-
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(mediaType, "{\r\n        \"roomId\": \"" + roomId + "\",\r\n        \"name\": \"" + name + "\"\r\n        }");
         Request.Builder request = new Request.Builder()
@@ -638,7 +599,7 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -650,38 +611,34 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
     public HttpReturn delAlbum(String roomId, ArrayList<String> roomAlbumId) {
-
         MediaType mediaType = MediaType.parse("application/json");
         Map<String, Object> map = new HashMap();
         map.put("roomId", roomId);
         String[] strings = new String[roomAlbumId.size()];
         roomAlbumId.toArray(strings);
         map.put("deletedRoomAlbumIdList", strings);
-
         RequestBody body = RequestBody.create(mediaType, new JSONObject(map).toString());
-
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/room/album")
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
     public HttpReturn getPhotos(String roomAlbumId) {
-
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/room/album/photo/list/" + roomAlbumId)
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -700,13 +657,11 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
     public HttpReturn delPhotos(String roomAlbumId, String roomAlbumPhotoId) {
-
-
         MediaType mediaType = MediaType.parse("application/json");
         Map<String, Object> map = new HashMap();
         map.put("roomAlbumId", roomAlbumId);
@@ -717,12 +672,11 @@ public class CloudUtils implements ICloudUtils {
                 .method("DELETE", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
     public HttpReturn delPhotos(String roomAlbumId, ArrayList<String> roomAlbumPhotoId) {
-
         MediaType mediaType = MediaType.parse("application/json");
         Map<String, Object> map = new HashMap();
         map.put("roomAlbumId", roomAlbumId);
@@ -735,7 +689,7 @@ public class CloudUtils implements ICloudUtils {
                 .method("DELETE", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -751,22 +705,19 @@ public class CloudUtils implements ICloudUtils {
                 .method("PUT", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
     public HttpReturn getLittleSimpleRooms() {
-
-
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(mediaType, "{\r\n    \"userId\": \"" + UserControlCenter.getUserMinInfo().userId + "\"\r\n}");
         Request.Builder request = new Request.Builder()
                 .url(UserControlCenter.getUserMinInfo().getExternalServerSetting().messageServerUrl + "/api/messages/all/last")
                 .method("PUT", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
-
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
 
 
     }
@@ -808,15 +759,11 @@ public class CloudUtils implements ICloudUtils {
 
     @Override
     public HttpReturn getSimpleRooms(int type) {
-
-
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/room/list/type/" + type)
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-
-        return gethttpReturn(request);
-
+        return gethttpReturn(request,15);
     }
 
     @Override
@@ -827,8 +774,7 @@ public class CloudUtils implements ICloudUtils {
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request);
-
+        return gethttpReturn(request,15);
     }
 
     int MsgCount = 20;
@@ -844,10 +790,12 @@ public class CloudUtils implements ICloudUtils {
             if (roomInfoInPhone.msgTime == -1L) {
                 OtherCallBack.Callback(false, "end", null);
                 return;
-            } else
+            } else {
                 map.put("queryEndTime", roomInfoInPhone.msgTime);
-        } else
+            }
+        } else {
             map.put("queryEndTime", new Date().getTime());
+        }
         map.put("roomId", roomId);
         map.put("userId", UserControlCenter.getUserMinInfo().userId);
         RequestBody body = getRequestBody(MediaType.parse("application/json"), map);
@@ -857,14 +805,13 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
         try {
-
             JSONArray msgs;
-
-            HttpReturn r = gethttpReturn(request);
-            if (r.status == 200)
-                msgs = new JSONObject(new Gson().toJson(r.data)).optJSONArray("events");
-            else
+            HttpReturn httpReturn = gethttpReturn(request,0);
+            if (httpReturn.status == 200){
+                msgs = new JSONObject(new Gson().toJson(httpReturn.data)).optJSONArray("events");
+            } else {
                 msgs = null;
+            }
             OtherCallBack.Callback(msgs != null, "", msgs);
             StringUtils.HaoLog("msgs=" + msgs);
         } catch (JSONException e) {
@@ -879,7 +826,7 @@ public class CloudUtils implements ICloudUtils {
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
 
     }
 
@@ -899,7 +846,7 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Content-Type", "application/json");
 
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
 
     }
 
@@ -916,7 +863,7 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
 
     }
 
@@ -929,7 +876,7 @@ public class CloudUtils implements ICloudUtils {
                 .method("PUT", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
 
@@ -1070,7 +1017,7 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -1084,7 +1031,7 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,15);
     }
 
 
@@ -1105,7 +1052,7 @@ public class CloudUtils implements ICloudUtils {
                 .method("PUT", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
 
     }
 
@@ -1124,7 +1071,7 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
 
 
     }
@@ -1144,7 +1091,7 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
 
     }
 
@@ -1158,7 +1105,7 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,15);
     }
 
     @Override
@@ -1171,7 +1118,7 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -1180,7 +1127,7 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/group/" + groupId + "/user/setting")
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -1189,7 +1136,7 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/group/" + groupId)
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
 
     }
 
@@ -1200,7 +1147,7 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/room/" + roomId + "/user/setting")
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -1221,7 +1168,7 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
 
     }
 
@@ -1231,7 +1178,7 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/group/" + groupId + "/verification-code")
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -1242,7 +1189,7 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/group/" + groupId + "/verification-code/" + verificationCode)
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -1253,7 +1200,7 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/room//" + roomId + "/msg/record")
                 .method("PUT", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -1271,7 +1218,7 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -1287,7 +1234,7 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,15);
 
     }
 
@@ -1298,7 +1245,7 @@ public class CloudUtils implements ICloudUtils {
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -1308,7 +1255,7 @@ public class CloudUtils implements ICloudUtils {
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -1329,8 +1276,6 @@ public class CloudUtils implements ICloudUtils {
 
     @Override
     public HttpReturn newKeep(String eventId) {
-
-
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(mediaType, "{\r\n    \"eventId\": \"" + eventId + "\"\r\n}");
         Request.Builder request = new Request.Builder()
@@ -1338,9 +1283,7 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-
-        return gethttpReturn(request);
-
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -1354,7 +1297,7 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -1377,7 +1320,7 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -1389,7 +1332,7 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "text/plain");
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -1400,7 +1343,7 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "text/plain");
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
 
     }
 
@@ -1413,7 +1356,7 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "text/plain");
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -1448,7 +1391,7 @@ public class CloudUtils implements ICloudUtils {
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "text/plain");
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
 
     }
 
@@ -1461,7 +1404,6 @@ public class CloudUtils implements ICloudUtils {
         map.put("deviceBrand", deviceBrand);
         map.put("deviceModel", deviceModel);
         map.put("deviceOsType", deviceOsType);
-
         map.put("openAppDateTime", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date().getTime()));
         RequestBody body = getRequestBody(MediaType.parse("application/json"), map);
 
@@ -1470,7 +1412,7 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Content-Type", "application/json")
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -1485,19 +1427,17 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Content-Type", "application/json")
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
     public HttpReturn getMicroapps(String microAppMenuId) {
-
-
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/microapp/list/type/" + microAppMenuId)
                 .get().addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "text/plain");
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -1554,7 +1494,7 @@ public class CloudUtils implements ICloudUtils {
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "text/plain");
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -1564,7 +1504,7 @@ public class CloudUtils implements ICloudUtils {
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "text/plain");
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -1575,7 +1515,7 @@ public class CloudUtils implements ICloudUtils {
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "text/plain");
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
 
@@ -1658,17 +1598,13 @@ public class CloudUtils implements ICloudUtils {
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-        HttpReturn httpReturn = gethttpReturn(request);
+        HttpReturn httpReturn = gethttpReturn(request,0);
         if (httpReturn.status == 200) {
             StringUtils.HaoLog(new Gson().toJson(httpReturn.data));
             return new Gson().fromJson(new Gson().toJson(httpReturn.data).toString(), new TypeToken<ArrayList<Stickerlibrary>>() {
             }.getType());
         }
-//        ObjectToClass(httpReturn,  new TypeToken<ArrayList<stickerlibrary>>() {
-//        }.getType());
-
         return null;
-
     }
 
     @Override
@@ -1678,13 +1614,12 @@ public class CloudUtils implements ICloudUtils {
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-        HttpReturn httpReturn = gethttpReturn(request);
+        HttpReturn httpReturn = gethttpReturn(request,0);
         if (httpReturn.status == 200) {
             return new Gson().fromJson(new Gson().toJson(httpReturn.data).toString(), new TypeToken<ArrayList<Stickerlibrary>>() {
             }.getType());
         }
         return null;
-
     }
 
     @Override
@@ -1696,7 +1631,7 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/x-www-form-urlencoded");
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -1705,35 +1640,31 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/user/sticker/all")
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        HttpReturn httpReturn = gethttpReturn(request);
+        HttpReturn httpReturn = gethttpReturn(request,0);
         if (httpReturn.status == 200) {
             StringUtils.HaoLog(new Gson().toJson(httpReturn.data));
             return new Gson().fromJson(new Gson().toJson(httpReturn.data).toString(), new TypeToken<ArrayList<CustomizeSticker>>() {
             }.getType());
         }
         return null;
-
-
     }
 
     @Override
     public HttpReturn newCustomizeSticker(File image) {
 
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-
         if (image != null) {
             builder.addFormDataPart("image", image.getName(),
                     RequestBody.create(MediaType.parse("application/octet-stream"),
                             image));
         }
         RequestBody body = builder.build();
-
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/user/sticker")
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -1745,7 +1676,7 @@ public class CloudUtils implements ICloudUtils {
                 .method("DELETE", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -1774,7 +1705,7 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Content-Type", "application/json");
 
-        HttpReturn httpReturn = gethttpReturn(request);
+        HttpReturn httpReturn = gethttpReturn(request,15);
         if (httpReturn.status == 200) {
             UserMin userMin = UserControlCenter.getUserMinInfo();
             TokenInfo tokenInfo = new Gson().fromJson(new Gson().toJson(httpReturn.data), TokenInfo.class);
@@ -1877,8 +1808,7 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request);
-
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -1891,18 +1821,16 @@ public class CloudUtils implements ICloudUtils {
                             image));
         }
         RequestBody body = builder.build();
-
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/user/background")
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
     public HttpReturn resetUserBackground() {
-
         MediaType mediaType = MediaType.parse("text/plain");
         RequestBody body = RequestBody.create(mediaType, "");
 
@@ -1911,7 +1839,7 @@ public class CloudUtils implements ICloudUtils {
                 .method("PUT", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -1922,7 +1850,7 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/user/token/validation")
                 .method("POST", body)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request);
+        return gethttpReturn(request,15);
 
     }
 
@@ -1934,7 +1862,7 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/user/token")
                 .method("PUT", body)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -1942,7 +1870,7 @@ public class CloudUtils implements ICloudUtils {
         Request.Builder request = new Request.Builder()
                 .url(AllData.getAnnouncementServer() + "/ann/in-range/")
                 .get();
-        return gethttpReturn(request);
+        return gethttpReturn(request,15);
     }
 
     @Override
@@ -1950,7 +1878,7 @@ public class CloudUtils implements ICloudUtils {
         Request.Builder request = new Request.Builder()
                 .url(AllData.getAnnouncementServer() + "/ann/in-range/" + givenTime)
                 .get();
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -1958,7 +1886,7 @@ public class CloudUtils implements ICloudUtils {
         Request.Builder request = new Request.Builder()
                 .url(AllData.getAnnouncementServer() + "/ann/closest/")
                 .get();
-        return gethttpReturn(request);
+        return gethttpReturn(request,15);
     }
 
     @Override
@@ -1966,7 +1894,7 @@ public class CloudUtils implements ICloudUtils {
         Request.Builder request = new Request.Builder()
                 .url(AllData.getAnnouncementServer() + "/ann/closest/" + givenTime)
                 .get();
-        return gethttpReturn(request);
+        return gethttpReturn(request,0);
     }
 
     @Override
@@ -2000,7 +1928,7 @@ public class CloudUtils implements ICloudUtils {
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/util/app/platform/tob")
                 .get();
-        return gethttpReturn(request);
+        return gethttpReturn(request,15);
     }
     
     public HttpAfReturn aflogin(String account, String password, String url) {
@@ -2048,9 +1976,12 @@ public class CloudUtils implements ICloudUtils {
         return getJhttpAfReturn(request);
     }
 
-    HttpReturn gethttpReturn(Request.Builder request) {
-        OkHttpClient client = getUnsafeOkHttpClient().newBuilder().build();
-
+    HttpReturn gethttpReturn(Request.Builder request, int timeoutInSeconds) {
+        OkHttpClient client = getUnsafeOkHttpClient().newBuilder()
+                .connectTimeout(timeoutInSeconds, TimeUnit.SECONDS)
+                .writeTimeout(timeoutInSeconds, TimeUnit.SECONDS)
+                .readTimeout(timeoutInSeconds, TimeUnit.SECONDS)
+                .build();
         try {
             Response response = client.newCall(request.build()).execute();
             if (response.code() == 200) {
@@ -2065,6 +1996,9 @@ public class CloudUtils implements ICloudUtils {
                 }
             }
         } catch (IOException | JsonSyntaxException | IllegalStateException e) {
+            if(e instanceof java.net.SocketTimeoutException){
+
+            }
             StringUtils.HaoLog("gethttpReturn error=" + request + " " + e);
             e.printStackTrace();
         }
@@ -2258,23 +2192,19 @@ public class CloudUtils implements ICloudUtils {
 
     public JSONArray getJSONArrayData(Request.Builder request) {
         try {
-
-            HttpReturn httpReturn = gethttpReturn(request);
-            if (httpReturn.status == 200)
+            HttpReturn httpReturn = gethttpReturn(request,0);
+            if (httpReturn.status == 200){
                 return new JSONArray(new Gson().toJson(httpReturn.data));
-
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return new JSONArray();
-
     }
 
     public RequestBody getRequestBody(MediaType mediaType, Map<String, Object> map) {
-
         JSONObject json = new JSONObject(map);
         return RequestBody.create(mediaType, json.toString());
-
     }
 
     @Override
@@ -2282,44 +2212,34 @@ public class CloudUtils implements ICloudUtils {
         new Thread(() -> {
             CloundTask(CloudUtils.iCloudUtils.getRoomSetting(roomId), data, classType);
         }).start();
-
     }
 
     public static void CloundTask(HttpReturn request, CallbackUtils.ReturnData data, Class<?> classType) {
-
         StringUtils.HaoLog("CloundTask", request);
         data.Callback(request.status == 200, request.msg, new Gson().fromJson(new Gson().toJson(request.data), classType));
-
     }
 
     public static Object ObjectToClass(HttpReturn data, java.lang.reflect.Type classType) {
-
         if (data.status == 200) {
             StringUtils.HaoLog(new Gson().toJson(data.data));
             return new Gson().fromJson(new Gson().toJson(data.data).toString(), classType);
         }
         return null;
-
-
     }
-
-
+    
     public byte[] getFile(String url) {
         Request.Builder request = new Request.Builder()
                 .url(url)
                 .get();
         OkHttpClient client = getUnsafeOkHttpClient().newBuilder().build();
-
         try {
             Response response = client.newCall(request.build()).execute();
-            if (response.code() == 200)
+            if (response.code() == 200){
                 return response.body().bytes();
-
+            }
         } catch (IOException e) {
             e.printStackTrace();
-
         }
         return null;
     }
-
 }
