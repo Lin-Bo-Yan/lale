@@ -51,6 +51,7 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.Date;
 
@@ -160,7 +161,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     String userid = remoteMessage.getData().get("userId");
                     if(AllData.getMainServer().equals(domain)){
                         String uuid = Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID);
-                        HttpReturn httpReturn = CloudUtils.iCloudUtils.closePusher(userid, uuid);
+                        HttpReturn httpReturn = CloudUtils.iCloudUtils.closePusher(userid, uuid, new CallbackUtils.TimeoutReturn() {
+                            @Override
+                            public void Callback(IOException timeout) {
+                                StringUtils.HaoLog("timeout");
+                            }
+                        });
                         StringUtils.HaoLog("關閉EIM推播成功 "+httpReturn.status);
                     }
                 }

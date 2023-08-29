@@ -210,7 +210,12 @@ public class UserControlCenter {
 
     public static void getAnnounceServer(CallbackUtils.AnnounceReturn announceReturn){
         new Thread(() -> {
-            HttpReturn httpReturn = CloudUtils.iCloudUtils.announceServer();
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.announceServer(new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
             if(httpReturn.status == 200){
                 Gson gson = new Gson();
                 String date = gson.toJson(httpReturn.data);
@@ -257,7 +262,12 @@ public class UserControlCenter {
 
     public static void getLatestAnnounce(CallbackUtils.AnnounceReturn announceReturn){
         new Thread(() -> {
-            HttpReturn httpReturn = CloudUtils.iCloudUtils.latestAnnounce();
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.latestAnnounce(new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
             if(httpReturn.status == 200){
                 Gson gson = new Gson();
                 String data = gson.toJson(httpReturn.data);
@@ -352,7 +362,12 @@ public class UserControlCenter {
         if (UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim) {
             new Thread(() -> {
                 StringUtils.HaoLog("tokenRefresh 開始");
-                HttpReturn httpReturn = CloudUtils.iCloudUtils.reToken();
+                HttpReturn httpReturn = CloudUtils.iCloudUtils.reToken(new CallbackUtils.TimeoutReturn() {
+                    @Override
+                    public void Callback(IOException timeout) {
+                        StringUtils.HaoLog("timeout");
+                    }
+                });
 
                 callback.Callback(httpReturn);
                 StringUtils.HaoLog("tokenRefresh 結束");
@@ -363,7 +378,12 @@ public class UserControlCenter {
     public static void tokenRefresh_noThread(CallbackUtils.ReturnHttp callback) {
         if (UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim) {
             StringUtils.HaoLog("tokenRefresh 開始");
-            HttpReturn httpReturn = CloudUtils.iCloudUtils.reToken();
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.reToken(new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
             callback.Callback(httpReturn);
             StringUtils.HaoLog("tokenRefresh 結束");
         }
@@ -372,7 +392,12 @@ public class UserControlCenter {
 
     public static void checkToken(CallbackUtils.ReturnHttp callback){
         StringUtils.HaoLog("checkToken 開始");
-        HttpReturn correct = CloudUtils.iCloudUtils.checkToken();
+        HttpReturn correct = CloudUtils.iCloudUtils.checkToken(new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
         callback.Callback(correct);
         StringUtils.HaoLog("checkToken 結束");
     }
@@ -552,8 +577,12 @@ public class UserControlCenter {
                 new Thread(() -> {
                     StringUtils.HaoLog("nowUserId=" + nowUserId);
                     StringUtils.HaoLog("uuid=" + Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID));
-                    callback.Callback(CloudUtils.iCloudUtils.updatePusher(nowUserId, Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID)));
-
+                    callback.Callback(CloudUtils.iCloudUtils.updatePusher(nowUserId, Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID), new CallbackUtils.TimeoutReturn() {
+                        @Override
+                        public void Callback(IOException timeout) {
+                            StringUtils.HaoLog("timeout");
+                        }
+                    }));
                 }).start();
             }
         });
@@ -580,7 +609,12 @@ public class UserControlCenter {
      */
     public static boolean alreadyLoddedIn(String loginType, String userId, String thirdPartyIdentifier, String deviceId){
         StringUtils.HaoLog("loginType=" + loginType + "\nuserId=" + userId + "\nthirdPartyIdentifier=" + thirdPartyIdentifier + "\ndeviceId=" + deviceId);
-        HttpReturn httpReturn = CloudUtils.iCloudUtils.alreadyLoddedIn(loginType,userId,thirdPartyIdentifier,deviceId);
+        HttpReturn httpReturn = CloudUtils.iCloudUtils.alreadyLoddedIn(loginType, userId, thirdPartyIdentifier, deviceId, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
         if(httpReturn.status == 200){
             String msg = httpReturn.msg;
             boolean data = (Boolean) httpReturn.data;
@@ -605,7 +639,12 @@ public class UserControlCenter {
                 new Thread(() -> {
                     StringUtils.HaoLog("登出 3");
                     HttpReturn httpReturn = new HttpReturn();
-                    httpReturn = CloudUtils.iCloudUtils.closePusher(UserControlCenter.getUserMinInfo().eimUserData.af_login_id, Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID));
+                    httpReturn = CloudUtils.iCloudUtils.closePusher(UserControlCenter.getUserMinInfo().eimUserData.af_login_id, Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID), new CallbackUtils.TimeoutReturn() {
+                        @Override
+                        public void Callback(IOException timeout) {
+                            StringUtils.HaoLog("timeout");
+                        }
+                    });
                     HttpReturn httpReturn2 = CloudUtils.iCloudUtils.userLogout();
                     SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
                     pref.edit().putString("nowUserId", "").apply();
@@ -726,7 +765,12 @@ public class UserControlCenter {
     
     public static void googlePlatformVersion(Activity activity){
         new Thread(() -> {
-            HttpReturn httpReturn = CloudUtils.iCloudUtils.googlePlatformVersion();
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.googlePlatformVersion(new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("ddd= "+"googlePlatformVersion");
+                }
+            });
             Gson gson = new Gson();
             if(httpReturn.status == 200){
                 String data = gson.toJson(httpReturn.data);
@@ -752,7 +796,12 @@ public class UserControlCenter {
     }
 
     public static void checkAppNeedUpdate(Activity activity) {
-        Boolean appNeedUpdate = CloudUtils.iCloudUtils.checkAppNeedUpdate();
+        Boolean appNeedUpdate = CloudUtils.iCloudUtils.checkAppNeedUpdate(new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
         if (appNeedUpdate){
             DialogUtils.showUpgradeDialog(activity);
         }

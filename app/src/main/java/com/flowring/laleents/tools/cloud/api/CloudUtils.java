@@ -76,12 +76,17 @@ public class CloudUtils implements ICloudUtils {
 
 
     @Override
-    public boolean checkAppNeedUpdate() {
+    public boolean checkAppNeedUpdate(CallbackUtils.TimeoutReturn timeoutReturn) {
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/util/app/version/android")
                 .get()
                 .addHeader("Content-Type", "application/json");
-        HttpReturn httpReturn = gethttpReturn(request,15);
+        HttpReturn httpReturn = gethttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
         if(httpReturn.status != 200){
             StringUtils.HaoLog("checkAppNeedUpdate= 錯誤碼 "+httpReturn.status);
             return false;
@@ -118,7 +123,13 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/user/resetpassword")
                 .method("POST", body)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request,0);
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -135,7 +146,14 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer brice004")
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -146,7 +164,14 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/user/register")
                 .method("POST", requestBody)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -161,7 +186,14 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/user/info/duplicate")
                 .method("POST", requestBody)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -173,7 +205,14 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("charset", "utf-8")
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -204,11 +243,18 @@ public class CloudUtils implements ICloudUtils {
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/user/thirdparty/login")
                 .method("POST", body);
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
-    public HttpReturn alreadyLoddedIn(String loginType, String userId, String thirdPartyIdentifier, String deviceId) {
+    public HttpReturn alreadyLoddedIn(String loginType, String userId, String thirdPartyIdentifier, String deviceId, CallbackUtils.TimeoutReturn timeoutReturn) {
         MediaType mediaType = MediaType.parse("application/json");
         JSONObject jbody = new JSONObject();
         try {
@@ -232,11 +278,17 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/user/mobile/logged")
                 .method("POST", body)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request,15);
+        HttpReturn httpReturn = gethttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
     }
 
     @Override
-    public HttpReturn loginSimpleThirdParty(String thirdPartyIdentifier, String deviceId) {
+    public HttpReturn loginSimpleThirdParty(String thirdPartyIdentifier, String deviceId, CallbackUtils.TimeoutReturn timeoutReturn) {
         MediaType mediaType = MediaType.parse("application/json");
         //RequestBody body = RequestBody.create(mediaType, "{\"thirdPartyIdentifier\": \"" + thirdPartyIdentifier + "\",  \"deviceId\": \"" + deviceId + "\",  \"loginType\":6 }");
         JSONObject jbody = new JSONObject();
@@ -255,7 +307,13 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("charset", "utf-8")
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request,15);
+        HttpReturn httpReturn = gethttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
     }
 
 
@@ -302,8 +360,14 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/util//festival/" + new Date().getTime())
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request,0);
 
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -315,7 +379,15 @@ public class CloudUtils implements ICloudUtils {
                 .method("PUT", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request,0);
+
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -347,11 +419,18 @@ public class CloudUtils implements ICloudUtils {
                 .method("PUT", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
-    public HttpReturn setPusher(String userId, String FCM_token, String uuid, String customerProperties) {
+    public HttpReturn setPusher(String userId, String FCM_token, String uuid, String customerProperties, CallbackUtils.TimeoutReturn timeoutReturn) {
         MediaType mediaType = MediaType.parse("application/json");
         Map<String, Object> map = new HashMap();
         map.put("apId", "Lale");
@@ -371,11 +450,17 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request,15);
+        HttpReturn httpReturn = gethttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
     }
 
     @Override
-    public HttpReturn updatePusher(String userId, String uuid) {
+    public HttpReturn updatePusher(String userId, String uuid, CallbackUtils.TimeoutReturn timeoutReturn) {
         MediaType mediaType = MediaType.parse("application/json");
         Map<String, Object> map = new HashMap();
         map.put("userId", userId);
@@ -385,11 +470,17 @@ public class CloudUtils implements ICloudUtils {
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/push/device/user/allowed")
                 .method("PUT", body);
-        return gethttpReturn(request,15);
+        HttpReturn httpReturn = gethttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
     }
 
     @Override
-    public HttpReturn closePusher(String userId, String uuid) {
+    public HttpReturn closePusher(String userId, String uuid, CallbackUtils.TimeoutReturn timeoutReturn) {
         MediaType mediaType = MediaType.parse("application/json");
         Map<String, Object> map = new HashMap();
         map.put("userId", userId);
@@ -400,13 +491,20 @@ public class CloudUtils implements ICloudUtils {
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/push/device/allowed")
                 .method("PUT", body);
-        return gethttpReturn(request,15);
+        HttpReturn httpReturn = gethttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
     }
 
     @Override
     public HttpAfReturn setAfPusher(String WFCI_URL, String memId,String userId, String FCM_token, String uuid, String customerProperties) {
-        if (WFCI_URL == null || WFCI_URL.isEmpty())
+        if (WFCI_URL == null || WFCI_URL.isEmpty()){
             return new HttpAfReturn();
+        }
         MediaType mediaType = MediaType.parse("application/json");
         Map<String, Object> map = new HashMap();
         map.put("memId", memId);
@@ -467,7 +565,14 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/friend/list/status/-1")
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -476,7 +581,14 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/friend/" + FriendId)
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -491,7 +603,14 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/friend/")
                 .put(body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -506,7 +625,14 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/friend/")
                 .put(body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
 
@@ -516,7 +642,14 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/user/keyword/" + StringUtils.unsafeCode(PhoneOrAccountOrEmail))
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -537,7 +670,13 @@ public class CloudUtils implements ICloudUtils {
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request,0).status == 200;
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn.status == 200;
     }
 
     @Override
@@ -551,7 +690,13 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return gethttpReturn(request,0);
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -564,8 +709,13 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request,0);
-
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -578,7 +728,13 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request,0);
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -587,7 +743,14 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/room/album/list/" + roomId)
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -599,7 +762,14 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -611,7 +781,14 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -628,7 +805,14 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -638,7 +822,14 @@ public class CloudUtils implements ICloudUtils {
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -657,7 +848,13 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request,0);
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -672,7 +869,14 @@ public class CloudUtils implements ICloudUtils {
                 .method("DELETE", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -689,7 +893,14 @@ public class CloudUtils implements ICloudUtils {
                 .method("DELETE", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -705,7 +916,14 @@ public class CloudUtils implements ICloudUtils {
                 .method("PUT", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -717,9 +935,14 @@ public class CloudUtils implements ICloudUtils {
                 .method("PUT", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request,0);
 
-
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -758,23 +981,35 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
-    public HttpReturn getSimpleRooms(int type) {
+    public HttpReturn getSimpleRooms(int type, CallbackUtils.TimeoutReturn timeoutReturn) {
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/room/list/type/" + type)
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request,15);
+        HttpReturn httpReturn = gethttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
     }
 
     @Override
-    public HttpReturn getOneRoom(String roomId) {
+    public HttpReturn getOneRoom(String roomId, CallbackUtils.TimeoutReturn timeoutReturn) {
 
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/room/" + roomId + "/info")
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request,15);
+        HttpReturn httpReturn = gethttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
     }
 
     int MsgCount = 20;
@@ -806,7 +1041,12 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Content-Type", "application/json");
         try {
             JSONArray msgs;
-            HttpReturn httpReturn = gethttpReturn(request,0);
+            HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
             if (httpReturn.status == 200){
                 msgs = new JSONObject(new Gson().toJson(httpReturn.data)).optJSONArray("events");
             } else {
@@ -826,8 +1066,13 @@ public class CloudUtils implements ICloudUtils {
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request,0);
-
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -846,8 +1091,13 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Content-Type", "application/json");
 
 
-        return gethttpReturn(request,0);
-
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -863,8 +1113,13 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return gethttpReturn(request,0);
-
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -876,7 +1131,13 @@ public class CloudUtils implements ICloudUtils {
                 .method("PUT", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request,0);
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
 
@@ -1017,11 +1278,17 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return gethttpReturn(request,0);
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
-    public HttpReturn updateRoom(String roomId, JSONObject value) {
+    public HttpReturn updateRoom(String roomId, JSONObject value, CallbackUtils.TimeoutReturn timeoutReturn) {
 
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(mediaType, value.toString());
@@ -1031,7 +1298,13 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return gethttpReturn(request,15);
+        HttpReturn httpReturn = gethttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
     }
 
 
@@ -1052,8 +1325,13 @@ public class CloudUtils implements ICloudUtils {
                 .method("PUT", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request,0);
-
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1071,9 +1349,13 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return gethttpReturn(request,0);
-
-
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1091,12 +1373,17 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return gethttpReturn(request,0);
-
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
-    public HttpReturn updateGroup(String roomId, JSONObject value) {
+    public HttpReturn updateGroup(String roomId, JSONObject value, CallbackUtils.TimeoutReturn timeoutReturn) {
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(mediaType, value.toString());
         Request.Builder request = new Request.Builder()
@@ -1105,7 +1392,13 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return gethttpReturn(request,15);
+        HttpReturn httpReturn = gethttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1118,7 +1411,13 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return gethttpReturn(request,0);
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1127,7 +1426,13 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/group/" + groupId + "/user/setting")
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request,0);
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1136,8 +1441,14 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/group/" + groupId)
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request,0);
 
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1147,7 +1458,14 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/room/" + roomId + "/user/setting")
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1168,8 +1486,13 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request,0);
-
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1178,7 +1501,14 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/group/" + groupId + "/verification-code")
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1189,7 +1519,14 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/group/" + groupId + "/verification-code/" + verificationCode)
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1200,7 +1537,14 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/room//" + roomId + "/msg/record")
                 .method("PUT", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1218,7 +1562,13 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return gethttpReturn(request,0);
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1234,8 +1584,13 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request,15);
-
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1245,7 +1600,13 @@ public class CloudUtils implements ICloudUtils {
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request,0);
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1255,7 +1616,13 @@ public class CloudUtils implements ICloudUtils {
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request,0);
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1283,7 +1650,14 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1297,7 +1671,13 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return gethttpReturn(request,0);
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1320,7 +1700,13 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return gethttpReturn(request,0);
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1332,7 +1718,13 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "text/plain");
 
-        return gethttpReturn(request,0);
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1343,8 +1735,13 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "text/plain");
 
-        return gethttpReturn(request,0);
-
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1356,7 +1753,13 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "text/plain");
 
-        return gethttpReturn(request,0);
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1391,8 +1794,14 @@ public class CloudUtils implements ICloudUtils {
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "text/plain");
-        return gethttpReturn(request,0);
 
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1412,7 +1821,14 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Content-Type", "application/json")
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1427,7 +1843,14 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Content-Type", "application/json")
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1437,7 +1860,13 @@ public class CloudUtils implements ICloudUtils {
                 .get().addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "text/plain");
 
-        return gethttpReturn(request,0);
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1494,7 +1923,14 @@ public class CloudUtils implements ICloudUtils {
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "text/plain");
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1504,7 +1940,14 @@ public class CloudUtils implements ICloudUtils {
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "text/plain");
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1515,7 +1958,14 @@ public class CloudUtils implements ICloudUtils {
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "text/plain");
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
 
@@ -1598,7 +2048,12 @@ public class CloudUtils implements ICloudUtils {
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-        HttpReturn httpReturn = gethttpReturn(request,0);
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
         if (httpReturn.status == 200) {
             StringUtils.HaoLog(new Gson().toJson(httpReturn.data));
             return new Gson().fromJson(new Gson().toJson(httpReturn.data).toString(), new TypeToken<ArrayList<Stickerlibrary>>() {
@@ -1614,7 +2069,12 @@ public class CloudUtils implements ICloudUtils {
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-        HttpReturn httpReturn = gethttpReturn(request,0);
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
         if (httpReturn.status == 200) {
             return new Gson().fromJson(new Gson().toJson(httpReturn.data).toString(), new TypeToken<ArrayList<Stickerlibrary>>() {
             }.getType());
@@ -1631,7 +2091,14 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/x-www-form-urlencoded");
-        return gethttpReturn(request,0);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1640,7 +2107,12 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/user/sticker/all")
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        HttpReturn httpReturn = gethttpReturn(request,0);
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
         if (httpReturn.status == 200) {
             StringUtils.HaoLog(new Gson().toJson(httpReturn.data));
             return new Gson().fromJson(new Gson().toJson(httpReturn.data).toString(), new TypeToken<ArrayList<CustomizeSticker>>() {
@@ -1664,7 +2136,13 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request,0);
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1676,7 +2154,13 @@ public class CloudUtils implements ICloudUtils {
                 .method("DELETE", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request,0);
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1697,7 +2181,7 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
-    public HttpReturn reToken() {
+    public HttpReturn reToken(CallbackUtils.TimeoutReturn timeoutReturn) {
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(mediaType, "{\r\n        \"token\": \"" + UserControlCenter.getUserMinInfo().token + "\",\r\n        \"refreshToken\": \"" + UserControlCenter.getUserMinInfo().refreshToken + "\"\r\n}");
         Request.Builder request = new Request.Builder()
@@ -1705,7 +2189,12 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Content-Type", "application/json");
 
-        HttpReturn httpReturn = gethttpReturn(request,15);
+        HttpReturn httpReturn = gethttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
         if (httpReturn.status == 200) {
             UserMin userMin = UserControlCenter.getUserMinInfo();
             TokenInfo tokenInfo = new Gson().fromJson(new Gson().toJson(httpReturn.data), TokenInfo.class);
@@ -1808,7 +2297,13 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request,0);
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1826,7 +2321,13 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request,0);
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1839,19 +2340,31 @@ public class CloudUtils implements ICloudUtils {
                 .method("PUT", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return gethttpReturn(request,0);
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
-    public HttpReturn checkToken() {
+    public HttpReturn checkToken(CallbackUtils.TimeoutReturn timeoutReturn) {
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(mediaType, "{\r\n    \"token\":\"" + UserControlCenter.getUserMinInfo().token + "\"\r\n}");
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/user/token/validation")
                 .method("POST", body)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request,15);
 
+        HttpReturn httpReturn = gethttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1862,15 +2375,28 @@ public class CloudUtils implements ICloudUtils {
                 .url(AllData.getMainServer() + "/user/token")
                 .method("PUT", body)
                 .addHeader("Content-Type", "application/json");
-        return gethttpReturn(request,0);
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
-    public HttpReturn announceServer() {
+    public HttpReturn announceServer(CallbackUtils.TimeoutReturn timeoutReturn) {
         Request.Builder request = new Request.Builder()
                 .url(AllData.getAnnouncementServer() + "/ann/in-range/")
                 .get();
-        return gethttpReturn(request,15);
+
+        HttpReturn httpReturn = gethttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1878,15 +2404,27 @@ public class CloudUtils implements ICloudUtils {
         Request.Builder request = new Request.Builder()
                 .url(AllData.getAnnouncementServer() + "/ann/in-range/" + givenTime)
                 .get();
-        return gethttpReturn(request,0);
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
-    public HttpReturn latestAnnounce() {
+    public HttpReturn latestAnnounce(CallbackUtils.TimeoutReturn timeoutReturn) {
         Request.Builder request = new Request.Builder()
                 .url(AllData.getAnnouncementServer() + "/ann/closest/")
                 .get();
-        return gethttpReturn(request,15);
+        HttpReturn httpReturn = gethttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1894,7 +2432,13 @@ public class CloudUtils implements ICloudUtils {
         Request.Builder request = new Request.Builder()
                 .url(AllData.getAnnouncementServer() + "/ann/closest/" + givenTime)
                 .get();
-        return gethttpReturn(request,0);
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1924,11 +2468,18 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
-    public HttpReturn googlePlatformVersion() {
+    public HttpReturn googlePlatformVersion(CallbackUtils.TimeoutReturn timeoutReturn) {
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/util/app/platform/tob")
                 .get();
-        return gethttpReturn(request,15);
+
+        HttpReturn httpReturn = gethttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
     }
     
     public HttpAfReturn aflogin(String account, String password, String url) {
@@ -1976,7 +2527,7 @@ public class CloudUtils implements ICloudUtils {
         return getJhttpAfReturn(request);
     }
 
-    HttpReturn gethttpReturn(Request.Builder request, int timeoutInSeconds) {
+    HttpReturn gethttpReturn(Request.Builder request, int timeoutInSeconds, CallbackUtils.TimeoutReturn timeoutReturn) {
         OkHttpClient client = getUnsafeOkHttpClient().newBuilder()
                 .connectTimeout(timeoutInSeconds, TimeUnit.SECONDS)
                 .writeTimeout(timeoutInSeconds, TimeUnit.SECONDS)
@@ -1997,7 +2548,7 @@ public class CloudUtils implements ICloudUtils {
             }
         } catch (IOException | JsonSyntaxException | IllegalStateException e) {
             if(e instanceof java.net.SocketTimeoutException){
-
+                timeoutReturn.Callback((IOException) e);
             }
             StringUtils.HaoLog("gethttpReturn error=" + request + " " + e);
             e.printStackTrace();
@@ -2173,26 +2724,28 @@ public class CloudUtils implements ICloudUtils {
     }
 
     public String getString(Request.Builder request) {
-
         OkHttpClient client = getUnsafeOkHttpClient().newBuilder().build();
-
         try {
             Response response = client.newCall(request.build()).execute();
-            if (response.code() == 200)
+            if (response.code() == 200){
                 return response.body().string();
-            else
+            } else {
                 return null;
-
+            }
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
-
     }
 
     public JSONArray getJSONArrayData(Request.Builder request) {
         try {
-            HttpReturn httpReturn = gethttpReturn(request,0);
+            HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
             if (httpReturn.status == 200){
                 return new JSONArray(new Gson().toJson(httpReturn.data));
             }

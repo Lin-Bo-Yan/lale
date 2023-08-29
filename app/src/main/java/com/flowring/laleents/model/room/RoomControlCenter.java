@@ -18,6 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class RoomControlCenter {
@@ -28,7 +29,12 @@ public class RoomControlCenter {
 
     public static void getAllRoom() {
 
-        HttpReturn httpReturn = CloudUtils.iCloudUtils.getSimpleRooms(0);
+        HttpReturn httpReturn = CloudUtils.iCloudUtils.getSimpleRooms(0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
         if (httpReturn.status == 200) {
             ArrayList<RoomMinInfo2> RoomMinInfo2 = new Gson().fromJson(new Gson().toJson(httpReturn.data), new TypeToken<ArrayList<RoomMinInfo2>>() {
             }.getType());
@@ -197,15 +203,17 @@ public class RoomControlCenter {
 
     public static void updateBackground(String roomId, String background, CallbackUtils.APIReturn callback) {
         new Thread(() -> {
-
             // 聊天室的聊天室背景
-
-
-            HttpReturn h = null;
+            HttpReturn httpReturn;
             try {
-                h = CloudUtils.iCloudUtils.updateRoom(roomId, new JSONObject().put("background", background).put("roomId", roomId));
-                StringUtils.HaoLog(h);
-                callback.Callback(h.status == 200, h.msg);
+                httpReturn = CloudUtils.iCloudUtils.updateRoom(roomId, new JSONObject().put("background", background).put("roomId", roomId), new CallbackUtils.TimeoutReturn() {
+                    @Override
+                    public void Callback(IOException timeout) {
+                        StringUtils.HaoLog("timeout");
+                    }
+                });
+                StringUtils.HaoLog(httpReturn);
+                callback.Callback(httpReturn.status == 200, httpReturn.msg);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -214,14 +222,17 @@ public class RoomControlCenter {
 
     public static void updateNotification(String roomId, boolean isNotification, CallbackUtils.APIReturn callback) {
         new Thread(() -> {
-
             // 是否開啟提醒 example: false
-
-            HttpReturn h = null;
+            HttpReturn httpReturn;
             try {
-                h = CloudUtils.iCloudUtils.updateRoom(roomId, new JSONObject().put("isNotification", isNotification).put("roomId", roomId));
-                StringUtils.HaoLog(h);
-                callback.Callback(h.status == 200, h.msg);
+                httpReturn = CloudUtils.iCloudUtils.updateRoom(roomId, new JSONObject().put("isNotification", isNotification).put("roomId", roomId), new CallbackUtils.TimeoutReturn() {
+                    @Override
+                    public void Callback(IOException timeout) {
+                        StringUtils.HaoLog("timeout");
+                    }
+                });
+                StringUtils.HaoLog(httpReturn);
+                callback.Callback(httpReturn.status == 200, httpReturn.msg);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -231,11 +242,16 @@ public class RoomControlCenter {
     public static void updateTop(String roomId, boolean isTop, CallbackUtils.APIReturn callback) {
         new Thread(() -> {
             // 是否置頂聊天室  example: false
-            HttpReturn h = null;
+            HttpReturn httpReturn;
             try {
-                h = CloudUtils.iCloudUtils.updateRoom(roomId, new JSONObject().put("isTop", isTop).put("roomId", roomId));
-                StringUtils.HaoLog(h);
-                callback.Callback(h.status == 200, h.msg);
+                httpReturn = CloudUtils.iCloudUtils.updateRoom(roomId, new JSONObject().put("isTop", isTop).put("roomId", roomId), new CallbackUtils.TimeoutReturn() {
+                    @Override
+                    public void Callback(IOException timeout) {
+                        StringUtils.HaoLog("timeout");
+                    }
+                });
+                StringUtils.HaoLog(httpReturn);
+                callback.Callback(httpReturn.status == 200, httpReturn.msg);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -244,14 +260,17 @@ public class RoomControlCenter {
 
     public static void updatesSatus(String roomId, int status, CallbackUtils.APIReturn callback) {
         new Thread(() -> {
-
             // 聊天室狀態：0: 隱藏; 1: 顯示; 2:刪除
-
-            HttpReturn h = null;
+            HttpReturn httpReturn;
             try {
-                h = CloudUtils.iCloudUtils.updateRoom(roomId, new JSONObject().put("status", status).put("roomId", roomId));
-                StringUtils.HaoLog(h);
-                callback.Callback(h.status == 200, h.msg);
+                httpReturn = CloudUtils.iCloudUtils.updateRoom(roomId, new JSONObject().put("status", status).put("roomId", roomId), new CallbackUtils.TimeoutReturn() {
+                    @Override
+                    public void Callback(IOException timeout) {
+                        StringUtils.HaoLog("timeout");
+                    }
+                });
+                StringUtils.HaoLog(httpReturn);
+                callback.Callback(httpReturn.status == 200, httpReturn.msg);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

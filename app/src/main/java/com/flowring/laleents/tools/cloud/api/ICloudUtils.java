@@ -24,7 +24,7 @@ public interface ICloudUtils {
     /**
      * 取的最新APP版本號
      */
-    boolean checkAppNeedUpdate();
+    boolean checkAppNeedUpdate(CallbackUtils.TimeoutReturn timeoutReturn);
 
 
     /**
@@ -67,13 +67,13 @@ public interface ICloudUtils {
      * 確認使用者是否已有登入過的行動裝置
      */
     @WorkerThread
-    HttpReturn alreadyLoddedIn(String loginType, String userId, String thirdPartyIdentifier, String deviceId);
+    HttpReturn alreadyLoddedIn(String loginType, String userId, String thirdPartyIdentifier, String deviceId, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 接收到第三方登入token 發起登入
      */
     @WorkerThread
-    HttpReturn loginSimpleThirdParty(String thirdPartyIdentifier, String deviceId);
+    HttpReturn loginSimpleThirdParty(String thirdPartyIdentifier, String deviceId, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 開啟google play下載頁面
@@ -126,19 +126,19 @@ public interface ICloudUtils {
      * 登入後啟動推播
      */
     @WorkerThread
-    HttpReturn setPusher(String userId, String FCM_token, String uuid, String customerProperties);
+    HttpReturn setPusher(String userId, String FCM_token, String uuid, String customerProperties, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 切換帳號時切換推播
      */
     @WorkerThread
-    HttpReturn updatePusher(String userId, String uuid);
+    HttpReturn updatePusher(String userId, String uuid, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 登出時關掉通知
      */
     @WorkerThread
-    HttpReturn closePusher(String userId, String uuid);
+    HttpReturn closePusher(String userId, String uuid, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 登入後啟動推播
@@ -162,7 +162,7 @@ public interface ICloudUtils {
      * token過期或是被失效之後重要
      */
     @WorkerThread
-    HttpReturn reToken();
+    HttpReturn reToken(CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * AF 更新Token
@@ -212,7 +212,7 @@ public interface ICloudUtils {
      * 驗證 token 是否正確
      */
     @WorkerThread
-    HttpReturn checkToken();
+    HttpReturn checkToken(CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 更新 token
@@ -379,10 +379,10 @@ public interface ICloudUtils {
     HttpReturn getAllSimpleRooms();
 
     @WorkerThread
-    HttpReturn getSimpleRooms(int type);
+    HttpReturn getSimpleRooms(int type, CallbackUtils.TimeoutReturn timeoutReturn);
 
     @WorkerThread
-    HttpReturn getOneRoom(String roomId);
+    HttpReturn getOneRoom(String roomId, CallbackUtils.TimeoutReturn timeoutReturn);
 
 
     @WorkerThread
@@ -465,7 +465,7 @@ public interface ICloudUtils {
      * 更新聊天室
      */
     @WorkerThread
-    HttpReturn updateRoom(String roomId, JSONObject body);
+    HttpReturn updateRoom(String roomId, JSONObject body, CallbackUtils.TimeoutReturn timeoutReturn);
 
 
     /**
@@ -490,7 +490,7 @@ public interface ICloudUtils {
      * 更新聊天室
      */
     @WorkerThread
-    HttpReturn updateGroup(String groupId, JSONObject body);
+    HttpReturn updateGroup(String groupId, JSONObject body, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 更新聊天室
@@ -786,7 +786,7 @@ public interface ICloudUtils {
      * 查詢伺服器維護公告 - 執行中的(區間內)
      */
     @WorkerThread
-    HttpReturn announceServer();
+    HttpReturn announceServer(CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 查詢伺服器維護公告 - 執行中的(區間內) - 給定時間
@@ -799,7 +799,7 @@ public interface ICloudUtils {
      * 查詢伺服器維護公告 - 所有類型最近的一筆資料
      */
     @WorkerThread
-    HttpReturn latestAnnounce();
+    HttpReturn latestAnnounce(CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 查詢伺服器維護公告 - 所有類型最近的一筆資料 - 給定時間
@@ -811,7 +811,7 @@ public interface ICloudUtils {
      * 取得 Lale 使用平台最低可相容版本
      */
     @WorkerThread
-    HttpReturn googlePlatformVersion();
+    HttpReturn googlePlatformVersion(CallbackUtils.TimeoutReturn timeoutReturn);
 
 
     byte[] getFile(String url);

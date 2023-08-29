@@ -307,7 +307,12 @@ public class EimLoginActivity extends MainAppCompatActivity {
         //存loginType
         SharedPreferencesUtils.generalType();
         SharedPreferencesUtils.thirdPartyIdentifier(eimUserData.af_mem_id);
-        HttpReturn httpReturn2 = CloudUtils.iCloudUtils.loginSimpleThirdParty(eimUserData.af_mem_id, Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID));
+        HttpReturn httpReturn2 = CloudUtils.iCloudUtils.loginSimpleThirdParty(eimUserData.af_mem_id, Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID), new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
 
         if (httpReturn2.status == 200) {
 
@@ -368,12 +373,22 @@ public class EimLoginActivity extends MainAppCompatActivity {
                                 String userId = UserControlCenter.getUserMinInfo().userId;
                                 String uuid = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
                                 String customerProperties = HashMapToJson(userId,AllData.getMainServer(),false, "");
-                                pu = CloudUtils.iCloudUtils.setPusher(userId, deviceToken, uuid, customerProperties);
+                                pu = CloudUtils.iCloudUtils.setPusher(userId, deviceToken, uuid, customerProperties, new CallbackUtils.TimeoutReturn() {
+                                    @Override
+                                    public void Callback(IOException timeout) {
+                                        StringUtils.HaoLog("timeout");
+                                    }
+                                });
                             } else {
                                 String userId = UserControlCenter.getUserMinInfo().userId;
                                 String uuid = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
                                 UserControlCenter.switchAccounts(userId);
-                                pu = CloudUtils.iCloudUtils.updatePusher(userId, uuid);
+                                pu = CloudUtils.iCloudUtils.updatePusher(userId, uuid, new CallbackUtils.TimeoutReturn() {
+                                    @Override
+                                    public void Callback(IOException timeout) {
+                                        StringUtils.HaoLog("timeout");
+                                    }
+                                });
                             }
                             StringUtils.HaoLog("setPusher= " + pu);
 
@@ -443,7 +458,12 @@ public class EimLoginActivity extends MainAppCompatActivity {
      */
     public static boolean alreadyLoddedIn(String loginType, String userId, String thirdPartyIdentifier, String deviceId){
         StringUtils.HaoLog("loginType=" + loginType + "\nuserId=" + userId + "\nthirdPartyIdentifier=" + thirdPartyIdentifier + "\ndeviceId=" + deviceId);
-        HttpReturn httpReturn = CloudUtils.iCloudUtils.alreadyLoddedIn(loginType,userId,thirdPartyIdentifier,deviceId);
+        HttpReturn httpReturn = CloudUtils.iCloudUtils.alreadyLoddedIn(loginType, userId, thirdPartyIdentifier, deviceId, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
         if(httpReturn.status == 200){
             String msg = httpReturn.msg;
             boolean data = (Boolean) httpReturn.data;

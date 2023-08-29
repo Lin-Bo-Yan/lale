@@ -21,10 +21,12 @@ import com.flowring.laleents.model.room.UserInRoom;
 import com.flowring.laleents.model.stickerlibrary.CustomizeSticker;
 import com.flowring.laleents.model.stickerlibrary.Sticker;
 import com.flowring.laleents.model.stickerlibrary.Stickerlibrary;
+import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.cloud.api.CloudUtils;
 import com.google.gson.Gson;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -221,7 +223,12 @@ public class AllData {
         if (roomMinInfe != null){
             return roomMinInfe;
         } else {
-            HttpReturn httpReturn = CloudUtils.iCloudUtils.getOneRoom(key);
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.getOneRoom(key, new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
             if (httpReturn.status == 200) {
                 RoomMinInfo roomMinInfe2 = new Gson().fromJson(new Gson().toJson(httpReturn.data), RoomMinInfoByListType.class).getRoomMinInfo();
                 if (roomMinInfe2 != null){AllData.updateRoom(roomMinInfe2);}

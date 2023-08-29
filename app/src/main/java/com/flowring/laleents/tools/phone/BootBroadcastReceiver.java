@@ -17,9 +17,12 @@ import com.flowring.laleents.model.msg.MsgControlCenter;
 import com.flowring.laleents.model.room.RoomMinInfo;
 import com.flowring.laleents.model.user.UserControlCenter;
 import com.flowring.laleents.tools.ActivityUtils;
+import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.cloud.api.CloudUtils;
 import com.flowring.laleents.tools.cloud.mqtt.MqttService;
+
+import java.io.IOException;
 
 public class BootBroadcastReceiver extends BroadcastReceiver {
     static public MessageInfo callMessageInfo = null;
@@ -55,7 +58,12 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
                     AllData.context = context.getApplicationContext();
                 if (UserControlCenter.getUserMinInfo() != null && UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim) {
                     new Thread(() -> {
-                        HttpReturn httpReturn = CloudUtils.iCloudUtils.reToken();
+                        HttpReturn httpReturn = CloudUtils.iCloudUtils.reToken(new CallbackUtils.TimeoutReturn() {
+                            @Override
+                            public void Callback(IOException timeout) {
+                                StringUtils.HaoLog("timeout");
+                            }
+                        });
                         StringUtils.HaoLog("isReToken=" + httpReturn.status);
                     }).start();
 

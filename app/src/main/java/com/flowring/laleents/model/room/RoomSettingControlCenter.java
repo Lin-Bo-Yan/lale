@@ -15,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class RoomSettingControlCenter {
@@ -29,16 +30,13 @@ public class RoomSettingControlCenter {
         new Thread(() -> {
             HttpReturn httpReturn = CloudUtils.iCloudUtils.delRecord(Roomid);
             callback.Callback(httpReturn);
-
         }).start();
 
 
     }
 
     public static void getRoomSetting(String Roomid, CallbackUtils.ReturnData<RoomSetting> callback) {
-
         CloudUtils.iCloudUtils.getRoomSetting(Roomid, callback, RoomSetting.class);
-
     }
 
     public static void getRoomMembers(String Roomid, CallbackUtils.ReturnData<ArrayList<UserInRoom>> callback) {
@@ -50,8 +48,9 @@ public class RoomSettingControlCenter {
 
                 callback.Callback(httpReturn.status == 200, httpReturn.msg, friendInfos);
 
-            } else
+            } else {
                 callback.Callback(httpReturn.status == 200, httpReturn.msg, new ArrayList<UserInRoom>());
+            }
         }).start();
 
     }
@@ -63,10 +62,9 @@ public class RoomSettingControlCenter {
             ArrayList<UserInRoom> friendInfos = new Gson().fromJson(httpReturn.data.toString(), new TypeToken<ArrayList<UserInRoom>>() {
             }.getType());
             return friendInfos;
-
-
-        } else
+        } else {
             return null;
+        }
     }
 
     public static ArrayList<UserInRoom> getRoomMembers(String Roomid) {
@@ -96,72 +94,86 @@ public class RoomSettingControlCenter {
 
             }
             return friendInfos;
-
-
-        } else
+        } else {
             return null;
+        }
     }
 
     public static void setBg(String groupId, File file, CallbackUtils.ReturnHttp callback) {
         new Thread(() -> {
-            HttpReturn h = CloudUtils.iCloudUtils.updateGroupBackground(groupId, file);
-            if (h != null) {
-                callback.Callback(h);
-            } else
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.updateGroupBackground(groupId, file);
+            if (httpReturn != null) {
+                callback.Callback(httpReturn);
+            } else {
                 callback.Callback(new HttpReturn());
+            }
         }).start();
-
     }
 
     public static void setStatus(RoomMinInfo roomMinInfo, int status, CallbackUtils.ReturnHttp callback) {
         new Thread(() -> {
             try {
-
                 if (roomMinInfo.groupId == null || roomMinInfo.groupId.isEmpty()) {
-                    HttpReturn httpReturn = CloudUtils.iCloudUtils.updateRoom(roomMinInfo.id, new JSONObject().put("roomId", roomMinInfo.id).put("status", status));
+                    HttpReturn httpReturn = CloudUtils.iCloudUtils.updateRoom(roomMinInfo.id, new JSONObject().put("roomId", roomMinInfo.id).put("status", status), new CallbackUtils.TimeoutReturn() {
+                        @Override
+                        public void Callback(IOException timeout) {
+                            StringUtils.HaoLog("timeout");
+                        }
+                    });
                     callback.Callback(httpReturn);
                 } else {
-                    HttpReturn httpReturn = CloudUtils.iCloudUtils.updateGroup(roomMinInfo.groupId, new JSONObject().put("groupId", roomMinInfo.groupId).put("roomId", roomMinInfo.id).put("status", status));
+                    HttpReturn httpReturn = CloudUtils.iCloudUtils.updateGroup(roomMinInfo.groupId, new JSONObject().put("groupId", roomMinInfo.groupId).put("roomId", roomMinInfo.id).put("status", status), new CallbackUtils.TimeoutReturn() {
+                        @Override
+                        public void Callback(IOException timeout) {
+                            StringUtils.HaoLog("timeout");
+                        }
+                    });
                     callback.Callback(httpReturn);
                 }
-
             } catch (JSONException e) {
                 e.printStackTrace();
                 callback.Callback(new HttpReturn());
             }
         }).start();
-
     }
 
     public static void leaveGroup(String roomId, String groupId, CallbackUtils.ReturnHttp callback) {
         new Thread(() -> {
-            HttpReturn h = CloudUtils.iCloudUtils.delGroupMember(roomId, groupId, new String[]{UserControlCenter.getUserMinInfo().userId});
-            if (h != null) {
-                callback.Callback(h);
-            } else
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.delGroupMember(roomId, groupId, new String[]{UserControlCenter.getUserMinInfo().userId});
+            if (httpReturn != null) {
+                callback.Callback(httpReturn);
+            } else {
                 callback.Callback(new HttpReturn());
+            }
         }).start();
     }
 
     public static void setHead(String groupId, File file, CallbackUtils.ReturnHttp callback) {
 
         new Thread(() -> {
-            HttpReturn h = CloudUtils.iCloudUtils.updateGroupAvatar(groupId, file);
-            if (h != null) {
-                callback.Callback(h);
-            } else
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.updateGroupAvatar(groupId, file);
+            if (httpReturn != null) {
+                callback.Callback(httpReturn);
+            } else {
                 callback.Callback(new HttpReturn());
+            }
         }).start();
     }
 
     public static void setShowName(String groupId, Boolean showName, CallbackUtils.ReturnHttp callback) {
         new Thread(() -> {
             try {
-                HttpReturn h = CloudUtils.iCloudUtils.updateGroup(groupId, new JSONObject().put("groupId", groupId).put("isShowDisplayName", showName));
-                if (h != null) {
-                    callback.Callback(h);
-                } else
+                HttpReturn httpReturn = CloudUtils.iCloudUtils.updateGroup(groupId, new JSONObject().put("groupId", groupId).put("isShowDisplayName", showName), new CallbackUtils.TimeoutReturn() {
+                    @Override
+                    public void Callback(IOException timeout) {
+                        StringUtils.HaoLog("timeout");
+                    }
+                });
+                if (httpReturn != null) {
+                    callback.Callback(httpReturn);
+                } else {
                     callback.Callback(new HttpReturn());
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
                 callback.Callback(new HttpReturn());
@@ -172,11 +184,12 @@ public class RoomSettingControlCenter {
     public static void setName(String roomId, String groupId, String Name, CallbackUtils.ReturnHttp callback) {
         new Thread(() -> {
             try {
-                HttpReturn h = CloudUtils.iCloudUtils.updateGroupSetting(groupId, new JSONObject().put("name", Name).put("roomId", roomId).put("groupId", groupId));
-                if (h != null) {
-                    callback.Callback(h);
-                } else
+                HttpReturn httpReturn = CloudUtils.iCloudUtils.updateGroupSetting(groupId, new JSONObject().put("name", Name).put("roomId", roomId).put("groupId", groupId));
+                if (httpReturn != null) {
+                    callback.Callback(httpReturn);
+                } else {
                     callback.Callback(new HttpReturn());
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
                 callback.Callback(new HttpReturn());
@@ -188,12 +201,12 @@ public class RoomSettingControlCenter {
         new Thread(() -> {
             String[] user = new String[userArrayList.size()];
             userArrayList.toArray(user);
-            HttpReturn h = CloudUtils.iCloudUtils.addGroupMember(roomId, groupId, user);
-            if (h != null) {
-                callback.Callback(h);
-            } else
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.addGroupMember(roomId, groupId, user);
+            if (httpReturn != null) {
+                callback.Callback(httpReturn);
+            } else {
                 callback.Callback(new HttpReturn());
-
+            }
         }).start();
     }
 
@@ -201,19 +214,19 @@ public class RoomSettingControlCenter {
         new Thread(() -> {
             String[] user = new String[userArrayList.size()];
             userArrayList.toArray(user);
-            HttpReturn h = CloudUtils.iCloudUtils.delGroupMember(roomId, groupId, user);
-            if (h != null) {
-                callback.Callback(h);
-            } else
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.delGroupMember(roomId, groupId, user);
+            if (httpReturn != null) {
+                callback.Callback(httpReturn);
+            } else {
                 callback.Callback(new HttpReturn());
-
+            }
         }).start();
     }
 
     public static void addGroupByQrcode(String groupId, String verificationCode, CallbackUtils.ReturnHttp callback) {
         new Thread(() -> {
-            HttpReturn h = CloudUtils.iCloudUtils.gotoGroup(groupId, verificationCode);
-            callback.Callback(h);
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.gotoGroup(groupId, verificationCode);
+            callback.Callback(httpReturn);
         }).start();
     }
 
@@ -221,8 +234,8 @@ public class RoomSettingControlCenter {
         StringUtils.HaoLog("roomId=" + roomId + " groupId=" + groupId + " intro=" + intro);
         new Thread(() -> {
             try {
-                HttpReturn h = CloudUtils.iCloudUtils.updateGroupSetting(groupId, new JSONObject().put("intro", intro).put("roomId", roomId).put("groupId", groupId));
-                callback.Callback(h);
+                HttpReturn httpReturn = CloudUtils.iCloudUtils.updateGroupSetting(groupId, new JSONObject().put("intro", intro).put("roomId", roomId).put("groupId", groupId));
+                callback.Callback(httpReturn);
             } catch (JSONException e) {
                 e.printStackTrace();
                 callback.Callback(new HttpReturn());
@@ -232,16 +245,13 @@ public class RoomSettingControlCenter {
 
     public static void getGroupSetting(String groupId, CallbackUtils.ReturnData<GroupSetting> callback) {
         new Thread(() -> {
-
             CloudUtils.CloundTask(CloudUtils.iCloudUtils.getGroupSetting(groupId), callback, GroupSetting.class);
         }).start();
-
     }
 
     public static void getGroupInfo(String groupId, CallbackUtils.ReturnData<GroupInfo> callback) {
         new Thread(() -> {
             CloudUtils.CloundTask(CloudUtils.iCloudUtils.getGroupInfo(groupId), callback, GroupInfo.class);
-
         }).start();
     }
 
