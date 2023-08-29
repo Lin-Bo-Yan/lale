@@ -41,7 +41,12 @@ public class RoomSettingControlCenter {
 
     public static void getRoomMembers(String Roomid, CallbackUtils.ReturnData<ArrayList<UserInRoom>> callback) {
         new Thread(() -> {
-            HttpReturn httpReturn = CloudUtils.iCloudUtils.getRoomMembers(Roomid);
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.getRoomMembers(Roomid, new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
             if (httpReturn.status == 200) {
                 ArrayList<UserInRoom> friendInfos = new Gson().fromJson(httpReturn.data.toString(), new TypeToken<ArrayList<UserInRoom>>() {
                 }.getType());
@@ -57,7 +62,12 @@ public class RoomSettingControlCenter {
 
     public static ArrayList<UserInRoom> getGroupMembers(String Roomid) {
 
-        HttpReturn httpReturn = CloudUtils.iCloudUtils.getGroupMembers(Roomid);
+        HttpReturn httpReturn = CloudUtils.iCloudUtils.getGroupMembers(Roomid, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
         if (httpReturn.status == 200) {
             ArrayList<UserInRoom> friendInfos = new Gson().fromJson(httpReturn.data.toString(), new TypeToken<ArrayList<UserInRoom>>() {
             }.getType());
@@ -69,7 +79,12 @@ public class RoomSettingControlCenter {
 
     public static ArrayList<UserInRoom> getRoomMembers(String Roomid) {
 
-        HttpReturn httpReturn = CloudUtils.iCloudUtils.getRoomMembers(Roomid);
+        HttpReturn httpReturn = CloudUtils.iCloudUtils.getRoomMembers(Roomid, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
         StringUtils.HaoLog("getRoomMembers 1=", httpReturn);
         if (httpReturn.status == 200) {
             ArrayList<UserInRoom> friendInfos = new Gson().fromJson(httpReturn.data.toString(), new TypeToken<ArrayList<UserInRoom>>() {

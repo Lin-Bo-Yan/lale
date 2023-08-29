@@ -14,6 +14,7 @@ import com.flowring.laleents.tools.cloud.api.CloudUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class ExploreControlCenter {
@@ -111,26 +112,38 @@ public class ExploreControlCenter {
     }
 
     public static void isMicroappFavorite(String microAppId, CallbackUtils.ReturnHttp callback) {
-
         new Thread(() -> {
-            callback.Callback(CloudUtils.iCloudUtils.isMicroappFavorite(microAppId));
-
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.isMicroappFavorite(microAppId, new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
+            callback.Callback(httpReturn);
         }).start();
     }
 
     public static void AddFavorite(String microAppId, CallbackUtils.ReturnHttp callback) {
-
         new Thread(() -> {
-            callback.Callback(CloudUtils.iCloudUtils.addMicroappFavorite(microAppId));
-
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.addMicroappFavorite(microAppId, new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
+            callback.Callback(httpReturn);
         }).start();
     }
 
     public static void DelFavorite(String microAppId, CallbackUtils.ReturnHttp callback) {
-
         new Thread(() -> {
-            callback.Callback(CloudUtils.iCloudUtils.delMicroappFavorite(microAppId));
-
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.delMicroappFavorite(microAppId, new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
+            callback.Callback(httpReturn);
         }).start();
     }
 

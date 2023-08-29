@@ -42,14 +42,12 @@ public class RoomControlCenter {
             for (RoomMinInfo2 roomMinInfo2 : RoomMinInfo2) {
                 StringUtils.HaoLog("roomMinInfo2=" + new Gson().toJson(roomMinInfo2));
                 StringUtils.HaoLog("roomMinInfo=" + new Gson().toJson(roomMinInfo2.getRoomMinInfo()));
-                if (roomMinInfo2 != null)
+                if (roomMinInfo2 != null){
                     roomMinInfos.add(roomMinInfo2.getRoomMinInfo());
+                }
             }
             AllData.updateRooms(roomMinInfos);
-
         }
-
-
     }
 
     class Room {
@@ -58,7 +56,12 @@ public class RoomControlCenter {
 
     public static void getRoom0(String roomId, CallbackUtils.APIReturn callback) {
         new Thread(() -> {
-            HttpReturn httpReturn = CloudUtils.iCloudUtils.getAllSimpleRooms();
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.getAllSimpleRooms(new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
             if (httpReturn.status == 200) {
                 ArrayList<RoomMinInfoByListType> room0 = new Gson().fromJson(httpReturn.data.toString(), new TypeToken<ArrayList<RoomMinInfoByListType>>() {
                 }.getType());
@@ -73,31 +76,36 @@ public class RoomControlCenter {
                             @Override
                             public void Callback(HttpReturn httpReturn) {
                                 StringUtils.HaoLog(httpReturn);
-
                             }
                         });
-
                         StringUtils.HaoLog(roomId + " = room0.get(i).id");
                     }
-
                 }
             }
-
             StringUtils.HaoLog("AllData.getRoomId(roomId) end=" + AllData.getRoomMinInfo(roomId));
             callback.Callback(AllData.getRoomMinInfo(roomId) != null, "");
-
         }).start();
-
     }
 
     public static void newG(String name, int type, ArrayList<String> users, File image, CallbackUtils.APIReturn callback) {
         new Thread(() -> {
             // 建立新群組房間
-            HttpReturn h = CloudUtils.iCloudUtils.newGroupRoom(name, type, users, image);
-            ArrayList<RoomMinInfoByListType> room0 = new Gson().fromJson(CloudUtils.iCloudUtils.getAllSimpleRooms().data.toString(), new TypeToken<ArrayList<RoomMinInfoByListType>>() {
+            HttpReturn newGroupRoom = CloudUtils.iCloudUtils.newGroupRoom(name, type, users, image, new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
+            HttpReturn getAllSimpleRooms = CloudUtils.iCloudUtils.getAllSimpleRooms(new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
+            ArrayList<RoomMinInfoByListType> room0 = new Gson().fromJson(getAllSimpleRooms.data.toString(), new TypeToken<ArrayList<RoomMinInfoByListType>>() {
             }.getType());
-            String newRoomId = new Gson().fromJson((String) h.data, Room.class).roomId;
-            StringUtils.HaoLog("h.data=" + h.data);
+            String newRoomId = new Gson().fromJson((String) newGroupRoom.data, Room.class).roomId;
+            StringUtils.HaoLog("newGroupRoom.data=" + newGroupRoom.data);
             StringUtils.HaoLog("newRoomId=" + newRoomId);
             StringUtils.HaoLog("room0.size()=" + room0.size());
             for (int i = 0; i < room0.size(); i++) {
@@ -105,100 +113,107 @@ public class RoomControlCenter {
                     AllData.updateRoom(room0.get(i).getRoomMinInfo());
                     StringUtils.HaoLog(newRoomId + " = room0.get(i).id");
                 }
-
             }
-            callback.Callback(h.msg.equals("Success"), newRoomId);
+            callback.Callback(newGroupRoom.msg.equals("Success"), newRoomId);
         }).start();
-
     }
 
     public static void newP(String password, CallbackUtils.PasswordRoomReturn callback) {
         new Thread(() -> {
             // 建立新群組房間
-            HttpReturn h = CloudUtils.iCloudUtils.newPassworkRoom(password);
-            StringUtils.HaoLog(h);
-            PasswordRoomMinInfo r = new Gson().fromJson((String) h.data, PasswordRoomMinInfo.class);
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.newPassworkRoom(password, new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
+            StringUtils.HaoLog(httpReturn);
+            PasswordRoomMinInfo roomMinInfo = new Gson().fromJson((String) httpReturn.data, PasswordRoomMinInfo.class);
 
-            StringUtils.HaoLog("h.data=" + h.data);
-            if (r != null) {
-                StringUtils.HaoLog("r=" + r.userList);
-                StringUtils.HaoLog("r=" + r.userInfoList);
-                callback.Callback(r);
-            } else
+            StringUtils.HaoLog("httpReturn.data=" + httpReturn.data);
+            if (roomMinInfo != null) {
+                StringUtils.HaoLog("roomMinInfo= " + roomMinInfo.userList);
+                StringUtils.HaoLog("roomMinInfo= " + roomMinInfo.userInfoList);
+                callback.Callback(roomMinInfo);
+            } else {
                 StringUtils.HaoLog("密碼建房失敗");
-
+            }
         }).start();
-
     }
 
     public static void getP(String password, CallbackUtils.PasswordRoomReturn callback) {
         new Thread(() -> {
             // 拿密碼房間
-            HttpReturn h = CloudUtils.iCloudUtils.getPassworkRoom(password);
-            StringUtils.HaoLog(h);
-            PasswordRoomMinInfo r = new Gson().fromJson((String) h.data, PasswordRoomMinInfo.class);
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.getPassworkRoom(password, new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
+            StringUtils.HaoLog(httpReturn);
+            PasswordRoomMinInfo roomMinInfo = new Gson().fromJson((String) httpReturn.data, PasswordRoomMinInfo.class);
 
-
-            if (r != null) {
-                callback.Callback(r);
-            } else
+            if (roomMinInfo != null) {
+                callback.Callback(roomMinInfo);
+            } else {
                 callback.Callback(null);
-
-
+            }
         }).start();
-
     }
 
     public static void getPtoR(int id, String password, String[] userList, CallbackUtils.ReturnHttp callback) {
         new Thread(() -> {
             // 以密碼建立房間
-            HttpReturn h = CloudUtils.iCloudUtils.addPassworkRoom(id, password, userList);
-            StringUtils.HaoLog(h);
-            callback.Callback(h);
-            StringUtils.HaoLog("h.data=" + h.data);
-
-
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.addPassworkRoom(id, password, userList, new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
+            StringUtils.HaoLog(httpReturn);
+            callback.Callback(httpReturn);
+            StringUtils.HaoLog("httpReturn.data=" + httpReturn.data);
         }).start();
-
     }
 
     public static void getPtoR(String groupId, String password, CallbackUtils.ReturnHttp callback) {
         new Thread(() -> {
             // 以密碼建立房間
-            HttpReturn h = CloudUtils.iCloudUtils.addPassworkRoom(groupId, password);
-            StringUtils.HaoLog(h);
-            callback.Callback(h);
-            StringUtils.HaoLog("h.data=" + h.data);
-
-
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.addPassworkRoom(groupId, password, new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
+            StringUtils.HaoLog(httpReturn);
+            callback.Callback(httpReturn);
+            StringUtils.HaoLog("httpReturn.data=" + httpReturn.data);
         }).start();
-
     }
 
     public static void leftP(int id, String password, CallbackUtils.ReturnHttp callback) {
         new Thread(() -> {
             // 離開密碼群
-            HttpReturn h = CloudUtils.iCloudUtils.leavePassworkRoom(id, password);
-            StringUtils.HaoLog(h);
-            callback.Callback(h);
-            StringUtils.HaoLog("h.data=" + h.data);
-
-
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.leavePassworkRoom(id, password);
+            StringUtils.HaoLog(httpReturn);
+            callback.Callback(httpReturn);
+            StringUtils.HaoLog("httpReturn.data=" + httpReturn.data);
         }).start();
-
     }
 
     public static void getGroupRoom(String groupId, CallbackUtils.ReturnHttp callback) {
         new Thread(() -> {
             //取得群組的房間
-            HttpReturn h = CloudUtils.iCloudUtils.getGroupRoom(groupId);
-            StringUtils.HaoLog(h);
-            callback.Callback(h);
-            StringUtils.HaoLog("h.data=" + h.data);
-
-
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.getGroupRoom(groupId, new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
+            StringUtils.HaoLog(httpReturn);
+            callback.Callback(httpReturn);
+            StringUtils.HaoLog("httpReturn.data=" + httpReturn.data);
         }).start();
-
     }
 
     public static void updateBackground(String roomId, String background, CallbackUtils.APIReturn callback) {

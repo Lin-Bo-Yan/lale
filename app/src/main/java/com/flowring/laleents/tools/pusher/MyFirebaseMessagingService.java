@@ -153,7 +153,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     String userid = remoteMessage.getData().get("userId");
                     String deviceToken = remoteMessage.getData().get("deviceToken");
                     String uuid = Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID);
-                    HttpReturn httpReturn = CloudUtils.iCloudUtils.closeAfPusher(domain,userid,deviceToken,uuid);
+                    HttpReturn httpReturn = CloudUtils.iCloudUtils.closeAfPusher(domain, userid, deviceToken, uuid, new CallbackUtils.TimeoutReturn() {
+                        @Override
+                        public void Callback(IOException timeout) {
+                            StringUtils.HaoLog("timeout");
+                        }
+                    });
                     StringUtils.HaoLog("關閉AF推播成功 "+httpReturn.status);
                 } else {
                     //EIM 關閉推播

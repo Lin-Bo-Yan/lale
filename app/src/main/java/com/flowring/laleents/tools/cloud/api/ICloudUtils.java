@@ -106,13 +106,13 @@ public interface ICloudUtils {
      * 取的主要user詳細資料
      */
     @WorkerThread
-    HttpReturn getUserInfo();
+    HttpReturn getUserInfo(CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 取的 其他user詳細資料
      */
     @WorkerThread
-    HttpReturn getUserInfo(String UserId);
+    HttpReturn getUserInfo(String UserId, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 修改user詳細資料
@@ -150,13 +150,13 @@ public interface ICloudUtils {
      * 登出時關掉通知
      */
     @WorkerThread
-    HttpReturn closeAfPusher(String WFCI_URL, String userId, String FCM_token, String uuid);
+    HttpReturn closeAfPusher(String WFCI_URL, String userId, String FCM_token, String uuid, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 使用者登出 userLogout
      */
     @WorkerThread
-    HttpReturn userLogout();
+    HttpReturn userLogout(CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * token過期或是被失效之後重要
@@ -266,7 +266,7 @@ public interface ICloudUtils {
      * 取得尚未審核的好友邀請列表
      */
     @WorkerThread
-    HttpReturn getNotYetFriends();
+    HttpReturn getNotYetFriends(CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 確認對方是否已經將自己加好友
@@ -363,20 +363,20 @@ public interface ICloudUtils {
      * 取得聊天室內成員
      */
     @WorkerThread
-    HttpReturn getRoomMembers(String roomId);
+    HttpReturn getRoomMembers(String roomId, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 取得聊天室內成員
      */
     @WorkerThread
-    HttpReturn getGroupMembers(String groupId);
+    HttpReturn getGroupMembers(String groupId, CallbackUtils.TimeoutReturn timeoutReturn);
 
 
     /**
      * 取得全部聊天室資料用於繪圖 在本地端有資料後 第一次登入使用 並拿到資料時戳
      */
     @WorkerThread
-    HttpReturn getAllSimpleRooms();
+    HttpReturn getAllSimpleRooms(CallbackUtils.TimeoutReturn timeoutReturn);
 
     @WorkerThread
     HttpReturn getSimpleRooms(int type, CallbackUtils.TimeoutReturn timeoutReturn);
@@ -417,43 +417,43 @@ public interface ICloudUtils {
      * 建立新的聊天室
      */
     @WorkerThread
-    HttpReturn newRoom(String friend);
+    HttpReturn newRoom(String friend,CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 建立新的群組聊天室
      */
     @WorkerThread
-    HttpReturn newGroupRoom(String name, int type, ArrayList<String> users, File image);
+    HttpReturn newGroupRoom(String name, int type, ArrayList<String> users, File image, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 建立新的群組聊天室
      */
     @WorkerThread
-    HttpReturn getGroupRoom(String groupId);
+    HttpReturn getGroupRoom(String groupId, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 建立新的密碼聊天室
      */
     @WorkerThread
-    HttpReturn newPassworkRoom(String Passwork);
+    HttpReturn newPassworkRoom(String Passwork,CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 取得臨時密碼聊天室
      */
     @WorkerThread
-    HttpReturn getPassworkRoom(String Passwork);
+    HttpReturn getPassworkRoom(String Passwork, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 進入密碼聊天室
      */
     @WorkerThread
-    HttpReturn addPassworkRoom(int id, String Passwork, String[] userList);
+    HttpReturn addPassworkRoom(int id, String Passwork, String[] userList,CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 進入密碼聊天室
      */
     @WorkerThread
-    HttpReturn addPassworkRoom(String groupId, String Passwork);
+    HttpReturn addPassworkRoom(String groupId, String Passwork, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 離開密碼聊天室
@@ -578,7 +578,7 @@ public interface ICloudUtils {
      * 搜尋訊息
      * String roomId=""時代表搜尋所有房間
      */
-    HttpReturn searchMsg(String keyword, String roomId);
+    HttpReturn searchMsg(String keyword, String roomId, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 新增收藏訊息
@@ -662,19 +662,19 @@ public interface ICloudUtils {
      * 微服務加入我的最愛
      */
     @WorkerThread
-    HttpReturn addMicroappFavorite(String microAppId);
+    HttpReturn addMicroappFavorite(String microAppId, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 微服務移出我的最愛
      */
     @WorkerThread
-    HttpReturn delMicroappFavorite(String microAppId);
+    HttpReturn delMicroappFavorite(String microAppId, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 微服務是否在我的最愛中
      */
     @WorkerThread
-    HttpReturn isMicroappFavorite(String microAppId);
+    HttpReturn isMicroappFavorite(String microAppId, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 微服務我的最愛列表

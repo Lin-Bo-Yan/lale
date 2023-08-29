@@ -25,6 +25,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,7 +40,14 @@ public class MsgControlCenter {
 
     public static void searchMessage(String keyword, String roomId, CallbackUtils.SearchMsgsReturn callback) {
         new Thread(() -> {
-            callback.Callback(new Gson().fromJson((String) CloudUtils.iCloudUtils.searchMsg(keyword, roomId).data, SearchMsgs.class));
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.searchMsg(keyword, roomId, new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
+            String data = (String) httpReturn.data;
+            callback.Callback(new Gson().fromJson(data, SearchMsgs.class));
         }).start();
 
     }

@@ -435,7 +435,14 @@ public class UserControlCenter {
     public static void getMainUserInfo(CallbackUtils.userReturn callback) {
         StringUtils.HaoLog("getMainUserInfo callback");
         new Thread(() -> {
-            userInfo = new Gson().fromJson((String) CloudUtils.iCloudUtils.getUserInfo().data, UserInfo.class);
+            HttpReturn getUserInfo = CloudUtils.iCloudUtils.getUserInfo(new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
+            String userInfoData = (String) getUserInfo.data;
+            userInfo = new Gson().fromJson(userInfoData, UserInfo.class);
             if (userInfo != null) {
                 userMin.displayName = userInfo.displayName;
                 userMin.avatarThumbnailUrl = userInfo.avatarThumbnailUrl;
@@ -645,7 +652,12 @@ public class UserControlCenter {
                             StringUtils.HaoLog("timeout");
                         }
                     });
-                    HttpReturn httpReturn2 = CloudUtils.iCloudUtils.userLogout();
+                    HttpReturn httpReturn2 = CloudUtils.iCloudUtils.userLogout(new CallbackUtils.TimeoutReturn() {
+                        @Override
+                        public void Callback(IOException timeout) {
+                            StringUtils.HaoLog("timeout");
+                        }
+                    });
                     SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
                     pref.edit().putString("nowUserId", "").apply();
                     pref.edit().putString("UserIds", "{}").apply();
@@ -664,7 +676,12 @@ public class UserControlCenter {
                         if (!deviceToken.isEmpty() && deviceToken != null) {
                             new Thread(() -> {
                                 StringUtils.HaoLog("登出 3-1");
-                                HttpReturn httpReturn = CloudUtils.iCloudUtils.closeAfPusher(UserControlCenter.getUserMinInfo().eimUserData.af_url, UserControlCenter.getUserMinInfo().eimUserData.af_login_id, deviceToken, Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID));
+                                HttpReturn httpReturn = CloudUtils.iCloudUtils.closeAfPusher(UserControlCenter.getUserMinInfo().eimUserData.af_url, UserControlCenter.getUserMinInfo().eimUserData.af_login_id, deviceToken, Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID), new CallbackUtils.TimeoutReturn() {
+                                    @Override
+                                    public void Callback(IOException timeout) {
+                                        StringUtils.HaoLog("timeout");
+                                    }
+                                });
                                 SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
                                 pref.edit().putString("nowUserId", "").apply();
                                 pref.edit().putString("UserIds", "{}").apply();
@@ -707,10 +724,15 @@ public class UserControlCenter {
 
     public static void getUserInfo(String userId, CallbackUtils.userReturn callback) {
         new Thread(() -> {
-            callback.Callback(new Gson().fromJson((String) CloudUtils.iCloudUtils.getUserInfo(userId).data, UserInfo.class));
-
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.getUserInfo(userId, new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
+            String data = (String) httpReturn.data;
+            callback.Callback(new Gson().fromJson(data, UserInfo.class));
         }).start();
-
     }
 
 
@@ -827,7 +849,12 @@ public class UserControlCenter {
 
     public static void isErrorCode(CallbackUtils.DeviceReturn deviceReturn){
         new Thread(() -> {
-            HttpReturn httpReturn = CloudUtils.iCloudUtils.getUserInfo();
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.getUserInfo(new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
             if(httpReturn.status == 200){
                 new Handler(Looper.getMainLooper()).post(() -> deviceReturn.Callback(false));
             } else {

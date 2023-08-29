@@ -391,23 +391,36 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
-    public HttpReturn getUserInfo() {
+    public HttpReturn getUserInfo(CallbackUtils.TimeoutReturn timeoutReturn) {
         StringUtils.HaoLog("getUserInfo UserId=main");
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/user")
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return getJhttpReturn(request);
+        HttpReturn httpReturn = getJhttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
     }
 
     @Override
-    public HttpReturn getUserInfo(String UserId) {
+    public HttpReturn getUserInfo(String UserId, CallbackUtils.TimeoutReturn timeoutReturn) {
         StringUtils.HaoLog("getUserInfo UserId=" + UserId);
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/user/id/" + UserId)
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return getJhttpReturn(request);
+
+        HttpReturn httpReturn = getJhttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -529,7 +542,7 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
-    public HttpReturn closeAfPusher(String WFCI_URL, String memId, String FCM_token, String uuid) {
+    public HttpReturn closeAfPusher(String WFCI_URL, String memId, String FCM_token, String uuid, CallbackUtils.TimeoutReturn timeoutReturn) {
         if (WFCI_URL == null || WFCI_URL.isEmpty()){
             return new HttpReturn();
         }
@@ -545,18 +558,34 @@ public class CloudUtils implements ICloudUtils {
         Request.Builder request = new Request.Builder()
                 .url(WFCI_URL + "/api/app-pusher")
                 .method("PUT", body);
-        return gethttp2Return(request);
+        HttpReturn httpReturn = gethttp2Return(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+
+        return httpReturn;
     }
 
     @Override
-    public HttpReturn userLogout() {
+    public HttpReturn userLogout(CallbackUtils.TimeoutReturn timeoutReturn) {
         MediaType mediaType = MediaType.parse("text/plain");
         RequestBody body = RequestBody.create(mediaType, "");
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/user/logout")
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return getJhttpReturn(request);
+
+
+        HttpReturn httpReturn = getJhttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+
+        return httpReturn;
     }
 
     @Override
@@ -653,13 +682,20 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
-    public HttpReturn getNotYetFriends() {
+    public HttpReturn getNotYetFriends(CallbackUtils.TimeoutReturn timeoutReturn) {
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/friend/request/list")
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return getJhttpReturn(request);
 
+        HttpReturn httpReturn = getJhttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+
+        return httpReturn;
     }
 
     @Override
@@ -946,38 +982,54 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
-    public HttpReturn getRoomMembers(String roomId) {
+    public HttpReturn getRoomMembers(String roomId, CallbackUtils.TimeoutReturn timeoutReturn) {
         StringUtils.HaoLog("getRoomMembers roomId=" + roomId);
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/room/user/list?roomId=" + roomId)
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        HttpReturn httpReturn = getJhttpReturn(request);
+        HttpReturn httpReturn = getJhttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
         StringUtils.HaoLog("getRoomMembers", httpReturn);
         return httpReturn;
 
     }
 
     @Override
-    public HttpReturn getGroupMembers(String groupId) {
+    public HttpReturn getGroupMembers(String groupId, CallbackUtils.TimeoutReturn timeoutReturn) {
 
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/room/user/list?groupId=" + groupId)
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return getJhttpReturn(request);
+        HttpReturn httpReturn = getJhttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+
+        return httpReturn;
     }
 
     @Override
-    public HttpReturn getAllSimpleRooms() {
+    public HttpReturn getAllSimpleRooms(CallbackUtils.TimeoutReturn timeoutReturn) {
 
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/room/list/type/0")
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return getJhttpReturn(request);
-
-
+        HttpReturn httpReturn = getJhttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1142,7 +1194,7 @@ public class CloudUtils implements ICloudUtils {
 
 
     @Override
-    public HttpReturn newRoom(String friend) {
+    public HttpReturn newRoom(String friend,CallbackUtils.TimeoutReturn timeoutReturn) {
 
         MediaType mediaType = MediaType.parse("application/json");
         Map<String, Object> map = new HashMap();
@@ -1156,14 +1208,18 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return getJhttpReturn(request);
+        HttpReturn httpReturn = getJhttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
 
+        return httpReturn;
     }
 
     @Override
-    public HttpReturn newGroupRoom(String name, int type, ArrayList<String> users, File image) {
-
-
+    public HttpReturn newGroupRoom(String name, int type, ArrayList<String> users, File image,CallbackUtils.TimeoutReturn timeoutReturn) {
         JSONObject map = new JSONObject();
         try {
             map.put("name", name);
@@ -1193,20 +1249,33 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return getJhttpReturn(request);
+        HttpReturn httpReturn = getJhttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+
+        return httpReturn;
     }
 
     @Override
-    public HttpReturn getGroupRoom(String groupId) {
+    public HttpReturn getGroupRoom(String groupId, CallbackUtils.TimeoutReturn timeoutReturn) {
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/group/" + groupId)
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-        return getJhttpReturn(request);
+        HttpReturn httpReturn = getJhttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
     }
 
     @Override
-    public HttpReturn newPassworkRoom(String Passwork) {
+    public HttpReturn newPassworkRoom(String Passwork, CallbackUtils.TimeoutReturn timeoutReturn) {
         MediaType mediaType = MediaType.parse("text/plain");
         RequestBody body = RequestBody.create(mediaType, "");
         Request.Builder request = new Request.Builder()
@@ -1214,24 +1283,33 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return getJhttpReturn(request);
-
+        HttpReturn httpReturn = getJhttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
     }
 
     @Override
-    public HttpReturn getPassworkRoom(String Passwork) {
-
-
+    public HttpReturn getPassworkRoom(String Passwork,CallbackUtils.TimeoutReturn timeoutReturn) {
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/group/private/password/" + Passwork)
                 .get()
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-        return getJhttpReturn(request);
+        HttpReturn httpReturn = getJhttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
     }
 
     @Override
-    public HttpReturn addPassworkRoom(int id, String password, String[] userList) {
+    public HttpReturn addPassworkRoom(int id, String password, String[] userList,CallbackUtils.TimeoutReturn timeoutReturn) {
         Map<String, Object> map = new HashMap();
         map.put("id", id);
         map.put("password", password);
@@ -1244,11 +1322,17 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return getJhttpReturn(request);
+        HttpReturn httpReturn = getJhttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
     }
 
     @Override
-    public HttpReturn addPassworkRoom(String groupId, String Passwork) {
+    public HttpReturn addPassworkRoom(String groupId, String Passwork,CallbackUtils.TimeoutReturn timeoutReturn) {
         Map<String, Object> map = new HashMap();
 
         map.put("password", Passwork);
@@ -1261,7 +1345,13 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return getJhttpReturn(request);
+        HttpReturn httpReturn = getJhttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1626,7 +1716,7 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
-    public HttpReturn searchMsg(String keyword, String roomId) {
+    public HttpReturn searchMsg(String keyword, String roomId, CallbackUtils.TimeoutReturn timeoutReturn) {
         Map<String, Object> map = new HashMap();
         map.put("keyword", keyword);
         map.put("roomId", roomId);
@@ -1638,7 +1728,13 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return getJhttpReturn(request);
+        HttpReturn httpReturn = getJhttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -1870,7 +1966,7 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
-    public HttpReturn addMicroappFavorite(String microAppId) {
+    public HttpReturn addMicroappFavorite(String microAppId, CallbackUtils.TimeoutReturn timeoutReturn) {
         Map<String, Object> map = new HashMap();
         map.put("microAppId", microAppId);
         map.put("userId", UserControlCenter.getUserMinInfo().userId);
@@ -1881,12 +1977,17 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return getJhttpReturn(request);
-
+        HttpReturn httpReturn = getJhttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
     }
 
     @Override
-    public HttpReturn delMicroappFavorite(String microAppId) {
+    public HttpReturn delMicroappFavorite(String microAppId,CallbackUtils.TimeoutReturn timeoutReturn) {
         Map<String, Object> map = new HashMap();
         map.put("microAppId", microAppId);
         map.put("userId", UserControlCenter.getUserMinInfo().userId);
@@ -1897,12 +1998,17 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return getJhttpReturn(request);
-
+        HttpReturn httpReturn = getJhttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
     }
 
     @Override
-    public HttpReturn isMicroappFavorite(String microAppId) {
+    public HttpReturn isMicroappFavorite(String microAppId,CallbackUtils.TimeoutReturn timeoutReturn) {
         Map<String, Object> map = new HashMap();
         map.put("microAppId", microAppId);
         map.put("userId", UserControlCenter.getUserMinInfo().userId);
@@ -1913,7 +2019,13 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
                 .addHeader("Content-Type", "application/json");
 
-        return getJhttpReturn(request);
+        HttpReturn httpReturn = getJhttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
     }
 
     @Override
@@ -2527,7 +2639,7 @@ public class CloudUtils implements ICloudUtils {
         return getJhttpAfReturn(request);
     }
 
-    HttpReturn gethttpReturn(Request.Builder request, int timeoutInSeconds, CallbackUtils.TimeoutReturn timeoutReturn) {
+    public HttpReturn gethttpReturn(Request.Builder request, int timeoutInSeconds, CallbackUtils.TimeoutReturn timeoutReturn) {
         OkHttpClient client = getUnsafeOkHttpClient().newBuilder()
                 .connectTimeout(timeoutInSeconds, TimeUnit.SECONDS)
                 .writeTimeout(timeoutInSeconds, TimeUnit.SECONDS)
@@ -2556,8 +2668,12 @@ public class CloudUtils implements ICloudUtils {
         return new HttpReturn();
     }
 
-    HttpReturn gethttp2Return(Request.Builder request) {
-        OkHttpClient client = getUnsafeOkHttpClient().newBuilder().build();
+    public HttpReturn gethttp2Return(Request.Builder request, int timeoutInSeconds, CallbackUtils.TimeoutReturn timeoutReturn) {
+        OkHttpClient client = getUnsafeOkHttpClient().newBuilder()
+                .connectTimeout(timeoutInSeconds, TimeUnit.SECONDS)
+                .writeTimeout(timeoutInSeconds, TimeUnit.SECONDS)
+                .readTimeout(timeoutInSeconds, TimeUnit.SECONDS)
+                .build();
         try {
             Response response = client.newCall(request.build()).execute();
             StringUtils.HaoLog("gethttp2Return="+new Gson().toJson(response));
@@ -2577,15 +2693,21 @@ public class CloudUtils implements ICloudUtils {
                 }
             }
         } catch (IOException | JsonSyntaxException | IllegalStateException e) {
+            if(e instanceof java.net.SocketTimeoutException){
+                timeoutReturn.Callback((IOException) e);
+            }
             StringUtils.HaoLog("gethttp2Return error=" + request + " " + e);
             e.printStackTrace();
         }
         return new HttpReturn();
     }
 
-    HttpReturn getJhttpReturn(Request.Builder request) {
-        OkHttpClient client = getUnsafeOkHttpClient().newBuilder().build();
-
+    public HttpReturn getJhttpReturn(Request.Builder request, int timeoutInSeconds, CallbackUtils.TimeoutReturn timeoutReturn) {
+        OkHttpClient client = getUnsafeOkHttpClient().newBuilder()
+                .connectTimeout(timeoutInSeconds, TimeUnit.SECONDS)
+                .writeTimeout(timeoutInSeconds, TimeUnit.SECONDS)
+                .readTimeout(timeoutInSeconds, TimeUnit.SECONDS)
+                .build();
         try {
             Response response = client.newCall(request.build()).execute();
             String body = response.body().string();
@@ -2593,6 +2715,9 @@ public class CloudUtils implements ICloudUtils {
             httpReturn.data = new JSONObject(body).optString("data");
             return httpReturn;
         } catch (IOException | JSONException | IllegalStateException | JsonSyntaxException e) {
+            if(e instanceof java.net.SocketTimeoutException){
+                timeoutReturn.Callback((IOException) e);
+            }
             e.printStackTrace();
             StringUtils.HaoLog("getJhttpReturn error=" + request + " " + e);
         }
