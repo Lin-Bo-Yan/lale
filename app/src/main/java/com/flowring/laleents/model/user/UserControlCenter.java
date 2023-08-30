@@ -139,23 +139,28 @@ public class UserControlCenter {
     public static void getCompanyModule(CallbackUtils.CompanyModuleReturn callback) {
         if (companyModules != null) {
             callback.Callback(companyModules);
-        } else
+        } else {
             getNewCompanyModule(callback);
+        }
     }
 
     public static void getNewCompanyModule(CallbackUtils.CompanyModuleReturn callback) {
         new Thread(() -> {
-            HttpAfReturn httpReturn = CloudUtils.iCloudUtils.getCompanyModule(userInfo.webagendaUrl, afToken, company.companyId);
+            HttpAfReturn httpReturn = CloudUtils.iCloudUtils.getCompanyModule(userInfo.webagendaUrl, afToken, company.companyId, new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
             if (httpReturn.success) {
                 Gson gson = new Gson();
                 companyModules = gson.fromJson(gson.toJson(httpReturn.data), new TypeToken<ArrayList<CompanyModule>>() {
                 }.getType());
                 callback.Callback(companyModules);
-            } else
+            } else {
                 callback.Callback(null);
-
+            }
         }).start();
-
     }
 
     public static void getCompanyDashboard(CallbackUtils.CompanyDashboardReturn callback) {
@@ -163,49 +168,58 @@ public class UserControlCenter {
             for (Dashboard dashboard : dashboards) {
                 if (dashboard.name != null && dashboard.name.equals("待處理工作") && dashboard.dashboardInfo != null) {
                     StringUtils.HaoLog("紀錄待辦數量");
-
                 }
             }
             callback.Callback(dashboards);
-        } else
+        } else {
             getNewCompanyDashboard(callback);
+        }
     }
 
     public static void getNewCompanyDashboard(CallbackUtils.CompanyDashboardReturn callback) {
         new Thread(() -> {
-            HttpAfReturn httpReturn = CloudUtils.iCloudUtils.getCompanyDashboard(userInfo.webagendaUrl, afToken);
+            HttpAfReturn httpReturn = CloudUtils.iCloudUtils.getCompanyDashboard(userInfo.webagendaUrl, afToken, new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
             if (httpReturn.success) {
                 Gson gson = new Gson();
                 dashboards = gson.fromJson(gson.toJson(httpReturn.data), new TypeToken<ArrayList<Dashboard>>() {
                 }.getType());
                 callback.Callback(dashboards);
-            } else
+            } else {
                 callback.Callback(null);
-
+            }
         }).start();
-
     }
 
     public static void getCompanyAnnouncement(CallbackUtils.CompanyAnnouncementReturn callback) {
         if (announcements != null) {
             callback.Callback(announcements);
-        } else
+        } else {
             getNewCompanyAnnouncement(callback);
+        }
     }
 
     public static void getNewCompanyAnnouncement(CallbackUtils.CompanyAnnouncementReturn callback) {
         new Thread(() -> {
-            HttpAfReturn httpReturn = CloudUtils.iCloudUtils.getCompanyAnnouncement(userInfo.webagendaUrl, afToken);
+            HttpAfReturn httpReturn = CloudUtils.iCloudUtils.getCompanyAnnouncement(userInfo.webagendaUrl, afToken, new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
             if (httpReturn.success) {
                 Gson gson = new Gson();
                 announcements = gson.fromJson(gson.toJson(httpReturn.data), new TypeToken<ArrayList<Announcement>>() {
                 }.getType());
                 callback.Callback(announcements);
-            } else
+            } else {
                 callback.Callback(null);
-
+            }
         }).start();
-
     }
 
     public static void getAnnounceServer(CallbackUtils.AnnounceReturn announceReturn){
@@ -319,12 +333,22 @@ public class UserControlCenter {
             Matcher matcher = pattern.matcher(url);
             if(matcher.matches()){
                 new Thread(() -> {
-                    HttpAfReturn afloginNew = CloudUtils.iCloudUtils.afloginNew(account,password,url);
+                    HttpAfReturn afloginNew = CloudUtils.iCloudUtils.afloginNew(account, password, url, new CallbackUtils.TimeoutReturn() {
+                        @Override
+                        public void Callback(IOException timeout) {
+                            StringUtils.HaoLog("timeout");
+                        }
+                    });
                     if(afloginNew.success){
                         String info = new Gson().toJson(afloginNew.data);
                         messageReturn.Callback(info);
                     } else {
-                        HttpAfReturn afReturn = CloudUtils.iCloudUtils.aflogin(account,password,url);
+                        HttpAfReturn afReturn = CloudUtils.iCloudUtils.aflogin(account, password, url, new CallbackUtils.TimeoutReturn() {
+                            @Override
+                            public void Callback(IOException timeout) {
+                                StringUtils.HaoLog("timeout");
+                            }
+                        });
                         if(afReturn.success){
                             String info = new Gson().toJson(afReturn.data);
                             messageReturn.Callback(info);
@@ -342,7 +366,12 @@ public class UserControlCenter {
 
     public static void getAfServerVersion(String afUrl, CallbackUtils.messageReturn messageReturn){
         new Thread(() -> {
-            HttpAfReturn afReturn = CloudUtils.iCloudUtils.afServerVersion(afUrl);
+            HttpAfReturn afReturn = CloudUtils.iCloudUtils.afServerVersion(afUrl, new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
             if(afReturn.success){
                 String info = new Gson().toJson(afReturn.data);
                 messageReturn.Callback(info);
@@ -463,7 +492,12 @@ public class UserControlCenter {
 
     public static void getNewCompany(CallbackUtils.CompanyReturn callback) {
         new Thread(() -> {
-            HttpAfReturn httpReturn = CloudUtils.iCloudUtils.getCompanyList(userInfo.webagendaUrl, afToken);
+            HttpAfReturn httpReturn = CloudUtils.iCloudUtils.getCompanyList(userInfo.webagendaUrl, afToken, new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
             if (httpReturn.success) {
                 Gson gson = new Gson();
                 StringUtils.HaoLog("data=" + httpReturn.data);
@@ -500,7 +534,12 @@ public class UserControlCenter {
                 StringUtils.HaoLog("取aftoken WebagendaUrl" + message);
                 if (message != null && !message.isEmpty()) {
                     new Thread(() -> {
-                        HttpAfReturn httpReturn = CloudUtils.iCloudUtils.getAfToken(message);
+                        HttpAfReturn httpReturn = CloudUtils.iCloudUtils.getAfToken(message, new CallbackUtils.TimeoutReturn() {
+                            @Override
+                            public void Callback(IOException timeout) {
+                                StringUtils.HaoLog("timeout");
+                            }
+                        });
                         StringUtils.HaoLog("取aftoken httpReturn" + httpReturn);
                         if (httpReturn.success) {
                             Gson gson = new Gson();
@@ -511,9 +550,9 @@ public class UserControlCenter {
                             callback.Callback(null);
                         }
                     }).start();
-
-                } else
+                } else {
                     callback.Callback(null);
+                }
             }
         });
     }
@@ -759,7 +798,12 @@ public class UserControlCenter {
     }
 
     public static void getOrgtreeuserimage() {
-        HttpAfReturn httpReturn2 = CloudUtils.iCloudUtils.orgtreeuserimage(UserControlCenter.getUserMinInfo().eimUserData.af_url, new String[]{UserControlCenter.getUserMinInfo().eimUserData.lale_user_id});
+        HttpAfReturn httpReturn2 = CloudUtils.iCloudUtils.orgtreeuserimage(UserControlCenter.getUserMinInfo().eimUserData.af_url, new String[]{UserControlCenter.getUserMinInfo().eimUserData.lale_user_id}, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
         StringUtils.HaoLog("getRoomMembers=", httpReturn2);
         if (httpReturn2.code == 200) {
             try {
@@ -832,7 +876,12 @@ public class UserControlCenter {
     public static void afTokenRefresh(CallbackUtils.AfReturnHttp afReturnHttp){
         new Thread(() -> {
             String afDomain = UserControlCenter.getUserMinInfo().eimUserData.af_url;
-            HttpAfReturn httpReturn= CloudUtils.iCloudUtils.renewToken(afDomain);
+            HttpAfReturn httpReturn= CloudUtils.iCloudUtils.renewToken(afDomain, new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
             afReturnHttp.Callback(httpReturn);
         }).start();
     }
@@ -842,7 +891,12 @@ public class UserControlCenter {
             String afDomain = UserControlCenter.getUserMinInfo().eimUserData.af_url;
             String deviceID = Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID);
             String af_token = UserControlCenter.getUserMinInfo().eimUserData.af_token;
-            HttpAfReturn httpReturn= CloudUtils.iCloudUtils.renewTokenHaveDeviceId(afDomain,af_token,deviceID);
+            HttpAfReturn httpReturn= CloudUtils.iCloudUtils.renewTokenHaveDeviceId(afDomain, af_token, deviceID, new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
             afReturnHttp.Callback(httpReturn);
         }).start();
     }

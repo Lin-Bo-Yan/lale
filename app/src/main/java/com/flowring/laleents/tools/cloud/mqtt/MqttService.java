@@ -21,10 +21,8 @@ import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.phone.AllData;
 
 public class MqttService extends Service {
-
-
     public static MqttControlCenter mqttControlCenter = null;
-
+    String data;
 
     private void startForeground() {
         String channelId = null;
@@ -35,16 +33,12 @@ public class MqttService extends Service {
             channelId = "";
         }
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId);
-
         Notification notification = builder.setOngoing(true)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setPriority(PRIORITY_MIN)
                 .setCategory(Notification.CATEGORY_SERVICE)
-
                 .build();
-
         startForeground(1, notification);
-
     }
 
     /**
@@ -77,31 +71,28 @@ public class MqttService extends Service {
         StringUtils.HaoLog("onCreate");
     }
 
-
     @Override
     public void onStart(Intent intent, int startId) {
-        if (AllData.context == null)
+        if (AllData.context == null){
             AllData.context = getApplicationContext();
-        if (AllData.context != null && UserControlCenter.getUserMinInfo() != null) {
-
-                    if (UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim) {
-                        if (AllData.dbHelper == null)
-                            AllData.initSQL(UserControlCenter.getUserMinInfo().userId);
-                        new Thread(() -> {
-                            StringUtils.HaoLog("onStart");
-                            if (MqttService.mqttControlCenter == null)
-                                MqttService.mqttControlCenter = new MqttControlCenter();
-                            else {
-                                StringUtils.HaoLog("NewConnect");
-                                MqttService.mqttControlCenter.NewConnect();
-                            }
-                        }).start();
-                    }
         }
-
+        if (AllData.context != null && UserControlCenter.getUserMinInfo() != null) {
+            if (UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim) {
+                if (AllData.dbHelper == null){
+                    AllData.initSQL(UserControlCenter.getUserMinInfo().userId);
+                }
+                new Thread(() -> {
+                    StringUtils.HaoLog("onStart");
+                    if (MqttService.mqttControlCenter == null){
+                        MqttService.mqttControlCenter = new MqttControlCenter();
+                    } else {
+                        StringUtils.HaoLog("NewConnect");
+                        MqttService.mqttControlCenter.NewConnect();
+                    }
+                }).start();
+            }
+        }
     }
-
-    String data;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {

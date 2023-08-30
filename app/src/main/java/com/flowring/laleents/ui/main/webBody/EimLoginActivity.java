@@ -183,7 +183,13 @@ public class EimLoginActivity extends MainAppCompatActivity {
             return;
         }
 
-        HttpAfReturn httpReturn = CloudUtils.iCloudUtils.getEimQRcode(activity, af_token, qrcode_info_url);
+        HttpAfReturn httpReturn = CloudUtils.iCloudUtils.getEimQRcode(activity, af_token, qrcode_info_url, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
+
         if (httpReturn.success) {
             StringUtils.HaoLog("掃描成功");
             StringUtils.HaoLog("取得使用者資料:" + new Gson().toJson(httpReturn.data));
@@ -254,7 +260,12 @@ public class EimLoginActivity extends MainAppCompatActivity {
             DialogUtils.showDialogMessage(EimLoginActivity.this,errMsg);
             return;
         }
-        HttpAfReturn httpReturn = CloudUtils.iCloudUtils.getEimQRcodeNew(activity, af_token, qrcode_info_url, uuid);
+        HttpAfReturn httpReturn = CloudUtils.iCloudUtils.getEimQRcodeNew(activity, af_token, qrcode_info_url, uuid, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("timeout");
+            }
+        });
         if(httpReturn.success){
             StringUtils.HaoLog("掃描新 getEimQRcode 成功");
             StringUtils.HaoLog("取得使用者資料:" + new Gson().toJson(httpReturn.data));
@@ -345,7 +356,12 @@ public class EimLoginActivity extends MainAppCompatActivity {
                         String userId = UserControlCenter.getUserMinInfo().eimUserData.af_login_id;
                         String uuid = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
                         String customerProperties = HashMapToJson(userId,WFCI_URL,true,deviceToken);
-                        HttpAfReturn pu = CloudUtils.iCloudUtils.setAfPusher(WFCI_URL, memId,userId, deviceToken, uuid, customerProperties);
+                        HttpAfReturn pu = CloudUtils.iCloudUtils.setAfPusher(WFCI_URL, memId, userId, deviceToken, uuid, customerProperties, new CallbackUtils.TimeoutReturn() {
+                            @Override
+                            public void Callback(IOException timeout) {
+                                StringUtils.HaoLog("timeout");
+                            }
+                        });
                         StringUtils.HaoLog("AF推播註冊:", pu);
                         activity.runOnUiThread(() -> {
                             activity.finish();

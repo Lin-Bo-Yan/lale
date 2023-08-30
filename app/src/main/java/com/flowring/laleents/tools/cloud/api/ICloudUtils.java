@@ -85,7 +85,7 @@ public interface ICloudUtils {
      * 取得EIM_QRcode登入資料
      */
     @WorkerThread
-    HttpAfReturn getEimQRcode(Context context, String af_token, String qrcode_info_url);
+    HttpAfReturn getEimQRcode(Context context, String af_token, String qrcode_info_url,CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 取得EIM_QRcode登入資料
@@ -93,7 +93,7 @@ public interface ICloudUtils {
      * 必定要傳 deviceId參數
      */
     @WorkerThread
-    HttpAfReturn getEimQRcodeNew(Context context, String af_token, String qrcode_info_url, String deviceId);
+    HttpAfReturn getEimQRcodeNew(Context context, String af_token, String qrcode_info_url, String deviceId,CallbackUtils.TimeoutReturn timeoutReturn);
 
 
     /**
@@ -144,7 +144,7 @@ public interface ICloudUtils {
      * 登入後啟動推播
      */
     @WorkerThread
-    HttpAfReturn setAfPusher(String WFCI_URL, String memId, String userId,String FCM_token, String uuid, String customerProperties);
+    HttpAfReturn setAfPusher(String WFCI_URL, String memId, String userId,String FCM_token, String uuid, String customerProperties, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 登出時關掉通知
@@ -171,7 +171,7 @@ public interface ICloudUtils {
      * 2. deviceId
      */
     @WorkerThread
-    HttpAfReturn renewTokenHaveDeviceId(String afDomain, String af_token, String deviceId);
+    HttpAfReturn renewTokenHaveDeviceId(String afDomain, String af_token, String deviceId, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * AF 更新Token
@@ -179,7 +179,7 @@ public interface ICloudUtils {
      * 1. refreshToken
      */
     @WorkerThread
-    HttpAfReturn renewToken(String afDomain);
+    HttpAfReturn renewToken(String afDomain, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 驗證Token是否有效
@@ -698,7 +698,7 @@ public interface ICloudUtils {
      * 取得aftoken
      */
     @WorkerThread
-    HttpAfReturn getAfToken(String afServer);
+    HttpAfReturn getAfToken(String afServer, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 更新 afToken
@@ -709,25 +709,25 @@ public interface ICloudUtils {
      * 取得公司清單
      */
     @WorkerThread
-    HttpAfReturn getCompanyList(String afServer, String afToken);
+    HttpAfReturn getCompanyList(String afServer, String afToken, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 取得公司布告欄
      */
     @WorkerThread
-    HttpAfReturn getCompanyAnnouncement(String afServer, String afToken);
+    HttpAfReturn getCompanyAnnouncement(String afServer, String afToken, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 取得工作面板列表
      */
     @WorkerThread
-    HttpAfReturn getCompanyDashboard(String afServer, String afToken);
+    HttpAfReturn getCompanyDashboard(String afServer, String afToken, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 取得應用列表
      */
     @WorkerThread
-    HttpAfReturn getCompanyModule(String afServer, String afToken, String companyId);
+    HttpAfReturn getCompanyModule(String afServer, String afToken, String companyId, CallbackUtils.TimeoutReturn timeoutReturn);
 
 
     //endregion
@@ -779,7 +779,7 @@ public interface ICloudUtils {
      * 拿取使用者頭像
      */
     @WorkerThread
-    HttpAfReturn orgtreeuserimage(String afDomain, String[] UserIds);
+    HttpAfReturn orgtreeuserimage(String afDomain, String[] UserIds, CallbackUtils.TimeoutReturn timeoutReturn);
     //endregion
 
     /**
@@ -826,7 +826,7 @@ public interface ICloudUtils {
      * 帳號登入
      */
     @WorkerThread
-    HttpAfReturn aflogin(String account, String password, String url);
+    HttpAfReturn aflogin(String account, String password, String url, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 帳號登入
@@ -834,13 +834,13 @@ public interface ICloudUtils {
      * 更換新的 domain
      */
     @WorkerThread
-    HttpAfReturn afloginNew(String account, String password, String url);
+    HttpAfReturn afloginNew(String account, String password, String url, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 拿 agentflow server的版號
      */
     @WorkerThread
-    HttpAfReturn afServerVersion(String afUrl);
+    HttpAfReturn afServerVersion(String afUrl, CallbackUtils.TimeoutReturn timeoutReturn);
 
 }
 

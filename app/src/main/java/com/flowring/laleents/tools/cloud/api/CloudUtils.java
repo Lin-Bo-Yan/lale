@@ -327,16 +327,22 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
-    public HttpAfReturn getEimQRcode(Context context, String af_token, String qrcode_info_url) {
+    public HttpAfReturn getEimQRcode(Context context, String af_token, String qrcode_info_url,CallbackUtils.TimeoutReturn timeoutReturn) {
         Request.Builder request = new Request.Builder()
                 .url(qrcode_info_url)
                 .get()
                 .addHeader("Authorization", "Bearer " + af_token);
-        return getJhttpAfReturn(request);
+        HttpAfReturn httpAfReturn = getJhttpAfReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpAfReturn;
     }
 
     @Override
-    public HttpAfReturn getEimQRcodeNew(Context context, String af_token, String qrcode_info_url, String deviceId) {
+    public HttpAfReturn getEimQRcodeNew(Context context, String af_token, String qrcode_info_url, String deviceId,CallbackUtils.TimeoutReturn timeoutReturn) {
         MediaType mediaType = MediaType.parse("application/json");
         JSONObject bodyJect = new JSONObject();
         try {
@@ -351,7 +357,13 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Authorization", "Bearer " + af_token)
                 .addHeader("Content-Type", "application/json");
 
-        return getJhttpAfReturn(request);
+        HttpAfReturn httpAfReturn = getJhttpAfReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpAfReturn;
     }
 
     @Override
@@ -514,7 +526,7 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
-    public HttpAfReturn setAfPusher(String WFCI_URL, String memId,String userId, String FCM_token, String uuid, String customerProperties) {
+    public HttpAfReturn setAfPusher(String WFCI_URL, String memId,String userId, String FCM_token, String uuid, String customerProperties, CallbackUtils.TimeoutReturn timeoutReturn) {
         if (WFCI_URL == null || WFCI_URL.isEmpty()){
             return new HttpAfReturn();
         }
@@ -538,7 +550,13 @@ public class CloudUtils implements ICloudUtils {
         Request.Builder request = new Request.Builder()
                 .url(WFCI_URL + "/api/app-pusher")
                 .method("POST", body);
-        return getJhttpAfReturn(request);
+        HttpAfReturn httpAfReturn = getJhttpAfReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpAfReturn;
     }
 
     @Override
@@ -2082,7 +2100,7 @@ public class CloudUtils implements ICloudUtils {
 
 
     @Override
-    public HttpAfReturn getAfToken(String afServer) {
+    public HttpAfReturn getAfToken(String afServer, CallbackUtils.TimeoutReturn timeoutReturn) {
 
         RequestBody body = RequestBody.create(MediaType.parse("application/json"), "{\"laleToken\": \"" + UserControlCenter.getUserMinInfo().token + "\"}\r\n");
         Request.Builder request = new Request.Builder()
@@ -2090,7 +2108,13 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Content-Type", "application/json");
 
-        return getJhttpAfReturn(request);
+        HttpAfReturn httpAfReturn = getJhttpAfReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpAfReturn;
     }
 
     @Override
@@ -2108,7 +2132,7 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
-    public HttpAfReturn getCompanyList(String afServer, String afToken) {
+    public HttpAfReturn getCompanyList(String afServer, String afToken, CallbackUtils.TimeoutReturn timeoutReturn) {
         StringUtils.HaoLog("afServer=" + afServer);
         Request.Builder request = new Request.Builder()
                 .url(afServer + "/api/dau/enterprise/all/current-user")
@@ -2116,41 +2140,64 @@ public class CloudUtils implements ICloudUtils {
                 .get()
                 .addHeader("Content-Type", "application/json");
 
-        return getJhttpAfReturn(request);
+        HttpAfReturn httpAfReturn = getJhttpAfReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpAfReturn;
     }
 
     @Override
-    public HttpAfReturn getCompanyAnnouncement(String afServer, String afToken) {
+    public HttpAfReturn getCompanyAnnouncement(String afServer, String afToken, CallbackUtils.TimeoutReturn timeoutReturn) {
         Request.Builder request = new Request.Builder()
                 .url(afServer + "/api/dau/dashboard/announcement/messages")
                 .addHeader("Authorization", "Bearer " + afToken)
                 .get()
                 .addHeader("Content-Type", "application/json");
 
-        return getJhttpAfReturn(request);
+        HttpAfReturn httpAfReturn = getJhttpAfReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpAfReturn;
     }
 
     @Override
-    public HttpAfReturn getCompanyDashboard(String afServer, String afToken) {
+    public HttpAfReturn getCompanyDashboard(String afServer, String afToken, CallbackUtils.TimeoutReturn timeoutReturn) {
         Request.Builder request = new Request.Builder()
                 .url(afServer + "/api/dau/dashboard/info/all?layoutId=LAY000000000001&state=delay")
                 .addHeader("Authorization", "Bearer " + afToken)
                 .get()
                 .addHeader("Content-Type", "application/json");
 
-
-        return getJhttpAfReturn(request);
+        HttpAfReturn httpAfReturn = getJhttpAfReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpAfReturn;
     }
 
     @Override
-    public HttpAfReturn getCompanyModule(String afServer, String afToken, String companyId) {
+    public HttpAfReturn getCompanyModule(String afServer, String afToken, String companyId, CallbackUtils.TimeoutReturn timeoutReturn) {
 
         Request.Builder request = new Request.Builder()
                 .url(afServer + "/api/dau/module/setting/all?comId=" + companyId)
                 .get()
                 .addHeader("Authorization", "Bearer " + afToken)
                 .addHeader("Content-Type", "application/json");
-        return getJhttpAfReturn(request);
+        HttpAfReturn httpAfReturn = getJhttpAfReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpAfReturn;
     }
 
     @Override
@@ -2276,7 +2323,7 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
-    public HttpAfReturn orgtreeuserimage(String afDomain, String[] UserIds) {
+    public HttpAfReturn orgtreeuserimage(String afDomain, String[] UserIds, CallbackUtils.TimeoutReturn timeoutReturn) {
         MediaType mediaType = MediaType.parse("application/json");
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("userList", UserIds);
@@ -2289,7 +2336,13 @@ public class CloudUtils implements ICloudUtils {
                 .url(afDomain + "/api/dau/org-tree/user/image")
                 .method("POST", requestBody)
                 .addHeader("Content-Type", "application/json");
-        return getJhttpAfReturn(request);
+        HttpAfReturn httpAfReturn = getJhttpAfReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpAfReturn;
     }
 
     @Override
@@ -2326,7 +2379,7 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
-    public HttpAfReturn renewTokenHaveDeviceId(String afDomain, String af_token, String deviceId) {
+    public HttpAfReturn renewTokenHaveDeviceId(String afDomain, String af_token, String deviceId, CallbackUtils.TimeoutReturn timeoutReturn) {
         MediaType mediaType = MediaType.parse("application/json");
         JSONObject bodyJect = new JSONObject();
         try {
@@ -2341,7 +2394,12 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Content-Type", "application/json");
 
-        HttpAfReturn httpAfReturn = getJhttpAfReturn(request);
+        HttpAfReturn httpAfReturn = getJhttpAfReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
         if(httpAfReturn.code == 200){
             UserMin userMin = UserControlCenter.getUserMinInfo();
             AfTokenInfo AfTokenInfo = new Gson().fromJson(new Gson().toJson(httpAfReturn.data), AfTokenInfo.class);
@@ -2358,7 +2416,7 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
-    public HttpAfReturn renewToken(String afDomain) {
+    public HttpAfReturn renewToken(String afDomain, CallbackUtils.TimeoutReturn timeoutReturn) {
         MediaType mediaType = MediaType.parse("application/json");
         JSONObject bodyJect = new JSONObject();
         try {
@@ -2372,7 +2430,12 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Content-Type", "application/json");
 
-        HttpAfReturn httpAfReturn = getJhttpAfReturn(request);
+        HttpAfReturn httpAfReturn = getJhttpAfReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
         if(httpAfReturn.code == 200){
             UserMin userMin = UserControlCenter.getUserMinInfo();
             AfTokenInfo AfTokenInfo = new Gson().fromJson(new Gson().toJson(httpAfReturn.data), AfTokenInfo.class);
@@ -2559,9 +2622,9 @@ public class CloudUtils implements ICloudUtils {
                 .url(url)
                 .get();
         OkHttpClient client = getUnsafeOkHttpClient().newBuilder()
-                .connectTimeout(5, TimeUnit.SECONDS)
-                .writeTimeout(5, TimeUnit.SECONDS)
-                .readTimeout(5, TimeUnit.SECONDS)
+                .connectTimeout(15, TimeUnit.SECONDS)
+                .writeTimeout(15, TimeUnit.SECONDS)
+                .readTimeout(15, TimeUnit.SECONDS)
                 .build();
         try {
             Response response = client.newCall(request.build()).execute();
@@ -2594,7 +2657,7 @@ public class CloudUtils implements ICloudUtils {
         return httpReturn;
     }
     
-    public HttpAfReturn aflogin(String account, String password, String url) {
+    public HttpAfReturn aflogin(String account, String password, String url, CallbackUtils.TimeoutReturn timeoutReturn) {
         MediaType mediaType = MediaType.parse("application/json");
         JSONObject body_j = new JSONObject();
         try {
@@ -2608,11 +2671,17 @@ public class CloudUtils implements ICloudUtils {
                 .url(url + "/api/dau/EIM/aflogin")
                 .method("POST", body)
                 .addHeader("Content-Type", "application/json");
-        return getJhttpAfReturn(request);
+        HttpAfReturn httpAfReturn = getJhttpAfReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpAfReturn;
     }
 
     @Override
-    public HttpAfReturn afloginNew(String account, String password, String url) {
+    public HttpAfReturn afloginNew(String account, String password, String url, CallbackUtils.TimeoutReturn timeoutReturn) {
         MediaType mediaType = MediaType.parse("application/json");
         JSONObject bodyJect = new JSONObject();
         String uuid = Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -2628,15 +2697,29 @@ public class CloudUtils implements ICloudUtils {
                 .url(url + "/api/auth/aftoken/aflogin")
                 .method("POST", body)
                 .addHeader("Content-Type", "application/json");
-        return getJhttpAfReturn(request);
+
+        HttpAfReturn httpAfReturn = getJhttpAfReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpAfReturn;
     }
 
     @Override
-    public HttpAfReturn afServerVersion(String afUrl) {
+    public HttpAfReturn afServerVersion(String afUrl, CallbackUtils.TimeoutReturn timeoutReturn) {
         Request.Builder request = new Request.Builder()
                 .url(afUrl + "/api/dau/config/webagenda/version")
                 .get();
-        return getJhttpAfReturn(request);
+
+        HttpAfReturn httpAfReturn = getJhttpAfReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpAfReturn;
     }
 
     public HttpReturn gethttpReturn(Request.Builder request, int timeoutInSeconds, CallbackUtils.TimeoutReturn timeoutReturn) {
@@ -2724,8 +2807,12 @@ public class CloudUtils implements ICloudUtils {
         return new HttpReturn();
     }
 
-    public HttpAfReturn getJhttpAfReturn(Request.Builder request) {
-        OkHttpClient client = getUnsafeOkHttpClient().newBuilder().build();
+    public HttpAfReturn getJhttpAfReturn(Request.Builder request, int timeoutInSeconds, CallbackUtils.TimeoutReturn timeoutReturn) {
+        OkHttpClient client = getUnsafeOkHttpClient().newBuilder()
+                .connectTimeout(timeoutInSeconds, TimeUnit.SECONDS)
+                .writeTimeout(timeoutInSeconds, TimeUnit.SECONDS)
+                .readTimeout(timeoutInSeconds, TimeUnit.SECONDS)
+                .build();
         try {
             Response response = client.newCall(request.build()).execute();
             String body = response.body().string();
@@ -2736,6 +2823,9 @@ public class CloudUtils implements ICloudUtils {
             StringUtils.HaoLog("getJhttpAfReturn end");
             return httpReturn;
         } catch (IOException | JsonSyntaxException | IllegalStateException e) {
+            if(e instanceof java.net.SocketTimeoutException){
+                timeoutReturn.Callback((IOException) e);
+            }
             e.printStackTrace();
             StringUtils.HaoLog("getJhttpAfReturn error=" + request + " " + e);
         }

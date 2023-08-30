@@ -93,7 +93,12 @@ public class RoomSettingControlCenter {
             for (int i = 0; i < userIds.length; i++) {
                 userIds[i] = friendInfos.get(i).userId;
             }
-            HttpAfReturn httpReturn2 = CloudUtils.iCloudUtils.orgtreeuserimage(UserControlCenter.getUserMinInfo().eimUserData.af_url, userIds);
+            HttpAfReturn httpReturn2 = CloudUtils.iCloudUtils.orgtreeuserimage(UserControlCenter.getUserMinInfo().eimUserData.af_url, userIds, new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("timeout");
+                }
+            });
             StringUtils.HaoLog("getRoomMembers=", httpReturn2);
             if (httpReturn2.code == 200) {
                 try {
