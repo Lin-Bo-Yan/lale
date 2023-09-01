@@ -298,6 +298,25 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
+    public HttpAfReturn getEimQRcodeNew(Context context, String af_token, String qrcode_info_url, String deviceId) {
+        MediaType mediaType = MediaType.parse("application/json");
+        JSONObject bodyJect = new JSONObject();
+        try {
+            bodyJect.put("deviceId", deviceId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody body = RequestBody.create(mediaType, bodyJect.toString());
+        Request.Builder request = new Request.Builder()
+                .url(qrcode_info_url)
+                .method("POST", body)
+                .addHeader("Authorization", "Bearer " + af_token)
+                .addHeader("Content-Type", "application/json");
+
+        return getJhttpAfReturn(request);
+    }
+
+    @Override
     public HttpReturn getFestival() {
 
         Request.Builder request = new Request.Builder()
@@ -1568,6 +1587,20 @@ public class CloudUtils implements ICloudUtils {
                 .addHeader("Content-Type", "application/json");
 
         return getJhttpAfReturn(request);
+    }
+
+    @Override
+    public HttpAfReturn renewAfToken(String refreshToken) {
+        MediaType mediaType = MediaType.parse("application/json");
+        JSONObject bodyJect = new JSONObject();
+        try {
+            bodyJect.put("refreshToken", refreshToken);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        return null;
     }
 
     @Override

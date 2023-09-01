@@ -87,10 +87,14 @@ public interface ICloudUtils {
     @WorkerThread
     HttpAfReturn getEimQRcode(Context context, String af_token, String qrcode_info_url);
 
+    /**
+     * 取得EIM_QRcode登入資料
+     * post方法
+     * 必定要傳 deviceId參數
+     */
+    @WorkerThread
+    HttpAfReturn getEimQRcodeNew(Context context, String af_token, String qrcode_info_url, String deviceId);
 
-    //endregion
-
-    //region  已登入 使用者資料相關
 
     /**
      * 已登入app時的改密碼
@@ -665,17 +669,16 @@ public interface ICloudUtils {
     @WorkerThread
     HttpReturn getMicroapp(String microAppId);
 
-
-    //endregion
-
-    //region  已登入 工作相關
-
-
     /**
      * 取得aftoken
      */
     @WorkerThread
     HttpAfReturn getAfToken(String afServer);
+
+    /**
+     * 更新 afToken
+     */
+    HttpAfReturn renewAfToken(String refreshToken);
 
     /**
      * 取得公司清單

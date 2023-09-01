@@ -12,6 +12,10 @@ public class EimUserData {
     public String af_mem_id = null;
     public String af_login_id = null;
     public String af_token = null;
+    public String afTokenExpiration = null;
+    public String afRefreshToken = null;
+    public String afRefreshTokenExpiration = null;
+    public String deviceId = null;
     public String af_wfci_service_url = null;
 
 

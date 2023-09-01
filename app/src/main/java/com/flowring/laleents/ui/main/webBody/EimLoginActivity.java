@@ -12,9 +12,11 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 
-import androidx.activity.result.ActivityResult;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
+
+import com.auth0.android.jwt.Claim;
+import com.auth0.android.jwt.JWT;
 import com.flowring.laleents.R;
 import com.flowring.laleents.model.HttpAfReturn;
 import com.flowring.laleents.model.HttpReturn;
@@ -23,7 +25,6 @@ import com.flowring.laleents.model.user.UserControlCenter;
 import com.flowring.laleents.model.user.UserMin;
 import com.flowring.laleents.tools.ActivityUtils;
 import com.flowring.laleents.tools.CallbackUtils;
-import com.flowring.laleents.tools.CommonUtils;
 import com.flowring.laleents.tools.DialogUtils;
 import com.flowring.laleents.tools.FileUtils;
 import com.flowring.laleents.tools.Log;
@@ -46,6 +47,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Map;
 
 public class EimLoginActivity extends MainAppCompatActivity {
     private static Button btn_login;
@@ -146,7 +148,16 @@ public class EimLoginActivity extends MainAppCompatActivity {
                 e.printStackTrace();
             }
             if (result != null && result.has("qrcode_info_url") && result.has("af_token")) {
-                connection_server_get_httpReturn(activity,result);
+                //判斷是否有 dev_id
+                String af_token = result.optString("af_token");
+                JWT jwt = new JWT(af_token);
+                String deviceId = jwt.getClaim("dev_id").asString();
+                if(deviceId != null && !deviceId.isEmpty()){
+                    String uuid = Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID);
+                    connection_server_get_httpReturn(activity,result,uuid);
+                } else {
+                    // 使用舊afToken換新afToken
+                }
             } else {
                 activity.cancelWait();
                 saveLog(activity);
@@ -154,7 +165,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
         }).start();
     }
 
-    public void connection_server_get_httpReturn(MainAppCompatActivity activity, JSONObject result){
+    public void connection_server_get_httpReturn(MainAppCompatActivity activity, JSONObject result,String deviceId){
         String af_token = result.optString("af_token");
         String qrcode_info_url = result.optString("qrcode_info_url");
         String errMsg = result.optString("errMsg");
@@ -164,32 +175,19 @@ public class EimLoginActivity extends MainAppCompatActivity {
             DialogUtils.showDialogMessage(EimLoginActivity.this,errMsg);
             return;
         }
-
-        HttpAfReturn httpReturn = CloudUtils.iCloudUtils.getEimQRcode(activity, af_token, qrcode_info_url);
-        if (httpReturn.success) {
-            StringUtils.HaoLog("掃描成功");
+        HttpAfReturn httpReturn = CloudUtils.iCloudUtils.getEimQRcodeNew(activity, af_token, qrcode_info_url, deviceId);
+        if(httpReturn.success){
+            StringUtils.HaoLog("掃描新 getEimQRcode 成功");
             StringUtils.HaoLog("取得使用者資料:" + new Gson().toJson(httpReturn.data));
-//                    String test="{\n" +
-//                            "    \"isLaleAppEim\": false,\n" +
-//                            "     \"isLaleAppWork\": true,\n" +
-//                            "  \"af_url\": \"https://agentflow.flowring.com:8443/WebAgenda\",\n" +
-//                            "  \"af_mem_id\": \"MEM00001091511489187\",\n" +
-//                            "  \"af_login_id\": \"f0\",\n" +
-//                            "  \"af_token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmMCIsImF1ZCI6Ik1FTTAwMDAxMDkxNTExNDg5MTg3IiwiaXNzIjoiRmxvd0Rlb20iLCJuYW1lIjoi5Y-k6JGjIiwiZXhwIjoxNjY2MTQ0MzA0LCJpYXQiOjE2NjU1Mzk1MDR9.AYfwO7xG8AdOKk43zb4lqcW8UhSQEXWQiH9rqBpFe50\",\n" +
-//                            "  \"af_wfci_service_url\": \"http://192.168.3.53:8083\"\n" +
-//                            "}";
-
             String eimUserDataString = new Gson().toJson(httpReturn.data);
             EimUserData eimUserData = new Gson().fromJson(eimUserDataString, EimUserData.class);
             saveUrlValid(eimUserData.af_url);
             {
                 UserMin userMin = eimUserData.getUserMin();
-
                 StringUtils.HaoLog("userMin=" + userMin);
                 UserControlCenter.setLogin(userMin);
                 UserControlCenter.updateUserMinInfo(userMin);
             }
-
             if(eimUserData.isLaleAppEim) {
                 String deviceID = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
                 Boolean isRepeatDevice = UserControlCenter.alreadyLoddedIn("6","",eimUserData.af_mem_id,deviceID);
