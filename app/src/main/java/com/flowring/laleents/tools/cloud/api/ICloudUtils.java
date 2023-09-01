@@ -799,5 +799,20 @@ public interface ICloudUtils {
      */
     @WorkerThread
     HttpAfReturn aflogin(String account, String password, String url);
+
+    /**
+     * 帳號登入
+     * 多參數：deviceId
+     * 更換新的 domain
+     */
+    @WorkerThread
+    HttpAfReturn afloginNew(String account, String password, String url);
+
+    /**
+     * 拿 agentflow server的版號
+     */
+    @WorkerThread
+    HttpAfReturn afServerVersion(String afUrl);
+
 }
 

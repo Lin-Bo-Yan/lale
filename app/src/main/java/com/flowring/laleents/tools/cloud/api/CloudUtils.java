@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 
 import com.flowring.laleents.model.HttpAfReturn;
 import com.flowring.laleents.model.HttpReturn;
@@ -1913,6 +1914,34 @@ public class CloudUtils implements ICloudUtils {
                 .url(url + "/api/dau/EIM/aflogin")
                 .method("POST", body)
                 .addHeader("Content-Type", "application/json");
+        return getJhttpAfReturn(request);
+    }
+
+    @Override
+    public HttpAfReturn afloginNew(String account, String password, String url) {
+        MediaType mediaType = MediaType.parse("application/json");
+        JSONObject bodyJect = new JSONObject();
+        String uuid = Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID);
+        try {
+            bodyJect.put("loginId", account);
+            bodyJect.put("password", password);
+            bodyJect.put("deviceId", uuid);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody body = RequestBody.create(mediaType, bodyJect.toString());
+        Request.Builder request = new Request.Builder()
+                .url(url + "/api/auth/aftoken/aflogin")
+                .method("POST", body)
+                .addHeader("Content-Type", "application/json");
+        return getJhttpAfReturn(request);
+    }
+
+    @Override
+    public HttpAfReturn afServerVersion(String afUrl) {
+        Request.Builder request = new Request.Builder()
+                .url(afUrl + "/api/dau/config/webagenda/version")
+                .get();
         return getJhttpAfReturn(request);
     }
 

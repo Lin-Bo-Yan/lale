@@ -307,12 +307,16 @@ public class UserControlCenter {
             Matcher matcher = pattern.matcher(url);
             if(matcher.matches()){
                 new Thread(() -> {
-                    HttpAfReturn afReturn = CloudUtils.iCloudUtils.aflogin(account,password,url);
-                    if(afReturn.success){
-                        String info = new Gson().toJson(afReturn.data);
+                    HttpAfReturn afloginNew = CloudUtils.iCloudUtils.afloginNew(account,password,url);
+                    if(afloginNew.success){
+                        String info = new Gson().toJson(afloginNew.data);
                         messageReturn.Callback(info);
                     } else {
-                        StringUtils.HaoLog("伺服器錯誤");
+                        HttpAfReturn afReturn = CloudUtils.iCloudUtils.aflogin(account,password,url);
+                        if(afReturn.success){
+                            String info = new Gson().toJson(afReturn.data);
+                            messageReturn.Callback(info);
+                        }
                     }
                 }).start();
             } else {
@@ -320,6 +324,16 @@ public class UserControlCenter {
                 DialogUtils.showDialogMessage(context,"格式不正確");
             }
         }
+    }
+
+    public static void getAfServerVersion(String afUrl, CallbackUtils.messageReturn messageReturn){
+        new Thread(() -> {
+            HttpAfReturn afReturn = CloudUtils.iCloudUtils.afServerVersion(afUrl);
+            if(afReturn.success){
+                String info = new Gson().toJson(afReturn.data);
+                messageReturn.Callback(info);
+            }
+        });
     }
 
     public static String getAfToken() {

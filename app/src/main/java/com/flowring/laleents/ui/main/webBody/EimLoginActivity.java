@@ -157,10 +157,11 @@ public class EimLoginActivity extends MainAppCompatActivity {
     public void connection_server_get_httpReturn(MainAppCompatActivity activity, JSONObject result){
         String af_token = result.optString("af_token");
         String qrcode_info_url = result.optString("qrcode_info_url");
+        String errMsg = result.optString("errMsg");
 
-        if (af_token.isEmpty() || qrcode_info_url.isEmpty()) {
+        if (!errMsg.isEmpty() && errMsg != null) {
             activity.cancelWait();
-            DialogUtils.showDialogMessage(EimLoginActivity.this,"請輸入正確的帳號和密碼");
+            DialogUtils.showDialogMessage(EimLoginActivity.this,errMsg);
             return;
         }
 
