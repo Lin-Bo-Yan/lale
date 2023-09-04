@@ -753,4 +753,14 @@ public class UserControlCenter {
             DialogUtils.showUpgradeDialog(activity);
         }
     }
+
+    public static void afTokenRefresh(CallbackUtils.AfReturnHttp afReturnHttp){
+        new Thread(() -> {
+            String afDomain = UserControlCenter.getUserMinInfo().eimUserData.af_url;
+            HttpAfReturn httpReturn= CloudUtils.iCloudUtils.renewToken(afDomain);
+            if(httpReturn.code == 200){
+                afReturnHttp.Callback(httpReturn);
+            }
+        }).start();
+    }
 }

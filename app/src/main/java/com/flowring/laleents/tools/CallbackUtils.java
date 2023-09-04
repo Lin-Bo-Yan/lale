@@ -2,6 +2,7 @@ package com.flowring.laleents.tools;
 
 import androidx.activity.result.ActivityResult;
 
+import com.flowring.laleents.model.HttpAfReturn;
 import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.model.ServerAnnouncement;
 import com.flowring.laleents.model.explore.FocusApp;
@@ -74,6 +75,11 @@ public class CallbackUtils {
 
     public interface ReturnHttp {
         void Callback(HttpReturn httpReturn);
+
+    }
+
+    public interface AfReturnHttp {
+        void Callback(HttpAfReturn httpAfReturn);
 
     }
 

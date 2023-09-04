@@ -12,9 +12,11 @@ import android.provider.Settings;
 
 import com.flowring.laleents.model.HttpAfReturn;
 import com.flowring.laleents.model.HttpReturn;
+import com.flowring.laleents.model.eim.EimUserData;
 import com.flowring.laleents.model.room.RoomInfoInPhone;
 import com.flowring.laleents.model.stickerlibrary.CustomizeSticker;
 import com.flowring.laleents.model.stickerlibrary.Stickerlibrary;
+import com.flowring.laleents.model.user.AfTokenInfo;
 import com.flowring.laleents.model.user.GetMinVersion;
 import com.flowring.laleents.model.user.TokenInfo;
 import com.flowring.laleents.model.user.UserControlCenter;
@@ -1789,6 +1791,60 @@ public class CloudUtils implements ICloudUtils {
             UserControlCenter.updateUserMinInfo(userMin);
         }
         return httpReturn;
+    }
+
+    @Override
+    public HttpAfReturn renewTokenHaveDeviceId(String afDomain, String af_token, String deviceId) {
+        MediaType mediaType = MediaType.parse("application/json");
+        JSONObject bodyJect = new JSONObject();
+        try {
+            bodyJect.put("token", af_token);
+            bodyJect.put("deviceId", deviceId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody body = RequestBody.create(mediaType, bodyJect.toString());
+        Request.Builder request = new Request.Builder()
+                .url(afDomain + "/api/auth/aftoken/refresh")
+                .method("POST", body)
+                .addHeader("Content-Type", "application/json");
+        return getJhttpAfReturn(request);
+    }
+
+    @Override
+    public HttpAfReturn renewToken(String afDomain) {
+        MediaType mediaType = MediaType.parse("application/json");
+        JSONObject bodyJect = new JSONObject();
+        try {
+            bodyJect.put("refreshToken", UserControlCenter.getUserMinInfo().eimUserData.afRefreshToken);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody body = RequestBody.create(mediaType, bodyJect.toString());
+        Request.Builder request = new Request.Builder()
+                .url(afDomain + "/api/auth/aftoken/refresh")
+                .method("POST", body)
+                .addHeader("Content-Type", "application/json");
+
+        HttpAfReturn httpAfReturn = getJhttpAfReturn(request);
+        if(httpAfReturn.code == 200){
+            UserMin userMin = UserControlCenter.getUserMinInfo();
+            AfTokenInfo AfTokenInfo = new Gson().fromJson(new Gson().toJson(httpAfReturn.data), AfTokenInfo.class);
+            if(AfTokenInfo != null && userMin != null){
+                userMin.eimUserData.af_token = AfTokenInfo.token;
+                userMin.eimUserData.afRefreshToken = AfTokenInfo.refreshToken;
+                userMin.eimUserData.afTokenExpiration = AfTokenInfo.expiration;
+                userMin.eimUserData.afRefreshTokenExpiration = AfTokenInfo.refreshExpiration;
+                userMin.eimUserData.deviceId = AfTokenInfo.deviceId;
+            }
+            UserControlCenter.updateUserMinInfo(userMin);
+        }
+        return httpAfReturn;
+    }
+
+    @Override
+    public HttpAfReturn tokenValid() {
+        return null;
     }
 
     @Override

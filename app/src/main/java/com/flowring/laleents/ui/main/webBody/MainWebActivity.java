@@ -80,6 +80,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.dmcbig.mediapicker.PickerConfig;
 import com.dmcbig.mediapicker.entity.Media;
 import com.flowring.laleents.R;
+import com.flowring.laleents.model.HttpAfReturn;
 import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.model.ServerAnnouncement;
 import com.flowring.laleents.model.explore.Microapp;
@@ -415,6 +416,9 @@ public class MainWebActivity extends MainAppCompatActivity {
                 new Thread(() -> {
                     censorToken();
                 }).start();
+            } else if(userMin.eimUserData.isLaleAppWork){
+                //StringUtils.HaoLog("isLaleAppWork= "+ UserControlCenter.getUserMinInfo().eimUserData.afTokenExpiration);
+                //StringUtils.HaoLog("isLaleAppWork= "+ UserControlCenter.getUserMinInfo().eimUserData.afRefreshTokenExpiration);
             }
         } else {
             goLogin();
@@ -1546,6 +1550,9 @@ public class MainWebActivity extends MainAppCompatActivity {
                 case "APIResponse":
                     APIResponse(data);
                     break;
+                case "afTokenRefresh":
+                    afTokenRefresh();
+                    break;
                 default:
                     unDo(json);
                     break;
@@ -1848,14 +1855,32 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    private void afTokenRefresh(){
+        UserControlCenter.afTokenRefresh(new CallbackUtils.AfReturnHttp() {
+            @Override
+            public void Callback(HttpAfReturn httpAfReturn) {
+                if(httpAfReturn.code == 200){
+                    String data = new Gson().toJson(httpAfReturn);
+                    try {
+                        String json = new JSONObject().put("type", "afTokenRefresh").put("data", data).toString();
+                        sendToWeb(json);
+                    }catch (JSONException e){
+                        e.printStackTrace();
+                        StringUtils.HaoLog("afTokenRefresh失敗");
+                    }
+                }
+            }
+        });
+    }
+
     private void webOk(JSONObject data) {
         if(data == null){
             latestAnnounceDialog();
         } else if(data.has("webViewVersion")){
             String webViewVersion = data.optString("webViewVersion");
+            //afTokenRefresh();
         }
         UserMin userMin = UserControlCenter.getUserMinInfo();
-
         StringUtils.HaoLog("webOk");
         if (userMin != null && !userMin.userId.isEmpty()) {
            checkPermission();
@@ -1898,6 +1923,12 @@ public class MainWebActivity extends MainAppCompatActivity {
         try {
             StringUtils.HaoLog("Login 成功=" + UserControlCenter.getUserMinInfo());
             StringUtils.HaoLog("Login=" + new Gson().toJson(UserControlCenter.getUserMinInfo().eimUserData));
+            //StringUtils.HaoLog("ddd= " + UserControlCenter.getUserMinInfo().eimUserData.af_token);
+            //int number = Integer.parseInt(UserControlCenter.getUserMinInfo().eimUserData.afTokenExpiration);
+            //StringUtils.HaoLog("ddd= " + number);
+//            StringUtils.HaoLog("ddd= " + UserControlCenter.getUserMinInfo().eimUserData.afRefreshToken);
+//            StringUtils.HaoLog("ddd= " + UserControlCenter.getUserMinInfo().eimUserData.afRefreshTokenExpiration);
+//            StringUtils.HaoLog("ddd= " + UserControlCenter.getUserMinInfo().eimUserData.deviceId);
             String json = new JSONObject().put("type", "loginEim").put("data", new JSONObject(new Gson().toJson(UserControlCenter.getUserMinInfo().eimUserData))).toString();
             sendToWeb(json);
         } catch (JSONException e) {

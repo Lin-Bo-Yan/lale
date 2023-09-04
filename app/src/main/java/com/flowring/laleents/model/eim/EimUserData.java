@@ -11,11 +11,14 @@ public class EimUserData {
     public String af_url = null;
     public String af_mem_id = null;
     public String af_login_id = null;
+    
+    // af 模式下會用到的參數
     public String af_token = null;
-    public String afTokenExpiration = null;
+    public Long afTokenExpiration = null;
     public String afRefreshToken = null;
-    public String afRefreshTokenExpiration = null;
+    public Long afRefreshTokenExpiration = null;
     public String deviceId = null;
+
     public String af_wfci_service_url = null;
 
 
@@ -56,13 +59,3 @@ public class EimUserData {
 
     }
 }
-
-        /*
-        userMin.displayName=;
-        userMin.refreshToken;
-        userMin. expiration;//token到期時間
-
-        userMin. avatarUrl;
-        userMin. avatarThumbnailUrl;//縮圖
-        userMin. refreshExpiration;
-        */

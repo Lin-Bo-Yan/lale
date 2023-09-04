@@ -165,6 +165,31 @@ public interface ICloudUtils {
     HttpReturn reToken();
 
     /**
+     * AF 更新Token
+     * 傳入參數：
+     * 1. token
+     * 2. deviceId
+     */
+    @WorkerThread
+    HttpAfReturn renewTokenHaveDeviceId(String afDomain, String af_token, String deviceId);
+
+    /**
+     * AF 更新Token
+     * 傳入參數：
+     * 1. refreshToken
+     */
+    @WorkerThread
+    HttpAfReturn renewToken(String afDomain);
+
+    /**
+     * 驗證Token是否有效
+     */
+    HttpAfReturn tokenValid();
+
+
+
+
+    /**
      * 修改user頭圖
      */
     @WorkerThread
