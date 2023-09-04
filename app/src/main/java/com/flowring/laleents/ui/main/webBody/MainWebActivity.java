@@ -1862,6 +1862,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         UserControlCenter.afTokenRefresh(new CallbackUtils.AfReturnHttp() {
             @Override
             public void Callback(HttpAfReturn httpAfReturn) {
+                StringUtils.HaoLog("afTokenRefresh= " + httpAfReturn.code);
                 if(httpAfReturn.code == 200){
                     String data = new Gson().toJson(httpAfReturn);
                     try {
@@ -1871,6 +1872,10 @@ public class MainWebActivity extends MainAppCompatActivity {
                         e.printStackTrace();
                         StringUtils.HaoLog("afTokenRefresh失敗");
                     }
+                } else if(httpAfReturn.code == 401){
+                    // 白名單驗證失敗，token不合法
+                } else if(httpAfReturn.code == 40001){
+                    // token逾期
                 }
             }
         });
@@ -1880,6 +1885,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         UserControlCenter.afTokenRefreshHaveDeviceId(new CallbackUtils.AfReturnHttp() {
             @Override
             public void Callback(HttpAfReturn httpAfReturn) {
+                StringUtils.HaoLog("oldVersionAfTokenRefresh= " + httpAfReturn.code);
                 if(httpAfReturn.code == 200){
                     String data = new Gson().toJson(httpAfReturn);
                     try {
@@ -1889,15 +1895,10 @@ public class MainWebActivity extends MainAppCompatActivity {
                         e.printStackTrace();
                         StringUtils.HaoLog("舊版換token失敗");
                     }
-                } else {
-                    runOnUiThread(()->{
-                        DialogUtils.showDialogMessage(MainWebActivity.this, "您的應用程式長期未使用", "系統已將您的帳號登出", new CallbackUtils.noReturn() {
-                            @Override
-                            public void Callback() {
-                                Logout();
-                            }
-                        });
-                    });
+                } else if(httpAfReturn.code == 401){
+                    // 白名單驗證失敗，token不合法
+                } else if(httpAfReturn.code == 40001){
+                    // token逾期
                 }
             }
         });
@@ -2240,10 +2241,20 @@ public class MainWebActivity extends MainAppCompatActivity {
             oldVersionAfTokenRefresh();
         } else {
             long afTokenExpiration = UserControlCenter.getUserMinInfo().eimUserData.afTokenExpiration / 1000;
+            long afRefreshTokenExpiration = UserControlCenter.getUserMinInfo().eimUserData.afRefreshTokenExpiration / 1000;
             StringUtils.HaoLog("isLaleAppWork= "+ timestamp);
             StringUtils.HaoLog("isLaleAppWork= "+ afTokenExpiration);
-            StringUtils.HaoLog("isLaleAppWork= "+ UserControlCenter.getUserMinInfo().eimUserData.afTokenExpiration / 1000);
-            if(timestamp > afTokenExpiration){
+            StringUtils.HaoLog("isLaleAppWork= "+ afRefreshTokenExpiration);
+            if(timestamp > afRefreshTokenExpiration){
+                runOnUiThread(()->{
+                    DialogUtils.showDialogMessage(MainWebActivity.this, "您的應用程式長期未使用", "系統已將您的帳號登出", new CallbackUtils.noReturn() {
+                        @Override
+                        public void Callback() {
+                            Logout();
+                        }
+                    });
+                });
+            } else if(timestamp > afTokenExpiration){
                 afTokenRefresh();
             }
         }
