@@ -355,6 +355,7 @@ public class DialogUtils {
                         callback.Callback();
                     }
                 })
+                .setCancelable(false)
                 .create();
         alertDialog.show();
         smartServerDialogLock = false;

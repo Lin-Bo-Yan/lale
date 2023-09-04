@@ -758,9 +758,17 @@ public class UserControlCenter {
         new Thread(() -> {
             String afDomain = UserControlCenter.getUserMinInfo().eimUserData.af_url;
             HttpAfReturn httpReturn= CloudUtils.iCloudUtils.renewToken(afDomain);
-            if(httpReturn.code == 200){
-                afReturnHttp.Callback(httpReturn);
-            }
+            afReturnHttp.Callback(httpReturn);
+        }).start();
+    }
+
+    public static void afTokenRefreshHaveDeviceId(CallbackUtils.AfReturnHttp afReturnHttp){
+        new Thread(() -> {
+            String afDomain = UserControlCenter.getUserMinInfo().eimUserData.af_url;
+            String deviceID = Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID);
+            String af_token = UserControlCenter.getUserMinInfo().eimUserData.af_token;
+            HttpAfReturn httpReturn= CloudUtils.iCloudUtils.renewTokenHaveDeviceId(afDomain,af_token,deviceID);
+            afReturnHttp.Callback(httpReturn);
         }).start();
     }
 }

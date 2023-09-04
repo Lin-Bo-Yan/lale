@@ -14,9 +14,9 @@ public class EimUserData {
     
     // af 模式下會用到的參數
     public String af_token = null;
-    public Long afTokenExpiration = null;
+    public Long afTokenExpiration = 0l;
     public String afRefreshToken = null;
-    public Long afRefreshTokenExpiration = null;
+    public Long afRefreshTokenExpiration = 0l;
     public String deviceId = null;
 
     public String af_wfci_service_url = null;

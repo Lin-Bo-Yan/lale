@@ -1,5 +1,6 @@
 package com.flowring.laleents.ui.main.webBody;
 
+import static com.flowring.laleents.tools.UiThreadUtil.runOnUiThread;
 import static com.flowring.laleents.ui.main.webBody.EimLoginActivity.loginFunction;
 import static java.security.AccessController.getContext;
 
@@ -39,6 +40,7 @@ import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -393,7 +395,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         if (!init) {
             BootBroadcastReceiver.setReToken(getApplicationContext());
         }
+        long timestamp = System.currentTimeMillis() / 1000;
 
+        StringUtils.HaoLog("ddd= " + timestamp);
     }
 
     @Override
@@ -417,8 +421,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     censorToken();
                 }).start();
             } else if(userMin.eimUserData.isLaleAppWork){
-                //StringUtils.HaoLog("isLaleAppWork= "+ UserControlCenter.getUserMinInfo().eimUserData.afTokenExpiration);
-                //StringUtils.HaoLog("isLaleAppWork= "+ UserControlCenter.getUserMinInfo().eimUserData.afRefreshTokenExpiration);
+                censorAfToken();
             }
         } else {
             goLogin();
@@ -1873,12 +1876,38 @@ public class MainWebActivity extends MainAppCompatActivity {
         });
     }
 
+    private void oldVersionAfTokenRefresh(){
+        UserControlCenter.afTokenRefreshHaveDeviceId(new CallbackUtils.AfReturnHttp() {
+            @Override
+            public void Callback(HttpAfReturn httpAfReturn) {
+                if(httpAfReturn.code == 200){
+                    String data = new Gson().toJson(httpAfReturn);
+                    try {
+                        String json = new JSONObject().put("type", "afTokenRefresh").put("data", data).toString();
+                        sendToWeb(json);
+                    }catch (JSONException e){
+                        e.printStackTrace();
+                        StringUtils.HaoLog("舊版換token失敗");
+                    }
+                } else {
+                    runOnUiThread(()->{
+                        DialogUtils.showDialogMessage(MainWebActivity.this, "您的應用程式長期未使用", "系統已將您的帳號登出", new CallbackUtils.noReturn() {
+                            @Override
+                            public void Callback() {
+                                Logout();
+                            }
+                        });
+                    });
+                }
+            }
+        });
+    }
+
     private void webOk(JSONObject data) {
         if(data == null){
             latestAnnounceDialog();
         } else if(data.has("webViewVersion")){
             String webViewVersion = data.optString("webViewVersion");
-            //afTokenRefresh();
         }
         UserMin userMin = UserControlCenter.getUserMinInfo();
         StringUtils.HaoLog("webOk");
@@ -1923,17 +1952,10 @@ public class MainWebActivity extends MainAppCompatActivity {
         try {
             StringUtils.HaoLog("Login 成功=" + UserControlCenter.getUserMinInfo());
             StringUtils.HaoLog("Login=" + new Gson().toJson(UserControlCenter.getUserMinInfo().eimUserData));
-            //StringUtils.HaoLog("ddd= " + UserControlCenter.getUserMinInfo().eimUserData.af_token);
-            //int number = Integer.parseInt(UserControlCenter.getUserMinInfo().eimUserData.afTokenExpiration);
-            //StringUtils.HaoLog("ddd= " + number);
-//            StringUtils.HaoLog("ddd= " + UserControlCenter.getUserMinInfo().eimUserData.afRefreshToken);
-//            StringUtils.HaoLog("ddd= " + UserControlCenter.getUserMinInfo().eimUserData.afRefreshTokenExpiration);
-//            StringUtils.HaoLog("ddd= " + UserControlCenter.getUserMinInfo().eimUserData.deviceId);
             String json = new JSONObject().put("type", "loginEim").put("data", new JSONObject(new Gson().toJson(UserControlCenter.getUserMinInfo().eimUserData))).toString();
             sendToWeb(json);
         } catch (JSONException e) {
             StringUtils.HaoLog("Login 失敗=" + UserControlCenter.getUserMinInfo());
-
             e.printStackTrace();
         }
         if (MqttService.mqttControlCenter == null) {
@@ -2208,6 +2230,23 @@ public class MainWebActivity extends MainAppCompatActivity {
                 }
             }
         });
+    }
+
+    private void censorAfToken(){
+        long timestamp = System.currentTimeMillis() / 1000;
+        // 檢查 afRefreshTokenExpiration 是否有值，如果沒有值表示舊版token
+        // 為確保向下相容，可傳入舊版的token及deviceId(必定要傳)
+        if(UserControlCenter.getUserMinInfo().eimUserData.afRefreshToken == null){
+            oldVersionAfTokenRefresh();
+        } else {
+            long afTokenExpiration = UserControlCenter.getUserMinInfo().eimUserData.afTokenExpiration / 1000;
+            StringUtils.HaoLog("isLaleAppWork= "+ timestamp);
+            StringUtils.HaoLog("isLaleAppWork= "+ afTokenExpiration);
+            StringUtils.HaoLog("isLaleAppWork= "+ UserControlCenter.getUserMinInfo().eimUserData.afTokenExpiration / 1000);
+            if(timestamp > afTokenExpiration){
+                afTokenRefresh();
+            }
+        }
     }
 
     private void downloadByBytesBase64(JSONObject data) {

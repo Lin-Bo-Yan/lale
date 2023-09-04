@@ -1808,7 +1808,21 @@ public class CloudUtils implements ICloudUtils {
                 .url(afDomain + "/api/auth/aftoken/refresh")
                 .method("POST", body)
                 .addHeader("Content-Type", "application/json");
-        return getJhttpAfReturn(request);
+
+        HttpAfReturn httpAfReturn = getJhttpAfReturn(request);
+        if(httpAfReturn.code == 200){
+            UserMin userMin = UserControlCenter.getUserMinInfo();
+            AfTokenInfo AfTokenInfo = new Gson().fromJson(new Gson().toJson(httpAfReturn.data), AfTokenInfo.class);
+            if(AfTokenInfo != null && userMin != null){
+                userMin.eimUserData.af_token = AfTokenInfo.token;
+                userMin.eimUserData.afRefreshToken = AfTokenInfo.refreshToken;
+                userMin.eimUserData.afTokenExpiration = AfTokenInfo.expiration;
+                userMin.eimUserData.afRefreshTokenExpiration = AfTokenInfo.refreshExpiration;
+                userMin.eimUserData.deviceId = AfTokenInfo.deviceId;
+            }
+            UserControlCenter.updateUserMinInfo(userMin);
+        }
+        return httpAfReturn;
     }
 
     @Override
