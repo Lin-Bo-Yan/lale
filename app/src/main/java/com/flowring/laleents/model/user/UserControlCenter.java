@@ -5,6 +5,8 @@ import static com.flowring.laleents.tools.phone.AllData.delectAll;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 
@@ -769,6 +771,17 @@ public class UserControlCenter {
             String af_token = UserControlCenter.getUserMinInfo().eimUserData.af_token;
             HttpAfReturn httpReturn= CloudUtils.iCloudUtils.renewTokenHaveDeviceId(afDomain,af_token,deviceID);
             afReturnHttp.Callback(httpReturn);
+        }).start();
+    }
+
+    public static void isErrorCode(CallbackUtils.DeviceReturn deviceReturn){
+        new Thread(() -> {
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.getUserInfo();
+            if(httpReturn.status == 200){
+                new Handler(Looper.getMainLooper()).post(() -> deviceReturn.Callback(false));
+            } else {
+                new Handler(Looper.getMainLooper()).post(() -> deviceReturn.Callback(true));
+            }
         }).start();
     }
 }

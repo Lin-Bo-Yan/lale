@@ -1198,12 +1198,25 @@ public class MainWebActivity extends MainAppCompatActivity {
                     if(smartServerDialogLock){
                         announceServerDialog();
                     }
-                } else if(errorResponse.getStatusCode() == 400 && request.getUrl().toString().contains("/api/dau/personalData")){
-                    Logout();
-                } else if(errorResponse.getStatusCode() == 401){
-                    new Thread(() -> {
-                        censorToken();
-                    }).start();
+                } else if(errorResponse.getStatusCode() == 400 || errorResponse.getStatusCode() == 401){
+                    UserControlCenter.isErrorCode(new CallbackUtils.DeviceReturn() {
+                        @Override
+                        public void Callback(Boolean deviceReturn) {
+                            if(deviceReturn){
+                                UserMin userMin = UserControlCenter.getUserMinInfo();
+                                if (userMin != null && !userMin.userId.isEmpty()) {
+                                    StringUtils.HaoLog("伺服器 400 或 401 " + userMin.eimUserData.isLaleAppEim + "/"+userMin.eimUserData.isLaleAppWork);
+                                    if(userMin.eimUserData.isLaleAppEim){
+                                        new Thread(() -> {
+                                            censorToken();
+                                        }).start();
+                                    }
+                                } else if(userMin.eimUserData.isLaleAppWork){
+                                    censorAfToken();
+                                }
+                            }
+                        }
+                    });
                 }
                 super.onReceivedHttpError(view, request, errorResponse);
             }
@@ -1876,6 +1889,14 @@ public class MainWebActivity extends MainAppCompatActivity {
                     // 白名單驗證失敗，token不合法
                 } else if(httpAfReturn.code == 40001){
                     // token逾期
+                    runOnUiThread(()->{
+                        DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "您的應用程式長期未使用", "系統已將您的帳號登出", new CallbackUtils.noReturn() {
+                            @Override
+                            public void Callback() {
+                                Logout();
+                            }
+                        });
+                    });
                 }
             }
         });
@@ -1899,6 +1920,14 @@ public class MainWebActivity extends MainAppCompatActivity {
                     // 白名單驗證失敗，token不合法
                 } else if(httpAfReturn.code == 40001){
                     // token逾期
+                    runOnUiThread(()->{
+                        DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "您的應用程式長期未使用", "系統已將您的帳號登出", new CallbackUtils.noReturn() {
+                            @Override
+                            public void Callback() {
+                                Logout();
+                            }
+                        });
+                    });
                 }
             }
         });
@@ -2242,12 +2271,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         } else {
             long afTokenExpiration = UserControlCenter.getUserMinInfo().eimUserData.afTokenExpiration / 1000;
             long afRefreshTokenExpiration = UserControlCenter.getUserMinInfo().eimUserData.afRefreshTokenExpiration / 1000;
-            StringUtils.HaoLog("isLaleAppWork= "+ timestamp);
-            StringUtils.HaoLog("isLaleAppWork= "+ afTokenExpiration);
-            StringUtils.HaoLog("isLaleAppWork= "+ afRefreshTokenExpiration);
             if(timestamp > afRefreshTokenExpiration){
                 runOnUiThread(()->{
-                    DialogUtils.showDialogMessage(MainWebActivity.this, "您的應用程式長期未使用", "系統已將您的帳號登出", new CallbackUtils.noReturn() {
+                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "您的應用程式長期未使用", "系統已將您的帳號登出", new CallbackUtils.noReturn() {
                         @Override
                         public void Callback() {
                             Logout();

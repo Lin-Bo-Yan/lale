@@ -355,6 +355,24 @@ public class DialogUtils {
                         callback.Callback();
                     }
                 })
+                .create();
+        alertDialog.show();
+        smartServerDialogLock = false;
+        return alertDialog;
+    }
+
+    // 空白處無法關閉
+    static public AlertDialog showDialogMessageCannotClosed(Context context, String title, String text, CallbackUtils.noReturn callback) {
+        AlertDialog alertDialog = new AlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage(text)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        callback.Callback();
+                    }
+                })
                 .setCancelable(false)
                 .create();
         alertDialog.show();

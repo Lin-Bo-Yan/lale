@@ -51,7 +51,7 @@ public class SharedPreferencesUtils {
         pref.edit().putBoolean("isRepeatDevice",isRepeatDevice).apply();
     }
 
-    public static Boolean getRepeatDevice(Activity activity){
+    public static boolean getRepeatDevice(Activity activity){
         pref = PreferenceManager.getDefaultSharedPreferences(activity);
         return pref.getBoolean("isRepeatDevice",false);
     }
