@@ -148,8 +148,15 @@ public class EimLoginActivity extends MainAppCompatActivity {
                 e.printStackTrace();
             }
             if (result != null && result.has("qrcode_info_url") && result.has("af_token")) {
-                //判斷是否有 dev_id
                 String af_token = result.optString("af_token");
+                String qrcode_info_url = result.optString("qrcode_info_url");
+                if (af_token.isEmpty() || qrcode_info_url.isEmpty()) {
+                    activity.cancelWait();
+                    DialogUtils.showDialogMessage(EimLoginActivity.this,"請輸入正確的帳號和密碼");
+                    return;
+                }
+
+                //判斷是否有 dev_id
                 JWT jwt = new JWT(af_token);
                 String deviceId = jwt.getClaim("dev_id").asString();
                 String uuid = Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID);

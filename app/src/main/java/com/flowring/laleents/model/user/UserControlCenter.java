@@ -318,6 +318,8 @@ public class UserControlCenter {
                         if(afReturn.success){
                             String info = new Gson().toJson(afReturn.data);
                             messageReturn.Callback(info);
+                        } else {
+                            DialogUtils.showDialogMessage(context,"請輸入正確的帳號和密碼");
                         }
                     }
                 }).start();
