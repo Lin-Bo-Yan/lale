@@ -391,7 +391,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         initFireBaseMsgBroadcastReceiver();
         initShareActivityBroadcastReceiver();
         com.flowring.laleents.tools.Log.setContext(getApplicationContext());
-        AllData.init(getApplicationContext());
+        AllData.init(getApplicationContext(),MainWebActivity.this);
         if (!init) {
             BootBroadcastReceiver.setReToken(getApplicationContext());
         }
@@ -411,6 +411,10 @@ public class MainWebActivity extends MainAppCompatActivity {
         super.onResume();
         if (AllData.context == null){
             AllData.context = getApplicationContext();
+        }
+
+        if(AllData.activity == null){
+            AllData.activity = MainWebActivity.this;
         }
         UserMin userMin = UserControlCenter.getUserMinInfo();
         StringUtils.HaoLog("onResume= " + userMin);

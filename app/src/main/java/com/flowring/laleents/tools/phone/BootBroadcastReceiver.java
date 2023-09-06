@@ -9,6 +9,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 
 import com.flowring.laleents.model.HttpReturn;
@@ -18,6 +20,7 @@ import com.flowring.laleents.model.room.RoomMinInfo;
 import com.flowring.laleents.model.user.UserControlCenter;
 import com.flowring.laleents.tools.ActivityUtils;
 import com.flowring.laleents.tools.CallbackUtils;
+import com.flowring.laleents.tools.CommonUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.cloud.api.CloudUtils;
 import com.flowring.laleents.tools.cloud.mqtt.MqttService;
@@ -61,7 +64,10 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
                         HttpReturn httpReturn = CloudUtils.iCloudUtils.reToken(new CallbackUtils.TimeoutReturn() {
                             @Override
                             public void Callback(IOException timeout) {
-                                StringUtils.HaoLog("timeout");
+                                StringUtils.HaoLog("reToken 網路異常");
+                                new Handler(Looper.getMainLooper()).post(() -> {
+                                    CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                                });
                             }
                         });
                         StringUtils.HaoLog("isReToken=" + httpReturn.status);

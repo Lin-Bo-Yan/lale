@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.view.View;
@@ -25,6 +27,7 @@ import com.flowring.laleents.model.user.UserControlCenter;
 import com.flowring.laleents.model.user.UserMin;
 import com.flowring.laleents.tools.ActivityUtils;
 import com.flowring.laleents.tools.CallbackUtils;
+import com.flowring.laleents.tools.CommonUtils;
 import com.flowring.laleents.tools.DialogUtils;
 import com.flowring.laleents.tools.FileUtils;
 import com.flowring.laleents.tools.Log;
@@ -186,7 +189,10 @@ public class EimLoginActivity extends MainAppCompatActivity {
         HttpAfReturn httpReturn = CloudUtils.iCloudUtils.getEimQRcode(activity, af_token, qrcode_info_url, new CallbackUtils.TimeoutReturn() {
             @Override
             public void Callback(IOException timeout) {
-                StringUtils.HaoLog("timeout");
+                StringUtils.HaoLog("getEimQRcode 網路異常");
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    CommonUtils.showToast(EimLoginActivity.this,getLayoutInflater(),"網路異常",false);
+                });
             }
         });
 
@@ -263,7 +269,10 @@ public class EimLoginActivity extends MainAppCompatActivity {
         HttpAfReturn httpReturn = CloudUtils.iCloudUtils.getEimQRcodeNew(activity, af_token, qrcode_info_url, uuid, new CallbackUtils.TimeoutReturn() {
             @Override
             public void Callback(IOException timeout) {
-                StringUtils.HaoLog("timeout");
+                StringUtils.HaoLog("getEimQRcodeNew 網路異常");
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    CommonUtils.showToast(EimLoginActivity.this,getLayoutInflater(),"網路異常",false);
+                });
             }
         });
         if(httpReturn.success){
@@ -321,7 +330,10 @@ public class EimLoginActivity extends MainAppCompatActivity {
         HttpReturn httpReturn2 = CloudUtils.iCloudUtils.loginSimpleThirdParty(eimUserData.af_mem_id, Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID), new CallbackUtils.TimeoutReturn() {
             @Override
             public void Callback(IOException timeout) {
-                StringUtils.HaoLog("timeout");
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    StringUtils.HaoLog("loginSimpleThirdParty 網路異常");
+                    CommonUtils.showToast(EimLoginActivity.this,getLayoutInflater(),"網路異常",false);
+                });
             }
         });
 
@@ -359,7 +371,10 @@ public class EimLoginActivity extends MainAppCompatActivity {
                         HttpAfReturn pu = CloudUtils.iCloudUtils.setAfPusher(WFCI_URL, memId, userId, deviceToken, uuid, customerProperties, new CallbackUtils.TimeoutReturn() {
                             @Override
                             public void Callback(IOException timeout) {
-                                StringUtils.HaoLog("timeout");
+                                StringUtils.HaoLog("setAfPusher 網路異常");
+                                new Handler(Looper.getMainLooper()).post(() -> {
+                                    CommonUtils.showToast(EimLoginActivity.this,getLayoutInflater(),"網路異常",false);
+                                });
                             }
                         });
                         StringUtils.HaoLog("AF推播註冊:", pu);
@@ -392,7 +407,10 @@ public class EimLoginActivity extends MainAppCompatActivity {
                                 pu = CloudUtils.iCloudUtils.setPusher(userId, deviceToken, uuid, customerProperties, new CallbackUtils.TimeoutReturn() {
                                     @Override
                                     public void Callback(IOException timeout) {
-                                        StringUtils.HaoLog("timeout");
+                                        new Handler(Looper.getMainLooper()).post(() -> {
+                                            StringUtils.HaoLog("setPusher 網路異常");
+                                            CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                                        });
                                     }
                                 });
                             } else {
@@ -402,7 +420,10 @@ public class EimLoginActivity extends MainAppCompatActivity {
                                 pu = CloudUtils.iCloudUtils.updatePusher(userId, uuid, new CallbackUtils.TimeoutReturn() {
                                     @Override
                                     public void Callback(IOException timeout) {
-                                        StringUtils.HaoLog("timeout");
+                                        new Handler(Looper.getMainLooper()).post(() -> {
+                                            StringUtils.HaoLog("updatePusher 網路異常");
+                                            CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                                        });
                                     }
                                 });
                             }

@@ -595,7 +595,6 @@ public class CloudUtils implements ICloudUtils {
                 .method("POST", body)
                 .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
 
-
         HttpReturn httpReturn = getJhttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
             @Override
             public void Callback(IOException timeout) {
@@ -1036,7 +1035,6 @@ public class CloudUtils implements ICloudUtils {
 
     @Override
     public HttpReturn getAllSimpleRooms(CallbackUtils.TimeoutReturn timeoutReturn) {
-
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/room/list/type/0")
                 .get()

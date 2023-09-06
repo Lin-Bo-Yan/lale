@@ -1,10 +1,14 @@
 package com.flowring.laleents.model.room;
 
 
+import android.os.Handler;
+import android.os.Looper;
+
 import com.flowring.laleents.model.HttpAfReturn;
 import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.model.user.UserControlCenter;
 import com.flowring.laleents.tools.CallbackUtils;
+import com.flowring.laleents.tools.CommonUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.cloud.api.CloudUtils;
 import com.flowring.laleents.tools.phone.AllData;
@@ -65,7 +69,10 @@ public class RoomSettingControlCenter {
         HttpReturn httpReturn = CloudUtils.iCloudUtils.getGroupMembers(Roomid, new CallbackUtils.TimeoutReturn() {
             @Override
             public void Callback(IOException timeout) {
-                StringUtils.HaoLog("timeout");
+                StringUtils.HaoLog("getGroupMembers 網路異常");
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                });
             }
         });
         if (httpReturn.status == 200) {
@@ -82,7 +89,10 @@ public class RoomSettingControlCenter {
         HttpReturn httpReturn = CloudUtils.iCloudUtils.getRoomMembers(Roomid, new CallbackUtils.TimeoutReturn() {
             @Override
             public void Callback(IOException timeout) {
-                StringUtils.HaoLog("timeout");
+                StringUtils.HaoLog("getRoomMembers 網路異常");
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                });
             }
         });
         StringUtils.HaoLog("getRoomMembers 1=", httpReturn);
@@ -96,7 +106,10 @@ public class RoomSettingControlCenter {
             HttpAfReturn httpReturn2 = CloudUtils.iCloudUtils.orgtreeuserimage(UserControlCenter.getUserMinInfo().eimUserData.af_url, userIds, new CallbackUtils.TimeoutReturn() {
                 @Override
                 public void Callback(IOException timeout) {
-                    StringUtils.HaoLog("timeout");
+                    StringUtils.HaoLog("OrganizationTreeUserImages 網路異常");
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                    });
                 }
             });
             StringUtils.HaoLog("getRoomMembers=", httpReturn2);
@@ -133,23 +146,29 @@ public class RoomSettingControlCenter {
     public static void setStatus(RoomMinInfo roomMinInfo, int status, CallbackUtils.ReturnHttp callback) {
         new Thread(() -> {
             try {
+                HttpReturn httpReturn;
                 if (roomMinInfo.groupId == null || roomMinInfo.groupId.isEmpty()) {
-                    HttpReturn httpReturn = CloudUtils.iCloudUtils.updateRoom(roomMinInfo.id, new JSONObject().put("roomId", roomMinInfo.id).put("status", status), new CallbackUtils.TimeoutReturn() {
+                    httpReturn = CloudUtils.iCloudUtils.updateRoom(roomMinInfo.id, new JSONObject().put("roomId", roomMinInfo.id).put("status", status), new CallbackUtils.TimeoutReturn() {
                         @Override
                         public void Callback(IOException timeout) {
-                            StringUtils.HaoLog("timeout");
+                            StringUtils.HaoLog("updateRoom 網路異常");
+                            new Handler(Looper.getMainLooper()).post(() -> {
+                                CommonUtils.showToast(AllData.activity, AllData.activity.getLayoutInflater(), "網路異常", false);
+                            });
                         }
                     });
-                    callback.Callback(httpReturn);
                 } else {
-                    HttpReturn httpReturn = CloudUtils.iCloudUtils.updateGroup(roomMinInfo.groupId, new JSONObject().put("groupId", roomMinInfo.groupId).put("roomId", roomMinInfo.id).put("status", status), new CallbackUtils.TimeoutReturn() {
+                    httpReturn = CloudUtils.iCloudUtils.updateGroup(roomMinInfo.groupId, new JSONObject().put("groupId", roomMinInfo.groupId).put("roomId", roomMinInfo.id).put("status", status), new CallbackUtils.TimeoutReturn() {
                         @Override
                         public void Callback(IOException timeout) {
-                            StringUtils.HaoLog("timeout");
+                            StringUtils.HaoLog("updateGroup 網路異常");
+                            new Handler(Looper.getMainLooper()).post(() -> {
+                                CommonUtils.showToast(AllData.activity, AllData.activity.getLayoutInflater(), "網路異常", false);
+                            });
                         }
                     });
-                    callback.Callback(httpReturn);
                 }
+                callback.Callback(httpReturn);
             } catch (JSONException e) {
                 e.printStackTrace();
                 callback.Callback(new HttpReturn());
@@ -186,7 +205,10 @@ public class RoomSettingControlCenter {
                 HttpReturn httpReturn = CloudUtils.iCloudUtils.updateGroup(groupId, new JSONObject().put("groupId", groupId).put("isShowDisplayName", showName), new CallbackUtils.TimeoutReturn() {
                     @Override
                     public void Callback(IOException timeout) {
-                        StringUtils.HaoLog("timeout");
+                        StringUtils.HaoLog("updateGroup 網路異常");
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            CommonUtils.showToast(AllData.activity, AllData.activity.getLayoutInflater(), "網路異常", false);
+                        });
                     }
                 });
                 if (httpReturn != null) {

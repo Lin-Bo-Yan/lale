@@ -4,10 +4,13 @@ package com.flowring.laleents.model.room;
 import static com.flowring.laleents.model.user.UserControlCenter.getUserMinInfo;
 
 import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 
 import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.tools.CallbackUtils;
+import com.flowring.laleents.tools.CommonUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.cloud.api.CloudUtils;
 import com.flowring.laleents.tools.phone.AllData;
@@ -32,7 +35,10 @@ public class RoomControlCenter {
         HttpReturn httpReturn = CloudUtils.iCloudUtils.getSimpleRooms(0, new CallbackUtils.TimeoutReturn() {
             @Override
             public void Callback(IOException timeout) {
-                StringUtils.HaoLog("timeout");
+                StringUtils.HaoLog("getSimpleRooms 網路異常");
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                });
             }
         });
         if (httpReturn.status == 200) {
@@ -59,7 +65,10 @@ public class RoomControlCenter {
             HttpReturn httpReturn = CloudUtils.iCloudUtils.getAllSimpleRooms(new CallbackUtils.TimeoutReturn() {
                 @Override
                 public void Callback(IOException timeout) {
-                    StringUtils.HaoLog("timeout");
+                    StringUtils.HaoLog("getAllSimpleRooms 網路異常");
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                    });
                 }
             });
             if (httpReturn.status == 200) {
@@ -99,7 +108,10 @@ public class RoomControlCenter {
             HttpReturn getAllSimpleRooms = CloudUtils.iCloudUtils.getAllSimpleRooms(new CallbackUtils.TimeoutReturn() {
                 @Override
                 public void Callback(IOException timeout) {
-                    StringUtils.HaoLog("timeout");
+                    StringUtils.HaoLog("getAllSimpleRooms 網路異常");
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                    });
                 }
             });
             ArrayList<RoomMinInfoByListType> room0 = new Gson().fromJson(getAllSimpleRooms.data.toString(), new TypeToken<ArrayList<RoomMinInfoByListType>>() {

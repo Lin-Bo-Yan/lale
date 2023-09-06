@@ -156,7 +156,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     HttpReturn httpReturn = CloudUtils.iCloudUtils.closeAfPusher(domain, userid, deviceToken, uuid, new CallbackUtils.TimeoutReturn() {
                         @Override
                         public void Callback(IOException timeout) {
-                            StringUtils.HaoLog("timeout");
+                            StringUtils.HaoLog("AF 關閉推播 api timeout");
                         }
                     });
                     StringUtils.HaoLog("關閉AF推播成功 "+httpReturn.status);
@@ -169,7 +169,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         HttpReturn httpReturn = CloudUtils.iCloudUtils.closePusher(userid, uuid, new CallbackUtils.TimeoutReturn() {
                             @Override
                             public void Callback(IOException timeout) {
-                                StringUtils.HaoLog("timeout");
+                                StringUtils.HaoLog("EIM 關閉推播 api timeout");
                             }
                         });
                         StringUtils.HaoLog("關閉EIM推播成功 "+httpReturn.status);

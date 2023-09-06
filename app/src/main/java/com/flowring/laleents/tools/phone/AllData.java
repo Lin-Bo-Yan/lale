@@ -3,9 +3,12 @@ package com.flowring.laleents.tools.phone;
 import static com.flowring.laleents.model.user.UserControlCenter.getUserMinInfo;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 
 import androidx.annotation.WorkerThread;
@@ -22,6 +25,7 @@ import com.flowring.laleents.model.stickerlibrary.CustomizeSticker;
 import com.flowring.laleents.model.stickerlibrary.Sticker;
 import com.flowring.laleents.model.stickerlibrary.Stickerlibrary;
 import com.flowring.laleents.tools.CallbackUtils;
+import com.flowring.laleents.tools.CommonUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.cloud.api.CloudUtils;
 import com.google.gson.Gson;
@@ -37,6 +41,7 @@ public class AllData {
 
     @SuppressLint("StaticFieldLeak")
     public static Context context;
+    public static Activity activity;
 
     private static String MainServer = "https://laledev0.flowring.com/laleweb";
     //   private static String MainServer = "http://192.168.9.110:6780";
@@ -105,8 +110,9 @@ public class AllData {
         pref.edit().putInt(getUserMinInfo().userId + "unreadWorkCount", unreadWorkCount).apply();
     }
 
-    public static void init(Context AppContext) {
+    public static void init(Context AppContext, Activity AppActivity) {
         context = AppContext;
+        activity = AppActivity;
     }
 
     public static void initSQL(String userId) {
@@ -226,7 +232,10 @@ public class AllData {
             HttpReturn httpReturn = CloudUtils.iCloudUtils.getOneRoom(key, new CallbackUtils.TimeoutReturn() {
                 @Override
                 public void Callback(IOException timeout) {
-                    StringUtils.HaoLog("timeout");
+                    StringUtils.HaoLog("getOneRoom 網路異常");
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        CommonUtils.showToast(activity,activity.getLayoutInflater(),"網路異常",false);
+                    });
                 }
             });
             if (httpReturn.status == 200) {

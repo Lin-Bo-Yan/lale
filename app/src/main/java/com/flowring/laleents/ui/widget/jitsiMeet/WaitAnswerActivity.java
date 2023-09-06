@@ -74,8 +74,13 @@ public class WaitAnswerActivity extends MainAppCompatActivity {
         if (AllData.context == null) {
             AllData.context = getApplicationContext();
         }
-        if (AllData.context == null)
+
+        if(AllData.activity == null){
+            AllData.activity = WaitAnswerActivity.this;
+        }
+        if (AllData.context == null){
             finish();
+        }
         new Thread(() -> {
             RoomMinInfo roomMinInfo = AllData.getRoomMinInfoNoNull(MessageInfo.room_id);
             UserControlCenter.getOrgtreeuserimage();
