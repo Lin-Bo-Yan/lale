@@ -81,7 +81,7 @@ import com.dmcbig.mediapicker.entity.Media;
 import com.flowring.laleents.R;
 import com.flowring.laleents.model.HttpAfReturn;
 import com.flowring.laleents.model.HttpReturn;
-import com.flowring.laleents.model.ServerAnnouncement;
+import com.flowring.laleents.model.device.ServerAnnouncement;
 import com.flowring.laleents.model.explore.Microapp;
 import com.flowring.laleents.model.msg.MsgControlCenter;
 import com.flowring.laleents.model.notifi.SilenceNotifi;

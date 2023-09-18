@@ -1,8 +1,8 @@
-package com.flowring.laleents.model;
+package com.flowring.laleents.model.device;
 
 public class ServerAnnouncement {
     public String annId ;
-    public String annType;
+    public int annType;
     public String startTime;
     public String endTime;
     public String content;
@@ -10,7 +10,7 @@ public class ServerAnnouncement {
 
     public ServerAnnouncement() {
         annId = null;
-        annType = null;
+        annType = 0;
         startTime = null;
         endTime = null;
         content = null;

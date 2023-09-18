@@ -4,7 +4,8 @@ import androidx.activity.result.ActivityResult;
 
 import com.flowring.laleents.model.HttpAfReturn;
 import com.flowring.laleents.model.HttpReturn;
-import com.flowring.laleents.model.ServerAnnouncement;
+import com.flowring.laleents.model.device.ServerAnnouncement;
+import com.flowring.laleents.model.device.SystemProgram;
 import com.flowring.laleents.model.explore.FocusApp;
 import com.flowring.laleents.model.explore.Microapp;
 import com.flowring.laleents.model.explore.MicroappType;
@@ -147,6 +148,11 @@ public class CallbackUtils {
 
     public interface AnnounceReturn{
         void Callback(ServerAnnouncement serverAnnouncement);
+
+    }
+
+    public interface ProgramReturn{
+        void Callback(SystemProgram program);
 
     }
 

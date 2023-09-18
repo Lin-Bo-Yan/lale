@@ -13,7 +13,8 @@ import android.provider.Settings;
 import com.flowring.laleents.model.AFtoken;
 import com.flowring.laleents.model.HttpAfReturn;
 import com.flowring.laleents.model.HttpReturn;
-import com.flowring.laleents.model.ServerAnnouncement;
+import com.flowring.laleents.model.device.ServerAnnouncement;
+import com.flowring.laleents.model.device.SystemProgram;
 import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.CommonUtils;
 import com.flowring.laleents.tools.DeleteCache;
@@ -331,7 +332,7 @@ public class UserControlCenter {
         }).start();
     }
 
-    public static void getAflogin(Context context, String account, String password, String url, CallbackUtils.messageReturn messageReturn){
+    public static void getAflogin(Context context, String account, String password, String url, CallbackUtils.messageReturn callback){
         if(account != null && password != null && url != null){
             Pattern pattern = Pattern.compile(DefinedUtils.URL_RULE);
             Matcher matcher = pattern.matcher(url);
@@ -345,7 +346,7 @@ public class UserControlCenter {
                     });
                     if(afloginNew.success){
                         String info = new Gson().toJson(afloginNew.data);
-                        messageReturn.Callback(info);
+                        callback.Callback(info);
                     } else {
                         HttpAfReturn afReturn = CloudUtils.iCloudUtils.aflogin(account, password, url, new CallbackUtils.TimeoutReturn() {
                             @Override
@@ -355,7 +356,7 @@ public class UserControlCenter {
                         });
                         if(afReturn.success){
                             String info = new Gson().toJson(afReturn.data);
-                            messageReturn.Callback(info);
+                            callback.Callback(info);
                         } else {
                             DialogUtils.showDialogMessage(context,"請輸入正確的帳號和密碼");
                         }
@@ -368,7 +369,7 @@ public class UserControlCenter {
         }
     }
 
-    public static void getAllSystemInfor(){
+    public static void getAllSystemInfor(CallbackUtils.ProgramReturn programReturn){
         new Thread(() -> {
             HttpReturn httpReturn = CloudUtils.iCloudUtils.getAllSystemInfor(new CallbackUtils.TimeoutReturn() {
                 @Override
@@ -379,7 +380,18 @@ public class UserControlCenter {
             });
 
             if(httpReturn.status == 200){
-
+                Gson gson = new Gson();
+                String data = gson.toJson(httpReturn.data);
+                SystemProgram[] systemPrograms = gson.fromJson(data,SystemProgram[].class);
+                if(systemPrograms != null && systemPrograms.length >0){
+                    for(SystemProgram system : systemPrograms){
+                        SystemProgram systemProgram = system;
+                        programReturn.Callback(systemProgram);
+                    }
+                } else {
+                    SystemProgram systemProgram = new SystemProgram();
+                    programReturn.Callback(systemProgram);
+                }
             }
         }).start();
     }
@@ -454,7 +466,7 @@ public class UserControlCenter {
         }).start();
     }
 
-    public static void getDefaultWatermarkTemplate(){
+    public static void getDefaultWatermarkTemplate(CallbackUtils.messageReturn callback){
         new Thread(() -> {
             HttpReturn httpReturn = CloudUtils.iCloudUtils.getDefaultWatermarkTemplate(new CallbackUtils.TimeoutReturn() {
                 @Override
@@ -465,12 +477,13 @@ public class UserControlCenter {
             });
 
             if(httpReturn.status == 200){
-
+                String info = new Gson().toJson(httpReturn.data);
+                callback.Callback(info);
             }
         }).start();
     }
 
-    public static void getAfServerVersion(String afUrl, CallbackUtils.messageReturn messageReturn){
+    public static void getAfServerVersion(String afUrl, CallbackUtils.messageReturn callback){
         new Thread(() -> {
             HttpAfReturn afReturn = CloudUtils.iCloudUtils.afServerVersion(afUrl, new CallbackUtils.TimeoutReturn() {
                 @Override
@@ -480,7 +493,7 @@ public class UserControlCenter {
             });
             if(afReturn.success){
                 String info = new Gson().toJson(afReturn.data);
-                messageReturn.Callback(info);
+                callback.Callback(info);
             }
         });
     }
@@ -944,7 +957,7 @@ public class UserControlCenter {
         }
     }
 
-    public static void getWebVersion(String url, CallbackUtils.messageReturn messageReturn,CallbackUtils.TimeoutReturn timeoutReturn){
+    public static void getWebVersion(String url, CallbackUtils.messageReturn callback,CallbackUtils.TimeoutReturn timeoutReturn){
         new Thread(() -> {
             String version = CloudUtils.iCloudUtils.webVersion(url, new CallbackUtils.TimeoutReturn() {
                 @Override
@@ -952,7 +965,7 @@ public class UserControlCenter {
                     timeoutReturn.Callback(timeout);
                 }
             });
-            messageReturn.Callback(version);
+            callback.Callback(version);
             }).start();
     }
     
