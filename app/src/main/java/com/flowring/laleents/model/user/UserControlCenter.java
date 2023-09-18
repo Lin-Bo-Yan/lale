@@ -378,21 +378,40 @@ public class UserControlCenter {
                     CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
                 }
             });
+            String jsonString = "[" +
+                    "{" +
+                    "\"settingKey\": \"screenshot_forbidden\"," +
+                    "\"settingValue\": \"true\"," +
+                    "\"additionalValue\": null" +
+                    "}," +
+                    "{" +
+                    "\"settingKey\": \"download_forbidden\"," +
+                    "\"settingValue\": \"false\"," +
+                    "\"additionalValue\": null" +
+                    "}," +
+                    "{" +
+                    "\"settingKey\": \"restrict_file_ext\"," +
+                    "\"settingValue\": \"true\"," +
+                    "\"additionalValue\": \"pptx;doc;pdf;png;jpg;jpe;jpeg\"" +
+                    "}," +
+                    "{" +
+                    "\"settingKey\": \"download_watermark\"," +
+                    "\"settingValue\": \"false\"," +
+                    "\"additionalValue\": null" +
+                    "}" +
+                    "]";
 
-            if(httpReturn.status == 200){
+            //if(httpReturn.status == 200){
                 Gson gson = new Gson();
                 String data = gson.toJson(httpReturn.data);
-                SystemProgram[] systemPrograms = gson.fromJson(data,SystemProgram[].class);
+                SystemProgram[] systemPrograms = gson.fromJson(jsonString,SystemProgram[].class);
                 if(systemPrograms != null && systemPrograms.length >0){
                     for(SystemProgram system : systemPrograms){
                         SystemProgram systemProgram = system;
                         programReturn.Callback(systemProgram);
                     }
-                } else {
-                    SystemProgram systemProgram = new SystemProgram();
-                    programReturn.Callback(systemProgram);
                 }
-            }
+            //}
         }).start();
     }
 

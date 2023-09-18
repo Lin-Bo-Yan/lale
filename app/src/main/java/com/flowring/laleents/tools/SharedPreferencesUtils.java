@@ -74,4 +74,55 @@ public class SharedPreferencesUtils {
         return errorCode;
     }
 
+    //設定screenshot布林值
+    public static void setScreenshotForbidden(String settingValue){
+        pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
+        boolean screenshotForbidden = Boolean.parseBoolean(settingValue);
+        pref.edit().putBoolean("isScreenshotForbidden",screenshotForbidden).apply();
+    }
+
+    //取出screenshot布林值
+    public static boolean getScreenshotForbidden(Activity activity){
+        pref = PreferenceManager.getDefaultSharedPreferences(activity);
+        return pref.getBoolean("isScreenshotForbidden",false);
+    }
+
+    //設定download布林值
+    public static void setDownloadForbidden(String settingValue){
+        pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
+        boolean downloadForbidden = Boolean.parseBoolean(settingValue);
+        pref.edit().putBoolean("isDownloadForbidden",downloadForbidden).apply();
+    }
+
+    //取出download布林值
+    public static boolean getDownloadForbidden(Activity activity){
+        pref = PreferenceManager.getDefaultSharedPreferences(activity);
+        return pref.getBoolean("isDownloadForbidden",false);
+    }
+
+    //設定restrict布林值 檔案名稱需要另做處理
+    public static void setRestrictFileExt(String settingValue, String additionalValue){
+        pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
+        boolean restrictFileExt = Boolean.parseBoolean(settingValue);
+        pref.edit().putBoolean("isRestrictFileExt",restrictFileExt).apply();
+    }
+
+    //取出restrict布林值
+    public static boolean getRestrictFileExt(Activity activity){
+        pref = PreferenceManager.getDefaultSharedPreferences(activity);
+        return pref.getBoolean("isRestrictFileExt",false);
+    }
+
+    //設定download_watermark布林值
+    public static void setWatermark(String settingValue){
+        pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
+        boolean downloadWatermark = Boolean.parseBoolean(settingValue);
+        pref.edit().putBoolean("isDownloadWatermark",downloadWatermark).apply();
+    }
+
+    //取出download_watermark布林值
+    public static boolean getWatermark(Activity activity){
+        pref = PreferenceManager.getDefaultSharedPreferences(activity);
+        return pref.getBoolean("isDownloadWatermark",false);
+    }
 }

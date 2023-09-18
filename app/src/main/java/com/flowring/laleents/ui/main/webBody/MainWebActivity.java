@@ -82,6 +82,7 @@ import com.flowring.laleents.R;
 import com.flowring.laleents.model.HttpAfReturn;
 import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.model.device.ServerAnnouncement;
+import com.flowring.laleents.model.device.SystemProgram;
 import com.flowring.laleents.model.explore.Microapp;
 import com.flowring.laleents.model.msg.MsgControlCenter;
 import com.flowring.laleents.model.notifi.SilenceNotifi;
@@ -419,6 +420,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         StringUtils.HaoLog("onResume= " + userMin);
         if (userMin != null && !userMin.userId.isEmpty()) {
             checkNetworkAndContinue();
+            setSystemInfor();
             if(userMin.eimUserData.isLaleAppEim){
                 censorToken();
                 censorEimFirebasePusher();
@@ -2418,15 +2420,15 @@ public class MainWebActivity extends MainAppCompatActivity {
         }, 300);
     }
 
-    private void retryEimFirebasePusher(final int errorCount){
-        if(errorCount < 3){
+    private void retryEimFirebasePusher(final int errorCount) {
+        if (errorCount < 3) {
             StringUtils.HaoLog("EimFirebasePusher 第 " + errorCount + " 次");
             UserControlCenter.storeEimErrorCode(MainWebActivity.this);
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     int errorCode = SharedPreferencesUtils.getFirebasePusherErrorCode(MainWebActivity.this);
-                    if(errorCode == 200){
+                    if (errorCode == 200) {
                         return;
                     }
                     retryEimFirebasePusher(errorCount + 1);
@@ -2441,6 +2443,33 @@ public class MainWebActivity extends MainAppCompatActivity {
                 }
             });
         }
+    }
+    
+    private void setSystemInfor(){
+        UserControlCenter.getAllSystemInfor(new CallbackUtils.ProgramReturn() {
+            @Override
+            public void Callback(SystemProgram program) {
+                switch (program.settingKey){
+                    case "screenshot_forbidden":
+                        StringUtils.HaoLog("setSystemInfor= 是否可截圖 " + program.settingValue);
+                        SharedPreferencesUtils.setScreenshotForbidden(program.settingValue);
+                        break;
+                    case "download_forbidden":
+                        StringUtils.HaoLog("setSystemInfor= 是否可下載 " + program.settingValue);
+                        SharedPreferencesUtils.setDownloadForbidden(program.settingValue);
+                        break;
+                    case "restrict_file_ext":
+                        StringUtils.HaoLog("setSystemInfor= 是否限制副檔名 " + program.settingValue);
+                        SharedPreferencesUtils.setRestrictFileExt(program.settingValue, program.additionalValue);
+                        //這邊要處理副檔名
+                        break;
+                    case "download_watermark":
+                        StringUtils.HaoLog("setSystemInfor= 是否下載附加浮水印 " + program.settingValue);
+                        SharedPreferencesUtils.setWatermark(program.settingValue);
+                        break;
+                }
+            }
+        });
     }
 
     private void downloadByBytesBase64(JSONObject data) {

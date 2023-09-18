@@ -19,6 +19,7 @@ import com.flowring.laleents.model.msg.MessageInfo;
 import com.flowring.laleents.model.msg.MessageItem;
 import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.DialogUtils;
+import com.flowring.laleents.tools.SharedPreferencesUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.phone.DefinedUtils;
 import com.flowring.laleents.tools.phone.LocalBroadcastControlCenter;
@@ -112,6 +113,14 @@ public class MainAppCompatActivity extends AppCompatActivity {
         itFilter.addAction("test");
         //保持亮起
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        //true 為 可以截圖
+        boolean screenshotsProhibited = SharedPreferencesUtils.getScreenshotForbidden(MainAppCompatActivity.this);
+        if(screenshotsProhibited){
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        } else {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        }
     }
 
     @Override
