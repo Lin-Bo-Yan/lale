@@ -2615,6 +2615,67 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
+    public HttpReturn getAllSystemInfor(CallbackUtils.TimeoutReturn timeoutReturn) {
+        Request.Builder request = new Request.Builder()
+                .url(AllData.getMainServer() + "/system/setting")
+                .get();
+        HttpReturn httpReturn = gethttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
+    }
+
+    @Override
+    public HttpReturn updataSystemInfor(JSONArray settingsArray, CallbackUtils.TimeoutReturn timeoutReturn) {
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType,settingsArray.toString());
+        Request.Builder request = new Request.Builder()
+                .url(AllData.getMainServer() + "/system/adm/setting")
+                .method("PUT", body)
+                .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
+
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
+    }
+
+    @Override
+    public HttpReturn getAllWatermarkTemplates(CallbackUtils.TimeoutReturn timeoutReturn) {
+        Request.Builder request = new Request.Builder()
+                .url(AllData.getMainServer() + "/watermark/adm/all")
+                .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token)
+                .get();
+        HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
+    }
+
+    @Override
+    public HttpReturn getDefaultWatermarkTemplate(CallbackUtils.TimeoutReturn timeoutReturn) {
+        Request.Builder request = new Request.Builder()
+                .url(AllData.getMainServer() + "/watermark/default")
+                .get();
+        HttpReturn httpReturn = gethttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return httpReturn;
+    }
+
+    @Override
     public String webVersion(String url,CallbackUtils.TimeoutReturn timeoutReturn) {
         Request.Builder request = new Request.Builder()
                 .url(url)

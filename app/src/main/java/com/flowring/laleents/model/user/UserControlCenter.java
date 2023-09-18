@@ -34,6 +34,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -365,6 +366,108 @@ public class UserControlCenter {
                 DialogUtils.showDialogMessage(context,"格式不正確");
             }
         }
+    }
+
+    public static void getAllSystemInfor(){
+        new Thread(() -> {
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.getAllSystemInfor(new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("getAllSystemInfor 網路異常");
+                    CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                }
+            });
+
+            if(httpReturn.status == 200){
+
+            }
+        }).start();
+    }
+
+    public static void updataSystemInfor(boolean screenshotForbidden, boolean downloadForbidden, boolean restrictFileExt, boolean downloadWatermark){
+        new Thread(() -> {
+            JSONArray settingsArray = updataSystemInforJsonArray(screenshotForbidden, downloadForbidden, restrictFileExt, downloadWatermark);
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.updataSystemInfor(settingsArray, new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("updataSystemInfor 網路異常");
+                }
+            });
+
+            if(httpReturn.status == 200){
+
+            }
+        }).start();
+    }
+
+    private static JSONArray updataSystemInforJsonArray(boolean screenshotForbidden, boolean downloadForbidden, boolean restrictFileExt, boolean downloadWatermark){
+        JSONArray settingsArray = new JSONArray();
+        JSONObject screenshotSetting = new JSONObject();
+        JSONObject downloadSetting = new JSONObject();
+        JSONObject fileExtSetting = new JSONObject();
+        JSONObject watermarkSetting = new JSONObject();
+
+        String screenshotString = Boolean.toString(screenshotForbidden);
+        String downloadString = Boolean.toString(downloadForbidden);
+        String restrictString = Boolean.toString(restrictFileExt);
+        String downloadWaterString = Boolean.toString(downloadWatermark);
+        try {
+            screenshotSetting.put("settingKey", "screenshot_forbidden");
+            screenshotSetting.put("settingValue", screenshotString);
+            screenshotSetting.put("additionalValue", "");
+            settingsArray.put(screenshotSetting);
+
+            downloadSetting.put("settingKey", "download_forbidden");
+            downloadSetting.put("settingValue", downloadString);
+            downloadSetting.put("additionalValue", "");
+            settingsArray.put(downloadSetting);
+
+            fileExtSetting.put("settingKey", "restrict_file_ext");
+            fileExtSetting.put("settingValue", restrictString);
+            fileExtSetting.put("additionalValue", "");
+            settingsArray.put(fileExtSetting);
+
+            watermarkSetting.put("settingKey", "download_watermark");
+            watermarkSetting.put("settingValue", downloadWaterString);
+            watermarkSetting.put("additionalValue", "");
+            settingsArray.put(watermarkSetting);
+
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+        return settingsArray;
+    }
+
+    public static void getAllWatermarkTemplates(){
+        new Thread(() -> {
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.getAllWatermarkTemplates(new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("getAllWatermarkTemplates 網路異常");
+                    CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                }
+            });
+
+            if(httpReturn.status == 200){
+
+            }
+        }).start();
+    }
+
+    public static void getDefaultWatermarkTemplate(){
+        new Thread(() -> {
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.getDefaultWatermarkTemplate(new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("getDefaultWatermarkTemplate 網路異常");
+                    CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                }
+            });
+
+            if(httpReturn.status == 200){
+
+            }
+        }).start();
     }
 
     public static void getAfServerVersion(String afUrl, CallbackUtils.messageReturn messageReturn){

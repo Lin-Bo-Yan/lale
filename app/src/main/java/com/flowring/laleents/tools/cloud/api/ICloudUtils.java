@@ -808,6 +808,30 @@ public interface ICloudUtils {
     HttpReturn latestAnnounceGivenTime(String givenTime);
 
     /**
+     * 系統設定 - 取得所有系統資訊
+     */
+    @WorkerThread
+    HttpReturn getAllSystemInfor(CallbackUtils.TimeoutReturn timeoutReturn);
+
+    /**
+     * 系統設定 - (Adm)更新系統資訊
+     */
+    @WorkerThread
+    HttpReturn updataSystemInfor(JSONArray settingsArray, CallbackUtils.TimeoutReturn timeoutReturn);
+
+    /**
+     * 浮水印 - (Adm)取得所有浮水印模板資訊
+     */
+    @WorkerThread
+    HttpReturn getAllWatermarkTemplates(CallbackUtils.TimeoutReturn timeoutReturn);
+
+    /**
+     * 浮水印 - 取得預設浮水印模板資訊
+     */
+    @WorkerThread
+    HttpReturn getDefaultWatermarkTemplate(CallbackUtils.TimeoutReturn timeoutReturn);
+
+    /**
      * 取得 Lale 使用平台最低可相容版本
      */
     @WorkerThread
