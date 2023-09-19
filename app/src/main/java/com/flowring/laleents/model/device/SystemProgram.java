@@ -1,6 +1,8 @@
 package com.flowring.laleents.model.device;
 
-public class SystemProgram {
+import java.io.Serializable;
+
+public class SystemProgram implements Serializable {
     public String settingKey;
     public String settingValue;
     public String additionalValue;

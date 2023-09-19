@@ -17,6 +17,7 @@ import com.flowring.laleents.model.msg.SearchMsgs;
 import com.flowring.laleents.model.room.PasswordRoomMinInfo;
 import com.flowring.laleents.model.user.UserControlCenter;
 import com.flowring.laleents.model.user.UserInfo;
+import com.flowring.laleents.ui.model.FileReader.WatermarkDefault;
 
 import java.io.File;
 import java.io.IOException;
@@ -153,6 +154,11 @@ public class CallbackUtils {
 
     public interface ProgramReturn{
         void Callback(SystemProgram program);
+
+    }
+
+    public interface WatermarkDefaultReturn{
+        void Callback(WatermarkDefault watermark);
 
     }
 

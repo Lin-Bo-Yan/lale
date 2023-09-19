@@ -1,6 +1,11 @@
 package com.flowring.laleents.ui.main.webBody;
 
+import com.flowring.laleents.model.user.UserControlCenter;
+import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.SharedPreferencesUtils;
+import com.flowring.laleents.tools.TimeUtils;
+import com.flowring.laleents.ui.model.FileReader.WatermarkDefault;
+import com.flowring.laleents.ui.model.FileReader.WeterMarkBgView;
 import com.flowring.laleents.ui.model.MainAppCompatActivity;
 import androidx.core.content.FileProvider;
 
@@ -15,6 +20,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.flowring.laleents.R;
 import com.flowring.laleents.tools.download.DownloadUtils;
@@ -24,10 +30,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FileReaderActivity extends MainAppCompatActivity {
-    public WebView webview;
-    public ImageView share;
+    private WebView webview;
+    private ImageView share;
+    private TextView watermarkTextView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,30 +48,8 @@ public class FileReaderActivity extends MainAppCompatActivity {
                 finish();
             }
         });
-        share = findViewById(R.id.share);
-        boolean enableSharing = SharedPreferencesUtils.getDownloadForbidden(FileReaderActivity.this);
-        if(enableSharing){
-            share.setVisibility(View.VISIBLE);
-            share.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String jsonDataStr = getIntent().getStringExtra("jsonData");
-                    if(jsonDataStr != null && !jsonDataStr.isEmpty()){
-                        try{
-                            JSONObject jsonData = new JSONObject(jsonDataStr);
-                            String fileId = jsonData.optString("fileId");
-                            String oldFileName = jsonData.optString("fileName");
-                            String url = jsonData.optString("url");
-                            DownloadUtils.openFile(url,oldFileName,fileId,FileReaderActivity.this);
-                        }catch (JSONException e){
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            });
-        } else {
-            share.setVisibility(View.GONE);
-        }
+        initShareImageView();
+        getWatermark();
 
         webview = findViewById(R.id.webview);
         WebSettings webSettings = webview.getSettings();
@@ -114,5 +101,55 @@ public class FileReaderActivity extends MainAppCompatActivity {
                 } else {StringUtils.HaoLog("Uri 空值");}
             } else {StringUtils.HaoLog("檔案不存在");}
         } else {StringUtils.HaoLog("存儲設備不可用，無法進行讀寫操作");}
+    }
+
+    private void initShareImageView(){
+        share = findViewById(R.id.share);
+        boolean enableSharing = SharedPreferencesUtils.getDownloadForbidden(FileReaderActivity.this);
+        if(enableSharing){
+            share.setVisibility(View.VISIBLE);
+            share.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String jsonDataStr = getIntent().getStringExtra("jsonData");
+                    if(jsonDataStr != null && !jsonDataStr.isEmpty()){
+                        try{
+                            JSONObject jsonData = new JSONObject(jsonDataStr);
+                            String fileId = jsonData.optString("fileId");
+                            String oldFileName = jsonData.optString("fileName");
+                            String url = jsonData.optString("url");
+                            DownloadUtils.openFile(url,oldFileName,fileId,FileReaderActivity.this);
+                        }catch (JSONException e){
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        } else {
+            share.setVisibility(View.GONE);
+        }
+    }
+
+    private void getWatermark(){
+        watermarkTextView = findViewById(R.id.watermark);
+        boolean watermarkEnable = SharedPreferencesUtils.getWatermark(FileReaderActivity.this);
+        if(watermarkEnable){
+            UserControlCenter.getDefaultWatermarkTemplate(new CallbackUtils.WatermarkDefaultReturn() {
+                @Override
+                public void Callback(WatermarkDefault watermark) {
+                    if(watermark != null){
+                        List<String> labels = new ArrayList<>();
+                        labels.add(watermark.textContent);
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                watermarkTextView.setBackground(new WeterMarkBgView(FileReaderActivity.this,labels,watermark.textRotate,watermark.textSize, watermark.textColor, watermark.textOpacity));
+                            }
+                        });
+                    }
+                }
+            });
+        }
     }
 }

@@ -30,6 +30,7 @@ import static com.flowring.laleents.ui.main.webBody.MainWebActivity.executorServ
 
 import com.flowring.laleents.ui.main.webBody.MainWebActivity;
 import com.flowring.laleents.ui.model.EimLogin.LoginInAppFunc;
+import com.flowring.laleents.ui.model.FileReader.WatermarkDefault;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
@@ -386,7 +387,7 @@ public class UserControlCenter {
                     "}," +
                     "{" +
                     "\"settingKey\": \"download_forbidden\"," +
-                    "\"settingValue\": \"true\"," +
+                    "\"settingValue\": \"false\"," +
                     "\"additionalValue\": null" +
                     "}," +
                     "{" +
@@ -396,7 +397,7 @@ public class UserControlCenter {
                     "}," +
                     "{" +
                     "\"settingKey\": \"download_watermark\"," +
-                    "\"settingValue\": \"false\"," +
+                    "\"settingValue\": \"true\"," +
                     "\"additionalValue\": null" +
                     "}" +
                     "]";
@@ -485,7 +486,7 @@ public class UserControlCenter {
         }).start();
     }
 
-    public static void getDefaultWatermarkTemplate(CallbackUtils.messageReturn callback){
+    public static void getDefaultWatermarkTemplate(CallbackUtils.WatermarkDefaultReturn watermark){
         new Thread(() -> {
             HttpReturn httpReturn = CloudUtils.iCloudUtils.getDefaultWatermarkTemplate(new CallbackUtils.TimeoutReturn() {
                 @Override
@@ -495,7 +496,7 @@ public class UserControlCenter {
                 }
             });
 
-            //if(httpReturn.status == 200){
+            //if(httpReturn.status == 200){ #50AEAEAE
                 //String info = new Gson().toJson(httpReturn.data);
             String info = "{" +
                     "\"wmtmplId\": \"wmtmpl_default\"," +
@@ -506,13 +507,15 @@ public class UserControlCenter {
                     "\"imageOpacity\": 50," +
                     "\"textContent\": \"姓名：\"," +
                     "\"textFont\": \"DFKai-SB\"," +
-                    "\"textColor\": \"#999999\"," +
-                    "\"textSize\": 48," +
-                    "\"textOpacity\": 50," +
-                    "\"textRotate\": 45," +
+                    "\"textColor\": \"#50AEAEAE\"," +
+                    "\"textSize\": 20," +
+                    "\"textOpacity\": 255," +
+                    "\"textRotate\": -30," +
                     "\"isDefault\": true" +
                     "}";
-                callback.Callback(info);
+                Gson gson = new Gson();
+                WatermarkDefault watermarkDefault = gson.fromJson(info,WatermarkDefault.class);
+            watermark.Callback(watermarkDefault);
             //}
         }).start();
     }
