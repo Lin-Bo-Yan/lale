@@ -457,8 +457,7 @@ public class MainWebActivity extends MainAppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if(requestCode == DefinedUtils.ACCESS_FINE_LOCATION_CODE)
-        {
+        if(requestCode == DefinedUtils.ACCESS_FINE_LOCATION_CODE) {
             try {
                 JSONObject j = new JSONObject().put("type", "authorize").put("data", new JSONObject().put("type","location").put("isSuccess",grantResults[0]==PackageManager.PERMISSION_GRANTED));
                 sendToWeb(j.toString());
@@ -1734,7 +1733,6 @@ public class MainWebActivity extends MainAppCompatActivity {
         download,openFile
     }
 
-    //因為下載檔案都要判別檔案名稱是否空白，設計成共用
     private void judgmentFileName(JSONObject data, ActionType type){
         if (PermissionUtils.checkPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) || (Build.VERSION.SDK_INT > Build.VERSION_CODES.R)) {
             String dataUrl = data.optString("url");
@@ -2451,20 +2449,20 @@ public class MainWebActivity extends MainAppCompatActivity {
             public void Callback(SystemProgram program) {
                 switch (program.settingKey){
                     case "screenshot_forbidden":
-                        StringUtils.HaoLog("setSystemInfor= 是否可截圖 " + program.settingValue);
+                        //StringUtils.HaoLog("setSystemInfor= 是否可截圖 " + program.settingValue);
                         SharedPreferencesUtils.setScreenshotForbidden(program.settingValue);
                         break;
                     case "download_forbidden":
-                        StringUtils.HaoLog("setSystemInfor= 是否可下載 " + program.settingValue);
+                        //StringUtils.HaoLog("setSystemInfor= 是否可下載 " + program.settingValue);
                         SharedPreferencesUtils.setDownloadForbidden(program.settingValue);
                         break;
                     case "restrict_file_ext":
-                        StringUtils.HaoLog("setSystemInfor= 是否限制副檔名 " + program.settingValue);
+                        StringUtils.HaoLog("setSystemInfor= 是否限制副檔名 " + program.additionalValue);
                         SharedPreferencesUtils.setRestrictFileExt(program.settingValue, program.additionalValue);
                         //這邊要處理副檔名
                         break;
                     case "download_watermark":
-                        StringUtils.HaoLog("setSystemInfor= 是否下載附加浮水印 " + program.settingValue);
+                        //StringUtils.HaoLog("setSystemInfor= 是否下載附加浮水印 " + program.settingValue);
                         SharedPreferencesUtils.setWatermark(program.settingValue);
                         break;
                 }

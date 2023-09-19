@@ -1,5 +1,6 @@
 package com.flowring.laleents.ui.main.webBody;
 
+import com.flowring.laleents.tools.SharedPreferencesUtils;
 import com.flowring.laleents.ui.model.MainAppCompatActivity;
 import androidx.core.content.FileProvider;
 
@@ -10,7 +11,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.flowring.laleents.R;
@@ -26,22 +29,15 @@ import java.io.File;
 public class FileNotSupportedActivity extends MainAppCompatActivity {
 
     Button shareButton;
-    TextView fileNameTextView;
+    TextView fileNameTextView,file_not_supported_title;
+    ImageView iconBack;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_not_supported);
         initFileNameTextView();
-
-        shareButton = findViewById(R.id.shareButton);
-        shareButton.setOnClickListener(view -> {
-            if (PermissionUtils.checkPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) || (Build.VERSION.SDK_INT > Build.VERSION_CODES.R)) {
-                String jsonString = getIntent().getStringExtra("JSONObject");
-                judgmentFileName(jsonString);
-            } else {
-                PermissionUtils.requestPermission(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, null, "該功能需要下載權限");
-            }
-        });
+        initShareButton();
+        initIconBack();
     }
 
     private void initFileNameTextView(){
@@ -55,7 +51,38 @@ public class FileNotSupportedActivity extends MainAppCompatActivity {
         }
         fileNameTextView = findViewById(R.id.fileNameTextView);
         fileNameTextView.setText(fileName);
+        file_not_supported_title = findViewById(R.id.file_not_supported_title);
+        file_not_supported_title.setText(fileName);
     }
+
+    private void initShareButton(){
+        shareButton = findViewById(R.id.shareButton);
+        boolean enableSharing = SharedPreferencesUtils.getDownloadForbidden(FileNotSupportedActivity.this);
+        if(enableSharing){
+            shareButton.setVisibility(View.VISIBLE);
+            shareButton.setOnClickListener(view -> {
+                if (PermissionUtils.checkPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) || (Build.VERSION.SDK_INT > Build.VERSION_CODES.R)) {
+                    String jsonString = getIntent().getStringExtra("JSONObject");
+                    judgmentFileName(jsonString);
+                } else {
+                    PermissionUtils.requestPermission(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, null, "該功能需要下載權限");
+                }
+            });
+        } else {
+            shareButton.setVisibility(View.GONE);
+        }
+    }
+
+    private void initIconBack(){
+        iconBack = findViewById(R.id.iconBack);
+        iconBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+    }
+
     private void judgmentFileName(String jsonString){
         String oldFileName = null;
         String fileId = null;

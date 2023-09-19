@@ -15,11 +15,12 @@
             android:layout_weight="1"
             android:layout_height="match_parent">
             <ImageView
+                android:id="@+id/iconBack"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:padding="8dp"
                 android:layout_marginRight="80dp"
-                android:src="@drawable/can_not_open_side_guide"/>
+                android:src="@drawable/nav_icon_back_arrow"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
@@ -27,6 +28,7 @@
             android:layout_height="match_parent"
             android:gravity="center">
             <TextView
+                android:id="@+id/file_not_supported_title"
                 android:text="@string/file_not_supported_title"
                 android:textColor="@color/white"
                 android:layout_width="wrap_content"
@@ -38,12 +40,7 @@
             android:layout_weight="1"
             android:layout_height="match_parent"
             android:gravity="center">
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="6dp"
-                android:layout_marginLeft="80dp"
-                android:src="@drawable/can_not_open_magnifier"/>
+
         </LinearLayout>
     </LinearLayout>
 

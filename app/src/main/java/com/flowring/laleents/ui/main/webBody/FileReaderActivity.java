@@ -1,5 +1,6 @@
 package com.flowring.laleents.ui.main.webBody;
 
+import com.flowring.laleents.tools.SharedPreferencesUtils;
 import com.flowring.laleents.ui.model.MainAppCompatActivity;
 import androidx.core.content.FileProvider;
 
@@ -38,25 +39,30 @@ public class FileReaderActivity extends MainAppCompatActivity {
                 finish();
             }
         });
-
         share = findViewById(R.id.share);
-        share.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String jsonDataStr = getIntent().getStringExtra("jsonData");
-                if(jsonDataStr != null && !jsonDataStr.isEmpty()){
-                    try{
-                        JSONObject jsonData = new JSONObject(jsonDataStr);
-                        String fileId = jsonData.optString("fileId");
-                        String oldFileName = jsonData.optString("fileName");
-                        String url = jsonData.optString("url");
-                        DownloadUtils.openFile(url,oldFileName,fileId,FileReaderActivity.this);
-                    }catch (JSONException e){
-                        e.printStackTrace();
+        boolean enableSharing = SharedPreferencesUtils.getDownloadForbidden(FileReaderActivity.this);
+        if(enableSharing){
+            share.setVisibility(View.VISIBLE);
+            share.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String jsonDataStr = getIntent().getStringExtra("jsonData");
+                    if(jsonDataStr != null && !jsonDataStr.isEmpty()){
+                        try{
+                            JSONObject jsonData = new JSONObject(jsonDataStr);
+                            String fileId = jsonData.optString("fileId");
+                            String oldFileName = jsonData.optString("fileName");
+                            String url = jsonData.optString("url");
+                            DownloadUtils.openFile(url,oldFileName,fileId,FileReaderActivity.this);
+                        }catch (JSONException e){
+                            e.printStackTrace();
+                        }
                     }
                 }
-            }
-        });
+            });
+        } else {
+            share.setVisibility(View.GONE);
+        }
 
         webview = findViewById(R.id.webview);
         WebSettings webSettings = webview.getSettings();

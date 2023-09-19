@@ -386,7 +386,7 @@ public class UserControlCenter {
                     "}," +
                     "{" +
                     "\"settingKey\": \"download_forbidden\"," +
-                    "\"settingValue\": \"false\"," +
+                    "\"settingValue\": \"true\"," +
                     "\"additionalValue\": null" +
                     "}," +
                     "{" +
@@ -495,10 +495,25 @@ public class UserControlCenter {
                 }
             });
 
-            if(httpReturn.status == 200){
-                String info = new Gson().toJson(httpReturn.data);
+            //if(httpReturn.status == 200){
+                //String info = new Gson().toJson(httpReturn.data);
+            String info = "{" +
+                    "\"wmtmplId\": \"wmtmpl_default\"," +
+                    "\"name\": \"Watermark_Logo\"," +
+                    "\"pageDirect\": \"vertical\"," +
+                    "\"image\": \"http://192.168.9.110:6701/file/download/296a6c9dacfe43adb5e9d15000b1a647\"," +
+                    "\"imageScale\": 100," +
+                    "\"imageOpacity\": 50," +
+                    "\"textContent\": \"姓名：\"," +
+                    "\"textFont\": \"DFKai-SB\"," +
+                    "\"textColor\": \"#999999\"," +
+                    "\"textSize\": 48," +
+                    "\"textOpacity\": 50," +
+                    "\"textRotate\": 45," +
+                    "\"isDefault\": true" +
+                    "}";
                 callback.Callback(info);
-            }
+            //}
         }).start();
     }
 
