@@ -113,14 +113,6 @@ public class MainAppCompatActivity extends AppCompatActivity {
         itFilter.addAction("test");
         //保持亮起
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        //true 為 可以截圖
-        boolean screenshotsProhibited = SharedPreferencesUtils.getScreenshotForbidden(MainAppCompatActivity.this);
-        if(screenshotsProhibited){
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
-        } else {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
-        }
     }
 
     @Override
@@ -132,8 +124,15 @@ public class MainAppCompatActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-
         super.onResume();
+
+        //true 為 可以截圖
+        boolean screenshotsProhibited = SharedPreferencesUtils.getScreenshotForbidden(MainAppCompatActivity.this);
+        if(screenshotsProhibited){
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        } else {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        }
     }
 
     protected DialogWait dialogWait;

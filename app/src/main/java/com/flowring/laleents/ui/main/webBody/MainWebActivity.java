@@ -481,7 +481,8 @@ public class MainWebActivity extends MainAppCompatActivity {
             }
             //若選擇拍照上傳data會是null
             Uri result = (data == null) ? null : data.getData();
-            if (result == null) {
+            Uri[] uris = new Uri[]{result};
+            if(result == null) {
                 if (data != null && data.getClipData() != null) {
                     ClipData clipData = data.getClipData();
                     if (clipData == null) {
@@ -499,16 +500,31 @@ public class MainWebActivity extends MainAppCompatActivity {
                     }
                     //取得拍照上傳的相片
                     Uri uri = Uri.fromFile(new File(currentPhotoPath));
+                    uris = new Uri[]{uri};
                     if (mUploadMessage != null) {
-                        mUploadMessage.onReceiveValue(new Uri[]{uri});
+                        mUploadMessage.onReceiveValue(uris);
                         mUploadMessage = null;
                     }
                 }
                 return;
             }
-            if (mUploadMessage != null) {
-                mUploadMessage.onReceiveValue(new Uri[]{result});
-                mUploadMessage = null;
+            if(result != null){
+                //如果限制副檔名啟用，則只能上傳符合的白名單
+                String fileName = FileUtils.getRealPathFromURI(MainWebActivity.this,result);
+                String fileType = FileUtils.fileType(fileName);
+                boolean restrictFileExtEnabled = SharedPreferencesUtils.getRestrictFileExt(MainWebActivity.this);
+                String fileExtension = SharedPreferencesUtils.getFileExtension(MainWebActivity.this);
+                if(restrictFileExtEnabled){
+                    boolean allowUpload = FileUtils.isStringInFileExtensions(fileExtension,fileType);
+                    if (!allowUpload) {
+                        CommonUtils.showToast(MainWebActivity.this, getLayoutInflater(), "不允許的檔案類型", false);
+                        uris = new Uri[0];
+                    }
+                }
+                if (mUploadMessage != null) {
+                    mUploadMessage.onReceiveValue(uris);
+                    mUploadMessage = null;
+                }
             }
         }
         if (requestCode == DefinedUtils.REQUEST_IMAGE_PICKER) {
@@ -2458,8 +2474,8 @@ public class MainWebActivity extends MainAppCompatActivity {
                         break;
                     case "restrict_file_ext":
                         StringUtils.HaoLog("setSystemInfor= 是否限制副檔名 " + program.additionalValue);
-                        SharedPreferencesUtils.setRestrictFileExt(program.settingValue, program.additionalValue);
-                        //這邊要處理副檔名
+                        SharedPreferencesUtils.setRestrictFileExt(program.settingValue);
+                        SharedPreferencesUtils.saveFileExtension(program.additionalValue);
                         break;
                     case "download_watermark":
                         //StringUtils.HaoLog("setSystemInfor= 是否下載附加浮水印 " + program.settingValue);

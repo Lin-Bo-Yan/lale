@@ -1231,6 +1231,9 @@ public class FileUtils {
     }
 
     public static String fileType(String fileName){
+        if (fileName == null) {
+            return "";
+        }
         int lastDotIndex = fileName.lastIndexOf(".");
         if (lastDotIndex == -1 || lastDotIndex == 0) {
             return "";
@@ -1279,6 +1282,45 @@ public class FileUtils {
                 return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
         }
         return "data";
+    }
+
+    public static String getRealPathFromURI(Context context, Uri contentURI) {
+        String result = null;
+        Cursor cursor = context.getContentResolver().query(contentURI, null, null, null, null);
+        // 如果Uri使用"file://"方案，直接獲取檔案名稱
+        if ("file".equals(contentURI.getScheme())) {
+            return contentURI.getLastPathSegment();
+        }
+
+        try {
+            // 來源是 Dropbox 或其他類似的本機檔案路徑
+            if (cursor == null) {
+                result = contentURI.getPath();
+            } else {
+                cursor.moveToFirst();
+                int displayNameIndex  = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                if(displayNameIndex != -1){
+                    result = cursor.getString(displayNameIndex);
+                }
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return result;
+    }
+
+    public static boolean isStringInFileExtensions(String fileExtension, String inputFileType){
+        // 將fileExtension分割成副檔名陣列
+        String[] extensions = fileExtension.split(";");
+        String fileType = inputFileType.replace(".", "");
+        for (String ext : extensions){
+            if (fileType.equalsIgnoreCase(ext.trim())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static String toExtension(String value) {

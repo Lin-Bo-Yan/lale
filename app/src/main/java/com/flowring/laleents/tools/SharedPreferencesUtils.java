@@ -101,7 +101,7 @@ public class SharedPreferencesUtils {
     }
 
     //設定restrict布林值 檔案名稱需要另做處理
-    public static void setRestrictFileExt(String settingValue, String additionalValue){
+    public static void setRestrictFileExt(String settingValue){
         pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
         boolean restrictFileExt = Boolean.parseBoolean(settingValue);
         pref.edit().putBoolean("isRestrictFileExt",restrictFileExt).apply();
@@ -111,6 +111,19 @@ public class SharedPreferencesUtils {
     public static boolean getRestrictFileExt(Activity activity){
         pref = PreferenceManager.getDefaultSharedPreferences(activity);
         return pref.getBoolean("isRestrictFileExt",false);
+    }
+
+    //存文件擴展名
+    public static void saveFileExtension(String additionalValue){
+        pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
+        pref.edit().putString("fileExtension", additionalValue).apply();
+    }
+
+    //取文件擴展名
+    public static String getFileExtension(Activity activity){
+        pref = PreferenceManager.getDefaultSharedPreferences(activity);
+        String fileExtension = pref.getString("fileExtension","");
+        return fileExtension;
     }
 
     //設定download_watermark布林值
