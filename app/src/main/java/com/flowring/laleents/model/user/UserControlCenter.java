@@ -504,13 +504,13 @@ public class UserControlCenter {
                     "\"pageDirect\": \"vertical\"," +
                     "\"image\": \"http://192.168.9.110:6701/file/download/296a6c9dacfe43adb5e9d15000b1a647\"," +
                     "\"imageScale\": 100," +
-                    "\"imageOpacity\": 50," +
+                    "\"imageOpacity\": 255," +
                     "\"textContent\": \"姓名：\"," +
                     "\"textFont\": \"DFKai-SB\"," +
                     "\"textColor\": \"#50AEAEAE\"," +
                     "\"textSize\": 20," +
                     "\"textOpacity\": 255," +
-                    "\"textRotate\": -30," +
+                    "\"textRotate\": -40," +
                     "\"isDefault\": true" +
                     "}";
                 Gson gson = new Gson();

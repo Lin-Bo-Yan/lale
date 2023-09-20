@@ -144,7 +144,7 @@ public class FileReaderActivity extends MainAppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                watermarkTextView.setBackground(new WeterMarkBgView(FileReaderActivity.this,labels,watermark.textRotate,watermark.textSize, watermark.textColor, watermark.textOpacity));
+                                watermarkTextView.setBackground(new WeterMarkBgView(FileReaderActivity.this,labels,watermark.textRotate,watermark.textSize, watermark.textColor, watermark.textOpacity, watermark.imageOpacity));
                             }
                         });
                     }
