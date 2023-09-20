@@ -2,6 +2,7 @@ package com.flowring.laleents.ui.main.webBody;
 
 import com.flowring.laleents.model.user.UserControlCenter;
 import com.flowring.laleents.tools.CallbackUtils;
+import com.flowring.laleents.tools.FileUtils;
 import com.flowring.laleents.tools.SharedPreferencesUtils;
 import com.flowring.laleents.ui.model.FileReader.WatermarkDefault;
 import com.flowring.laleents.ui.model.FileReader.WeterMarkBgView;
@@ -10,6 +11,7 @@ import androidx.core.content.FileProvider;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -57,7 +59,6 @@ public class FileReaderActivity extends MainAppCompatActivity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 view.loadUrl(request.getUrl().toString());
-
                 return false;
             }
         });
@@ -139,7 +140,7 @@ public class FileReaderActivity extends MainAppCompatActivity {
                     if(watermark != null){
                         List<String> labels = new ArrayList<>();
                         labels.add(watermark.textContent);
-
+                        Bitmap bitmap = FileUtils.getBitmapFromURL(watermark.image);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -150,7 +151,8 @@ public class FileReaderActivity extends MainAppCompatActivity {
                                         watermark.textOpacity,
                                         watermark.imageOpacity,
                                         watermark.imageScale,
-                                        watermark.textFont));
+                                        watermark.textFont,
+                                        bitmap));
                             }
                         });
                     }

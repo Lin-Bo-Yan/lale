@@ -31,7 +31,6 @@ public class DownLoadThread implements Runnable {
                 downloadFile = Environment.getExternalStorageDirectory();
                 sdFile = new File(downloadFile, "memei_1.zip");
                 fout = new FileOutputStream(sdFile);
-            } else {
             }
             byte[] buffer = new byte[1024];
             int len;

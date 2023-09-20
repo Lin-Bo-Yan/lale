@@ -29,7 +29,7 @@ import java.io.File;
 public class FileNotSupportedActivity extends MainAppCompatActivity {
 
     Button shareButton;
-    TextView fileNameTextView,file_not_supported_title;
+    TextView fileNameTextView;
     ImageView iconBack;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +51,6 @@ public class FileNotSupportedActivity extends MainAppCompatActivity {
         }
         fileNameTextView = findViewById(R.id.fileNameTextView);
         fileNameTextView.setText(fileName);
-        file_not_supported_title = findViewById(R.id.file_not_supported_title);
-        file_not_supported_title.setText(fileName);
     }
 
     private void initShareButton(){

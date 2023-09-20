@@ -495,22 +495,21 @@ public class UserControlCenter {
                     CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
                 }
             });
-
-            //if(httpReturn.status == 200){ #50AEAEAE
+            //if(httpReturn.status == 200){
                 //String info = new Gson().toJson(httpReturn.data);
             String info = "{" +
                     "\"wmtmplId\": \"wmtmpl_default\"," +
                     "\"name\": \"Watermark_Logo\"," +
                     "\"pageDirect\": \"vertical\"," +
-                    "\"image\": \"http://192.168.9.110:6701/file/download/296a6c9dacfe43adb5e9d15000b1a647\"," +
-                    "\"imageScale\": 30," +
-                    "\"imageOpacity\": 255," +
-                    "\"textContent\": \"姓名：\"," +
-                    "\"textFont\": \"標楷體\"," +
-                    "\"textColor\": \"#50AEAEAE\"," +
-                    "\"textSize\": 60," +
-                    "\"textOpacity\": 255," +
-                    "\"textRotate\": -40," +
+                    "\"image\": \"https://agentflow.flowring.com:8443/WebAgenda/downloadPhoto?userId=dVI3V1pyVFQ3bUlHU1J0SmNEbGVKVFNqenc4eUhlK1gNClcmJCMhQWRYVjM0cWI1bTRZPQ0K&size=p\"," +
+                    "\"imageScale\": 100," +
+                    "\"imageOpacity\": 100," +
+                    "\"textContent\": \"刑素蘭\"," +
+                    "\"textFont\": \"DFKai-SB\"," +
+                    "\"textColor\": \"#08C7D0\"," +
+                    "\"textSize\": 40," +
+                    "\"textOpacity\": 100," +
+                    "\"textRotate\": 0," +
                     "\"isDefault\": true" +
                     "}";
                 Gson gson = new Gson();

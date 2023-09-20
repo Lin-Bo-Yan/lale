@@ -2,7 +2,6 @@ package com.flowring.laleents.ui.model.FileReader;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
@@ -15,7 +14,6 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.flowring.laleents.R;
 import com.flowring.laleents.tools.StringUtils;
 
 import java.util.List;
@@ -32,8 +30,9 @@ public class WeterMarkBgView extends Drawable {
     private String textColor;
     private int textOpacity;  //文字透明度
     private String textFont;  // 文字字體
+    private Bitmap bitmap;
 
-    public WeterMarkBgView(Context context, List<String> labels, int degress, int fontSize, String textColor, int textOpacity, int imageOpacity, int imageScale, String textFont) {
+    public WeterMarkBgView(Context context, List<String> labels, int degress, int fontSize, String textColor, int textOpacity, int imageOpacity, int imageScale, String textFont, Bitmap bitmap) {
         this.labels = labels;
         this.context = context;
         this.degress = degress;
@@ -43,6 +42,7 @@ public class WeterMarkBgView extends Drawable {
         this.imageOpacity = imageOpacity;
         this.imageScale = imageScale;
         this.textFont = textFont;
+        this.bitmap = bitmap;
     }
 
     @Override
@@ -52,7 +52,7 @@ public class WeterMarkBgView extends Drawable {
         int canvasHeight = getBounds().height();
 
         //畫布背景色
-        canvas.drawColor(Color.parseColor("#40F3F5F9"));
+        //canvas.drawColor(Color.parseColor("#40F3F5F9"));
         //水印文字顏色
         paint.setColor(Color.parseColor(textColor));
         //設置抗鋸齒
@@ -66,22 +66,24 @@ public class WeterMarkBgView extends Drawable {
         // 設置透明度為半透明
         paint.setAlpha(textOpacity);
 
-        float scale = convertToFloatPercentage(imageScale);
-        // 設定圖片縮放比例
-        Matrix matrix = new Matrix();
-        matrix.postScale(scale, scale);
+        // 設置圖片
+        if(bitmap != null){
+            float scale = convertToFloatPercentage(imageScale);
+            // 設定圖片縮放比例
+            Matrix matrix = new Matrix();
+            matrix.postScale(scale, scale);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.default_group);
-        // 使用Matrix物件對Bitmap進行縮放
-        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            // 使用Matrix物件對Bitmap進行縮放
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
 
-        // 設置圖片透明度
-        bitmapPaint.setAlpha(imageOpacity);
+            // 設置圖片透明度
+            bitmapPaint.setAlpha(imageOpacity);
 
-        // 計算圖片的左上角位置，使它們都位於畫布中心
-        int imageLeft = (canvasWidth - bitmap.getWidth()) / 2;
-        int imageTop = (canvasHeight - bitmap.getHeight()) / 2;
-        canvas.drawBitmap(bitmap, imageLeft, imageTop, bitmapPaint);
+            // 計算圖片的左上角位置，使它們都位於畫布中心
+            int imageLeft = (canvasWidth - bitmap.getWidth()) / 2;
+            int imageTop = (canvasHeight - bitmap.getHeight()) / 2;
+            canvas.drawBitmap(bitmap, imageLeft, imageTop, bitmapPaint);
+        }
 
         // 保存當前的繪製狀態
         canvas.save();
@@ -141,14 +143,14 @@ public class WeterMarkBgView extends Drawable {
     private static Typeface textFontConversion(Context context, String textFont){
         Typeface customTypeface;
         switch (textFont){
-            case "細明體":
-                customTypeface = Typeface.createFromAsset(context.getAssets(), "detailed_body.ttf");
+            case "MingLiU":
+                customTypeface = Typeface.createFromAsset(context.getAssets(), "MingLiU.ttf");
                 return customTypeface;
-            case "新細明體":
-                customTypeface = Typeface.createFromAsset(context.getAssets(), "new_detailed_body.ttf");
+            case "PMingLiU":
+                customTypeface = Typeface.createFromAsset(context.getAssets(), "PMingLiU.ttf");
                 return customTypeface;
-            case "標楷體":
-                customTypeface = Typeface.createFromAsset(context.getAssets(), "standard_italic_style.ttf");
+            case "DFKai-SB":
+                customTypeface = Typeface.createFromAsset(context.getAssets(), "DFKai_SB.ttf");
                 return customTypeface;
             case "Roboto":
                 customTypeface = Typeface.createFromAsset(context.getAssets(), "Roboto-Light.ttf");
