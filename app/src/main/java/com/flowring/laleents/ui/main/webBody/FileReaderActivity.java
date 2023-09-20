@@ -3,7 +3,6 @@ package com.flowring.laleents.ui.main.webBody;
 import com.flowring.laleents.model.user.UserControlCenter;
 import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.SharedPreferencesUtils;
-import com.flowring.laleents.tools.TimeUtils;
 import com.flowring.laleents.ui.model.FileReader.WatermarkDefault;
 import com.flowring.laleents.ui.model.FileReader.WeterMarkBgView;
 import com.flowring.laleents.ui.model.MainAppCompatActivity;
@@ -144,7 +143,14 @@ public class FileReaderActivity extends MainAppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                watermarkTextView.setBackground(new WeterMarkBgView(FileReaderActivity.this,labels,watermark.textRotate,watermark.textSize, watermark.textColor, watermark.textOpacity, watermark.imageOpacity));
+                                watermarkTextView.setBackground(new WeterMarkBgView(FileReaderActivity.this,labels,
+                                        watermark.textRotate,
+                                        watermark.textSize,
+                                        watermark.textColor,
+                                        watermark.textOpacity,
+                                        watermark.imageOpacity,
+                                        watermark.imageScale,
+                                        watermark.textFont));
                             }
                         });
                     }

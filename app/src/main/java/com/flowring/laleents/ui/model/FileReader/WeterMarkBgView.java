@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Typeface;
@@ -27,11 +28,12 @@ public class WeterMarkBgView extends Drawable {
     private int degress;      //角度
     private int fontSize;     // 字體大小，單位sp
     private int imageOpacity; // 圖片透明度
+    private int imageScale;    // 圖片縮放大小
     private String textColor;
     private int textOpacity;  //文字透明度
-    private Typeface customTypeface;
+    private String textFont;  // 文字字體
 
-    public WeterMarkBgView(Context context, List<String> labels, int degress, int fontSize, String textColor, int textOpacity, int imageOpacity) {
+    public WeterMarkBgView(Context context, List<String> labels, int degress, int fontSize, String textColor, int textOpacity, int imageOpacity, int imageScale, String textFont) {
         this.labels = labels;
         this.context = context;
         this.degress = degress;
@@ -39,7 +41,8 @@ public class WeterMarkBgView extends Drawable {
         this.textColor = textColor;
         this.textOpacity = textOpacity;
         this.imageOpacity = imageOpacity;
-        customTypeface = Typeface.createFromAsset(context.getAssets(), "SentyDew.ttf");
+        this.imageScale = imageScale;
+        this.textFont = textFont;
     }
 
     @Override
@@ -56,12 +59,23 @@ public class WeterMarkBgView extends Drawable {
         paint.setAntiAlias(true);
         // setTextSize方法設置水印文字的大小，使用 sp2px 方法將傳入的字體大小轉換為像素值。
         paint.setTextSize(sp2px(context,fontSize));
+
+        Typeface customTypeface = textFontConversion(context,textFont);
         // 設置字體
         paint.setTypeface(customTypeface);
         // 設置透明度為半透明
         paint.setAlpha(textOpacity);
-        // 設置圖片透明度
+
+        float scale = convertToFloatPercentage(imageScale);
+        // 設定圖片縮放比例
+        Matrix matrix = new Matrix();
+        matrix.postScale(scale, scale);
+
         Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.default_group);
+        // 使用Matrix物件對Bitmap進行縮放
+        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+
+        // 設置圖片透明度
         bitmapPaint.setAlpha(imageOpacity);
 
         // 計算圖片的左上角位置，使它們都位於畫布中心
@@ -108,8 +122,43 @@ public class WeterMarkBgView extends Drawable {
         return PixelFormat.UNKNOWN;
     }
 
-    public static int sp2px(Context context,float spValue){
+    private static int sp2px(Context context,float spValue){
         final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
         return (int) (spValue * fontScale + 0.5f);
+    }
+
+    private static float convertToFloatPercentage(int percent) {
+        if (percent > 100) {
+            StringUtils.HaoLog("百分比必須低於100");
+            return 1.0f;
+        } else if(percent < 0){
+            StringUtils.HaoLog("百分比必須高於0");
+            return 0.1f;
+        }
+        return (float) percent / 100.0f;
+    }
+
+    private static Typeface textFontConversion(Context context, String textFont){
+        Typeface customTypeface;
+        switch (textFont){
+            case "細明體":
+                customTypeface = Typeface.createFromAsset(context.getAssets(), "detailed_body.ttf");
+                return customTypeface;
+            case "新細明體":
+                customTypeface = Typeface.createFromAsset(context.getAssets(), "new_detailed_body.ttf");
+                return customTypeface;
+            case "標楷體":
+                customTypeface = Typeface.createFromAsset(context.getAssets(), "standard_italic_style.ttf");
+                return customTypeface;
+            case "Roboto":
+                customTypeface = Typeface.createFromAsset(context.getAssets(), "Roboto-Light.ttf");
+                return customTypeface;
+            case "Montserrat":
+                customTypeface = Typeface.createFromAsset(context.getAssets(), "Montserrat-Light.ttf");
+                return customTypeface;
+            default:
+                customTypeface = Typeface.createFromAsset(context.getAssets(), "NotoSerifTC-Light.otf");
+                return customTypeface;
+        }
     }
 }
