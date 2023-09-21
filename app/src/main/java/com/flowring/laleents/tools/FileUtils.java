@@ -1319,6 +1319,9 @@ public class FileUtils {
     }
 
     public static boolean isStringInFileExtensions(String fileExtension, String inputFileType){
+        if("null".equalsIgnoreCase(fileExtension)){
+            return true;
+        }
         // 將fileExtension分割成副檔名陣列
         String[] extensions = fileExtension.split(";");
         String fileType = inputFileType.replace(".", "");

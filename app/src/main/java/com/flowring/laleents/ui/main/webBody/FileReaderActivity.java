@@ -138,8 +138,7 @@ public class FileReaderActivity extends MainAppCompatActivity {
                 @Override
                 public void Callback(WatermarkDefault watermark) {
                     if(watermark != null){
-                        List<String> labels = new ArrayList<>();
-                        labels.add(watermark.textContent);
+                        List<String> labels = lineBreakCutter(watermark.textContent);
                         Bitmap bitmap = FileUtils.getBitmapFromURL(watermark.image);
                         runOnUiThread(new Runnable() {
                             @Override
@@ -159,5 +158,14 @@ public class FileReaderActivity extends MainAppCompatActivity {
                 }
             });
         }
+    }
+
+    private List<String> lineBreakCutter(String textContent){
+        String[] parts = textContent.split("\n");
+        List<String> labels = new ArrayList<>();
+        for(String part : parts){
+            labels.add(part);
+        }
+        return labels;
     }
 }

@@ -2465,22 +2465,33 @@ public class MainWebActivity extends MainAppCompatActivity {
             public void Callback(SystemProgram program) {
                 switch (program.settingKey){
                     case "screenshot_forbidden":
-                        //StringUtils.HaoLog("setSystemInfor= 是否可截圖 " + program.settingValue);
                         SharedPreferencesUtils.setScreenshotForbidden(program.settingValue);
+                        screenshotEnable(program.settingValue);
                         break;
                     case "download_forbidden":
-                        //StringUtils.HaoLog("setSystemInfor= 是否可下載 " + program.settingValue);
                         SharedPreferencesUtils.setDownloadForbidden(program.settingValue);
                         break;
                     case "restrict_file_ext":
-                        StringUtils.HaoLog("setSystemInfor= 是否限制副檔名 " + program.additionalValue);
                         SharedPreferencesUtils.setRestrictFileExt(program.settingValue);
                         SharedPreferencesUtils.saveFileExtension(program.additionalValue);
                         break;
                     case "download_watermark":
-                        //StringUtils.HaoLog("setSystemInfor= 是否下載附加浮水印 " + program.settingValue);
                         SharedPreferencesUtils.setWatermark(program.settingValue);
                         break;
+                }
+            }
+        });
+    }
+
+    private void screenshotEnable(String settingValue){
+        boolean screenshotForbidden = Boolean.parseBoolean(settingValue);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(screenshotForbidden){
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
+                } else {
+                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
                 }
             }
         });

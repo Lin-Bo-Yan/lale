@@ -379,40 +379,18 @@ public class UserControlCenter {
                     CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
                 }
             });
-            String jsonString = "[" +
-                    "{" +
-                    "\"settingKey\": \"screenshot_forbidden\"," +
-                    "\"settingValue\": \"true\"," +
-                    "\"additionalValue\": null" +
-                    "}," +
-                    "{" +
-                    "\"settingKey\": \"download_forbidden\"," +
-                    "\"settingValue\": \"false\"," +
-                    "\"additionalValue\": null" +
-                    "}," +
-                    "{" +
-                    "\"settingKey\": \"restrict_file_ext\"," +
-                    "\"settingValue\": \"true\"," +
-                    "\"additionalValue\": \"pptx;doc;pdf;png;jpg;jpe;jpeg\"" +
-                    "}," +
-                    "{" +
-                    "\"settingKey\": \"download_watermark\"," +
-                    "\"settingValue\": \"true\"," +
-                    "\"additionalValue\": null" +
-                    "}" +
-                    "]";
 
-            //if(httpReturn.status == 200){
+            if(httpReturn.status == 200){
                 Gson gson = new Gson();
                 String data = gson.toJson(httpReturn.data);
-                SystemProgram[] systemPrograms = gson.fromJson(jsonString,SystemProgram[].class);
-                if(systemPrograms != null && systemPrograms.length >0){
+                SystemProgram[] systemPrograms = gson.fromJson(data,SystemProgram[].class);
+                if(systemPrograms != null && systemPrograms.length > 0){
                     for(SystemProgram system : systemPrograms){
                         SystemProgram systemProgram = system;
                         programReturn.Callback(systemProgram);
                     }
                 }
-            //}
+            }
         }).start();
     }
 
@@ -495,27 +473,13 @@ public class UserControlCenter {
                     CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
                 }
             });
-            //if(httpReturn.status == 200){
-                //String info = new Gson().toJson(httpReturn.data);
-            String info = "{" +
-                    "\"wmtmplId\": \"wmtmpl_default\"," +
-                    "\"name\": \"Watermark_Logo\"," +
-                    "\"pageDirect\": \"vertical\"," +
-                    "\"image\": \"https://agentflow.flowring.com:8443/WebAgenda/downloadPhoto?userId=dVI3V1pyVFQ3bUlHU1J0SmNEbGVKVFNqenc4eUhlK1gNClcmJCMhQWRYVjM0cWI1bTRZPQ0K&size=p\"," +
-                    "\"imageScale\": 100," +
-                    "\"imageOpacity\": 100," +
-                    "\"textContent\": \"刑素蘭\"," +
-                    "\"textFont\": \"DFKai-SB\"," +
-                    "\"textColor\": \"#08C7D0\"," +
-                    "\"textSize\": 40," +
-                    "\"textOpacity\": 100," +
-                    "\"textRotate\": 0," +
-                    "\"isDefault\": true" +
-                    "}";
+
+            if(httpReturn.status == 200){
+                String info = new Gson().toJson(httpReturn.data);
                 Gson gson = new Gson();
                 WatermarkDefault watermarkDefault = gson.fromJson(info,WatermarkDefault.class);
             watermark.Callback(watermarkDefault);
-            //}
+            }
         }).start();
     }
 
