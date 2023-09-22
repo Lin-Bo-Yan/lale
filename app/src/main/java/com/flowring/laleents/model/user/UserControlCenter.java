@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 
 import com.flowring.laleents.model.AFtoken;
+import com.flowring.laleents.model.Http2Return;
 import com.flowring.laleents.model.HttpAfReturn;
 import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.model.device.ServerAnnouncement;
@@ -481,6 +482,27 @@ public class UserControlCenter {
             watermark.Callback(watermarkDefault);
             }
         }).start();
+    }
+
+    public static String obtainReorganizedTextWatermark(String textContent){
+        Http2Return http2Return = CloudUtils.iCloudUtils.textWatermark(textContent, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("取得重組後的文字浮水印 網路異常");
+                CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+            }
+        });
+
+        if(http2Return.code == 200){
+            String info = new Gson().toJson(http2Return.data);
+            try {
+                JSONObject jsonObject = new JSONObject(info);
+                return jsonObject.optString("textWatermark");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return "";
     }
 
     public static void getAfServerVersion(String afUrl, CallbackUtils.messageReturn callback){

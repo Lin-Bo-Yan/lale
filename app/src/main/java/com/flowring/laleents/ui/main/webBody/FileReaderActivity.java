@@ -138,7 +138,8 @@ public class FileReaderActivity extends MainAppCompatActivity {
                 @Override
                 public void Callback(WatermarkDefault watermark) {
                     if(watermark != null){
-                        List<String> labels = lineBreakCutter(watermark.textContent);
+                        String textContent = UserControlCenter.obtainReorganizedTextWatermark(watermark.textContent);
+                        List<String> labels = lineBreakCutter(textContent);
                         Bitmap bitmap = FileUtils.getBitmapFromURL(watermark.image);
                         runOnUiThread(new Runnable() {
                             @Override

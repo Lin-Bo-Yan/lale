@@ -6,6 +6,7 @@ import android.content.Context;
 import androidx.annotation.MainThread;
 import androidx.annotation.WorkerThread;
 
+import com.flowring.laleents.model.Http2Return;
 import com.flowring.laleents.model.HttpAfReturn;
 import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.model.stickerlibrary.CustomizeSticker;
@@ -830,6 +831,12 @@ public interface ICloudUtils {
      */
     @WorkerThread
     HttpReturn getDefaultWatermarkTemplate(CallbackUtils.TimeoutReturn timeoutReturn);
+
+    /**
+     * 浮水印 - 文字浮水印構成
+     */
+    @WorkerThread
+    Http2Return textWatermark(String textContent, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 取得 Lale 使用平台最低可相容版本

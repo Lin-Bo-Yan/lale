@@ -101,7 +101,7 @@ public class WeterMarkBgView extends Drawable {
         int spacing = 0; // 垂直間距，drawText(要繪製的文本內容,x軸起始位置畫布左上角,y軸起始位置畫布左上角,Paint對象設置文本的顏色)
         for (String label : labels) {
             canvas.drawText(label, textLeft, textTop  + spacing, paint);
-            spacing = spacing + 100;
+            spacing += textHeight; // 將行間距增加到下一行文字的高度
         }
 
         // 使用 canvas.restore() 恢復到 canvas.save() 之前的繪製狀態

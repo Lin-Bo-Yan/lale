@@ -10,9 +10,9 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 
+import com.flowring.laleents.model.Http2Return;
 import com.flowring.laleents.model.HttpAfReturn;
 import com.flowring.laleents.model.HttpReturn;
-import com.flowring.laleents.model.eim.EimUserData;
 import com.flowring.laleents.model.room.RoomInfoInPhone;
 import com.flowring.laleents.model.stickerlibrary.CustomizeSticker;
 import com.flowring.laleents.model.stickerlibrary.Stickerlibrary;
@@ -550,7 +550,7 @@ public class CloudUtils implements ICloudUtils {
         Request.Builder request = new Request.Builder()
                 .url(WFCI_URL + "/api/app-pusher")
                 .method("POST", body);
-        HttpReturn httpReturn = gethttp2Return(request, 15, new CallbackUtils.TimeoutReturn() {
+        HttpReturn httpReturn = gethttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
             @Override
             public void Callback(IOException timeout) {
                 timeoutReturn.Callback(timeout);
@@ -576,7 +576,7 @@ public class CloudUtils implements ICloudUtils {
         Request.Builder request = new Request.Builder()
                 .url(WFCI_URL + "/api/app-pusher")
                 .method("PUT", body);
-        HttpReturn httpReturn = gethttp2Return(request, 15, new CallbackUtils.TimeoutReturn() {
+        HttpReturn httpReturn = gethttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
             @Override
             public void Callback(IOException timeout) {
                 timeoutReturn.Callback(timeout);
@@ -2676,6 +2676,31 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
+    public Http2Return textWatermark(String textContent, CallbackUtils.TimeoutReturn timeoutReturn) {
+        String WFCI_URL = UserControlCenter.getUserMinInfo().eimUserData.af_wfci_service_url;
+        MediaType mediaType = MediaType.parse("application/json");
+        JSONObject bodyJect = new JSONObject();
+        try {
+            bodyJect.put("textContent", textContent);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody body = RequestBody.create(mediaType, bodyJect.toString());
+        Request.Builder request = new Request.Builder()
+                .url(WFCI_URL + "/api/lalesystem/watermark/construction")
+                .method("POST", body)
+                .addHeader("token", UserControlCenter.getUserMinInfo().eimUserData.af_token);
+
+        Http2Return http2Return = gethttp2Return(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return http2Return;
+    }
+
+    @Override
     public String webVersion(String url,CallbackUtils.TimeoutReturn timeoutReturn) {
         Request.Builder request = new Request.Builder()
                 .url(url)
@@ -2810,7 +2835,7 @@ public class CloudUtils implements ICloudUtils {
         return new HttpReturn();
     }
 
-    public HttpReturn gethttp2Return(Request.Builder request, int timeoutInSeconds, CallbackUtils.TimeoutReturn timeoutReturn) {
+    public Http2Return gethttp2Return(Request.Builder request, int timeoutInSeconds, CallbackUtils.TimeoutReturn timeoutReturn) {
         OkHttpClient client = getUnsafeOkHttpClient().newBuilder()
                 .connectTimeout(timeoutInSeconds, TimeUnit.SECONDS)
                 .writeTimeout(timeoutInSeconds, TimeUnit.SECONDS)
@@ -2818,16 +2843,15 @@ public class CloudUtils implements ICloudUtils {
                 .build();
         try {
             Response response = client.newCall(request.build()).execute();
-            StringUtils.HaoLog("gethttp2Return= " + new Gson().toJson(response));
+            StringUtils.HaoLog("gethttp2Return= "+new Gson().toJson(response));
             if (response.code() == 200) {
                 String body = response.body().string();
-                StringUtils.HaoLog("body= " + body);
-                HttpReturn httpReturn = new Gson().fromJson(body, HttpReturn.class);
+                StringUtils.HaoLog("body=" + body);
+                Http2Return http2Return = new Gson().fromJson(body, Http2Return.class);
 
-                if (httpReturn != null) {
-                    httpReturn.status = 200;
-                    StringUtils.HaoLog(response.request().url().toString(), httpReturn);
-                    return httpReturn;
+                if (http2Return != null) {
+                    StringUtils.HaoLog("http2Return= "+response.request().url());
+                    return http2Return;
                 } else{
                     StringUtils.HaoLog("gethttp2Return");
                     StringUtils.HaoLog(response.request().url() + " " + response.code() + " body=" + body);
@@ -2841,7 +2865,7 @@ public class CloudUtils implements ICloudUtils {
             StringUtils.HaoLog("gethttp2Return error= " + request + " " + e);
             e.printStackTrace();
         }
-        return new HttpReturn();
+        return new Http2Return();
     }
 
     public HttpReturn getJhttpReturn(Request.Builder request, int timeoutInSeconds, CallbackUtils.TimeoutReturn timeoutReturn) {
