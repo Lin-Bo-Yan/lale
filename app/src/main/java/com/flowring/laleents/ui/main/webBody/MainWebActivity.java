@@ -517,7 +517,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                 if(restrictFileExtEnabled){
                     boolean allowUpload = FileUtils.isStringInFileExtensions(fileExtension,fileType);
                     if (!allowUpload) {
-                        CommonUtils.showToast(MainWebActivity.this, getLayoutInflater(), "不允許的檔案類型", false);
+                        CommonUtils.showToast(MainWebActivity.this, getLayoutInflater(), "不允許上傳的檔案類型", false);
                         uris = new Uri[0];
                     }
                 }

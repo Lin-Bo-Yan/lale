@@ -485,11 +485,13 @@ public class UserControlCenter {
     }
 
     public static String obtainReorganizedTextWatermark(String textContent){
+        final String textContentFinal = textContent;
+        String[] callbackMessage = new String[1];
         Http2Return http2Return = CloudUtils.iCloudUtils.textWatermark(textContent, new CallbackUtils.TimeoutReturn() {
             @Override
             public void Callback(IOException timeout) {
                 StringUtils.HaoLog("取得重組後的文字浮水印 網路異常");
-                CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                callbackMessage[0] = StringUtils.replaceTextPlaceholders(textContentFinal);
             }
         });
 
@@ -501,8 +503,12 @@ public class UserControlCenter {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        } else if(callbackMessage[0] != null){
+            textContent = callbackMessage[0];
+        } else {
+            textContent = StringUtils.replaceTextPlaceholders(textContent);
         }
-        return "";
+        return textContent;
     }
 
     public static void getAfServerVersion(String afUrl, CallbackUtils.messageReturn callback){

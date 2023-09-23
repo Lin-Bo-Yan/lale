@@ -11,6 +11,7 @@ import android.util.DisplayMetrics;
 
 import com.flowring.laleents.model.HttpAfReturn;
 import com.flowring.laleents.model.HttpReturn;
+import com.flowring.laleents.model.user.UserControlCenter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,6 +19,8 @@ import org.json.JSONObject;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class StringUtils {
 
@@ -188,13 +191,10 @@ public class StringUtils {
     }
 
     public static String format_yyyy_MM_dd(String date) {
-
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(Long.parseLong(date));
         return formatter.format(calendar.getTime());
-
-
     }
 
     public static boolean version(String appVersion, String dbVersion) {
@@ -234,36 +234,35 @@ public class StringUtils {
         int height_bg = 100;
         Bitmap mBitmap = Bitmap.createBitmap(width_bg, height_bg, Bitmap.Config.ARGB_8888);
 
-//            StringUtils.HaoLog("開頭:"+data.charAt(0)+" 結尾:"+data.charAt(data.length()-1));
+//        StringUtils.HaoLog("開頭:"+data.charAt(0)+" 結尾:"+data.charAt(data.length()-1));
         int start = Character.codePointAt(data, 0);
         int end = Character.codePointAt(data, data.length() - 1);
-//            StringUtils.HaoLog("開頭:"+start+" 結尾:"+end);
+//        StringUtils.HaoLog("開頭:"+start+" 結尾:"+end);
 //        StringUtils.HaoLog("開頭:"+start+" 結尾:"+end);
         String sum = "" + (start + end);
 //        StringUtils.HaoLog("相加:"+sum);
         int at = Integer.parseInt(sum.substring(sum.length() - 1));
 //        StringUtils.HaoLog("at:"+at);
 
-
         int bgColor = color[at];
 
         Canvas mCanvas;
-        // 画笔－－写字
+        // 畫筆－－寫字
         Paint mTextPaint = new Paint();
 
 
-        // 得到图片的宽、高
+        // 得到圖片的寬、高
 
 
-        // 创建一个你需要尺寸的Bitmap
+        // 建立一個你需要尺寸的Bitmap
 
-        // 用这个Bitmap生成一个Canvas,然后canvas就会把内容绘制到上面这个bitmap中
+        // 用這個Bitmap產生一個Canvas,然後canvas就會把內容繪製到上面這個bitmap中
         mCanvas = new Canvas(mBitmap);
-        // 绘制背景图片
+        // 繪製背景圖片
         mCanvas.drawColor(bgColor);
-        // 绘制文字
-        mTextPaint.setColor(Color.WHITE);// 白色画笔
-        mTextPaint.setTextSize(80.0f);// 设置字体大小
+        // 繪製文字
+        mTextPaint.setColor(Color.WHITE);// 白色畫筆
+        mTextPaint.setTextSize(80.0f);// 設定字體大小
 
         float distanceTextString_width = mTextPaint.measureText(
                 data.substring(0, 1), 0, 1);
@@ -281,8 +280,6 @@ public class StringUtils {
         // 保存繪圖為本地圖片
         mCanvas.save();
         mCanvas.restore();
-
-
         return mBitmap;
     }
 
@@ -291,5 +288,26 @@ public class StringUtils {
         int length = fileId.length();
         String result = fileId.substring(length - 10);
         return result;
+    }
+
+    public static String replaceTextPlaceholders(String textContent){
+        Pattern pattern = Pattern.compile("\\$\\{memName\\}|\\$\\{depName\\}|\\$\\{roleName\\}|\\$\\{memEmail\\}");
+        Matcher matcher = pattern.matcher(textContent);
+        StringBuffer replacedText = new StringBuffer();
+        while (matcher.find()){
+            String match = matcher.group();
+            if(match.equals("${memName}")){
+                matcher.appendReplacement(replacedText, UserControlCenter.getUserMinInfo().displayName);
+            } else if (match.equals("${depName}")) {
+                matcher.appendReplacement(replacedText, "部門");
+            } else if (match.equals("${roleName}")) {
+                matcher.appendReplacement(replacedText, "職務");
+            } else if(match.equals("${memEmail}")){
+                matcher.appendReplacement(replacedText, "E-mail");
+            }
+        }
+        matcher.appendTail(replacedText);
+        textContent = replacedText.toString();
+        return textContent;
     }
 }

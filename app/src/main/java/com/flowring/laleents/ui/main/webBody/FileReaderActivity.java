@@ -192,7 +192,7 @@ public class FileReaderActivity extends MainAppCompatActivity {
 
             return ip;
         } else {
-            return null;
+            return "";
         }
     }
 
