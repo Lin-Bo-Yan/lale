@@ -514,7 +514,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                 String fileType = FileUtils.fileType(fileName);
                 boolean restrictFileExtEnabled = SharedPreferencesUtils.getRestrictFileExt(MainWebActivity.this);
                 String fileExtension = SharedPreferencesUtils.getFileExtension(MainWebActivity.this);
-                if(!restrictFileExtEnabled){
+                if(restrictFileExtEnabled){
                     boolean allowUpload = FileUtils.isStringInFileExtensions(fileExtension,fileType);
                     if (!allowUpload) {
                         CommonUtils.showToast(MainWebActivity.this, getLayoutInflater(), "不允許的檔案類型", false);
@@ -2477,6 +2477,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                         break;
                     case "download_watermark":
                         SharedPreferencesUtils.setWatermark(program.settingValue);
+                        SharedPreferencesUtils.watermarkLabel(program.additionalValue);
                         break;
                 }
             }

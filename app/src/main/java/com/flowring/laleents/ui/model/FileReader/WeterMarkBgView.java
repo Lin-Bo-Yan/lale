@@ -68,13 +68,15 @@ public class WeterMarkBgView extends Drawable {
 
         // 設置圖片
         if(bitmap != null){
+            Bitmap calculationCompletedBitmap = calculateImageReductionRatio(bitmap,bitmap.getWidth(),canvasWidth,bitmap.getHeight(),canvasHeight);
+
             float scale = convertToFloatPercentage(imageScale);
             // 設定圖片縮放比例
             Matrix matrix = new Matrix();
             matrix.postScale(scale, scale);
 
             // 使用Matrix物件對Bitmap進行縮放
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            bitmap = Bitmap.createBitmap(calculationCompletedBitmap, 0, 0, calculationCompletedBitmap.getWidth(), calculationCompletedBitmap.getHeight(), matrix, true);
 
             // 設置圖片透明度
             bitmapPaint.setAlpha(imageOpacity);
@@ -125,8 +127,8 @@ public class WeterMarkBgView extends Drawable {
     }
 
     private static int sp2px(Context context,float spValue){
-        final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
-        return (int) (spValue * fontScale + 0.5f);
+        final float fontScale = context.getResources().getDisplayMetrics().density;
+        return (int) (spValue * fontScale * 0.8f);
     }
 
     private static float convertToFloatPercentage(int percent) {
@@ -138,6 +140,21 @@ public class WeterMarkBgView extends Drawable {
             return 0.1f;
         }
         return (float) percent / 100.0f;
+    }
+
+    private static Bitmap calculateImageReductionRatio(Bitmap bitmap, int bitmapWidth, int canvasWidth, int bitmapHeight, int canvasHeight){
+        // 計算寬度和高度的比率
+        float widthRatio = (float) canvasWidth / (float) bitmapWidth;
+        float heightRatio = (float) canvasHeight / (float) bitmapHeight;
+        // 使用較小的比率來縮小影像
+        float scale = Math.min(widthRatio, heightRatio) * 0.8f;
+        // 設定圖片縮放比例
+        Matrix matrix = new Matrix();
+        matrix.postScale(scale, scale);
+
+        // 使用Matrix物件對Bitmap進行縮放
+        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmapWidth, bitmapHeight, matrix, true);
+        return bitmap;
     }
 
     private static Typeface textFontConversion(Context context, String textFont){

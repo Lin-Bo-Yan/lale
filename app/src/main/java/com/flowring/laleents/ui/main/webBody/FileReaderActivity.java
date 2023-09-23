@@ -4,6 +4,7 @@ import com.flowring.laleents.model.user.UserControlCenter;
 import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.FileUtils;
 import com.flowring.laleents.tools.SharedPreferencesUtils;
+import com.flowring.laleents.tools.TimeUtils;
 import com.flowring.laleents.ui.model.FileReader.WatermarkDefault;
 import com.flowring.laleents.ui.model.FileReader.WeterMarkBgView;
 import com.flowring.laleents.ui.model.MainAppCompatActivity;
@@ -12,7 +13,10 @@ import androidx.core.content.FileProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
@@ -140,6 +144,9 @@ public class FileReaderActivity extends MainAppCompatActivity {
                     if(watermark != null){
                         String textContent = UserControlCenter.obtainReorganizedTextWatermark(watermark.textContent);
                         List<String> labels = lineBreakCutter(textContent);
+                        labels.add(getLocalIpAddress(FileReaderActivity.this));
+                        StringUtils.HaoLog("浮水印標籤 " + SharedPreferencesUtils.getWatermarkLabel(FileReaderActivity.this));
+
                         Bitmap bitmap = FileUtils.getBitmapFromURL(watermark.image);
                         runOnUiThread(new Runnable() {
                             @Override
@@ -169,4 +176,24 @@ public class FileReaderActivity extends MainAppCompatActivity {
         }
         return labels;
     }
+
+    private static String getLocalIpAddress(Context context) {
+        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        if (wifiManager != null) {
+            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+            int ipAddress = wifiInfo.getIpAddress();
+
+            // 格式化 IP 地址
+            String ip = String.format("%d.%d.%d.%d",
+                    (ipAddress & 0xff),
+                    (ipAddress >> 8 & 0xff),
+                    (ipAddress >> 16 & 0xff),
+                    (ipAddress >> 24 & 0xff));
+
+            return ip;
+        } else {
+            return null;
+        }
+    }
+
 }
