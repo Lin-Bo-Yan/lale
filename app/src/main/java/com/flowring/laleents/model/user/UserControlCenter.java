@@ -376,8 +376,10 @@ public class UserControlCenter {
             HttpReturn httpReturn = CloudUtils.iCloudUtils.getAllSystemInfor(new CallbackUtils.TimeoutReturn() {
                 @Override
                 public void Callback(IOException timeout) {
-                    StringUtils.HaoLog("getAllSystemInfor 網路異常");
-                    CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        StringUtils.HaoLog("getAllSystemInfor 網路異常");
+                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                    });
                 }
             });
 
@@ -401,7 +403,9 @@ public class UserControlCenter {
             HttpReturn httpReturn = CloudUtils.iCloudUtils.updataSystemInfor(settingsArray, new CallbackUtils.TimeoutReturn() {
                 @Override
                 public void Callback(IOException timeout) {
-                    StringUtils.HaoLog("updataSystemInfor 網路異常");
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        StringUtils.HaoLog("updataSystemInfor 網路異常");
+                    });
                 }
             });
 
@@ -454,8 +458,10 @@ public class UserControlCenter {
             HttpReturn httpReturn = CloudUtils.iCloudUtils.getAllWatermarkTemplates(new CallbackUtils.TimeoutReturn() {
                 @Override
                 public void Callback(IOException timeout) {
-                    StringUtils.HaoLog("getAllWatermarkTemplates 網路異常");
-                    CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        StringUtils.HaoLog("getAllWatermarkTemplates 網路異常");
+                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                    });
                 }
             });
 
@@ -470,8 +476,10 @@ public class UserControlCenter {
             HttpReturn httpReturn = CloudUtils.iCloudUtils.getDefaultWatermarkTemplate(new CallbackUtils.TimeoutReturn() {
                 @Override
                 public void Callback(IOException timeout) {
-                    StringUtils.HaoLog("getDefaultWatermarkTemplate 網路異常");
-                    CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        StringUtils.HaoLog("getDefaultWatermarkTemplate 網路異常");
+                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                    });
                 }
             });
 

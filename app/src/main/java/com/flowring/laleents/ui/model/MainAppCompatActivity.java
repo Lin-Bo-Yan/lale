@@ -128,11 +128,7 @@ public class MainAppCompatActivity extends AppCompatActivity {
 
         //true 為 可以截圖
         boolean screenshotsProhibited = SharedPreferencesUtils.getScreenshotForbidden(MainAppCompatActivity.this);
-        if(screenshotsProhibited){
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
-        } else {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
-        }
+        screenshotEnable(screenshotsProhibited);
     }
 
     protected DialogWait dialogWait;
@@ -157,6 +153,19 @@ public class MainAppCompatActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public void screenshotEnable(boolean enableScreenshots){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(enableScreenshots){
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
+                } else {
+                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+                }
+            }
+        });
     }
 
 

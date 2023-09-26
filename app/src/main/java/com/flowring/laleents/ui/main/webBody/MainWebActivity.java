@@ -27,7 +27,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.net.http.SslError;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -2466,7 +2465,8 @@ public class MainWebActivity extends MainAppCompatActivity {
                 switch (program.settingKey){
                     case "screenshot_forbidden":
                         SharedPreferencesUtils.setScreenshotForbidden(program.settingValue);
-                        screenshotEnable(program.settingValue);
+                        boolean screenshotForbidden = Boolean.parseBoolean(program.settingValue);
+                        screenshotEnable(screenshotForbidden);
                         break;
                     case "download_forbidden":
                         SharedPreferencesUtils.setDownloadForbidden(program.settingValue);
@@ -2477,22 +2477,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                         break;
                     case "download_watermark":
                         SharedPreferencesUtils.setWatermark(program.settingValue);
-                        SharedPreferencesUtils.watermarkLabel(program.additionalValue);
                         break;
-                }
-            }
-        });
-    }
-
-    private void screenshotEnable(String settingValue){
-        boolean screenshotForbidden = Boolean.parseBoolean(settingValue);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if(screenshotForbidden){
-                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
-                } else {
-                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
                 }
             }
         });
@@ -2663,8 +2648,6 @@ public class MainWebActivity extends MainAppCompatActivity {
                     jsonArray.put(phone);
                 }
                 sendToWeb(new JSONObject().put("type", "getAddressBook").put("data", new JSONObject().put("phones", jsonArray)).toString());
-
-
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -2848,192 +2831,10 @@ public class MainWebActivity extends MainAppCompatActivity {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return phones;
     }
-
-    class DownloadFileFromURL extends AsyncTask<String, String, String> {
-
-        /**
-         * Before starting background thread Show Progress Bar Dialog
-         **/
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        /**
-         * Downloading file in background thread
-         **/
-        @Override
-        protected String doInBackground(String... f_url) {
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
-                int count;
-                try {
-                    URL url = new URL(f_url[0]);
-                    URLConnection conection = url.openConnection();
-                    conection.connect();
-
-                    // this will be useful so that you can show a tipical 0-100%
-                    // progress bar
-                    int lenghtOfFile = conection.getContentLength();
-
-                    // download the file
-                    InputStream input = new BufferedInputStream(url.openStream(),
-                            8192);
-                    final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
-                    StringUtils.HaoLog("getContentType=" + conection.getContentType());
-                    StringUtils.HaoLog("getContent=" + conection.getContent());
-                    String fileName = sdf.format(new Date().getDate()) + FileUtils.toExtension(conection.getContentType());
-                    String filePath = getExternalFilesDir(null) + "/"
-                            + fileName;
-                    // Output stream
-                    OutputStream output = new FileOutputStream(filePath);
-
-                    final int CREATE_FILE = 1;
-
-
-                    byte data[] = new byte[1024];
-
-                    long total = 0;
-
-                    while ((count = input.read(data)) != -1) {
-                        total += count;
-                        // publishing the progress....
-                        // After this onProgressUpdate will be called
-                        publishProgress("" + (int) ((total * 100) / lenghtOfFile));
-
-                        // writing data to file
-                        output.write(data, 0, count);
-                    }
-
-                    // flushing output
-                    output.flush();
-
-                    // closing streams
-                    output.close();
-                    input.close();
-                    Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-                    intent.addCategory(Intent.CATEGORY_OPENABLE);
-                    File file = new File(filePath);
-                    intent.setType(conection.getContentType());
-                    intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, file);
-                    activityReturn = new CallbackUtils.ActivityReturn() {
-                        @Override
-                        public void Callback(androidx.activity.result.ActivityResult activityResult) {
-                            if (activityResult.getResultCode() == Activity.RESULT_OK) {
-                                Uri uri = activityResult.getData().getData();
-                                StringUtils.HaoLog("uri=" + uri);
-                                int compareTo = new File(fileName).compareTo(new File(uri.getPath()));
-                                StringUtils.HaoLog("compareTo=" + compareTo);
-                            } else {
-                                try {
-                                    StringUtils.HaoLog("DownloadManager=end nook");
-                                    sendToWeb(new JSONObject().put("type", "downloadFile").put("data", new JSONObject().put("isSuccess", false)).toString());
-
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-
-                                }
-                            }
-
-
-                        }
-                    };
-                    runOnUiThread(() -> {
-                        ActivityResult.launch(intent);
-                    });
-
-
-                } catch (Exception e) {
-                    Log.e("Error: ", e.getMessage());
-                }
-
-
-            } else {
-                int count;
-                try {
-                    URL url = new URL(f_url[0]);
-                    URLConnection conection = url.openConnection();
-                    conection.connect();
-
-                    // this will be useful so that you can show a tipical 0-100%
-                    // progress bar
-                    int lenghtOfFile = conection.getContentLength();
-
-                    // download the file
-                    InputStream input = new BufferedInputStream(url.openStream(),
-                            8192);
-                    final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
-                    StringUtils.HaoLog("getContentType=" + conection.getContentType());
-                    StringUtils.HaoLog("getContent=" + conection.getContent());
-
-                    // Output stream
-                    OutputStream output = new FileOutputStream(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() + "/"
-                            + sdf.format(new Date().getDate()) + FileUtils.toExtension(conection.getContentType()));
-                    byte data[] = new byte[1024];
-
-                    long total = 0;
-
-                    while ((count = input.read(data)) != -1) {
-                        total += count;
-                        // publishing the progress....
-                        // After this onProgressUpdate will be called
-                        publishProgress("" + (int) ((total * 100) / lenghtOfFile));
-
-                        // writing data to file
-                        output.write(data, 0, count);
-                    }
-
-                    // flushing output
-                    output.flush();
-
-                    // closing streams
-                    output.close();
-                    input.close();
-                    try {
-                        StringUtils.HaoLog("DownloadManager=end nook");
-                        sendToWeb(new JSONObject().put("type", "downloadFile").put("data", new JSONObject().put("isSuccess", true)).toString());
-                        return null;
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-
-                    }
-                } catch (Exception e) {
-                    Log.e("Error: ", e.getMessage());
-                }
-
-                try {
-                    StringUtils.HaoLog("DownloadManager=end nook");
-                    sendToWeb(new JSONObject().put("type", "downloadFile").put("data", new JSONObject().put("isSuccess", false)).toString());
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-
-                }
-            }
-            return null;
-        }
-
-        /**
-         * Updating progress bar
-         **/
-        protected void onProgressUpdate(String... progress) {
-            // setting progress percentage
-
-        }
-
-        /**
-         * After completing background task Dismiss the progress dialog
-         **/
-        @Override
-        protected void onPostExecute(String file_url) {
-            // dismiss the dialog after the file was downloade
-        }
-    }
-    //endregion
-
-    //region  sendToWebtest
 
     void sendToWebtest() {
 

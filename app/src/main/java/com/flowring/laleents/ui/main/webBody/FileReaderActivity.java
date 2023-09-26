@@ -109,8 +109,10 @@ public class FileReaderActivity extends MainAppCompatActivity {
 
     private void initShareImageView(){
         share = findViewById(R.id.share);
-        boolean enableSharing = SharedPreferencesUtils.getDownloadForbidden(FileReaderActivity.this);
-        if(enableSharing){
+        boolean enableBanSharing = SharedPreferencesUtils.getDownloadForbidden(FileReaderActivity.this);
+        if(enableBanSharing){
+            share.setVisibility(View.GONE);
+        } else {
             share.setVisibility(View.VISIBLE);
             share.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -129,8 +131,6 @@ public class FileReaderActivity extends MainAppCompatActivity {
                     }
                 }
             });
-        } else {
-            share.setVisibility(View.GONE);
         }
     }
 
@@ -143,10 +143,7 @@ public class FileReaderActivity extends MainAppCompatActivity {
                 public void Callback(WatermarkDefault watermark) {
                     if(watermark != null){
                         String textContent = UserControlCenter.obtainReorganizedTextWatermark(watermark.textContent);
-                        List<String> labels = lineBreakCutter(textContent);
-                        labels.add(getLocalIpAddress(FileReaderActivity.this));
-                        StringUtils.HaoLog("浮水印標籤 " + SharedPreferencesUtils.getWatermarkLabel(FileReaderActivity.this));
-
+                        List<String> labels = lineBreakCutter(StringUtils.replaceTextPlaceholders(textContent));
                         Bitmap bitmap = FileUtils.getBitmapFromURL(watermark.image);
                         runOnUiThread(new Runnable() {
                             @Override
@@ -175,25 +172,6 @@ public class FileReaderActivity extends MainAppCompatActivity {
             labels.add(part);
         }
         return labels;
-    }
-
-    private static String getLocalIpAddress(Context context) {
-        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        if (wifiManager != null) {
-            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-            int ipAddress = wifiInfo.getIpAddress();
-
-            // 格式化 IP 地址
-            String ip = String.format("%d.%d.%d.%d",
-                    (ipAddress & 0xff),
-                    (ipAddress >> 8 & 0xff),
-                    (ipAddress >> 16 & 0xff),
-                    (ipAddress >> 24 & 0xff));
-
-            return ip;
-        } else {
-            return "";
-        }
     }
 
 }

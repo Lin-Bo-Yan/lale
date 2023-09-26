@@ -106,6 +106,12 @@ public class EimLoginActivity extends MainAppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        screenshotEnable(true);
+    }
+
     public static void saveLog(MainAppCompatActivity activity) {
         activity.runOnUiThread(()->{
             DialogUtils.showDialogMessage(activity, "登入失敗，您的QRCode已失效","請重新登入" ,new CallbackUtils.noReturn() {

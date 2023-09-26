@@ -6,12 +6,15 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 
 import com.flowring.laleents.model.HttpAfReturn;
 import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.model.user.UserControlCenter;
+import com.flowring.laleents.tools.phone.AllData;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -291,7 +294,7 @@ public class StringUtils {
     }
 
     public static String replaceTextPlaceholders(String textContent){
-        Pattern pattern = Pattern.compile("\\$\\{memName\\}|\\$\\{depName\\}|\\$\\{roleName\\}|\\$\\{memEmail\\}");
+        Pattern pattern = Pattern.compile("\\$\\{memName\\}|\\$\\{depName\\}|\\$\\{roleName\\}|\\$\\{memEmail\\}|\\$\\{ip\\}|\\$\\{downloadTime\\}");
         Matcher matcher = pattern.matcher(textContent);
         StringBuffer replacedText = new StringBuffer();
         while (matcher.find()){
@@ -304,10 +307,34 @@ public class StringUtils {
                 matcher.appendReplacement(replacedText, "職務");
             } else if(match.equals("${memEmail}")){
                 matcher.appendReplacement(replacedText, "E-mail");
+            }else if(match.equals("${ip}")){
+                matcher.appendReplacement(replacedText, getLocalIpAddress(AllData.context));
+            }else if(match.equals("${downloadTime}")){
+                matcher.appendReplacement(replacedText, TimeUtils.NowTime());
             }
         }
         matcher.appendTail(replacedText);
         textContent = replacedText.toString();
         return textContent;
     }
+
+    private static String getLocalIpAddress(Context context) {
+        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        if (wifiManager != null) {
+            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+            int ipAddress = wifiInfo.getIpAddress();
+
+            // 格式化 IP 地址
+            String ip = String.format("%d.%d.%d.%d",
+                    (ipAddress & 0xff),
+                    (ipAddress >> 8 & 0xff),
+                    (ipAddress >> 16 & 0xff),
+                    (ipAddress >> 24 & 0xff));
+
+            return ip;
+        } else {
+            return "";
+        }
+    }
+
 }

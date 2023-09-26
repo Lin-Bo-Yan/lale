@@ -1100,23 +1100,18 @@ public class FileUtils {
     }
 
     public static Bitmap getBitmapFromURL(String imageUrl) {
-        Pattern pattern = Pattern.compile("^(https://[^\\s<>{}|`\\[\\]]*)$");
-        Matcher matcher = pattern.matcher(imageUrl);
-        if(matcher.matches()){
-            try {
-                URL url = new URL(imageUrl);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setDoInput(true);
-                connection.connect();
-                InputStream input = connection.getInputStream();
-                Bitmap bitmap = BitmapFactory.decodeStream(input);
-                return bitmap;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
+        try {
+            URL url = new URL(imageUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap bitmap = BitmapFactory.decodeStream(input);
+            return bitmap;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
@@ -1268,13 +1263,12 @@ public class FileUtils {
             case ".JPG":
                 return "image/jpg";
             case ".m4e":
+            case ".mp4":
                 return "video/mpeg4";
             case ".m4a":
                 return "audio/mp4a-latm";
             case ".mp3":
                 return "audio/mp3";
-            case ".mp4":
-                return "video/mpeg4";
             case ".png":
                 return "image/png";
             case ".gif":
@@ -1282,11 +1276,16 @@ public class FileUtils {
             case ".bmp":
                 return "image/bmp";
             case ".pdf":
+            case ".PDF":
                 return "application/pdf";
             case ".ppt":
                 return "application/vnd.ms-powerpoint";
             case ".pptx":
                 return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+            case ".docx":
+                return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+            case ".doc":
+                return "application/msword";
         }
         return "data";
     }

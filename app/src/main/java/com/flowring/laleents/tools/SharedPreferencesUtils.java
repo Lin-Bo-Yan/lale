@@ -139,17 +139,4 @@ public class SharedPreferencesUtils {
         return pref.getBoolean("isDownloadWatermark",false);
     }
 
-    //存浮水印標籤
-    public static void watermarkLabel(String additionalValue){
-        pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
-        pref.edit().putString("watermarkLabel", additionalValue).apply();
-    }
-
-    //取出浮水印標籤
-    public static String getWatermarkLabel(Activity activity){
-        pref = PreferenceManager.getDefaultSharedPreferences(activity);
-        String fileExtension = pref.getString("watermarkLabel","");
-        return fileExtension;
-    }
-
 }

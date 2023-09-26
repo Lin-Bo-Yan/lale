@@ -55,8 +55,10 @@ public class FileNotSupportedActivity extends MainAppCompatActivity {
 
     private void initShareButton(){
         shareButton = findViewById(R.id.shareButton);
-        boolean enableSharing = SharedPreferencesUtils.getDownloadForbidden(FileNotSupportedActivity.this);
-        if(enableSharing){
+        boolean enableBanSharing = SharedPreferencesUtils.getDownloadForbidden(FileNotSupportedActivity.this);
+        if(enableBanSharing){
+            shareButton.setVisibility(View.GONE);
+        } else {
             shareButton.setVisibility(View.VISIBLE);
             shareButton.setOnClickListener(view -> {
                 if (PermissionUtils.checkPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) || (Build.VERSION.SDK_INT > Build.VERSION_CODES.R)) {
@@ -66,8 +68,6 @@ public class FileNotSupportedActivity extends MainAppCompatActivity {
                     PermissionUtils.requestPermission(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, null, "該功能需要下載權限");
                 }
             });
-        } else {
-            shareButton.setVisibility(View.GONE);
         }
     }
 

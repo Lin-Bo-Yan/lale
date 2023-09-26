@@ -59,7 +59,6 @@
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
         android:launchMode="singleTask"
-
         android:requestLegacyExternalStorage="true"
         android:preserveLegacyExternalStorage="true"
         android:theme="@style/AppTheme">

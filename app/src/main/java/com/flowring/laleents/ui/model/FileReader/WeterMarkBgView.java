@@ -63,8 +63,8 @@ public class WeterMarkBgView extends Drawable {
         Typeface customTypeface = textFontConversion(context,textFont);
         // 設置字體
         paint.setTypeface(customTypeface);
-        // 設置透明度為半透明
-        paint.setAlpha(textOpacity);
+        // 設置文字透明度
+        paint.setAlpha(transparencyPercentage(textOpacity));
 
         // 設置圖片
         if(bitmap != null){
@@ -79,7 +79,7 @@ public class WeterMarkBgView extends Drawable {
             bitmap = Bitmap.createBitmap(calculationCompletedBitmap, 0, 0, calculationCompletedBitmap.getWidth(), calculationCompletedBitmap.getHeight(), matrix, true);
 
             // 設置圖片透明度
-            bitmapPaint.setAlpha(imageOpacity);
+            bitmapPaint.setAlpha(transparencyPercentage(imageOpacity));
 
             // 計算圖片的左上角位置，使它們都位於畫布中心
             int imageLeft = (canvasWidth - bitmap.getWidth()) / 2;
@@ -128,18 +128,30 @@ public class WeterMarkBgView extends Drawable {
 
     private static int sp2px(Context context,float spValue){
         final float fontScale = context.getResources().getDisplayMetrics().density;
-        return (int) (spValue * fontScale * 0.8f);
+        float dpValue = spValue * fontScale * 0.8f;
+        return (int) dpValue;
     }
 
     private static float convertToFloatPercentage(int percent) {
-        if (percent > 100) {
+        if (percent >= 100) {
             StringUtils.HaoLog("百分比必須低於100");
             return 1.0f;
-        } else if(percent < 0){
+        } else if(percent <= 0){
             StringUtils.HaoLog("百分比必須高於0");
             return 0.1f;
         }
         return (float) percent / 100.0f;
+    }
+
+    private static int transparencyPercentage(int percent){
+        if(percent < 0){
+            return 0;
+        } else if(percent > 100){
+            return 255;
+        } else {
+            // 將百分比乘以2.55來得到0到255之間的值
+            return (int) (percent * 2.55);
+        }
     }
 
     private static Bitmap calculateImageReductionRatio(Bitmap bitmap, int bitmapWidth, int canvasWidth, int bitmapHeight, int canvasHeight){
