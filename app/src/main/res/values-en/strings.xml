@@ -66,10 +66,6 @@
     <string name="unable_find_path">Unable to find webAgendaUrl4LaleAuth path configuration !</string>
     <string name="work_notification_format">%s:%s\nYou have a job that needs to be processed as soon as possible</string>
     <string name="change_language">Change Language</string>
-    <string name="traditional_chinese">Traditional Chinese</string>
-    <string name="simplified_chinese">Simplified Chinese</string>
-    <string name="english_language">English</string>
-    <string name="language_selection_text">You need to restart to change the language\nConfirm language change?</string>
 
     <!-- FileUtils.java -->
     <string name="file_too_large">File size exceeds 50MB and cannot be uploaded</string>

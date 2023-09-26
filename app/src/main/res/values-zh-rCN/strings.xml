@@ -66,10 +66,7 @@
     <string name="unable_find_path">无法找到 webAgendaUrl4LaleAuth 路径设定!</string>
     <string name="work_notification_format">%s:%s\n您有一份工作需尽速处理</string>
     <string name="change_language">变更语言</string>
-    <string name="traditional_chinese">繁体中文</string>
-    <string name="simplified_chinese">简体中文</string>
-    <string name="english_language">English</string>
-    <string name="language_selection_text">需要重新启动已变更语言\n确定变更语言？</string>
+
     <!-- FileUtils.java -->
     <string name="file_too_large">文件大小超过50MB，无法上传</string>
     <string name="not_member">用户不是聊天室成员</string>

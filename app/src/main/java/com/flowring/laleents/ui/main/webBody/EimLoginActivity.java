@@ -122,7 +122,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
         ic_multilingual.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String[] languageSelector = new String[]{getString(R.string.traditional_chinese), getString(R.string.simplified_chinese), getString(R.string.english_language)};
+                String[] languageSelector = new String[]{"繁體中文", "簡體中文", "English"};
                 ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
                         EimLoginActivity.this,
                         android.R.layout.simple_list_item_1,
