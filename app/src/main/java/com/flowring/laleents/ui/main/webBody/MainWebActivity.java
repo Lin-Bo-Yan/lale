@@ -516,7 +516,8 @@ public class MainWebActivity extends MainAppCompatActivity {
                 if(restrictFileExtEnabled){
                     boolean allowUpload = FileUtils.isStringInFileExtensions(fileExtension,fileType);
                     if (!allowUpload) {
-                        CommonUtils.showToast(MainWebActivity.this, getLayoutInflater(), "不允許上傳的檔案類型", false);
+                        String replacedSymbol = fileExtension.replace(";", "、");
+                        DialogUtils.showDialogMessage(MainWebActivity.this,"上傳失敗","上傳格式未在指定範圍內\n可上傳的副檔名：" + replacedSymbol);
                         uris = new Uri[0];
                     }
                 }
@@ -1598,7 +1599,6 @@ public class MainWebActivity extends MainAppCompatActivity {
         sb.setText("使用者Lale ID : " + UserControlCenter.getUserMinInfo().userId + "\n問題描述:");
         sb.setType("message/rfc822");
 
-
         Uri NuriForFile = FileProvider.getUriForFile(this, "com.flowring.laleents.fileprovider", com.flowring.laleents.tools.Log.mLogFile);
         sb.setStream(NuriForFile);
         sb.setSubject("問題回報");
@@ -2172,8 +2172,9 @@ public class MainWebActivity extends MainAppCompatActivity {
     private void share(JSONObject data) {
         if (data.has("type")) {
             String inviteMessage = "";
-            if (data.has("data"))
+            if (data.has("data")){
                 inviteMessage = data.optString("data");
+            }
             StringUtils.HaoLog("share command："+data.optString("type"));
             switch (data.optString("type")) {
                 case "sms":

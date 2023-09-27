@@ -23,9 +23,12 @@ public class SharedPreferencesUtils {
 
     public static boolean clearGeneralType(Activity activity){
         pref = PreferenceManager.getDefaultSharedPreferences(activity);
-        pref.edit().remove("loginType").apply();
-        String value = pref.getString("loginType", "");
-        return value.isEmpty();
+        if(pref.contains("loginType")){
+            pref.edit().remove("loginType").apply();
+            String value = pref.getString("loginType", "");
+            return value.isEmpty();
+        }
+        return false;
     }
 
     public static void thirdPartyIdentifier(String sID){
@@ -41,9 +44,13 @@ public class SharedPreferencesUtils {
 
     public static boolean clearThirdPartyIdentifier(Activity activity){
         pref = PreferenceManager.getDefaultSharedPreferences(activity);
-        pref.edit().remove("thirdPartyIdentifier").apply();
-        String value = pref.getString("thirdPartyIdentifier", "");
-        return value.isEmpty();
+        if(pref.contains("thirdPartyIdentifier")){
+            pref.edit().remove("thirdPartyIdentifier").apply();
+            String value = pref.getString("thirdPartyIdentifier", "");
+            return value.isEmpty();
+        }
+
+        return false;
     }
 
     public static void isRepeatDevice(Boolean isRepeatDevice){
@@ -58,9 +65,12 @@ public class SharedPreferencesUtils {
 
     public static boolean clearRepeatDevice(Activity activity){
         pref = PreferenceManager.getDefaultSharedPreferences(activity);
-        pref.edit().remove("isRepeatDevice").apply();
-        String value = pref.getString("isRepeatDevice", "");
-        return value.isEmpty();
+        if(pref.contains("isRepeatDevice")){
+            pref.edit().remove("isRepeatDevice").apply();
+            String value = pref.getString("isRepeatDevice", "");
+            return value.isEmpty();
+        }
+        return false;
     }
 
     public static void firebasePusherErrorCode(int status){
@@ -87,6 +97,13 @@ public class SharedPreferencesUtils {
         return pref.getBoolean("isScreenshotForbidden",false);
     }
 
+    public static void clearScreenshotForbidden(Activity activity) {
+        pref = PreferenceManager.getDefaultSharedPreferences(activity);
+        if (pref.contains("isScreenshotForbidden")) {
+            pref.edit().remove("isScreenshotForbidden").apply();
+        }
+    }
+
     //設定download布林值
     public static void setDownloadForbidden(String settingValue){
         pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
@@ -98,6 +115,13 @@ public class SharedPreferencesUtils {
     public static boolean getDownloadForbidden(Activity activity){
         pref = PreferenceManager.getDefaultSharedPreferences(activity);
         return pref.getBoolean("isDownloadForbidden",false);
+    }
+
+    public static void clearDownloadForbidden(Activity activity) {
+        pref = PreferenceManager.getDefaultSharedPreferences(activity);
+        if (pref.contains("isDownloadForbidden")) {
+            pref.edit().remove("isDownloadForbidden").apply();
+        }
     }
 
     //設定restrict布林值 檔案名稱需要另做處理
@@ -113,6 +137,13 @@ public class SharedPreferencesUtils {
         return pref.getBoolean("isRestrictFileExt",false);
     }
 
+    public static void clearRestrictFileExt(Activity activity) {
+        pref = PreferenceManager.getDefaultSharedPreferences(activity);
+        if (pref.contains("isRestrictFileExt")) {
+            pref.edit().remove("isRestrictFileExt").apply();
+        }
+    }
+
     //存文件擴展名
     public static void saveFileExtension(String additionalValue){
         pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
@@ -124,6 +155,13 @@ public class SharedPreferencesUtils {
         pref = PreferenceManager.getDefaultSharedPreferences(activity);
         String fileExtension = pref.getString("fileExtension","");
         return fileExtension;
+    }
+
+    public static void clearFileExtension(Activity activity) {
+        pref = PreferenceManager.getDefaultSharedPreferences(activity);
+        if (pref.contains("fileExtension")) {
+            pref.edit().remove("fileExtension").apply();
+        }
     }
 
     //設定download_watermark布林值
@@ -139,4 +177,10 @@ public class SharedPreferencesUtils {
         return pref.getBoolean("isDownloadWatermark",false);
     }
 
+    public static void clearWatermark(Activity activity) {
+        pref = PreferenceManager.getDefaultSharedPreferences(activity);
+        if (pref.contains("isDownloadWatermark")) {
+            pref.edit().remove("isDownloadWatermark").apply();
+        }
+    }
 }

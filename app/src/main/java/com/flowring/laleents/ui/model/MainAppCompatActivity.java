@@ -160,9 +160,11 @@ public class MainAppCompatActivity extends AppCompatActivity {
             @Override
             public void run() {
                 if(enableScreenshots){
-                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
-                } else {
+                    //不可以截圖
                     getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+                } else {
+                    //可以截圖
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
                 }
             }
         });

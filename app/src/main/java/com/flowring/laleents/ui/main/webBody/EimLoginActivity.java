@@ -109,7 +109,12 @@ public class EimLoginActivity extends MainAppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        screenshotEnable(true);
+        screenshotEnable(false);
+        SharedPreferencesUtils.clearScreenshotForbidden(EimLoginActivity.this);
+        SharedPreferencesUtils.clearDownloadForbidden(EimLoginActivity.this);
+        SharedPreferencesUtils.clearRestrictFileExt(EimLoginActivity.this);
+        SharedPreferencesUtils.clearFileExtension(EimLoginActivity.this);
+        SharedPreferencesUtils.clearWatermark(EimLoginActivity.this);
     }
 
     public static void saveLog(MainAppCompatActivity activity) {

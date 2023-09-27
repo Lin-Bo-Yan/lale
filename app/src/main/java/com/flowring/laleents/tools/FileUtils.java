@@ -736,7 +736,10 @@ public class FileUtils {
         JSONObject jsonObject = new JSONObject();
         String name = file.getName();
         String lastPathComponent = name.substring(name.lastIndexOf('/') + 1);
-        String pic = ThumbnailUtils.resizeAndConvertToBase64(file.getPath(),50);
+        String pic = "thumbnail";
+        if(isValidFileType(file.getName(), ".jpeg", ".jpg", ".png", ".gif",".bmp",".heic")){
+            pic = ThumbnailUtils.resizeAndConvertToBase64(file.getPath(),50);
+        }
         int hashCode = lastPathComponent.hashCode();
         try {
             jsonObject.put("fileId",httpReturn.data);
@@ -752,7 +755,10 @@ public class FileUtils {
     public static JSONObject forSingleShareFile(File file, HttpReturn httpReturn){
         JSONObject jsonObject = new JSONObject();
         String fileName = file.getName();
-        String pic = ThumbnailUtils.resizeAndConvertToBase64(file.getPath(),50);
+        String pic = "thumbnail";
+        if(isValidFileType(file.getName(), ".jpeg", ".jpg", ".png", ".gif",".bmp",".heic")){
+            pic = ThumbnailUtils.resizeAndConvertToBase64(file.getPath(),50);
+        }
         try {
             jsonObject.put("onlyKey","hashcode");
             jsonObject.put("fileId",httpReturn.data);
