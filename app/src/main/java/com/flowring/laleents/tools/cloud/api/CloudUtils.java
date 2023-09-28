@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -199,7 +200,24 @@ public class CloudUtils implements ICloudUtils {
     @Override
     public HttpReturn login(Context context, String deviceID, String account, String password) {
         MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(mediaType, "{\"deviceId\": \"" + deviceID + "\",  \"password\": \"" + password + "\",  \"userId\": \"" + account + "\", \"devicePlatform\": \"android\"}");
+        String androidVersion = Build.VERSION.RELEASE;
+        String manufacturer = Build.MANUFACTURER;
+        String device = Build.DEVICE;
+        String deviceName = String.format("%s-%s",manufacturer,device);
+
+        JSONObject jbody = new JSONObject();
+        try {
+            jbody.put("userId",account);
+            jbody.put("password",password);
+            jbody.put("deviceId",deviceID);
+            jbody.put("devicePlatform","android");
+            jbody.put("devicePlatformVersion",androidVersion);
+            jbody.put("deviceName",deviceName);
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+
+        RequestBody body = RequestBody.create(mediaType,jbody.toString());
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/user/login")
                 .method("POST", body)
@@ -218,6 +236,10 @@ public class CloudUtils implements ICloudUtils {
     @Override
     public HttpReturn loginThirdParty(String displayName, String deviceID, int type, String sID, File image) {
         JSONObject jbody = new JSONObject();
+        String androidVersion = Build.VERSION.RELEASE;
+        String manufacturer = Build.MANUFACTURER;
+        String device = Build.DEVICE;
+        String deviceName = String.format("%s-%s",manufacturer,device);
         try {
             jbody.put("loginType", type);
             jbody.put("thirdPartyIdentifier", sID);
@@ -226,6 +248,8 @@ public class CloudUtils implements ICloudUtils {
             }
             jbody.put("deviceId", deviceID);
             jbody.put("devicePlatform","android");
+            jbody.put("devicePlatformVersion",androidVersion);
+            jbody.put("deviceName",deviceName);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -290,6 +314,10 @@ public class CloudUtils implements ICloudUtils {
     @Override
     public HttpReturn loginSimpleThirdParty(String thirdPartyIdentifier, String deviceId, CallbackUtils.TimeoutReturn timeoutReturn) {
         MediaType mediaType = MediaType.parse("application/json");
+        String androidVersion = Build.VERSION.RELEASE;
+        String manufacturer = Build.MANUFACTURER;
+        String device = Build.DEVICE;
+        String deviceName = String.format("%s-%s",manufacturer,device);
         //RequestBody body = RequestBody.create(mediaType, "{\"thirdPartyIdentifier\": \"" + thirdPartyIdentifier + "\",  \"deviceId\": \"" + deviceId + "\",  \"loginType\":6 }");
         JSONObject jbody = new JSONObject();
         try {
@@ -298,6 +326,8 @@ public class CloudUtils implements ICloudUtils {
             jbody.put("displayName",UserControlCenter.getUserMinInfo().userId);
             jbody.put("deviceId",deviceId);
             jbody.put("devicePlatform","android");
+            jbody.put("devicePlatformVersion",androidVersion);
+            jbody.put("deviceName",deviceName);
         }catch (JSONException e){
             e.printStackTrace();
         }
