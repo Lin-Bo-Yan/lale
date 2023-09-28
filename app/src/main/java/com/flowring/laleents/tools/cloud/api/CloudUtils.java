@@ -2323,12 +2323,12 @@ public class CloudUtils implements ICloudUtils {
     @Override
     public HttpAfReturn orgtreeuserimage(String afDomain, String[] UserIds, CallbackUtils.TimeoutReturn timeoutReturn) {
         MediaType mediaType = MediaType.parse("application/json");
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("userList", UserIds);
         map.put("isAll", false);
 
         RequestBody requestBody = RequestBody.create(mediaType, new JSONObject(map).toString());
-        StringUtils.HaoLog("getRoomMembers " + new JSONObject(map).toString());
+        StringUtils.HaoLog("getRoomMembers " + new JSONObject(map));
         StringUtils.HaoLog("getRoomMembers " + afDomain + "/api/dau/org-tree/user/image");
         Request.Builder request = new Request.Builder()
                 .url(afDomain + "/api/dau/org-tree/user/image")
@@ -2615,7 +2615,7 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
-    public HttpReturn getAllSystemInfor(CallbackUtils.TimeoutReturn timeoutReturn) {
+    public HttpReturn getEimAllSystemInfor(CallbackUtils.TimeoutReturn timeoutReturn) {
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/system/setting")
                 .get();
@@ -2690,6 +2690,25 @@ public class CloudUtils implements ICloudUtils {
                 .url(WFCI_URL + "/api/lalesystem/watermark/construction")
                 .method("POST", body)
                 .addHeader("token", UserControlCenter.getUserMinInfo().eimUserData.af_token);
+
+        Http2Return http2Return = gethttp2Return(request, 15, new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                timeoutReturn.Callback(timeout);
+            }
+        });
+        return http2Return;
+    }
+
+    @Override
+    public Http2Return getAppWorkAllSystemInfor(CallbackUtils.TimeoutReturn timeoutReturn) {
+        String afWfciServiceUrl = UserControlCenter.getUserMinInfo().eimUserData.af_wfci_service_url;
+        String sysId = "LSC00000000000000003";
+        String WFCI_URL = String.format("%s/api/lalesystem/sysid/%s", afWfciServiceUrl, sysId);
+        Request.Builder request = new Request.Builder()
+                .url(WFCI_URL)
+                .addHeader("token", UserControlCenter.getUserMinInfo().eimUserData.af_token)
+                .get();
 
         Http2Return http2Return = gethttp2Return(request, 15, new CallbackUtils.TimeoutReturn() {
             @Override

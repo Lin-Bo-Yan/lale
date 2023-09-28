@@ -809,10 +809,10 @@ public interface ICloudUtils {
     HttpReturn latestAnnounceGivenTime(String givenTime);
 
     /**
-     * 系統設定 - 取得所有系統資訊
+     * 系統設定 - 取得 Eim 所有系統資訊
      */
     @WorkerThread
-    HttpReturn getAllSystemInfor(CallbackUtils.TimeoutReturn timeoutReturn);
+    HttpReturn getEimAllSystemInfor(CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 系統設定 - (Adm)更新系統資訊
@@ -837,6 +837,12 @@ public interface ICloudUtils {
      */
     @WorkerThread
     Http2Return textWatermark(String textContent, CallbackUtils.TimeoutReturn timeoutReturn);
+
+    /**
+     * 系統設定 - 取得 純辦公 所有系統資訊
+     */
+    @WorkerThread
+    Http2Return getAppWorkAllSystemInfor(CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 取得 Lale 使用平台最低可相容版本

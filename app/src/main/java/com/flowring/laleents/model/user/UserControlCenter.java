@@ -371,13 +371,13 @@ public class UserControlCenter {
         }
     }
 
-    public static void getAllSystemInfor(CallbackUtils.ProgramReturn programReturn){
+    public static void getEimAllSystemInfor(CallbackUtils.ProgramReturn programReturn){
         new Thread(() -> {
-            HttpReturn httpReturn = CloudUtils.iCloudUtils.getAllSystemInfor(new CallbackUtils.TimeoutReturn() {
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.getEimAllSystemInfor(new CallbackUtils.TimeoutReturn() {
                 @Override
                 public void Callback(IOException timeout) {
                     new Handler(Looper.getMainLooper()).post(() -> {
-                        StringUtils.HaoLog("getAllSystemInfor 網路異常");
+                        StringUtils.HaoLog("getEimAllSystemInfor 網路異常");
                         CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
                     });
                 }
@@ -517,6 +517,33 @@ public class UserControlCenter {
             textContent = StringUtils.replaceTextPlaceholders(textContent);
         }
         return textContent;
+    }
+
+    public static void getAppWorkAllSystemInfor(CallbackUtils.DeviceReturn settingValue){
+        new Thread(() -> {
+            Http2Return http2Return = CloudUtils.iCloudUtils.getAppWorkAllSystemInfor(new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        StringUtils.HaoLog("getAppWorkAllSystemInfor 網路異常");
+                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                    });
+                }
+            });
+
+            if(http2Return.code == 200){
+                String info = new Gson().toJson(http2Return.data);
+                try {
+                    JSONObject jsonObject = new JSONObject(info);
+                    String appWorkProps = jsonObject.optString("appWorkProps");
+                    JSONObject appWorkPropsJsonObjec = new JSONObject(appWorkProps);
+                    boolean screenshotForbidden = appWorkPropsJsonObjec.optBoolean("screenshot_forbidden");
+                    settingValue.Callback(screenshotForbidden);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     public static void getAfServerVersion(String afUrl, CallbackUtils.messageReturn callback){

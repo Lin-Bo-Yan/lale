@@ -419,13 +419,14 @@ public class MainWebActivity extends MainAppCompatActivity {
         StringUtils.HaoLog("onResume= " + userMin);
         if (userMin != null && !userMin.userId.isEmpty()) {
             checkNetworkAndContinue();
-            setSystemInfor();
             if(userMin.eimUserData.isLaleAppEim){
                 censorToken();
                 censorEimFirebasePusher();
+                setEimSystemInfor();
             } else if(userMin.eimUserData.isLaleAppWork){
                 censorAfToken();
                 censorAfFirebasePusher();
+                setAppWorkSystemInfor();
             }
         } else {
             goLogin();
@@ -1117,24 +1118,21 @@ public class MainWebActivity extends MainAppCompatActivity {
     }
 
     void checkUpApp(Intent intent) {
-
         if (init) {
             StringUtils.HaoLog("checkUpApp2 " +intent.hasExtra("isHome"));
             if (intent.getBooleanExtra("isHome", false)) {
                 try {
-
                     JSONObject j = new JSONObject().put("type", "gotoWeb").put("data", new JSONObject().put("url",intent.getStringExtra("isHomeMICRO_APPurl")).put("title",intent.getStringExtra("isHomeMICRO_APPName")));
                     sendToWeb(j.toString());
                    intent.removeExtra("isHome");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
             } else if (intent.getBooleanExtra("bFromPhone", false) &&intent.getStringExtra("Notification") != null) {
                 try {
                     sendToWeb("Notification", new JSONObject(intent.getStringExtra("Notification")));
-                   intent.removeExtra("bFromPhone");
-                   intent.removeExtra("Notification");
+                    intent.removeExtra("bFromPhone");
+                    intent.removeExtra("Notification");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -1152,12 +1150,6 @@ public class MainWebActivity extends MainAppCompatActivity {
             Uri uri = Uri.parse(url);
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
-//            if (ContextCompat.checkSelfPermission(MainWebActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
-//                    PackageManager.PERMISSION_GRANTED) {
-//                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 50);
-//            } else {
-//                downloadFile(url, userAgent, contentDisposition, mimeType);
-//            }
         }
     };
 
@@ -1268,11 +1260,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                 StringUtils.HaoLog("webView_Log= "+consoleMessage.messageLevel());
                 switch (consoleMessage.messageLevel()){
                     case ERROR://將error信息上報到服務端
-                        StringUtils.HaoLog("webView_Log= " + " "+consoleMessage.message());
-                        break;
                     case LOG:
-                        StringUtils.HaoLog("webView_Log= " + " "+consoleMessage.message());
-                        break;
                     case WARNING:
                         StringUtils.HaoLog("webView_Log= " + " "+consoleMessage.message());
                         break;
@@ -2458,9 +2446,8 @@ public class MainWebActivity extends MainAppCompatActivity {
             });
         }
     }
-    
-    private void setSystemInfor(){
-        UserControlCenter.getAllSystemInfor(new CallbackUtils.ProgramReturn() {
+    private void setEimSystemInfor(){
+        UserControlCenter.getEimAllSystemInfor(new CallbackUtils.ProgramReturn() {
             @Override
             public void Callback(SystemProgram program) {
                 switch (program.settingKey){
@@ -2480,6 +2467,17 @@ public class MainWebActivity extends MainAppCompatActivity {
                         SharedPreferencesUtils.setWatermark(program.settingValue);
                         break;
                 }
+            }
+        });
+    }
+
+    private void setAppWorkSystemInfor(){
+        UserControlCenter.getAppWorkAllSystemInfor(new CallbackUtils.DeviceReturn() {
+            @Override
+            public void Callback(boolean screenshotForbidden) {
+                String settingValue = Boolean.toString(screenshotForbidden);
+                SharedPreferencesUtils.setScreenshotForbidden(settingValue);
+                screenshotEnable(screenshotForbidden);
             }
         });
     }
