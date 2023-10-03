@@ -125,8 +125,6 @@ public class MainAppCompatActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-        //true 為 可以截圖
         boolean screenshotsProhibited = SharedPreferencesUtils.getScreenshotForbidden(MainAppCompatActivity.this);
         screenshotEnable(screenshotsProhibited);
     }

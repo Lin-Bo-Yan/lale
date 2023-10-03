@@ -91,14 +91,14 @@ public class WeterMarkBgView extends Drawable {
         canvas.save();
 
         // 獲取水印文字的寬度和高度
-        float textWidth = paint.measureText(labels.get(0));
+        float textWidth = measureText(labels);
         float textHeight = paint.getTextSize();
         // 計算文字的左上角位置，使它們都位於畫布中心
         int textLeft = (canvasWidth - (int)textWidth) / 2;
         int textTop = (canvasHeight + (int)textHeight) / 2;
 
         // rotate 方法將整個畫布旋轉指定的角度（degress），以下改成旋轉文字角度
-        canvas.rotate(degress, textLeft + textWidth / 2, textTop - textHeight / 2);
+        canvas.rotate(-degress, textLeft + textWidth / 2, textTop - textHeight / 2);
 
         int spacing = 0; // 垂直間距，drawText(要繪製的文本內容,x軸起始位置畫布左上角,y軸起始位置畫布左上角,Paint對象設置文本的顏色)
         for (String label : labels) {
@@ -128,7 +128,7 @@ public class WeterMarkBgView extends Drawable {
 
     private static int sp2px(Context context,float spValue){
         final float fontScale = context.getResources().getDisplayMetrics().density;
-        float dpValue = spValue * fontScale * 0.8f;
+        float dpValue = spValue * fontScale * 0.6f;
         return (int) dpValue;
     }
 
@@ -145,12 +145,12 @@ public class WeterMarkBgView extends Drawable {
 
     private static int transparencyPercentage(int percent){
         if(percent < 0){
-            return 0;
-        } else if(percent > 100){
             return 255;
+        } else if(percent > 100){
+            return 0;
         } else {
-            // 將百分比乘以2.55來得到0到255之間的值
-            return (int) (percent * 2.55);
+            // 將百分比乘以2.55來得到0到255之間的值，再用255減掉變成負號
+            return (int) (255 - (percent * 2.55));
         }
     }
 
@@ -159,7 +159,7 @@ public class WeterMarkBgView extends Drawable {
         float widthRatio = (float) canvasWidth / (float) bitmapWidth;
         float heightRatio = (float) canvasHeight / (float) bitmapHeight;
         // 使用較小的比率來縮小影像
-        float scale = Math.min(widthRatio, heightRatio) * 0.8f;
+        float scale = Math.min(widthRatio, heightRatio) * 0.6f;
         // 設定圖片縮放比例
         Matrix matrix = new Matrix();
         matrix.postScale(scale, scale);
@@ -167,6 +167,17 @@ public class WeterMarkBgView extends Drawable {
         // 使用Matrix物件對Bitmap進行縮放
         bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmapWidth, bitmapHeight, matrix, true);
         return bitmap;
+    }
+
+    private float measureText(List<String> labels){
+        float maxWidth = 0;
+        for (String label : labels) {
+            float textWidth = paint.measureText(label);
+            if (textWidth > maxWidth) {
+                maxWidth = textWidth;
+            }
+        }
+        return maxWidth;
     }
 
     private static Typeface textFontConversion(Context context, String textFont){

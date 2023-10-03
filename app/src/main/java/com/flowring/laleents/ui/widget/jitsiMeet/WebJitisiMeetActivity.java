@@ -54,9 +54,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WebJitisiMeetActivity extends MainAppCompatActivity {
-
-
     PermissionRequest myRequest;
+    WebView webView;
+    String url = "";
+    private PictureInPictureParams.Builder mPictureInPictureParamsBuilder;
 
     private boolean checkPublishPermission() {
         List<String> permissions = new ArrayList<>();
@@ -79,15 +80,15 @@ public class WebJitisiMeetActivity extends MainAppCompatActivity {
     void cleanWebviewCache() {
         deleteDatabase("webview.db");
         deleteDatabase("webviewCache.db");
-
     }
 
     void setWebView(WebView webView, String url) {
         this.getWindow().setFlags(
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
-        if (webView == null)
+        if (webView == null){
             webView = new WebView(getApplicationContext());
+        }
         cleanWebviewCache();
         WebSettings webSettings = webView.getSettings();
         webSettings.setAllowFileAccess(true);
@@ -202,21 +203,17 @@ public class WebJitisiMeetActivity extends MainAppCompatActivity {
         webView.loadUrl(url);
     }
 
-    WebView webView;
-
     void backtoActivity() {
         if (webView != null) {
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
                     FrameLayout.LayoutParams.MATCH_PARENT,
                     FrameLayout.LayoutParams.MATCH_PARENT);
-            if (webView.getParent() != null)
+            if (webView.getParent() != null){
                 ((ViewGroup) webView.getParent()).removeView(webView);
+            }
             ((ViewGroup) findViewById(R.id.all)).addView(webView, params);
         }
     }
-
-    String url = "";
-    private PictureInPictureParams.Builder mPictureInPictureParamsBuilder;
 
     private void lastPerson() {
         MsgControlCenter.sendAllEndRequest(getIntent().getStringExtra("roomId"), getIntent().getStringExtra("msgId"));
@@ -230,7 +227,7 @@ public class WebJitisiMeetActivity extends MainAppCompatActivity {
             }
             Rational aspectRatio = new Rational(200, getIntent().getBooleanExtra("isGroupCall", false) ? 400 : 200);
             mPictureInPictureParamsBuilder.setAspectRatio(aspectRatio);
-            //进入pip模式
+            //進入pip模式
             enterPictureInPictureMode(mPictureInPictureParamsBuilder.build());
             isInPictureInPictureMode = true;
         }
@@ -319,11 +316,10 @@ public class WebJitisiMeetActivity extends MainAppCompatActivity {
         String roomSecret = roomIdParse + msgIdParse; // 組成房間獨立 code
         // 將以上資訊帶入 url 中開啟通話服務
         if (UserControlCenter.getUserMinInfo() != null && UserControlCenter.getUserMinInfo().eimUserData != null && !UserControlCenter.getUserMinInfo().eimUserData.call_service_url.isEmpty()) {
-        StringUtils.HaoLog("有拿到callServiceUrl:"+UserControlCenter.getUserMinInfo().eimUserData.call_service_url + "/#/call/" + roomSecret + "/" + dataEncode);
+            StringUtils.HaoLog("有拿到callServiceUrl:"+UserControlCenter.getUserMinInfo().eimUserData.call_service_url + "/#/call/" + roomSecret + "/" + dataEncode);
             return UserControlCenter.getUserMinInfo().eimUserData.call_service_url + "/#/call/" + roomSecret + "/" + dataEncode;
-        }
-        {         StringUtils.HaoLog("沒有拿到callServiceUrl:");
-
+        } else {
+            StringUtils.HaoLog("沒有拿到callServiceUrl:");
             return  "https://agentflow.flowring.com:8443/appCall/#/call/" + roomSecret + "/" + dataEncode;
         }
     }
@@ -333,8 +329,6 @@ public class WebJitisiMeetActivity extends MainAppCompatActivity {
     protected void onPause() {
         super.onPause();
 //        windowManager.updateViewLayout(webView, params0);
-
-
     }
 
     @Override
@@ -346,11 +340,9 @@ public class WebJitisiMeetActivity extends MainAppCompatActivity {
 //            windowManager.removeView(webView);
             webView = null;
         }
-        if(isLock())
-        {
+        if(isLock()) {
             ActivityUtils.gotoMainWebActivity(this);
         }
-
         super.onDestroy();
     }
 
@@ -389,7 +381,6 @@ public class WebJitisiMeetActivity extends MainAppCompatActivity {
     protected void onStop() {
         super.onStop();
         StringUtils.HaoLog("onStop=" + isInPictureInPictureMode);
-
             if (isInPictureInPictureMode||isLock()) {
                 if (webView != null) {
                     webView.loadUrl("about:blank");
@@ -400,8 +391,6 @@ public class WebJitisiMeetActivity extends MainAppCompatActivity {
                 StringUtils.HaoLog("onStop ???=" + isInPictureInPictureMode);
                 finish();
             }
-
-
     }
 
 
@@ -423,14 +412,15 @@ public class WebJitisiMeetActivity extends MainAppCompatActivity {
     @SuppressLint("JavascriptInterface")
     @JavascriptInterface
     public void postMessage(String json) {
-
         Log.d("hao", "toAndroid: " + json);
-        if (json == null || json.isEmpty())
+        if (json == null || json.isEmpty()){
             return;
+        }
         try {
             JSONObject jsonObject = new JSONObject(json);
-            if (jsonObject.isNull("command"))
+            if (jsonObject.isNull("command")){
                 return;
+            }
             String command = jsonObject.optString("command");
             Log.d("hao", "命令 " + command);
             switch (command) {
@@ -441,7 +431,6 @@ public class WebJitisiMeetActivity extends MainAppCompatActivity {
                             MsgControlCenter.sendEndRequest(getIntent().getStringExtra("roomId"), getIntent().getStringExtra("msgId"));
                             finish();
                         });
-
                     }
                     break;
                 case "last person":
@@ -465,13 +454,10 @@ public class WebJitisiMeetActivity extends MainAppCompatActivity {
 
     }
 
-    public boolean isLock()
-    {
-
-
+    public boolean isLock() {
         KeyguardManager mKeyguardManager = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
         boolean flag = mKeyguardManager.inKeyguardRestrictedInputMode();
-StringUtils.HaoLog("flag="+flag);
+        StringUtils.HaoLog("flag= " + flag);
         return flag;
     }
 }
