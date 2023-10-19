@@ -1,7 +1,6 @@
 package com.flowring.laleents.model.user;
 
 import static com.flowring.laleents.tools.phone.AllData.delectAll;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;

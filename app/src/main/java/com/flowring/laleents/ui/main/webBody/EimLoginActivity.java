@@ -332,7 +332,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
         //存loginType
         SharedPreferencesUtils.generalType();
         SharedPreferencesUtils.thirdPartyIdentifier(eimUserData.af_mem_id);
-        HttpReturn httpReturn2 = CloudUtils.iCloudUtils.loginSimpleThirdParty(eimUserData.af_mem_id, Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID), new CallbackUtils.TimeoutReturn() {
+        HttpReturn httpReturn = CloudUtils.iCloudUtils.loginSimpleThirdParty(eimUserData.af_mem_id, Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID), new CallbackUtils.TimeoutReturn() {
             @Override
             public void Callback(IOException timeout) {
                 new Handler(Looper.getMainLooper()).post(() -> {
@@ -342,10 +342,10 @@ public class EimLoginActivity extends MainAppCompatActivity {
             }
         });
 
-        if (httpReturn2.status == 200) {
-            String userMinString = new Gson().toJson(httpReturn2.data);
+        if (httpReturn.status == 200) {
+            String userMinString = new Gson().toJson(httpReturn.data);
             UserMin userMin = new Gson().fromJson(userMinString, UserMin.class);
-            StringUtils.HaoLog("httpReturn2.data=" + new Gson().toJson(httpReturn2.data));
+            StringUtils.HaoLog("httpReturn2.data=" + new Gson().toJson(httpReturn.data));
             userMin.eimUserData = eimUserData;
             userMin.eimUserData.lale_token = userMin.token;
             userMin.eimUserData.refresh_token = userMin.refreshToken;
@@ -360,7 +360,13 @@ public class EimLoginActivity extends MainAppCompatActivity {
                 }
             });
         } else {
-            saveLog(activity);
+            switch (httpReturn.msg){
+                case "LLUD-0002:人員裝置禁止登入":
+                    runOnUiThread(()->{
+                        DialogUtils.showDialogMessage(EimLoginActivity.this,"管理員以設定此裝置不允許登入","請更換其他裝置登入");
+                    });
+                    break;
+            }
             activity.cancelWait();
         }
     }

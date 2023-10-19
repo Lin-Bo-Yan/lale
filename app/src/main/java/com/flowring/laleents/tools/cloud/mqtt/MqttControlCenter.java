@@ -2,22 +2,14 @@ package com.flowring.laleents.tools.cloud.mqtt;
 
 import static com.pubnub.api.vendor.Base64.NO_WRAP;
 
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.preference.PreferenceManager;
 
-import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.model.msg.MsgControlCenter;
-import com.flowring.laleents.model.user.TokenInfo;
 import com.flowring.laleents.model.user.UserControlCenter;
-import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.StringUtils;
-import com.flowring.laleents.tools.cloud.api.CloudUtils;
 import com.flowring.laleents.tools.phone.AllData;
 import com.flowring.laleents.tools.phone.LocalBroadcastControlCenter;
-import com.google.gson.Gson;
-
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -96,11 +88,13 @@ public class MqttControlCenter {
     Runnable NewConnect = new Runnable() {
         @Override
         synchronized public void run() {
-            if (stopNew)
+            if (stopNew){
                 return;
+            }
             StringUtils.HaoLog("NewConnect " + Thread.currentThread().getName());
-            if (UserControlCenter.getUserMinInfo() == null || !UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim)
+            if (UserControlCenter.getUserMinInfo() == null || !UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim){
                 return;
+            }
             try {
                 if (client != null) {
                     client.setCallback(new MqttCallback() {
@@ -157,7 +151,6 @@ public class MqttControlCenter {
         String subTopic = null;
         try {
             StringUtils.HaoLog("userId=" + UserControlCenter.getUserMinInfo().userId);
-
             subTopic = "/event/" + new String(android.util.Base64.encode(UserControlCenter.getUserMinInfo().userId.getBytes("UTF-8"), NO_WRAP));
         } catch (UnsupportedEncodingException e) {
             StringUtils.HaoLog("SubTopic e=" + e);

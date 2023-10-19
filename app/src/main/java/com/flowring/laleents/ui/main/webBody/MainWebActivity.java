@@ -36,7 +36,6 @@ import android.os.Message;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
-import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
@@ -120,12 +119,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.net.URL;
@@ -353,6 +349,7 @@ public class MainWebActivity extends MainAppCompatActivity {
 
     //防止伺服器公告Dialog重複顯示
     public static boolean smartServerDialogLock = true;
+    private static boolean isThreadStarted = false;
     private boolean shownLock = true;
     private boolean urlsIsOk = true;
     private boolean init = false;
@@ -2326,6 +2323,39 @@ public class MainWebActivity extends MainAppCompatActivity {
                         case "token 資料錯誤":
                             StringUtils.HaoLog("censorToken= 5 token 資料錯誤 " + Thread.currentThread().getName());
                             Logout(false);
+                            break;
+                        case "LLUD-0003:FORCED_LOGOUT":
+                            StringUtils.HaoLog("censorToken= 5 " + " 強制登出 ");
+                            runOnUiThread(()->{
+                                DialogUtils.showDialogMessage(MainWebActivity.this, "此裝置已被管理員強制登出", "若需繼續使用請在次登入", new CallbackUtils.noReturn() {
+                                    @Override
+                                    public void Callback() {
+                                        Logout(false);
+                                    }
+                                });
+                            });
+                            break;
+                        case "LLUD-0003:CHANGE_DEVICE":
+                            StringUtils.HaoLog("censorToken= 5 " + " 更換設備");
+                            runOnUiThread(()->{
+                                DialogUtils.showDialogMessage(MainWebActivity.this, getString(R.string.single_device_sign_out_title),getString(R.string.single_device_sign_out_text), new CallbackUtils.noReturn() {
+                                    @Override
+                                    public void Callback() {
+                                        Logout(false);
+                                    }
+                                });
+                            });
+                            break;
+                        case "LLUD-0003:LOGIN_FORBIDDEN":
+                            StringUtils.HaoLog("censorToken= 5 " + " 不允許登入");
+                            runOnUiThread(()->{
+                                DialogUtils.showDialogMessage(MainWebActivity.this, "管理員以設定此裝置不允許登入", "請更換其他裝置登入", new CallbackUtils.noReturn() {
+                                    @Override
+                                    public void Callback() {
+                                        Logout(false);
+                                    }
+                                });
+                            });
                             break;
                     }
                 }
