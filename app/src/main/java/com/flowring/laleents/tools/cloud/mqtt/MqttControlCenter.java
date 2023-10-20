@@ -4,10 +4,15 @@ import static com.pubnub.api.vendor.Base64.NO_WRAP;
 
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Looper;
 
+import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.model.msg.MsgControlCenter;
 import com.flowring.laleents.model.user.UserControlCenter;
+import com.flowring.laleents.tools.CallbackUtils;
+import com.flowring.laleents.tools.CommonUtils;
 import com.flowring.laleents.tools.StringUtils;
+import com.flowring.laleents.tools.cloud.api.CloudUtils;
 import com.flowring.laleents.tools.phone.AllData;
 import com.flowring.laleents.tools.phone.LocalBroadcastControlCenter;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
@@ -18,6 +23,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
@@ -80,7 +86,7 @@ public class MqttControlCenter {
     boolean stopNew = false;
 
     public void NewConnect() {
-        StringUtils.HaoLog("handler.post 2");
+        StringUtils.HaoLog("handler.post 開啟");
         stopNew = false;
         handler.post(NewConnect);
     }
@@ -197,8 +203,34 @@ public class MqttControlCenter {
         handler.post(EndMqtt);
         // MQTT 連接選項
         initConnOpts();
-        StringUtils.HaoLog("handler.post 3");
-        handler.post(NewConnect);
+        StringUtils.HaoLog("handler.post 關閉");
+        if(notIsForcedLogOut()){
+            handler.post(NewConnect);
+        } else {
+            DisConnect();
+        }
+    }
+
+    public boolean notIsForcedLogOut(){
+        HttpReturn httpReturn = CloudUtils.iCloudUtils.checkToken(new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("checkToken 網路異常");
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                });
+            }
+        });
+        if(httpReturn.status != 200){
+            String msg = httpReturn.msg;
+            StringUtils.HaoLog("notIsForcedLogOut MQ檢查token是否正確= " + msg);
+            switch (msg){
+                case "LLUD-0003:FORCED_LOGOUT":
+                case "LLUD-0003:LOGIN_FORBIDDEN":
+                    return false;
+            }
+        }
+        return true;
     }
 
     void initConnOpts() {
