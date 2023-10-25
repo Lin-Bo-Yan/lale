@@ -53,7 +53,9 @@ import com.flowring.laleents.ui.widget.dialog.StringAdapter;
 import com.flowring.laleents.ui.widget.jitsiMeet.WaitAnswerActivity;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DialogUtils {
@@ -404,29 +406,61 @@ public class DialogUtils {
 
     }
 
-    static public void feedbackDialogMessage(Context context, String title, String text, CallbackUtils.noReturn ok, CallbackUtils.noReturn cancel) {
-        runOnUiThread(()->{
-            new AlertDialog.Builder(context)
-                    .setTitle(title)
-                    .setMessage(text)
-                    .setPositiveButton(R.string.problem_report, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            ok.Callback();
-                        }
-                    })
-                    .setNegativeButton(R.string.closure, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            cancel.Callback();
-                        }
-                    })
-                    .create().show();
-            smartServerDialogLock = false;
-        });
+    public static void showDialogWebMessage(Context context, String title, List<String> buttons, List<CallbackUtils.noReturn> callbacks) {
+        runOnUiThread(() -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context)
+                    .setTitle(title);
 
+            List<String> translatedButtons = new ArrayList<>();
+            for (String button : buttons) {
+                String translatedButton = translateButton(button);
+                translatedButtons.add(translatedButton);
+            }
+
+            if(translatedButtons.size() > 0){
+                builder.setPositiveButton(translatedButtons.get(0), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        callbacks.get(0).Callback();
+                    }
+                });
+            }
+
+            if(translatedButtons.size() > 1){
+                builder.setNegativeButton(translatedButtons.get(1), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        callbacks.get(1).Callback();
+                    }
+                });
+            }
+
+            if(translatedButtons.size() > 2){
+                builder.setNeutralButton(translatedButtons.get(2), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        callbacks.get(2).Callback();
+                    }
+                });
+            }
+            builder.setCancelable(false).create().show();
+        });
+    }
+
+    private static String translateButton(String button) {
+        switch (button) {
+            case "logout":
+                return "登出";
+            case "ok":
+                return "確定";
+            case "cancel":
+                return "取消";
+            default:
+                return button;
+        }
     }
 
     static public void showDialogCheckMessage(Context context, String title, String text,CallbackUtils.noReturn cancelCallback, CallbackUtils.noReturn callback) {

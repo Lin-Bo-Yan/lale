@@ -1023,74 +1023,33 @@ public class MainWebActivity extends MainAppCompatActivity {
     }
 
     private void webMessage(JSONObject data){
-        String message = null;
-        String id = null;
-        List<String> buttons = new ArrayList<>();
         Gson gson = new Gson();
-        if(data.has("id")){
-            message = data.optString("message");
-            id = data.optString("id");
-            String buttonString = data.optString("button");
-            // 將字串轉成字串陣列
-            Type listType = new TypeToken<List<String>>(){}.getType();
-            buttons = gson.fromJson(buttonString, listType);
-        }
-
-        if(id != null && !id.isEmpty()){
-            switch (id){
-                case "msg1":
-                    messageOne(message,buttons);
-                    break;
-                case "msg2":
-                    messageTwo(message,buttons);
-                    break;
-            }
-        }
-
-    }
-
-    private void messageOne(String message,List<String> buttons){
-        String okButton = buttons.get(0);
-        String cancelButton = buttons.get(1);
-        DialogUtils.showDialogMessage(MainWebActivity.this, message, "", okButton, cancelButton, new CallbackUtils.noReturn() {
-            @Override
-            public void Callback() {
-                problemReport();
-            }
-        }, new CallbackUtils.noReturn() {
-            @Override
-            public void Callback() {
-                Logout();
-            }
-        });
-    }
-
-    private void messageTwo(String message,List<String> buttons){
-        String okButton = buttons.get(0);
-        String cancelButton = buttons.get(1);
-        DialogUtils.showDialogMessage(MainWebActivity.this, message, "", okButton, cancelButton, new CallbackUtils.noReturn() {
-            @Override
-            public void Callback() {
-                //使用者按下ok發js回給webview
-                try {
-                    JSONObject jsonObject = new JSONObject().put("type", "webMessage").put("data", new JSONObject().put("click","ok").put("id","msg2"));
-                    sendToWeb(jsonObject.toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
+        String title = data.optString("message");
+        String buttonString = data.optString("button");
+        String msgId = data.optString("id");
+        Type listType = new TypeToken<List<String>>(){}.getType();
+        List<String> buttons = gson.fromJson(buttonString, listType);
+        List<CallbackUtils.noReturn> callbacks = new ArrayList<>();
+        for (int i = 0; i < buttons.size(); i++) {
+            // 建立一個有效最終變數的副本
+            final int buttonIndex = i;
+            CallbackUtils.noReturn callback = new CallbackUtils.noReturn() {
+                @Override
+                public void Callback() {
+                    String button = buttons.get(buttonIndex);
+                    switch (button){
+                        case "logout":
+                            Logout();
+                            break;
+                        case "cancel":
+                            cancel();
+                            break;
+                    }
                 }
-            }
-        }, new CallbackUtils.noReturn() {
-            @Override
-            public void Callback() {
-                //使用者按下取消發js回給webview
-                try {
-                    JSONObject jsonObject = new JSONObject().put("type", "webMessage").put("data", new JSONObject().put("click","cancel").put("id","msg2"));
-                    sendToWeb(jsonObject.toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+            };
+            callbacks.add(callback);
+        }
+        DialogUtils.showDialogWebMessage(this,title,buttons,callbacks);
     }
 
     private void problemReport(){
@@ -2041,6 +2000,18 @@ public class MainWebActivity extends MainAppCompatActivity {
         });
         loginFunction.accountValid = null;
         loginFunction.passwordValid = null;
+    }
+
+    private void cancel(){
+        try {
+            JSONObject jsonData = new JSONObject();
+            jsonData.put("click","cancel");
+            jsonData.put("id","msg2");
+            JSONObject jsonObject = new JSONObject().put("type", "webMessage").put("data",jsonData);
+            sendToWeb(jsonObject.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public void goLogin() {
