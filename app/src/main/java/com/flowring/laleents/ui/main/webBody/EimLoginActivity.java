@@ -42,6 +42,7 @@ import com.flowring.laleents.ui.widget.qrCode.ScanCaptureActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,6 +51,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class EimLoginActivity extends MainAppCompatActivity {
@@ -227,22 +231,31 @@ public class EimLoginActivity extends MainAppCompatActivity {
                 if(isRepeatDevice){
                     //跳出 dialog
                     StringUtils.HaoLog("是否重複登入? "+"登入");
-                    DialogUtils.showDialogCheckMessage(activity, "是否登入此裝置", "您之前未正常登出或已於其他裝置登入，請確認是否登入此裝置(將登出其他裝置)", new CallbackUtils.noReturn() {
-                        @Override
-                        public void Callback() {
-
-                        }
-                    }, new CallbackUtils.noReturn() {
-                        @Override
-                        public void Callback() {
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    loginSimpleThirdParty(activity, eimUserData);
+                    String buttonString = "[\"ok\",\"cancel\"]";
+                    Type listType = new TypeToken<List<String>>(){}.getType();
+                    List<String> buttons = new Gson().fromJson(buttonString, listType);
+                    List<CallbackUtils.noReturn> callbacks = new ArrayList<>();
+                    for(int i = 0; i < buttons.size(); i++){
+                        final int buttonIndex = i;
+                        CallbackUtils.noReturn callback = new CallbackUtils.noReturn() {
+                            @Override
+                            public void Callback() {
+                                String button = buttons.get(buttonIndex);
+                                switch (button){
+                                    case "ok":
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                loginSimpleThirdParty(activity, eimUserData);
+                                            }
+                                        }).start();
+                                        break;
                                 }
-                            }).start();
-                        }
-                    });
+                            }
+                        };
+                        callbacks.add(callback);
+                    }
+                    DialogUtils.showDialogCancelable(activity,getString(R.string.single_device_title),getString(R.string.single_device_text),buttons,callbacks);
                     activity.cancelWait();
                 } else {
                     loginSimpleThirdParty(activity,eimUserData);
@@ -294,22 +307,31 @@ public class EimLoginActivity extends MainAppCompatActivity {
                 if(isRepeatDevice){
                     //跳出 dialog
                     StringUtils.HaoLog("是否重複登入? "+"登入");
-                    DialogUtils.showDialogCheckMessage(activity, "是否登入此裝置", "您之前未正常登出或已於其他裝置登入，請確認是否登入此裝置(將登出其他裝置)", new CallbackUtils.noReturn() {
-                        @Override
-                        public void Callback() {
-
-                        }
-                    }, new CallbackUtils.noReturn() {
-                        @Override
-                        public void Callback() {
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    loginSimpleThirdParty(activity, eimUserData);
+                    String buttonString = "[\"ok\",\"cancel\"]";
+                    Type listType = new TypeToken<List<String>>(){}.getType();
+                    List<String> buttons = new Gson().fromJson(buttonString, listType);
+                    List<CallbackUtils.noReturn> callbacks = new ArrayList<>();
+                    for(int i = 0; i < buttons.size(); i++){
+                        final int buttonIndex = i;
+                        CallbackUtils.noReturn callback = new CallbackUtils.noReturn() {
+                            @Override
+                            public void Callback() {
+                                String button = buttons.get(buttonIndex);
+                                switch (button){
+                                    case "ok":
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                loginSimpleThirdParty(activity, eimUserData);
+                                            }
+                                        }).start();
+                                        break;
                                 }
-                            }).start();
-                        }
-                    });
+                            }
+                        };
+                        callbacks.add(callback);
+                    }
+                    DialogUtils.showDialogCancelable(activity,getString(R.string.single_device_title),getString(R.string.single_device_text),buttons,callbacks);
                     activity.cancelWait();
                 } else {
                     loginSimpleThirdParty(activity,eimUserData);

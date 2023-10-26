@@ -48,7 +48,6 @@ import com.flowring.laleents.tools.cloud.api.CloudUtils;
 import com.flowring.laleents.tools.phone.AllData;
 import com.flowring.laleents.tools.phone.DefinedUtils;
 import com.flowring.laleents.tools.phone.PermissionUtils;
-import com.flowring.laleents.ui.main.webBody.MainWebActivity;
 import com.flowring.laleents.ui.widget.dialog.StringAdapter;
 import com.flowring.laleents.ui.widget.jitsiMeet.WaitAnswerActivity;
 
@@ -60,19 +59,6 @@ import java.util.Map;
 
 public class DialogUtils {
 
-    static public void showNoDo(Context context) {
-        new AlertDialog.Builder(context)
-                .setMessage("即將推出，敬請期待。")
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                }).setCancelable(true)
-                .create().show();
-    }
-
-    //棄用
     static public void hideCall(Context context, MessageInfo MessageInfo) {
         runOnUiThread(() -> {
             if (callDialog != null) {
@@ -96,14 +82,6 @@ public class DialogUtils {
         KeyguardManager keyguardManager = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
         boolean isLock = keyguardManager != null && keyguardManager.inKeyguardRestrictedInputMode();
         if (isLock) {
-//            KeyguardManager.KeyguardLock keyguardLock = keyguardManager.newKeyguardLock("com.example.myapp:bright");
-//            keyguardLock.disableKeyguard();
-//            PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-//            PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.SCREEN_DIM_WAKE_LOCK,"com.example.myapp:bright");
-//            wakeLock.acquire();
-//            wakeLock.release();
-//            getOrgtreeuserimage(context, messageInfo);
-
             Intent intent = new Intent(context, WaitAnswerActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra("MessageInfo", messageInfo);
@@ -112,9 +90,9 @@ public class DialogUtils {
             callMessageInfo = messageInfo;
             RoomMinInfo roomMinInfo = AllData.getRoomMinInfo(callMessageInfo.room_id);
             UserControlCenter.getOrgtreeuserimage();
-            if (roomMinInfo != null)
+            if (roomMinInfo != null){
                 showCallDialog(context, roomMinInfo);
-            else {
+            } else {
                 RoomControlCenter.getRoom0(callMessageInfo.room_id, new CallbackUtils.APIReturn() {
                     @Override
                     public void Callback(boolean isok, String DataOrErrorMsg) {
@@ -126,7 +104,6 @@ public class DialogUtils {
         }
     }
 
-    //棄用
     static boolean isCallOk = false;
     static void showCallDialog(Context context, RoomMinInfo roomMinInfo) {
         if (Settings.canDrawOverlays(context)) {
@@ -229,93 +206,6 @@ public class DialogUtils {
         }
     }
 
-//    private static void getOrgtreeuserimage(Context context, MessageInfo messageInfo){
-//        callMessageInfo = messageInfo;
-//        if (callMessageInfo != null){
-//            UserControlCenter.getOrgtreeuserimage();
-//            notifications(context,callMessageInfo);
-//        } else {
-//            StringUtils.HaoLog("getOrgtreeuserimage  "+"callMessageInfo is null");
-//            RoomControlCenter.getRoom0(callMessageInfo.room_id, new CallbackUtils.APIReturn() {
-//                @Override
-//                public void Callback(boolean isok, String DataOrErrorMsg) {
-//                    if(callMessageInfo != null){
-//                        notifications(context,callMessageInfo);
-//                    }else {
-//                        StringUtils.HaoLog("getRoomMembers  "+"callMessageInfo is null");
-//                    }
-//                }
-//            });
-//        }
-//    }
-//
-//    private static void notifications(Context context, MessageInfo messageInfo){
-//        String channel_id = "lale_channel_id";
-//        int id = CommonUtils.letterToNumber(messageInfo.id);
-//        if(id < 0){
-//            id = -id;
-//        }
-//
-//        // 默認系統提示音
-//        Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-//        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-//
-//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-//            NotificationChannel channel = new NotificationChannel(channel_id,"通話通知", NotificationManager.IMPORTANCE_HIGH);
-//            channel.setShowBadge(true); // 開啟知顯示應用程式圖示旁邊的小圓點徽章,顯示未讀取訊息數量或其他提醒
-//            channel.canShowBadge(); //斷該裝置是否支援顯示徽章。
-//            channel.enableLights(true);//致能閃燈
-//            channel.setLightColor(Color.RED);
-//            channel.enableVibration(true); //致能震動
-//            channel.setVibrationPattern(new long[]{100, 200, 300, 400, 500}); //設定震動模式
-//            AudioAttributes audioAttributes = new AudioAttributes.Builder()
-//                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-//                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-//                    .build();
-//            channel.setSound(uri, audioAttributes);
-//            channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
-//            notificationManager.createNotificationChannel(channel);
-//        }
-//
-//        Intent intent = new Intent(context, MainWebActivity.class);
-//        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-//
-//        NotificationCompat.Builder builder = new NotificationCompat.Builder(context,channel_id)
-//                .setSmallIcon(R.drawable.ic_launcher)
-//                .setPriority(NotificationCompat.PRIORITY_HIGH)
-//                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-//                .setFullScreenIntent(pendingIntent, true)
-//                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-//                .setAutoCancel(true);
-//
-//        RemoteViews headsUpRemoteView = new RemoteViews(context.getPackageName(), R.layout.notification_custom);
-//        //取得 誰打來
-//        RoomMinInfo roomMinInfo = AllData.getRoomMinInfo(messageInfo.room_id);
-//        if (roomMinInfo != null){
-//            headsUpRemoteView.setTextViewText(R.id.title,roomMinInfo.name);
-//        }
-//
-//        Intent rejectIntent = new Intent(context, BootBroadcastReceiver.class);
-//        rejectIntent.putExtra("id",id);
-//        rejectIntent.putExtra("messageInfo_room_id",messageInfo.room_id);
-//        rejectIntent.putExtra("messageInfo_eventId",messageInfo.id);
-//        rejectIntent.setAction("reject_notification");
-//        PendingIntent rejectPenInt = PendingIntent.getBroadcast(context,id,rejectIntent,PendingIntent.FLAG_IMMUTABLE);
-//        headsUpRemoteView.setOnClickPendingIntent(R.id.button_No_call, rejectPenInt);
-//
-//        Intent acceptIntent = new Intent(context, BootBroadcastReceiver.class);
-//        acceptIntent.putExtra("id",id);
-//        acceptIntent.putExtra("messageInfo_room_id",messageInfo.room_id);
-//        acceptIntent.putExtra("messageInfo_eventId",messageInfo.id);
-//        acceptIntent.putExtra("MessageInfo", messageInfo);
-//        acceptIntent.setAction("accept_notification");
-//        PendingIntent acceptPenInt = PendingIntent.getBroadcast(context,id,acceptIntent,PendingIntent.FLAG_IMMUTABLE);
-//        headsUpRemoteView.setOnClickPendingIntent(R.id.button_accept_call, acceptPenInt);
-//
-//        builder.setCustomContentView(headsUpRemoteView);
-//        notificationManager.notify(id, builder.build());
-//    }
-
     static public void showDialogMessage(Context context, String text) {
         runOnUiThread(()->{
             new AlertDialog.Builder(context)
@@ -363,53 +253,11 @@ public class DialogUtils {
         return alertDialog;
     }
 
-    // 空白處無法關閉
-    static public AlertDialog showDialogMessageCannotClosed(Context context, String title, String text, CallbackUtils.noReturn callback) {
-        AlertDialog alertDialog = new AlertDialog.Builder(context)
-                .setTitle(title)
-                .setMessage(text)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        callback.Callback();
-                    }
-                })
-                .setCancelable(false)
-                .create();
-        alertDialog.show();
-        smartServerDialogLock = false;
-        return alertDialog;
-    }
-
-    static public void showDialogMessage(Context context, String title, String text,String okButton,String cancelButton, CallbackUtils.noReturn ok, CallbackUtils.noReturn cancel) {
-        runOnUiThread(()->{
-            new AlertDialog.Builder(context)
-                    .setTitle(title)
-                    .setMessage(text)
-                    .setPositiveButton(okButton, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            ok.Callback();
-                        }
-                    })
-                    .setNegativeButton(cancelButton, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            cancel.Callback();
-                        }
-                    })
-                    .create().show();
-        });
-
-    }
-
-    public static void showDialogWebMessage(Context context, String title, List<String> buttons, List<CallbackUtils.noReturn> callbacks) {
+    // 按鈕可調，按鈕有後續動作，按空白處不可關閉Dialog
+    public static void showDialog(Context context, String title, List<String> buttons, List<CallbackUtils.noReturn> callbacks) {
         runOnUiThread(() -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(context)
-                    .setTitle(title);
+                    .setMessage(title);
 
             List<String> translatedButtons = new ArrayList<>();
             for (String button : buttons) {
@@ -450,6 +298,141 @@ public class DialogUtils {
         });
     }
 
+    public static void showDialog(Context context, String title, String text, List<String> buttons, List<CallbackUtils.noReturn> callbacks) {
+        runOnUiThread(() -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context)
+                    .setTitle(title)
+                    .setMessage(text);
+
+            List<String> translatedButtons = new ArrayList<>();
+            for (String button : buttons) {
+                String translatedButton = translateButton(button);
+                translatedButtons.add(translatedButton);
+            }
+
+            if(translatedButtons.size() > 0){
+                builder.setPositiveButton(translatedButtons.get(0), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        callbacks.get(0).Callback();
+                    }
+                });
+            }
+
+            if(translatedButtons.size() > 1){
+                builder.setNegativeButton(translatedButtons.get(1), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        callbacks.get(1).Callback();
+                    }
+                });
+            }
+
+            if(translatedButtons.size() > 2){
+                builder.setNeutralButton(translatedButtons.get(2), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        callbacks.get(2).Callback();
+                    }
+                });
+            }
+            builder.setCancelable(false).create().show();
+        });
+    }
+
+    // 按鈕可調，按鈕有後續動作，按空白處可關閉Dialog
+    public static void showDialogCancelable(Context context, String title, List<String> buttons, List<CallbackUtils.noReturn> callbacks) {
+        runOnUiThread(() -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context)
+                    .setMessage(title);
+
+            List<String> translatedButtons = new ArrayList<>();
+            for (String button : buttons) {
+                String translatedButton = translateButton(button);
+                translatedButtons.add(translatedButton);
+            }
+
+            if(translatedButtons.size() > 0){
+                builder.setPositiveButton(translatedButtons.get(0), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        callbacks.get(0).Callback();
+                    }
+                });
+            }
+
+            if(translatedButtons.size() > 1){
+                builder.setNegativeButton(translatedButtons.get(1), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        callbacks.get(1).Callback();
+                    }
+                });
+            }
+
+            if(translatedButtons.size() > 2){
+                builder.setNeutralButton(translatedButtons.get(2), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        callbacks.get(2).Callback();
+                    }
+                });
+            }
+            builder.create().show();
+        });
+    }
+
+    public static void showDialogCancelable(Context context, String title, String text, List<String> buttons, List<CallbackUtils.noReturn> callbacks) {
+        runOnUiThread(() -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context)
+                    .setTitle(title)
+                    .setMessage(text);
+
+            List<String> translatedButtons = new ArrayList<>();
+            for (String button : buttons) {
+                String translatedButton = translateButton(button);
+                translatedButtons.add(translatedButton);
+            }
+
+            if(translatedButtons.size() > 0){
+                builder.setPositiveButton(translatedButtons.get(0), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        callbacks.get(0).Callback();
+                    }
+                });
+            }
+
+            if(translatedButtons.size() > 1){
+                builder.setNegativeButton(translatedButtons.get(1), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        callbacks.get(1).Callback();
+                    }
+                });
+            }
+
+            if(translatedButtons.size() > 2){
+                builder.setNeutralButton(translatedButtons.get(2), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        callbacks.get(2).Callback();
+                    }
+                });
+            }
+            builder.create().show();
+        });
+    }
+
     private static String translateButton(String button) {
         switch (button) {
             case "logout":
@@ -458,33 +441,13 @@ public class DialogUtils {
                 return "確定";
             case "cancel":
                 return "取消";
+            case "closure":
+                return "關閉";
+            case "feedback":
+                return "問題回報";
             default:
                 return button;
         }
-    }
-
-    static public void showDialogCheckMessage(Context context, String title, String text,CallbackUtils.noReturn cancelCallback, CallbackUtils.noReturn callback) {
-        runOnUiThread(() -> {
-            new AlertDialog.Builder(context)
-                    .setTitle(title)
-                    .setMessage(text)
-                    .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            cancelCallback.Callback();
-                        }
-
-                    })
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            callback.Callback();
-                        }
-                    })
-                    .create().show();
-        });
     }
 
     public static AlertDialog showOneDialog(Activity activity, String title, String negative, String positive, DialogInterface.OnClickListener positiveClick) {
@@ -677,7 +640,6 @@ public class DialogUtils {
 
     }
 
-
     public static void showSignOutDialog(Activity activity,CallbackUtils.TokenReturn tokenReturn){
         runOnUiThread(() -> {
             Dialog dialog = new Dialog(activity);
@@ -711,45 +673,6 @@ public class DialogUtils {
                             })
                             .setCancelable(false);
             alertDialogBuilder.show();
-        });
-    }
-    
-    public static void showTimeoutDialog(Activity activity,CallbackUtils.TokenReturn signout, CallbackUtils.TokenReturn closed, CallbackUtils.TokenReturn problemReport){
-        runOnUiThread(() -> {
-            Dialog dialog = new Dialog(activity);
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.setContentView(R.layout.dialog_timeout);
-            dialog.show();
-            Button signoutButton = dialog.findViewById(R.id.signoutButton);
-            signoutButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    dialog.dismiss();
-                    signout.Callback();
-                    //登出
-                }
-            });
-
-            Button closedButton = dialog.findViewById(R.id.closedButton);
-            closedButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    dialog.dismiss();
-                    closed.Callback();
-                    //關閉
-                }
-            });
-
-            Button problemReportButton = dialog.findViewById(R.id.problemReportButton);
-            problemReportButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    dialog.dismiss();
-                    problemReport.Callback();
-                    //問題回報
-                }
-            });
-
         });
     }
 

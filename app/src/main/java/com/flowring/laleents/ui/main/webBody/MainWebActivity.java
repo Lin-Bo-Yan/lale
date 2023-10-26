@@ -1,6 +1,5 @@
 package com.flowring.laleents.ui.main.webBody;
 
-import static com.flowring.laleents.tools.UiThreadUtil.runOnUiThread;
 import static com.flowring.laleents.ui.main.webBody.EimLoginActivity.loginFunction;
 import static java.security.AccessController.getContext;
 
@@ -40,7 +39,6 @@ import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -65,7 +63,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
-import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -395,9 +392,6 @@ public class MainWebActivity extends MainAppCompatActivity {
         if (!init) {
             BootBroadcastReceiver.setReToken(getApplicationContext());
         }
-        long timestamp = System.currentTimeMillis() / 1000;
-
-        StringUtils.HaoLog("ddd= " + timestamp);
     }
 
     @Override
@@ -572,17 +566,29 @@ public class MainWebActivity extends MainAppCompatActivity {
     private void checkNetworkAndContinue() {
         if (!NetUtils.isNetworkAvailable(MainWebActivity.this)) {
             StringUtils.HaoLog("沒有網路");
-            DialogUtils.showDialogMessage(MainWebActivity.this, "請確認網路連線", "", "確定","取消",new CallbackUtils.noReturn() {
-                @Override
-                public void Callback() {
-                    checkNetworkAndContinue();
-                }
-            }, new CallbackUtils.noReturn() {
-                @Override
-                public void Callback() {
-                    finish();
-                }
-            });
+            String buttonString = "[\"ok\",\"cancel\"]";
+            Type listType = new TypeToken<List<String>>(){}.getType();
+            List<String> buttons = new Gson().fromJson(buttonString, listType);
+            List<CallbackUtils.noReturn> callbacks = new ArrayList<>();
+            for(int i = 0; i < buttons.size(); i++){
+                final int buttonIndex = i;
+                CallbackUtils.noReturn callback = new CallbackUtils.noReturn() {
+                    @Override
+                    public void Callback() {
+                        String button = buttons.get(buttonIndex);
+                        switch (button){
+                            case "ok":
+                                checkNetworkAndContinue();
+                                break;
+                            case "cancel":
+                                finish();
+                                break;
+                        }
+                    }
+                };
+                callbacks.add(callback);
+            }
+            DialogUtils.showDialogCancelable(MainWebActivity.this,"請確認網路連線",buttons,callbacks);
         } else {
             executeNetworkOperations();
         }
@@ -628,25 +634,31 @@ public class MainWebActivity extends MainAppCompatActivity {
     }
 
     private void showTimeoutDialog(){
-        DialogUtils.showTimeoutDialog(MainWebActivity.this, new CallbackUtils.TokenReturn() {
-            @Override
-            public void Callback() {
-                //登出
-                Logout();
-            }
-        }, new CallbackUtils.TokenReturn() {
-            @Override
-            public void Callback() {
-                //關閉
-                finish();
-            }
-        }, new CallbackUtils.TokenReturn() {
-            @Override
-            public void Callback() {
-                //問題回報
-                feedback();
-            }
-        });
+        Gson gson = new Gson();
+        String buttonString = "[\"feedback\",\"closure\"]";
+        Type listType = new TypeToken<List<String>>(){}.getType();
+        List<String> buttons = gson.fromJson(buttonString, listType);
+        List<CallbackUtils.noReturn> callbacks = new ArrayList<>();
+        for (int i = 0; i < buttons.size(); i++) {
+            // 建立一個有效最終變數的副本
+            final int buttonIndex = i;
+            CallbackUtils.noReturn callback = new CallbackUtils.noReturn() {
+                @Override
+                public void Callback() {
+                    String button = buttons.get(buttonIndex);
+                    switch (button){
+                        case "closure":
+                            finish();
+                            break;
+                        case "feedback":
+                            feedback();
+                            break;
+                    }
+                }
+            };
+            callbacks.add(callback);
+        }
+        DialogUtils.showDialogCancelable(MainWebActivity.this,getString(R.string.server_exception_title),getString(R.string.server_exception_text),buttons,callbacks);
     }
 
     void cleanWebviewCache() {
@@ -1038,33 +1050,45 @@ public class MainWebActivity extends MainAppCompatActivity {
                 public void Callback() {
                     String button = buttons.get(buttonIndex);
                     switch (button){
-                        case "logout":
-                            Logout();
+                        case "ok":
+                            ok(msgId);
                             break;
                         case "cancel":
-                            cancel();
+                            cancel(msgId);
                             break;
                     }
                 }
             };
             callbacks.add(callback);
         }
-        DialogUtils.showDialogWebMessage(this,title,buttons,callbacks);
+        DialogUtils.showDialog(this,title,buttons,callbacks);
     }
 
     private void problemReport(){
-        DialogUtils.showDialogMessage(MainWebActivity.this, getString(R.string.server_exception_title), getString(R.string.server_exception_text),"問題回報","關閉", new CallbackUtils.noReturn() {
-            @Override
-            public void Callback() {
-                StringUtils.HaoLog("伺服器異常，問題回報");
-                feedback();
-            }
-        }, new CallbackUtils.noReturn() {
-            @Override
-            public void Callback() {
-                finish();
-            }
-        });
+        String buttonString = "[\"feedback\",\"closure\"]";
+        Type listType = new TypeToken<List<String>>(){}.getType();
+        List<String> buttons = new Gson().fromJson(buttonString,listType);
+        List<CallbackUtils.noReturn> callbacks = new ArrayList<>();
+        DialogUtils.showDialogCancelable(MainWebActivity.this,getString(R.string.server_exception_title),getString(R.string.server_exception_text),buttons,callbacks);
+        for(int i = 0; i < buttons.size(); i++){
+            final int buttonIndex = i;
+            CallbackUtils.noReturn callback = new CallbackUtils.noReturn() {
+                @Override
+                public void Callback() {
+                    String button = buttons.get(buttonIndex);
+                    switch (button){
+                        case "feedback":
+                            StringUtils.HaoLog("伺服器異常，問題回報");
+                            feedback();
+                            break;
+                        case "closure":
+                            finish();
+                            break;
+                    }
+                }
+            };
+            callbacks.add(callback);
+        }
     }
 
     void checkUpApp(Intent intent) {
@@ -1852,14 +1876,27 @@ public class MainWebActivity extends MainAppCompatActivity {
                     // 白名單驗證失敗，token不合法
                 } else if(httpAfReturn.code == 40001){
                     // token逾期
-                    runOnUiThread(()->{
-                        DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "您的應用程式長期未使用", "系統已將您的帳號登出", new CallbackUtils.noReturn() {
+                    String buttonString = "[\"ok\"]";
+                    Type listType = new TypeToken<List<String>>(){}.getType();
+                    List<String> buttons = new Gson().fromJson(buttonString, listType);
+                    List<CallbackUtils.noReturn> callbacks = new ArrayList<>();
+                    DialogUtils.showDialog(MainWebActivity.this,"您的應用程式長期未使用","系統已將您的帳號登出",buttons,callbacks);
+                    for (int i = 0; i < buttons.size(); i++) {
+                        final int buttonIndex = i;
+                        CallbackUtils.noReturn callback = new CallbackUtils.noReturn() {
                             @Override
                             public void Callback() {
-                                Logout();
+                                String button = buttons.get(buttonIndex);
+                                switch (button){
+                                    case "ok":
+                                        smartServerDialogLock = false;
+                                        Logout();
+                                        break;
+                                }
                             }
-                        });
-                    });
+                        };
+                        callbacks.add(callback);
+                    }
                 }
             }
         });
@@ -1883,14 +1920,27 @@ public class MainWebActivity extends MainAppCompatActivity {
                     // 白名單驗證失敗，token不合法
                 } else if(httpAfReturn.code == 40001){
                     // token逾期
-                    runOnUiThread(()->{
-                        DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "您的應用程式長期未使用", "系統已將您的帳號登出", new CallbackUtils.noReturn() {
+                    String buttonString = "[\"ok\"]";
+                    Type listType = new TypeToken<List<String>>(){}.getType();
+                    List<String> buttons = new Gson().fromJson(buttonString, listType);
+                    List<CallbackUtils.noReturn> callbacks = new ArrayList<>();
+                    DialogUtils.showDialog(MainWebActivity.this,"您的應用程式長期未使用","系統已將您的帳號登出",buttons,callbacks);
+                    for (int i = 0; i < buttons.size(); i++) {
+                        final int buttonIndex = i;
+                        CallbackUtils.noReturn callback = new CallbackUtils.noReturn() {
                             @Override
                             public void Callback() {
-                                Logout();
+                                String button = buttons.get(buttonIndex);
+                                switch (button){
+                                    case "ok":
+                                        smartServerDialogLock = false;
+                                        Logout();
+                                        break;
+                                }
                             }
-                        });
-                    });
+                        };
+                        callbacks.add(callback);
+                    }
                 }
             }
         });
@@ -1985,7 +2035,6 @@ public class MainWebActivity extends MainAppCompatActivity {
 
     private void Logout() {
         StringUtils.HaoLog("登出");
-
         UserControlCenter.setLogout(new CallbackUtils.ReturnHttp() {
             @Override
             public void Callback(HttpReturn httpReturn) {
@@ -2002,11 +2051,23 @@ public class MainWebActivity extends MainAppCompatActivity {
         loginFunction.passwordValid = null;
     }
 
-    private void cancel(){
+    private void cancel(String msgId){
         try {
             JSONObject jsonData = new JSONObject();
             jsonData.put("click","cancel");
-            jsonData.put("id","msg2");
+            jsonData.put("id",msgId);
+            JSONObject jsonObject = new JSONObject().put("type", "webMessage").put("data",jsonData);
+            sendToWeb(jsonObject.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void ok(String msgId){
+        try {
+            JSONObject jsonData = new JSONObject();
+            jsonData.put("click","ok");
+            jsonData.put("id",msgId);
             JSONObject jsonObject = new JSONObject().put("type", "webMessage").put("data",jsonData);
             sendToWeb(jsonObject.toString());
         } catch (JSONException e) {
@@ -2150,17 +2211,27 @@ public class MainWebActivity extends MainAppCompatActivity {
                         } else {
                             if(shownLock){
                                 shownLock = false;
-                                DialogUtils.showDialogMessage(MainWebActivity.this, httpReturn.msg, "連線狀態異常，是否要登出？","確定","取消", new CallbackUtils.noReturn() {
-                                    @Override
-                                    public void Callback() {
-                                        Logout();
-                                    }
-                                }, new CallbackUtils.noReturn() {
-                                    @Override
-                                    public void Callback() {
-                                
-                                    }
-                                });
+                                String buttonString = "[\"ok\",\"cancel\"]";
+                                Type listType = new TypeToken<List<String>>(){}.getType();
+                                List<String> buttons = new Gson().fromJson(buttonString, listType);
+                                List<CallbackUtils.noReturn> callbacks = new ArrayList<>();
+                                DialogUtils.showDialogCancelable(MainWebActivity.this,"連線失敗","連線狀態異常，是否要登出？",buttons,callbacks);
+                                for (int i = 0; i < buttons.size(); i++) {
+                                    // 建立一個有效最終變數的副本
+                                    final int buttonIndex = i;
+                                    CallbackUtils.noReturn callback = new CallbackUtils.noReturn() {
+                                        @Override
+                                        public void Callback() {
+                                            String button = buttons.get(buttonIndex);
+                                            switch (button){
+                                                case "ok":
+                                                    Logout();
+                                                    break;
+                                            }
+                                        }
+                                    };
+                                    callbacks.add(callback);
+                                }
                             }
                         }
                     } else {
@@ -2247,14 +2318,27 @@ public class MainWebActivity extends MainAppCompatActivity {
             long afTokenExpiration = UserControlCenter.getUserMinInfo().eimUserData.afTokenExpiration / 1000;
             long afRefreshTokenExpiration = UserControlCenter.getUserMinInfo().eimUserData.afRefreshTokenExpiration / 1000;
             if(timestamp > afRefreshTokenExpiration){
-                runOnUiThread(()->{
-                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "您的應用程式長期未使用", "系統已將您的帳號登出", new CallbackUtils.noReturn() {
+                String buttonString = "[\"ok\"]";
+                Type listType = new TypeToken<List<String>>(){}.getType();
+                List<String> buttons = new Gson().fromJson(buttonString, listType);
+                List<CallbackUtils.noReturn> callbacks = new ArrayList<>();
+                DialogUtils.showDialog(MainWebActivity.this,"您的應用程式長期未使用","系統已將您的帳號登出",buttons,callbacks);
+                for (int i = 0; i < buttons.size(); i++) {
+                    final int buttonIndex = i;
+                    CallbackUtils.noReturn callback = new CallbackUtils.noReturn() {
                         @Override
                         public void Callback() {
-                            Logout();
+                            String button = buttons.get(buttonIndex);
+                            switch (button){
+                                case "ok":
+                                    smartServerDialogLock = false;
+                                    Logout();
+                                    break;
+                            }
                         }
-                    });
-                });
+                    };
+                    callbacks.add(callback);
+                }
             } else if(timestamp > afTokenExpiration){
                 afTokenRefresh();
             }
