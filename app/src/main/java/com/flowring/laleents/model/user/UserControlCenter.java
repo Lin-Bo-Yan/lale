@@ -24,8 +24,9 @@ import com.flowring.laleents.tools.cloud.api.CloudUtils;
 import com.flowring.laleents.tools.cloud.mqtt.MqttService;
 import com.flowring.laleents.tools.phone.AllData;
 import com.flowring.laleents.tools.phone.DefinedUtils;
-import com.flowring.laleents.ui.main.webBody.EimLoginActivity;
+import static com.flowring.laleents.ui.main.webBody.MainWebActivity.smartServerDialogLock;
 import com.flowring.laleents.ui.main.webBody.MainWebActivity;
+import com.flowring.laleents.ui.model.EimLogin.LoginInAppFunc;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
@@ -706,98 +707,93 @@ public class UserControlCenter {
 
     public static void setLogout(CallbackUtils.ReturnHttp callback) {
         if (UserControlCenter.getUserMinInfo() != null) {
-            //刪除實體檔案
-            DeleteCache.checkExternalSharing(AllData.context);
-            DeleteCache.checkSharefile(AllData.context);
-            DeleteCache.checkOpenfile(AllData.context);
             if (UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim) {
-                StringUtils.HaoLog("登出 2");
-                new Thread(() -> {
-                    StringUtils.HaoLog("登出 3");
-                    HttpReturn httpReturn = new HttpReturn();
-                    httpReturn = CloudUtils.iCloudUtils.closePusher(UserControlCenter.getUserMinInfo().eimUserData.af_login_id, Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID), new CallbackUtils.TimeoutReturn() {
-                        @Override
-                        public void Callback(IOException timeout) {
-                            new Handler(Looper.getMainLooper()).post(() -> {
-                                StringUtils.HaoLog("closePusher 網路異常");
-                                CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                            });
-                        }
-                    });
-                    HttpReturn httpReturn2 = CloudUtils.iCloudUtils.userLogout(new CallbackUtils.TimeoutReturn() {
-                        @Override
-                        public void Callback(IOException timeout) {
-                            new Handler(Looper.getMainLooper()).post(() -> {
-                                StringUtils.HaoLog("userLogout 網路異常");
-                                CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                            });
-                        }
-                    });
-                    SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
-                    pref.edit().putString("nowUserId", "").apply();
-                    pref.edit().putString("UserIds", "{}").apply();
-                    if (MqttService.mqttControlCenter != null){MqttService.mqttControlCenter.DisConnect();}
-                    userMin = null;
-                    cleanUser();
-                    delectAll();
-                    StringUtils.HaoLog("登出 4 httpReturn2 "+httpReturn2.status);
-                    callback.Callback(httpReturn);
-                }).start();
+                laleAppEimLogout(callback);
             } else {
-                StringUtils.HaoLog("登出 2-1");
-                FirebaseMessaging.getInstance().getToken().addOnSuccessListener(new OnSuccessListener<String>() {
+                laleAppWorkLogout(callback);
+            }
+            StringUtils.HaoLog("登出 結束");
+        }
+    }
+
+    private static void laleAppEimLogout(CallbackUtils.ReturnHttp callback){
+        StringUtils.HaoLog("登出 2");
+        new Thread(() -> {
+            StringUtils.HaoLog("登出 3");
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.userLogout(new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        StringUtils.HaoLog("userLogout 網路異常");
+                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                    });
+                }
+            });
+
+            if(httpReturn.status == 200){
+                //刪除實體檔案
+                DeleteCache.checkExternalSharing(AllData.context);
+                DeleteCache.checkSharefile(AllData.context);
+                DeleteCache.checkOpenfile(AllData.context);
+                HttpReturn httpReturn2 = CloudUtils.iCloudUtils.closePusher(UserControlCenter.getUserMinInfo().eimUserData.af_login_id, Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID), new CallbackUtils.TimeoutReturn() {
                     @Override
-                    public void onSuccess(String deviceToken) {
-                        if (!deviceToken.isEmpty() && deviceToken != null) {
-                            new Thread(() -> {
-                                StringUtils.HaoLog("登出 3-1");
-                                HttpReturn httpReturn = CloudUtils.iCloudUtils.closeAfPusher(UserControlCenter.getUserMinInfo().eimUserData.af_url, UserControlCenter.getUserMinInfo().eimUserData.af_login_id, deviceToken, Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID), new CallbackUtils.TimeoutReturn() {
-                                    @Override
-                                    public void Callback(IOException timeout) {
-                                        StringUtils.HaoLog("closeAfPusher 網路異常");
-                                        new Handler(Looper.getMainLooper()).post(() -> {
-                                            CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                                        });
-                                    }
-                                });
-                                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
-                                pref.edit().putString("nowUserId", "").apply();
-                                pref.edit().putString("UserIds", "{}").apply();
-                                userMin = null;
-                                cleanUser();
-                                delectAll();
-                                callback.Callback(httpReturn);
-                            }).start();
-                        }
+                    public void Callback(IOException timeout) {
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            StringUtils.HaoLog("closePusher 網路異常");
+                            CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                        });
                     }
                 });
+                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
+                pref.edit().putString("nowUserId", "").apply();
+                pref.edit().putString("UserIds", "{}").apply();
+                if (MqttService.mqttControlCenter != null){
+                    MqttService.mqttControlCenter.DisConnect();
+                }
+
+                initVariables();
+                cleanUser();
+                delectAll();
+                StringUtils.HaoLog("登出 4 推播登出? " + httpReturn2.status);
             }
-        StringUtils.HaoLog("登出 結束");
-        }
+            callback.Callback(httpReturn);
+        }).start();
+    }
+
+    private static void laleAppWorkLogout(CallbackUtils.ReturnHttp callback){
+        StringUtils.HaoLog("登出 2-1");
+        FirebaseMessaging.getInstance().getToken().addOnSuccessListener(new OnSuccessListener<String>() {
+            @Override
+            public void onSuccess(String deviceToken) {
+                if (!deviceToken.isEmpty() && deviceToken != null) {
+                    new Thread(() -> {
+                        StringUtils.HaoLog("登出 3-1");
+                        HttpReturn httpReturn = CloudUtils.iCloudUtils.closeAfPusher(UserControlCenter.getUserMinInfo().eimUserData.af_url, UserControlCenter.getUserMinInfo().eimUserData.af_login_id, deviceToken, Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID), new CallbackUtils.TimeoutReturn() {
+                            @Override
+                            public void Callback(IOException timeout) {
+                                StringUtils.HaoLog("closeAfPusher 網路異常");
+                                new Handler(Looper.getMainLooper()).post(() -> {
+                                    CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                                });
+                            }
+                        });
+                        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
+                        pref.edit().putString("nowUserId", "").apply();
+                        pref.edit().putString("UserIds", "{}").apply();
+                        userMin = null;
+                        cleanUser();
+                        delectAll();
+                        callback.Callback(httpReturn);
+                    }).start();
+                }
+            }
+        });
     }
 
     public static UserMin getUserMinInfo() {
         if (userMin != null){return userMin;}
         userMin = getUserMinInfoByPhone();
         return userMin;
-    }
-
-    static UserMin getUserMinInfoByPhone() {
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
-        String id = pref.getString("nowUserId", "");
-        if (id.isEmpty()){
-            return null;
-        } else{
-            try {
-                JSONObject UserIds = new JSONObject(pref.getString("UserIds", "[]"));
-                Gson gson = new Gson();
-                StringUtils.HaoLog(UserIds.getString(id));
-                return gson.fromJson(UserIds.getString(id), UserMin.class);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
     }
 
     public static void getUserInfo(String userId, CallbackUtils.userReturn callback) {
@@ -816,11 +812,8 @@ public class UserControlCenter {
         }).start();
     }
 
-
     public static List<UserMin> getUserMinInfos() {
-
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
-
         List<UserMin> userMins = new ArrayList<>();
         try {
             JSONObject UserIds = new JSONObject(pref.getString("UserIds", "[]"));
@@ -836,7 +829,6 @@ public class UserControlCenter {
             e.printStackTrace();
         }
         return null;
-
     }
 
     public static void getOrgtreeuserimage() {
@@ -975,5 +967,29 @@ public class UserControlCenter {
                 new Handler(Looper.getMainLooper()).post(() -> deviceReturn.Callback(true));
             }
         }).start();
+    }
+
+    private static UserMin getUserMinInfoByPhone() {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
+        String id = pref.getString("nowUserId", "");
+        if (id.isEmpty()){
+            return null;
+        } else{
+            try {
+                JSONObject UserIds = new JSONObject(pref.getString("UserIds", "[]"));
+                Gson gson = new Gson();
+                StringUtils.HaoLog(UserIds.getString(id));
+                return gson.fromJson(UserIds.getString(id), UserMin.class);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
+
+    private static void initVariables(){
+        smartServerDialogLock = false;
+        LoginInAppFunc.accountValid = null;
+        LoginInAppFunc.passwordValid = null;
     }
 }

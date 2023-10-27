@@ -59,13 +59,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
 
     private static final String TAG = MyFirebaseMessagingService.class.getSimpleName();
-    private boolean isShowRoom = false;
     static int afid = 5000;
 
     @Override
     public void onDeletedMessages() {
         super.onDeletedMessages();
-
     }
 
     @Override
@@ -81,8 +79,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         //有使用者登入才會處理推播
         if (UserControlCenter.getUserMinInfo() != null) {
             if (UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim) {
-                if (AllData.dbHelper == null)
+                if (AllData.dbHelper == null){
                     AllData.initSQL(UserControlCenter.getUserMinInfo().userId);
+                }
                 if (remoteMessage.getData() != null) {
                     MessageInfo messageInfo = receiveMsg(remoteMessage.getData().get("body"), MsgControlCenter.Source.notifi);
                     StringUtils.HaoLog("messageInfo result1=" + messageInfo);
@@ -147,10 +146,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 String isAF = remoteMessage.getData().get("isAF");
                 boolean isAFBoolean = Boolean.parseBoolean(isAF);
 
+                String domain = remoteMessage.getData().get("domain");
+                String userid = remoteMessage.getData().get("userId");
                 if(isAFBoolean){
                     //AF 關閉推播
-                    String domain = remoteMessage.getData().get("domain");
-                    String userid = remoteMessage.getData().get("userId");
                     String deviceToken = remoteMessage.getData().get("deviceToken");
                     String uuid = Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID);
                     HttpReturn httpReturn = CloudUtils.iCloudUtils.closeAfPusher(domain, userid, deviceToken, uuid, new CallbackUtils.TimeoutReturn() {
@@ -162,8 +161,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     StringUtils.HaoLog("關閉AF推播成功 "+httpReturn.status);
                 } else {
                     //EIM 關閉推播
-                    String domain = remoteMessage.getData().get("domain");
-                    String userid = remoteMessage.getData().get("userId");
                     if(AllData.getMainServer().equals(domain)){
                         String uuid = Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID);
                         HttpReturn httpReturn = CloudUtils.iCloudUtils.closePusher(userid, uuid, new CallbackUtils.TimeoutReturn() {
@@ -204,9 +201,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 Intent intent = new Intent(this, MainWebActivity.class);
                 intent.putExtra("bFromPhone", true);
                 intent.putExtra("Notification", body);
-
                 String title = remoteMessage.getData().get("title");
-
                 if (workNotifi.notifyType != null && workNotifi.msgType.equals("AF_TASK")) {
                     title = workNotifi.frontUserName;
                     body = workNotifi.taskName + ":" + workNotifi.keyword + "\n您有一份工作需盡速處理";
@@ -216,7 +211,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 }
                 StringUtils.HaoLog("body= "+body);
                 PendingIntent pendingIntent = PendingIntent.getActivity(this, afid, intent,  FLAG_IMMUTABLE);
-
 
                 NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channel_id)
                         .setSmallIcon(R.drawable.ic_launcher)
@@ -240,16 +234,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     channel.setShowBadge(true);
                     channel.canShowBadge();
                     channel.enableLights(true);
-
                     channel.setLightColor(Color.RED);
                     channel.enableVibration(true);
                     channel.setVibrationPattern(new long[]{100, 200, 300, 400, 500});
-
                     channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
                     notificationManager.createNotificationChannel(channel);
-
                 }
-
                 notificationManager.notify(afid++, notificationBuilder.build());
             }
         }
@@ -262,7 +252,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String channel_id = "lale_channel_id";
 
         int id = CommonUtils.letterToNumber(data.id);
-        StringUtils.HaoLog("id=" + id);
+        StringUtils.HaoLog("id= " + id);
         if (id < 0) {
             id = -id;
         }
@@ -273,11 +263,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         workNotifi workNotifi = null;
         Bitmap bitmap = null;
         StringUtils.HaoLog("data.content=" + data.content);
-        if (data.content == null)
+        if (data.content == null){
             return;
+        }
         StringUtils.HaoLog("is_lale_ecosystem_af_notify()=" + data.is_lale_ecosystem_af_notify());
         if (data.is_lale_ecosystem_af_notify()) {
-
             try {
                 String msg = new JSONObject(data.content).optString("data");
                 StringUtils.HaoLog("Notification= "+msg);
@@ -286,31 +276,25 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
         } else {
             StringUtils.HaoLog("Notification= " + data.room_id);
             intent.putExtra("roomInfo", data.room_id);
         }
         StringUtils.HaoLog("workNotifi =" + new Gson().toJson(workNotifi));
         PendingIntent pendingIntent = PendingIntent.getActivity(this, id, intent, FLAG_IMMUTABLE );
-
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-
         //設定標題 內文
-
         RoomMinInfo room = AllData.getRoomMinInfo(data.room_id);
         if (room == null) {
             RoomControlCenter.getAllRoom();
             room = AllData.getRoomMinInfo(data.room_id);
         }
         String body = data.getText();
-
         UserInRoom userInRoom = null;
         String title = data.type;
         String avatar_url = "";
         if (workNotifi == null) {
-
             if (room != null) {
                 avatar_url = room.avatarUrl;
                 title = room.name;
@@ -326,7 +310,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     }
                     userInRoom = AllData.getUserInRoom(room.id, data.sender);
                 }
-
             }
             StringUtils.HaoLog("userInRoom= " + room.type);
             StringUtils.HaoLog("userInRoom= " + body);
@@ -356,9 +339,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             }
         } else {
             StringUtils.HaoLog("到關通知" + workNotifi.msgType);
-
             if (workNotifi.msgType.contains("AF_TASK")) {
-
                 title = workNotifi.frontUserName;
                 body = workNotifi.taskName + ":" + workNotifi.keyword + "\n您有一份工作需盡速處理";
             }
@@ -366,7 +347,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 title = workNotifi.title;
                 body = workNotifi.content;
             }
-
         }
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channel_id)
@@ -385,7 +365,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             notificationBuilder.setLargeIcon(bitmap);
         } else {
             notificationBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher));
-
         }
         // Notification Channel is required for Android O and above
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -397,7 +376,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             channel.setShowBadge(true);
             channel.canShowBadge();
             channel.enableLights(true);
-
             channel.setLightColor(Color.RED);
             channel.enableVibration(true);
             channel.setVibrationPattern(new long[]{100, 200, 300, 400, 500});
@@ -408,19 +386,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             channel.setSound(uri, audioAttributes);
             channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
             notificationManager.createNotificationChannel(channel);
-
         }
-
         notificationManager.notify(id, notificationBuilder.build());
         StringUtils.HaoLog("發送通知  ");
-
     }
 
     private void sendGroupNotification(MessageInfo data){
         Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         String channel_id = "lale_channel_id";
         int id = CommonUtils.letterToNumber(data.id);
-        StringUtils.HaoLog("id=" + id);
+        StringUtils.HaoLog("id= " + id);
         if (id < 0) {
             id = -id;
         }
@@ -445,7 +420,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             room = AllData.getRoomMinInfo(data.room_id);
         }
         String body = data.getText();
-        UserInRoom userInRoom = null;
+        UserInRoom userInRoom;
         String title = data.type;
         if (room != null) {
             title = room.name;
@@ -503,7 +478,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             channel.setSound(uri, audioAttributes);
             channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
             notificationManager.createNotificationChannel(channel);
-
         }
 
         notificationManager.notify(id, notificationBuilder.build());

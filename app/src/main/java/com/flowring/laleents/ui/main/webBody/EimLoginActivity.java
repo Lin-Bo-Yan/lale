@@ -383,7 +383,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
             @Override
             public void onSuccess(String deviceToken) {
                 if (!deviceToken.isEmpty() && deviceToken != null) {
-                    StringUtils.HaoLog("deviceToken: "+deviceToken);
+                    StringUtils.HaoLog("deviceToken= " + deviceToken);
                     new Thread(() -> {
                         String WFCI_URL = UserControlCenter.getUserMinInfo().eimUserData.af_wfci_service_url;
                         String memId = UserControlCenter.getUserMinInfo().eimUserData.af_mem_id;
@@ -399,7 +399,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
                                 });
                             }
                         });
-                        StringUtils.HaoLog("AF推播註冊:", pu);
+                        StringUtils.HaoLog("AF推播註冊= ", pu);
                         activity.runOnUiThread(() -> {
                             activity.finish();
                         });
@@ -449,7 +449,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
                                     }
                                 });
                             }
-                            StringUtils.HaoLog("setPusher= " + pu);
+                            StringUtils.HaoLog("setPusher= " + pu.status);
 
                         } catch (JSONException e) {
                             e.printStackTrace();

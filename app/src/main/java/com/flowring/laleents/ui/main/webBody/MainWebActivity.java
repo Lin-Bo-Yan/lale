@@ -329,7 +329,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         itFilter.addAction(LocalBroadcastControlCenter.ACTION_NOTIFI_AF);
         itFilter.addAction(LocalBroadcastControlCenter.ACTION_MQTT_FRIEND);
         itFilter.addAction(LocalBroadcastControlCenter.ACTION_MQTT_Error);
-        LocalBroadcastManager.getInstance((Context) this).registerReceiver(FireBaseMsgBroadcastReceiver, itFilter); //註冊廣播接收器
+        LocalBroadcastManager.getInstance(this).registerReceiver(FireBaseMsgBroadcastReceiver, itFilter); //註冊廣播接收器
     }
 
     private void initShareActivityBroadcastReceiver(){
@@ -823,7 +823,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             if (type.startsWith("text/")) {
                 if(stream != null){
                     StringUtils.HaoLog("txt檔分享");
-                    Uri txtUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                    Uri txtUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
                     fileName = FileUtils.getContentURIFileName(this,txtUri);
                     outputFile = FileUtils.getFilePathFromUri(this,txtUri,fileName);
                     try {
@@ -846,7 +846,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             //從手機分享單張圖片
             else if (type.startsWith("image/")) {
                 //需要下載權限
-                Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                Uri imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
                 fileName = FileUtils.getContentURIFileName(this,imageUri);
                 outputFile = FileUtils.getFilePathFromUri(this,imageUri,fileName);
                 try {
@@ -862,7 +862,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     e.printStackTrace();
                 }
             } else if (type.startsWith("video/")) {
-                Uri videoUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                Uri videoUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
                 fileName = FileUtils.getContentURIFileName(this,videoUri);
                 outputFile = FileUtils.getFilePathFromUri(this,videoUri,fileName);
                 try {
@@ -880,7 +880,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             }
             //從手機其他檔案
             else {
-                Uri fileUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                Uri fileUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
                 fileName = FileUtils.getContentURIFileName(this,fileUri);
                 outputFile = FileUtils.getFilePathFromUri(this,fileUri,fileName);
                 try {
@@ -1339,7 +1339,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                 if (getContext() == null) {
                     return false;
                 }
-                AlertDialog.Builder builder = new AlertDialog.Builder((Context) MainWebActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainWebActivity.this);
                 builder.setTitle("Alert");
                 builder.setMessage(message);
                 builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -1356,7 +1356,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             @Override
             public boolean onJsConfirm(WebView view, String url, String message, final JsResult result) {
                 Log.e("hao", "onJsConfirm");
-                AlertDialog.Builder builder = new AlertDialog.Builder((Context) MainWebActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainWebActivity.this);
                 builder.setTitle("Confirm");
                 builder.setMessage(message);
                 builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -1457,17 +1457,19 @@ public class MainWebActivity extends MainAppCompatActivity {
     @JavascriptInterface
     public String postMessage(String json) {
         StringUtils.HaoLog("jsp postMessage:" + TimeUtils.NowTime() + "/" + json);
-        if (json == null || json.isEmpty())
+        if (json == null || json.isEmpty()){
             return null;
+        }
         try {
             JSONObject jsonObject = new JSONObject(json);
-            if (jsonObject.isNull("command"))
+            if (jsonObject.isNull("command")){
                 return json;
+            }
             String command = jsonObject.optString("command");
             JSONObject data = null;
-            if (!jsonObject.isNull("data"))
+            if (!jsonObject.isNull("data")){
                 data = jsonObject.optJSONObject("data");
-
+            }
             switch (command) {
                 case "NewUrl":
                     NewUrl(data);
@@ -1579,7 +1581,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         sb.setStream(NuriForFile);
         sb.setSubject("問題回報");
         sb.startChooser();
-        Toast.makeText((Context) this, "請選擇電子信箱進行傳送", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "請選擇電子信箱進行傳送", Toast.LENGTH_LONG).show();
 
     }
 
@@ -1889,7 +1891,6 @@ public class MainWebActivity extends MainAppCompatActivity {
                                 String button = buttons.get(buttonIndex);
                                 switch (button){
                                     case "ok":
-                                        smartServerDialogLock = false;
                                         Logout();
                                         break;
                                 }
@@ -1933,7 +1934,6 @@ public class MainWebActivity extends MainAppCompatActivity {
                                 String button = buttons.get(buttonIndex);
                                 switch (button){
                                     case "ok":
-                                        smartServerDialogLock = false;
                                         Logout();
                                         break;
                                 }
@@ -2002,7 +2002,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             e.printStackTrace();
         }
         if (MqttService.mqttControlCenter == null) {
-            Intent intentServer = new Intent((Context) this, MqttService.class);
+            Intent intentServer = new Intent(this, MqttService.class);
             intentServer.putExtra("data", "new");
             startService(intentServer);
         } else {
@@ -2038,17 +2038,18 @@ public class MainWebActivity extends MainAppCompatActivity {
         UserControlCenter.setLogout(new CallbackUtils.ReturnHttp() {
             @Override
             public void Callback(HttpReturn httpReturn) {
-                NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                manager.cancelAll();
-                runOnUiThread(() -> {
-                    isLoggedIn = false;
-                    goLogin();
-                });
-
+                if(httpReturn.status == 200){
+                    NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    manager.cancelAll();
+                    runOnUiThread(() -> {
+                        isLoggedIn = false;
+                        goLogin();
+                    });
+                } else {
+                    DialogUtils.showDialogMessage(MainWebActivity.this,"登出失敗，請重新登出");
+                }
             }
         });
-        loginFunction.accountValid = null;
-        loginFunction.passwordValid = null;
     }
 
     private void cancel(String msgId){
@@ -2081,7 +2082,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             webView.destroy();
             webView = null;
         }
-        Intent intent = new Intent((Context) MainWebActivity.this, EimLoginActivity.class);
+        Intent intent = new Intent(MainWebActivity.this, EimLoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
     }
@@ -2331,7 +2332,6 @@ public class MainWebActivity extends MainAppCompatActivity {
                             String button = buttons.get(buttonIndex);
                             switch (button){
                                 case "ok":
-                                    smartServerDialogLock = false;
                                     Logout();
                                     break;
                             }
@@ -2623,7 +2623,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             Uri uri = Uri.parse(scheme);
             startActivity(new Intent(Intent.ACTION_VIEW, uri));
         } catch (ActivityNotFoundException e) {
-            Toast.makeText((Context) MainWebActivity.this, "尚未安裝Line。", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainWebActivity.this, "尚未安裝Line。", Toast.LENGTH_SHORT).show();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -2637,7 +2637,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             wechatIntent.putExtra(Intent.EXTRA_TEXT, inviteMessage);
             startActivity(wechatIntent);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText((Context) MainWebActivity.this, "尚未安裝Wechat。", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainWebActivity.this, "尚未安裝Wechat。", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -2656,7 +2656,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             wechatIntent.putExtra(Intent.EXTRA_SUBJECT, "一起來用Lale吧!");
             startActivity(wechatIntent);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText((Context) MainWebActivity.this, "尚未安裝Gmail。", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainWebActivity.this, "尚未安裝Gmail。", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -2946,23 +2946,20 @@ public class MainWebActivity extends MainAppCompatActivity {
     }
 
     @JavascriptInterface
-    public void startScanQRCode(String msg) {
+    public void startScanQRCode(String msg){
         try {
             openQRcode(new JSONObject().put("title", "QR code"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
     }
 
     private void closeNativeBrowser() {
-
         webView.evaluateJavascript("closeNativeBrowser()", new ValueCallback<String>() {
             @Override
             public void onReceiveValue(String s) {
                 if (!chromeCallbackUrl.isEmpty()) {
                     wvloadUrl(chromeCallbackUrl);
-
                     chromeCallbackUrl = "";
                 }
                 if (needBack) {
@@ -2976,13 +2973,14 @@ public class MainWebActivity extends MainAppCompatActivity {
             }
 
             private void wvloadUrl(String chromeCallbackUrl) {
+
             }
         });
     }
 
+    //創建免費工作群組 不明-等免費工作能做時再做
     @JavascriptInterface
-    public void freeWorkGroup(String msg)//創建免費工作群組 不明-等免費工作能做時再做
-    {
+    public void freeWorkGroup(String msg){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "freeWorkGroup(String msg)").put("data", new JSONObject().put("msg", msg))).toString());
         } catch (JSONException e) {
@@ -2990,9 +2988,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //友圈網頁的退回變成設定按鈕
     @JavascriptInterface
-    public void showSettingIcon(String json)//友圈網頁的退回變成設定按鈕 不知道用途
-    {
+    public void showSettingIcon(String json){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "showSettingIcon(String json)").put("data", new JSONObject().put("json", json))).toString());
         } catch (JSONException e) {
@@ -3000,9 +2998,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //修改為讀數量 可能已經因為改版失效了
     @JavascriptInterface
-    public void setNotificationBell(String notifyCount)//修改為讀數量 可能已經因為改版失效了
-    {
+    public void setNotificationBell(String notifyCount){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "setNotificationBell(String notifyCount)").put("data", new JSONObject().put("notifyCount", notifyCount))).toString());
         } catch (JSONException e) {
@@ -3010,9 +3008,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //下載貼圖 疑似改版完後用不到
     @JavascriptInterface
-    public void downloadSticker(String text)//下載貼圖 疑似改版完後用不到
-    {
+    public void downloadSticker(String text){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "downloadSticker(String text)").put("data", new JSONObject().put("text", text))).toString());
         } catch (JSONException e) {
@@ -3020,9 +3018,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //刪除貼圖 疑似改版完後用不到
     @JavascriptInterface
-    public void deleteSticker(String text)//刪除貼圖 疑似改版完後用不到
-    {
+    public void deleteSticker(String text){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "deleteSticker(String text)").put("data", new JSONObject().put("text", text))).toString());
         } catch (JSONException e) {
@@ -3030,9 +3028,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //回復 evaluateJavascript(String.format("isInLaleApp('true')")
     @JavascriptInterface
-    public void isInLaleApp()//回復 evaluateJavascript(String.format("isInLaleApp('true')") 不知道幹啥用的
-    {
+    public void isInLaleApp(){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "isInLaleApp()")).toString());
         } catch (JSONException e) {
@@ -3040,9 +3038,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //退回辦公的首頁
     @JavascriptInterface
-    public void gotoCompanyTab()//退回辦公的首頁 從程式碼裡面看是把webview關掉
-    {
+    public void gotoCompanyTab(){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "gotoCompanyTab()")).toString());
         } catch (JSONException e) {
@@ -3050,9 +3048,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //修改該頁的標題
     @JavascriptInterface
-    public void setToolbarTitle(String title)//修改該頁的標題
-    {
+    public void setToolbarTitle(String title){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "setToolbarTitle(String title)").put("data", new JSONObject().put("title", title))).toString());
         } catch (JSONException e) {
@@ -3060,9 +3058,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //關掉這頁退回前一頁並刷新前一頁
     @JavascriptInterface
-    public void backToPrevious(String backDashboard)//關掉這頁退回前一頁並刷新前一頁
-    {
+    public void backToPrevious(String backDashboard){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "backToPrevious(String backDashboard)").put("data", new JSONObject().put("backDashboard", backDashboard))).toString());
         } catch (JSONException e) {
@@ -3070,9 +3068,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //Toast文字
     @JavascriptInterface
-    public void testCallback(String url)//Toast文字
-    {
+    public void testCallback(String url){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "testCallback(String url)").put("data", new JSONObject().put("url", url))).toString());
         } catch (JSONException e) {
@@ -3080,9 +3078,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //使用者改暱稱
     @JavascriptInterface
-    public void changeNickName(String displayName)//使用者改暱稱
-    {
+    public void changeNickName(String displayName){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "changeNickName(String displayName)").put("data", new JSONObject().put("displayName", displayName))).toString());
         } catch (JSONException e) {
@@ -3090,9 +3088,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //回傳好友清單-需要參考資料
     @JavascriptInterface
-    public void getMyFriendList(String json)//回傳好友清單-需要參考資料
-    {
+    public void getMyFriendList(String json){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "getMyFriendList(String json)").put("data", new JSONObject().put("json", json))).toString());
         } catch (JSONException e) {
@@ -3100,9 +3098,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //前往好友選取頁面 並把id記錄起來之後發送回去-需要參考資料
     @JavascriptInterface
-    public void openChooseMember(String userIds, String id)//前往好友選取頁面 並把id記錄起來之後發送回去-需要參考資料
-    {
+    public void openChooseMember(String userIds, String id){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "openChooseMember(String userIds, String id)").put("data", new JSONObject().put("userIds", userIds).put("id", id))).toString());
         } catch (JSONException e) {
@@ -3110,9 +3108,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //修改右上角按鈕的按下事件類型和換圖-需要參考資料
     @JavascriptInterface
-    public void showToolbarMoreIcon(String type)//修改右上角按鈕的按下事件類型和換圖-需要參考資料
-    {
+    public void showToolbarMoreIcon(String type){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "showToolbarMoreIcon(String type)").put("data", new JSONObject().put("type", type))).toString());
         } catch (JSONException e) {
@@ -3120,9 +3118,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //修改右上角按鈕的按下事件類型和換圖-需要參考資料
     @JavascriptInterface
-    public void showToolbarSearchIcon(String url)//修改右上角按鈕的按下事件類型和換圖-需要參考資料
-    {
+    public void showToolbarSearchIcon(String url){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "showToolbarSearchIcon(String url)").put("data", new JSONObject().put("url", url))).toString());
         } catch (JSONException e) {
@@ -3130,9 +3128,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //前往加好友頁面
     @JavascriptInterface
-    public void gotoAddFriend()//前往加好友頁面
-    {
+    public void gotoAddFriend(){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "gotoAddFriend()")).toString());
         } catch (JSONException e) {
@@ -3140,9 +3138,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //前往我的設定 好友設定
     @JavascriptInterface
-    public void gotoFriendTabSetting()//前往我的設定 好友設定
-    {
+    public void gotoFriendTabSetting(){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "gotoFriendTabSetting()")).toString());
         } catch (JSONException e) {
@@ -3150,9 +3148,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //刷新網頁
     @JavascriptInterface
-    public void reloadWeb()//刷新網頁
-    {
+    public void reloadWeb(){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "reloadWeb()")).toString());
         } catch (JSONException e) {
@@ -3160,9 +3158,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //開啟該使用者的卡片頁面
     @JavascriptInterface
-    public void openLaleCard(String userID)//開啟該使用者的卡片頁面
-    {
+    public void openLaleCard(String userID){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "openLaleCard(String userID)").put("data", new JSONObject().put("userID", userID))).toString());
         } catch (JSONException e) {
@@ -3170,9 +3168,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //前往指定房間
     @JavascriptInterface
-    public void openMemiaRoom(String msg)//前往指定房間
-    {
+    public void openMemiaRoom(String msg){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "openMemiaRoom(String msg)").put("data", new JSONObject().put("msg", msg))).toString());
         } catch (JSONException e) {
@@ -3180,9 +3178,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //取得token
     @JavascriptInterface
-    public void getLaleJWT(String msg)//取得token
-    {
+    public void getLaleJWT(String msg){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "getLaleJWT(String msg)").put("data", new JSONObject().put("msg", msg))).toString());
         } catch (JSONException e) {
@@ -3190,9 +3188,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //前往指定房間
     @JavascriptInterface
-    public void openChatRoom(String msg)//前往指定房間
-    {
+    public void openChatRoom(String msg){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "openChatRoom(String msg)").put("data", new JSONObject().put("msg", msg))).toString());
         } catch (JSONException e) {
@@ -3200,9 +3198,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //前往加入群組的頁面
     @JavascriptInterface
-    public void joinGroup(String msg)//前往加入群組的頁面
-    {
+    public void joinGroup(String msg){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "joinGroup(String msg)").put("data", new JSONObject().put("msg", msg))).toString());
         } catch (JSONException e) {
@@ -3210,9 +3208,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //創建群組
     @JavascriptInterface
-    public void createGroup(String msg)//創建群組
-    {
+    public void createGroup(String msg){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "createGroup(String msg)").put("data", new JSONObject().put("msg", msg))).toString());
         } catch (JSONException e) {
@@ -3220,9 +3218,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //退回上一頁
     @JavascriptInterface
-    public void goBackAndReload()//退回上一頁
-    {
+    public void goBackAndReload(){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "goBackAndReload()")).toString());
         } catch (JSONException e) {
@@ -3230,9 +3228,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //關掉此頁
     @JavascriptInterface
-    public void cancelFollowSuccess()//關掉此頁
-    {
+    public void cancelFollowSuccess(){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "cancelFollowSuccess")).toString());
         } catch (JSONException e) {
@@ -3240,9 +3238,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //開啟一個新的web view頁面
     @JavascriptInterface
-    public void openNewBrowser(String URL, boolean isForm) //開啟一個新的web view頁面
-    {
+    public void openNewBrowser(String URL, boolean isForm){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "openNewBrowser(String URL, boolean isForm)").put("data", new JSONObject().put("URL", URL).put("isForm", isForm))).toString());
         } catch (JSONException e) {
@@ -3250,9 +3248,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //修改標題文字
     @JavascriptInterface
-    public void changeTitle(String Title)//修改標題文字
-    {
+    public void changeTitle(String Title){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "changeTitle(String Title)").put("data", new JSONObject().put("Title", Title))).toString());
         } catch (JSONException e) {
@@ -3260,9 +3258,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //到該webView的第一頁
     @JavascriptInterface
-    public void closeWebView(String msg)//到該webView的第一頁
-    {
+    public void closeWebView(String msg){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "closeWebView(String msg)").put("data", new JSONObject().put("msg", msg))).toString());
         } catch (JSONException e) {
@@ -3270,9 +3268,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //分享訊息->前往分享頁面
     @JavascriptInterface
-    public void shareToChatRoom(String msg)//分享訊息->前往分享頁面
-    {
+    public void shareToChatRoom(String msg){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "shareToChatRoom(String msg)").put("data", new JSONObject().put("msg", msg))).toString());
         } catch (JSONException e) {
@@ -3280,9 +3278,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //以這些成員資料前往創建群組頁面
     @JavascriptInterface
-    public void returnEnterpriseMemberIDs(String members)//以這些成員資料前往創建群組頁面
-    {
+    public void returnEnterpriseMemberIDs(String members){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "returnEnterpriseMemberIDs(String members)").put("data", new JSONObject().put("members", members))).toString());
         } catch (JSONException e) {
@@ -3290,9 +3288,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
     }
 
+    //該網頁是否可以分享 右上角的按鈕按下的彈跳視窗中的分享功能
     @JavascriptInterface
-    public void isCanShare(boolean bShare)//該網頁是否可以分享 右上角的按鈕按下的彈跳視窗中的分享功能
-    {
+    public void isCanShare(boolean bShare){
         try {
             sendToWeb(new JSONObject().put("type", "webViewJSI").put("data", new JSONObject().put("name", "isCanShare(boolean bShare)").put("data", new JSONObject().put("bShare", bShare))).toString());
         } catch (JSONException e) {
@@ -3315,9 +3313,8 @@ public class MainWebActivity extends MainAppCompatActivity {
         os = new FileOutputStream(downloadFile);
         os.write(imgBytesData);
         os.flush();
-
         if (downloadFile.exists()) {
-            Toast.makeText((Context) this, "下載成功", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "下載成功", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -3381,7 +3378,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                                             public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                                                 mBitmap = resource;
                                                 if (mBitmap != null) {
-                                                    //图片信息不为空时才保存
+                                                    //圖片資訊不為空時才保存
                                                     String fileName = FormatUtils.getDateFormat(System.currentTimeMillis(), "yyyyMMddHHmmss");
                                                     Uri uri = FileUtils.saveBitmapToGallery(MainWebActivity.this, fileName, mBitmap);
                                                     emitter.onNext(uri != null);
@@ -3404,14 +3401,14 @@ public class MainWebActivity extends MainAppCompatActivity {
                                     }
                                     if (photos.size() == count.get()) {
                                         cancelWait();
-                                        Toast.makeText((Context) MainWebActivity.this, "已下載", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(MainWebActivity.this, "已下載", Toast.LENGTH_SHORT).show();
                                     }
 
                                 }
                             }, new Consumer<Throwable>() {
                                 @Override
                                 public void accept(Throwable throwable) throws Exception {
-                                    Toast.makeText((Context) MainWebActivity.this, "下載失敗", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(MainWebActivity.this, "下載失敗", Toast.LENGTH_SHORT).show();
                                 }
                             }, new Action() {
                                 @Override
@@ -3425,7 +3422,4 @@ public class MainWebActivity extends MainAppCompatActivity {
             }
         });
     }
-    //endregion
-
-
 }

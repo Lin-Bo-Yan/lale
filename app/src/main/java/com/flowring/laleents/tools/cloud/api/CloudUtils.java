@@ -2757,7 +2757,7 @@ public class CloudUtils implements ICloudUtils {
                 .build();
         try {
             Response response = client.newCall(request.build()).execute();
-            StringUtils.HaoLog("gethttp2Return="+new Gson().toJson(response));
+            StringUtils.HaoLog("gethttp2Return= " + new Gson().toJson(response));
             if (response.code() == 200) {
                 String body = response.body().string();
                 StringUtils.HaoLog("body=" + body);
@@ -2777,7 +2777,7 @@ public class CloudUtils implements ICloudUtils {
             if(e instanceof java.net.SocketTimeoutException){
                 timeoutReturn.Callback((IOException) e);
             }
-            StringUtils.HaoLog("gethttp2Return error=" + request + " " + e);
+            StringUtils.HaoLog("gethttp2Return error= " + request + " " + e);
             e.printStackTrace();
         }
         return new HttpReturn();
