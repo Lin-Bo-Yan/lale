@@ -203,22 +203,12 @@ public class EimLoginActivity extends MainAppCompatActivity {
         if (httpReturn.success) {
             StringUtils.HaoLog("掃描成功");
             StringUtils.HaoLog("取得使用者資料:" + new Gson().toJson(httpReturn.data));
-//                    String test="{\n" +
-//                            "    \"isLaleAppEim\": false,\n" +
-//                            "     \"isLaleAppWork\": true,\n" +
-//                            "  \"af_url\": \"https://agentflow.flowring.com:8443/WebAgenda\",\n" +
-//                            "  \"af_mem_id\": \"MEM00001091511489187\",\n" +
-//                            "  \"af_login_id\": \"f0\",\n" +
-//                            "  \"af_token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmMCIsImF1ZCI6Ik1FTTAwMDAxMDkxNTExNDg5MTg3IiwiaXNzIjoiRmxvd0Rlb20iLCJuYW1lIjoi5Y-k6JGjIiwiZXhwIjoxNjY2MTQ0MzA0LCJpYXQiOjE2NjU1Mzk1MDR9.AYfwO7xG8AdOKk43zb4lqcW8UhSQEXWQiH9rqBpFe50\",\n" +
-//                            "  \"af_wfci_service_url\": \"http://192.168.3.53:8083\"\n" +
-//                            "}";
 
             String eimUserDataString = new Gson().toJson(httpReturn.data);
             EimUserData eimUserData = new Gson().fromJson(eimUserDataString, EimUserData.class);
             saveUrlValid(eimUserData.af_url);
             {
                 UserMin userMin = eimUserData.getUserMin();
-
                 StringUtils.HaoLog("userMin=" + userMin);
                 UserControlCenter.setLogin(userMin);
                 UserControlCenter.updateUserMinInfo(userMin);
@@ -260,8 +250,14 @@ public class EimLoginActivity extends MainAppCompatActivity {
                 } else {
                     loginSimpleThirdParty(activity,eimUserData);
                 }
-            } else if ( eimUserData.isLaleAppWork == true) {
-                FirebasePusher_AF_push_registration(activity);
+            } else if (eimUserData.isLaleAppWork == true) {
+                UserControlCenter.laleAfFirebasePusher(activity);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        finish();
+                    }
+                });
             }
         } else {
             activity.cancelWait();
@@ -337,7 +333,14 @@ public class EimLoginActivity extends MainAppCompatActivity {
                     loginSimpleThirdParty(activity,eimUserData);
                 }
             } else if ( eimUserData.isLaleAppWork == true) {
-                FirebasePusher_AF_push_registration(activity);
+                UserControlCenter.laleAfFirebasePusher(activity);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        finish();
+                    }
+                });
             }
         } else {
             activity.cancelWait();
@@ -360,107 +363,26 @@ public class EimLoginActivity extends MainAppCompatActivity {
         });
 
         if (httpReturn2.status == 200) {
-
             String userMinString = new Gson().toJson(httpReturn2.data);
             UserMin userMin = new Gson().fromJson(userMinString, UserMin.class);
             StringUtils.HaoLog("httpReturn2.data=" + new Gson().toJson(httpReturn2.data));
             userMin.eimUserData = eimUserData;
-
             userMin.eimUserData.lale_token = userMin.token;
             userMin.eimUserData.refresh_token = userMin.refreshToken;
             UserControlCenter.setLogin(userMin);
             UserControlCenter.updateUserMinInfo(userMin);
-            FirebasePusher_LaleAppEim(activity);
+            UserControlCenter.laleEimFirebasePusher(activity);
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    finish();
+                }
+            });
         } else {
             saveLog(activity);
             activity.cancelWait();
         }
-    }
-
-    public void FirebasePusher_AF_push_registration(MainAppCompatActivity activity){
-        StringUtils.HaoLog("AF_push_registration");
-        FirebaseMessaging.getInstance().getToken().addOnSuccessListener(new OnSuccessListener<String>() {
-            @Override
-            public void onSuccess(String deviceToken) {
-                if (!deviceToken.isEmpty() && deviceToken != null) {
-                    StringUtils.HaoLog("deviceToken= " + deviceToken);
-                    new Thread(() -> {
-                        String WFCI_URL = UserControlCenter.getUserMinInfo().eimUserData.af_wfci_service_url;
-                        String memId = UserControlCenter.getUserMinInfo().eimUserData.af_mem_id;
-                        String userId = UserControlCenter.getUserMinInfo().eimUserData.af_login_id;
-                        String uuid = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
-                        String customerProperties = HashMapToJson(userId,WFCI_URL,true,deviceToken);
-                        HttpAfReturn pu = CloudUtils.iCloudUtils.setAfPusher(WFCI_URL, memId, userId, deviceToken, uuid, customerProperties, new CallbackUtils.TimeoutReturn() {
-                            @Override
-                            public void Callback(IOException timeout) {
-                                StringUtils.HaoLog("setAfPusher 網路異常");
-                                new Handler(Looper.getMainLooper()).post(() -> {
-                                    CommonUtils.showToast(EimLoginActivity.this,getLayoutInflater(),"網路異常",false);
-                                });
-                            }
-                        });
-                        StringUtils.HaoLog("AF推播註冊= ", pu);
-                        activity.runOnUiThread(() -> {
-                            activity.finish();
-                        });
-                    }).start();
-                }
-            }
-        });
-    }
-
-    public static void FirebasePusher_LaleAppEim(MainAppCompatActivity activity){
-        StringUtils.HaoLog("測試帳號登入會觸發");
-        FirebaseMessaging.getInstance().getToken().addOnSuccessListener(new OnSuccessListener<String>() {
-            @Override
-            public void onSuccess(String deviceToken) {
-                if (!deviceToken.isEmpty() && deviceToken != null) {
-                    SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
-                    new Thread(() -> {
-                        HttpReturn pu;
-                        try {
-                            JSONObject UserIds = new JSONObject(pref.getString("UserIds", "{}"));
-                            StringUtils.HaoLog("UserIds= " + UserIds);
-                            StringUtils.HaoLog("deviceToken= " + deviceToken);
-                            if (UserIds.length() <= 1){
-                                String userId = UserControlCenter.getUserMinInfo().userId;
-                                String uuid = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
-                                String customerProperties = HashMapToJson(userId,AllData.getMainServer(),false, "");
-                                pu = CloudUtils.iCloudUtils.setPusher(userId, deviceToken, uuid, customerProperties, new CallbackUtils.TimeoutReturn() {
-                                    @Override
-                                    public void Callback(IOException timeout) {
-                                        new Handler(Looper.getMainLooper()).post(() -> {
-                                            StringUtils.HaoLog("setPusher 網路異常");
-                                            CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                                        });
-                                    }
-                                });
-                            } else {
-                                String userId = UserControlCenter.getUserMinInfo().userId;
-                                String uuid = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
-                                UserControlCenter.switchAccounts(userId);
-                                pu = CloudUtils.iCloudUtils.updatePusher(userId, uuid, new CallbackUtils.TimeoutReturn() {
-                                    @Override
-                                    public void Callback(IOException timeout) {
-                                        new Handler(Looper.getMainLooper()).post(() -> {
-                                            StringUtils.HaoLog("updatePusher 網路異常");
-                                            CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                                        });
-                                    }
-                                });
-                            }
-                            StringUtils.HaoLog("setPusher= " + pu.status);
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        activity.runOnUiThread(() -> {
-                            activity.finish();
-                        });
-                    }).start();
-                }
-            }
-        });
     }
 
     private void signOut(){
@@ -491,25 +413,6 @@ public class EimLoginActivity extends MainAppCompatActivity {
             Boolean clearThirdPartyIdentifier = SharedPreferencesUtils.clearThirdPartyIdentifier(EimLoginActivity.this);
             StringUtils.HaoLog("已被已有其他設備登出 "+clearRepeatDevice + " / " + clearGeneralType + " / " + clearThirdPartyIdentifier);
         }
-    }
-
-    /**
-     * 額外自訂義推送資訊
-     */
-    private static String HashMapToJson(String userId, String domain, Boolean isAF, String deviceToken) {
-        JSONObject json = new JSONObject();
-        try{
-            json.put("userId",userId);
-            json.put("domain",domain);
-            json.put("isAF",isAF);
-            if(isAF){
-                StringUtils.HaoLog("deviceToken= "+deviceToken);
-                json.put("deviceToken",deviceToken);
-            }
-        }catch (JSONException e){
-            e.printStackTrace();
-        }
-        return json.toString();
     }
 
     /**

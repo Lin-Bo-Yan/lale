@@ -78,7 +78,7 @@ public class UserControlCenter {
 
     public static int getWaitWorkCount() {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
-        return pref.getInt(UserControlCenter.getUserMinInfo().userId + "_" + "WaitWorkCount", 0);
+        return pref.getInt(getUserMinInfo().userId + "_" + "WaitWorkCount", 0);
     }
 
     public class Dashboard {
@@ -401,7 +401,7 @@ public class UserControlCenter {
     }
 
     public static void tokenRefresh(CallbackUtils.ReturnHttp callback) {
-        if (UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim) {
+        if (getUserMinInfo().eimUserData.isLaleAppEim) {
             new Thread(() -> {
                 StringUtils.HaoLog("tokenRefresh 開始");
                 HttpReturn httpReturn = CloudUtils.iCloudUtils.reToken(new CallbackUtils.TimeoutReturn() {
@@ -421,7 +421,7 @@ public class UserControlCenter {
     }
 
     public static void tokenRefresh_noThread(CallbackUtils.ReturnHttp callback) {
-        if (UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim) {
+        if (getUserMinInfo().eimUserData.isLaleAppEim) {
             StringUtils.HaoLog("tokenRefresh 開始");
             HttpReturn httpReturn = CloudUtils.iCloudUtils.reToken(new CallbackUtils.TimeoutReturn() {
                 @Override
@@ -436,7 +436,6 @@ public class UserControlCenter {
             StringUtils.HaoLog("tokenRefresh 結束");
         }
     }
-
 
     public static void checkToken(CallbackUtils.ReturnHttp callback){
         StringUtils.HaoLog("checkToken 開始");
@@ -539,7 +538,6 @@ public class UserControlCenter {
                 callback.Callback(null);
             }
         }).start();
-
     }
 
     public static void getAfToken(CallbackUtils.messageReturn callback) {
@@ -587,7 +585,6 @@ public class UserControlCenter {
             @Override
             public void Callback(UserInfo userInfo) {
                 callback.Callback(userInfo.webagendaUrl);
-
             }
         });
     }
@@ -605,7 +602,6 @@ public class UserControlCenter {
             e.printStackTrace();
         }
         UserControlCenter.userMin = userMin;
-
     }
 
     public static void updateUserMinInfo(UserMin newUserMin) {
@@ -620,19 +616,15 @@ public class UserControlCenter {
             e.printStackTrace();
         }
         userMin = newUserMin;
-
     }
 
     public static void switchAccounts(String nowUserId) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
         pref.edit().putString("nowUserId", nowUserId).apply();
         userMin = getUserMinInfoByPhone();
-
         cleanUser();
         StringUtils.HaoLog("NewConnect");
         MqttService.mqttControlCenter.NewConnect();
-
-
     }
 
     public static void switchAccounts(String nowUserId, CallbackUtils.ReturnHttp callback) {
@@ -666,7 +658,7 @@ public class UserControlCenter {
         new Thread(() -> {
             String loginType = SharedPreferencesUtils.getGeneralType();
             String thirdPartyIdentifier = SharedPreferencesUtils.getThirdPartyIdentifier();
-            String userId = UserControlCenter.getUserMinInfo().userId;
+            String userId = getUserMinInfo().userId;
             String deviceID = Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID);
             StringUtils.HaoLog("檢查是否已被登出 "+"\nloginType=" + loginType + "\nuserId=" + userId + "\nthirdPartyIdentifier=" + thirdPartyIdentifier + "\ndeviceId=" + deviceID);
             if(loginType != null && !loginType.isEmpty() &&
@@ -706,8 +698,8 @@ public class UserControlCenter {
     }
 
     public static void setLogout(CallbackUtils.ReturnHttp callback) {
-        if (UserControlCenter.getUserMinInfo() != null) {
-            if (UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim) {
+        if (getUserMinInfo() != null) {
+            if (getUserMinInfo().eimUserData.isLaleAppEim) {
                 laleAppEimLogout(callback);
             } else {
                 laleAppWorkLogout(callback);
@@ -735,7 +727,7 @@ public class UserControlCenter {
                 DeleteCache.checkExternalSharing(AllData.context);
                 DeleteCache.checkSharefile(AllData.context);
                 DeleteCache.checkOpenfile(AllData.context);
-                HttpReturn httpReturn2 = CloudUtils.iCloudUtils.closePusher(UserControlCenter.getUserMinInfo().eimUserData.af_login_id, Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID), new CallbackUtils.TimeoutReturn() {
+                HttpReturn httpReturn2 = CloudUtils.iCloudUtils.closePusher(getUserMinInfo().eimUserData.af_login_id, Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID), new CallbackUtils.TimeoutReturn() {
                     @Override
                     public void Callback(IOException timeout) {
                         new Handler(Looper.getMainLooper()).post(() -> {
@@ -768,7 +760,7 @@ public class UserControlCenter {
                 if (!deviceToken.isEmpty() && deviceToken != null) {
                     new Thread(() -> {
                         StringUtils.HaoLog("登出 3-1");
-                        HttpReturn httpReturn = CloudUtils.iCloudUtils.closeAfPusher(UserControlCenter.getUserMinInfo().eimUserData.af_url, UserControlCenter.getUserMinInfo().eimUserData.af_login_id, deviceToken, Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID), new CallbackUtils.TimeoutReturn() {
+                        HttpReturn httpReturn = CloudUtils.iCloudUtils.closeAfPusher(getUserMinInfo().eimUserData.af_url, getUserMinInfo().eimUserData.af_login_id, deviceToken, Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID), new CallbackUtils.TimeoutReturn() {
                             @Override
                             public void Callback(IOException timeout) {
                                 StringUtils.HaoLog("closeAfPusher 網路異常");
@@ -791,7 +783,9 @@ public class UserControlCenter {
     }
 
     public static UserMin getUserMinInfo() {
-        if (userMin != null){return userMin;}
+        if (userMin != null){
+            return userMin;
+        }
         userMin = getUserMinInfoByPhone();
         return userMin;
     }
@@ -832,7 +826,7 @@ public class UserControlCenter {
     }
 
     public static void getOrgtreeuserimage() {
-        HttpAfReturn httpReturn2 = CloudUtils.iCloudUtils.orgtreeuserimage(UserControlCenter.getUserMinInfo().eimUserData.af_url, new String[]{UserControlCenter.getUserMinInfo().eimUserData.lale_user_id}, new CallbackUtils.TimeoutReturn() {
+        HttpAfReturn httpReturn2 = CloudUtils.iCloudUtils.orgtreeuserimage(getUserMinInfo().eimUserData.af_url, new String[]{getUserMinInfo().eimUserData.lale_user_id}, new CallbackUtils.TimeoutReturn() {
             @Override
             public void Callback(IOException timeout) {
                 StringUtils.HaoLog("OrganizationTreeUserImages 網路異常");
@@ -845,7 +839,7 @@ public class UserControlCenter {
         if (httpReturn2.code == 200) {
             try {
                 JSONObject jsonObject = new JSONObject(new Gson().toJson(httpReturn2.data));
-                UserMin userMin = UserControlCenter.getUserMinInfo();
+                UserMin userMin = getUserMinInfo();
                 userMin.avatarUrl = jsonObject.optString(userMin.eimUserData.lale_user_id);
                 userMin.avatarThumbnailUrl = jsonObject.optString(userMin.eimUserData.lale_user_id);
             } catch (JSONException e) {
@@ -918,7 +912,7 @@ public class UserControlCenter {
 
     public static void afTokenRefresh(CallbackUtils.AfReturnHttp afReturnHttp){
         new Thread(() -> {
-            String afDomain = UserControlCenter.getUserMinInfo().eimUserData.af_url;
+            String afDomain = getUserMinInfo().eimUserData.af_url;
             HttpAfReturn httpReturn= CloudUtils.iCloudUtils.renewToken(afDomain, new CallbackUtils.TimeoutReturn() {
                 @Override
                 public void Callback(IOException timeout) {
@@ -934,9 +928,9 @@ public class UserControlCenter {
 
     public static void afTokenRefreshHaveDeviceId(CallbackUtils.AfReturnHttp afReturnHttp){
         new Thread(() -> {
-            String afDomain = UserControlCenter.getUserMinInfo().eimUserData.af_url;
+            String afDomain = getUserMinInfo().eimUserData.af_url;
             String deviceID = Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID);
-            String af_token = UserControlCenter.getUserMinInfo().eimUserData.af_token;
+            String af_token = getUserMinInfo().eimUserData.af_token;
             HttpAfReturn httpReturn= CloudUtils.iCloudUtils.renewTokenHaveDeviceId(afDomain, af_token, deviceID, new CallbackUtils.TimeoutReturn() {
                 @Override
                 public void Callback(IOException timeout) {
@@ -967,6 +961,104 @@ public class UserControlCenter {
                 new Handler(Looper.getMainLooper()).post(() -> deviceReturn.Callback(true));
             }
         }).start();
+    }
+
+    public static void laleAfFirebasePusher(Activity activity){
+        StringUtils.HaoLog("AF推播註冊");
+        FirebaseMessaging.getInstance().getToken().addOnSuccessListener(new OnSuccessListener<String>() {
+            @Override
+            public void onSuccess(String deviceToken) {
+                if (!deviceToken.isEmpty() && deviceToken != null) {
+                    StringUtils.HaoLog("deviceToken= " + deviceToken);
+                    new Thread(() -> {
+                        String WFCI_URL = getUserMinInfo().eimUserData.af_wfci_service_url;
+                        String memId = getUserMinInfo().eimUserData.af_mem_id;
+                        String userId = getUserMinInfo().eimUserData.af_login_id;
+                        String uuid = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
+                        String customerProperties = HashMapToJson(userId,WFCI_URL,true,deviceToken);
+                        HttpAfReturn pu = CloudUtils.iCloudUtils.setAfPusher(WFCI_URL, memId, userId, deviceToken, uuid, customerProperties, new CallbackUtils.TimeoutReturn() {
+                            @Override
+                            public void Callback(IOException timeout) {
+                                StringUtils.HaoLog("setAfPusher 網路異常");
+                                new Handler(Looper.getMainLooper()).post(() -> {
+                                    CommonUtils.showToast(activity,activity.getLayoutInflater(),"網路異常",false);
+                                });
+                            }
+                        });
+                        StringUtils.HaoLog("AF推播註冊= ", pu.code);
+                    }).start();
+                }
+            }
+        });
+    }
+
+    public static void laleEimFirebasePusher(Activity activity){
+        StringUtils.HaoLog("IM推播註冊");
+        FirebaseMessaging.getInstance().getToken().addOnSuccessListener(new OnSuccessListener<String>() {
+            @Override
+            public void onSuccess(String deviceToken) {
+                if (!deviceToken.isEmpty() && deviceToken != null) {
+                    SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
+                    new Thread(() -> {
+                        HttpReturn pu;
+                        try {
+                            JSONObject UserIds = new JSONObject(pref.getString("UserIds", "{}"));
+                            StringUtils.HaoLog("UserIds= " + UserIds);
+                            StringUtils.HaoLog("deviceToken= " + deviceToken);
+                            if (UserIds.length() <= 1){
+                                String userId = getUserMinInfo().userId;
+                                String uuid = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
+                                String customerProperties = HashMapToJson(userId,AllData.getMainServer(),false, "");
+                                pu = CloudUtils.iCloudUtils.setPusher(userId, deviceToken, uuid, customerProperties, new CallbackUtils.TimeoutReturn() {
+                                    @Override
+                                    public void Callback(IOException timeout) {
+                                        new Handler(Looper.getMainLooper()).post(() -> {
+                                            StringUtils.HaoLog("setPusher 網路異常");
+                                            CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                                        });
+                                    }
+                                });
+                            } else {
+                                String userId = getUserMinInfo().userId;
+                                String uuid = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
+                                switchAccounts(userId);
+                                pu = CloudUtils.iCloudUtils.updatePusher(userId, uuid, new CallbackUtils.TimeoutReturn() {
+                                    @Override
+                                    public void Callback(IOException timeout) {
+                                        new Handler(Looper.getMainLooper()).post(() -> {
+                                            StringUtils.HaoLog("updatePusher 網路異常");
+                                            CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                                        });
+                                    }
+                                });
+                            }
+                            StringUtils.HaoLog("IM推播註冊= " + pu.status);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
+                }
+            }
+        });
+    }
+
+    /**
+     * 額外自訂義推送資訊
+     */
+    public static String HashMapToJson(String userId, String domain, Boolean isAF, String deviceToken) {
+        JSONObject json = new JSONObject();
+        try{
+            json.put("userId",userId);
+            json.put("domain",domain);
+            json.put("isAF",isAF);
+            if(isAF){
+                StringUtils.HaoLog("deviceToken= "+deviceToken);
+                json.put("deviceToken",deviceToken);
+            }
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+        return json.toString();
     }
 
     private static UserMin getUserMinInfoByPhone() {

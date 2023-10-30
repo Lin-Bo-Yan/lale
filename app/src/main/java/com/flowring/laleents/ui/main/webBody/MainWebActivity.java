@@ -588,7 +588,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                 };
                 callbacks.add(callback);
             }
-            DialogUtils.showDialogCancelable(MainWebActivity.this,"請確認網路連線",buttons,callbacks);
+            DialogUtils.showDialogCancelable(MainWebActivity.this,getString(R.string.dialog_check_network_text),buttons,callbacks);
         } else {
             executeNetworkOperations();
         }
