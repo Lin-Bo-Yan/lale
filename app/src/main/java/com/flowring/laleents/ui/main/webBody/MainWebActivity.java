@@ -2035,18 +2035,17 @@ public class MainWebActivity extends MainAppCompatActivity {
 
     private void Logout() {
         StringUtils.HaoLog("登出");
-        UserControlCenter.setLogout(new CallbackUtils.ReturnHttp() {
+        UserControlCenter.setLogout(new CallbackUtils.LogoutReturn() {
             @Override
-            public void Callback(HttpReturn httpReturn) {
-                if(httpReturn.status == 200){
-                    NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                    manager.cancelAll();
-                    runOnUiThread(() -> {
-                        isLoggedIn = false;
-                        goLogin();
-                    });
+            public void Callback(HttpReturn httpReturn, boolean isLaleAppEim) {
+                if(isLaleAppEim){
+                    if(httpReturn.status == 200){
+                        cancelNotification();
+                    } else {
+                        DialogUtils.showDialogMessage(MainWebActivity.this,"登出失敗，請重新登出");
+                    }
                 } else {
-                    DialogUtils.showDialogMessage(MainWebActivity.this,"登出失敗，請重新登出");
+                    cancelNotification();
                 }
             }
         });
@@ -2085,6 +2084,15 @@ public class MainWebActivity extends MainAppCompatActivity {
         Intent intent = new Intent(MainWebActivity.this, EimLoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
+    }
+
+    private void cancelNotification(){
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.cancelAll();
+        runOnUiThread(() -> {
+            isLoggedIn = false;
+            goLogin();
+        });
     }
 
     private void sendFileInfo(File[] files){

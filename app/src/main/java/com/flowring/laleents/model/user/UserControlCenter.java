@@ -697,7 +697,7 @@ public class UserControlCenter {
         return false;
     }
 
-    public static void setLogout(CallbackUtils.ReturnHttp callback) {
+    public static void setLogout(CallbackUtils.LogoutReturn callback) {
         if (getUserMinInfo() != null) {
             if (getUserMinInfo().eimUserData.isLaleAppEim) {
                 laleAppEimLogout(callback);
@@ -708,7 +708,7 @@ public class UserControlCenter {
         }
     }
 
-    private static void laleAppEimLogout(CallbackUtils.ReturnHttp callback){
+    private static void laleAppEimLogout(CallbackUtils.LogoutReturn callback){
         StringUtils.HaoLog("登出 2");
         new Thread(() -> {
             StringUtils.HaoLog("登出 3");
@@ -748,11 +748,11 @@ public class UserControlCenter {
                 delectAll();
                 StringUtils.HaoLog("登出 4 推播登出? " + httpReturn2.status);
             }
-            callback.Callback(httpReturn);
+            callback.Callback(httpReturn,true);
         }).start();
     }
 
-    private static void laleAppWorkLogout(CallbackUtils.ReturnHttp callback){
+    private static void laleAppWorkLogout(CallbackUtils.LogoutReturn callback){
         StringUtils.HaoLog("登出 2-1");
         FirebaseMessaging.getInstance().getToken().addOnSuccessListener(new OnSuccessListener<String>() {
             @Override
@@ -775,7 +775,7 @@ public class UserControlCenter {
                         userMin = null;
                         cleanUser();
                         delectAll();
-                        callback.Callback(httpReturn);
+                        callback.Callback(httpReturn,false);
                     }).start();
                 }
             }
@@ -985,7 +985,7 @@ public class UserControlCenter {
                                 });
                             }
                         });
-                        StringUtils.HaoLog("AF推播註冊= ", pu.code);
+                        StringUtils.HaoLog("AF推播註冊= ", pu);
                     }).start();
                 }
             }

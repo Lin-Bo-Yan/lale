@@ -159,4 +159,9 @@ public class CallbackUtils {
         void Callback(HttpReturn httpReturn, File file);
 
     }
+
+    public interface LogoutReturn {
+        void Callback(HttpReturn httpReturn, boolean isLaleAppEim);
+
+    }
 }
