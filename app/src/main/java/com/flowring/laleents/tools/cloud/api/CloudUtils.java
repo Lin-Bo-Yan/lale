@@ -543,8 +543,8 @@ public class CloudUtils implements ICloudUtils {
         map.put("deviceModel", "Android");
         map.put("allowed", true);
         map.put("customerProperties",customerProperties);
-        StringUtils.HaoLog("setAfPusher json=" + new JSONObject(map).toString());
-        StringUtils.HaoLog("setAfPusher URL=" + WFCI_URL + "/api/app-pusher");
+        StringUtils.HaoLog("setAfPusher json= " + new JSONObject(map));
+        StringUtils.HaoLog("setAfPusher URL= " + WFCI_URL + "/api/app-pusher");
         StringUtils.HaoLog("setAfPusher method=POST");
         RequestBody body = RequestBody.create(mediaType, new JSONObject(map).toString());
         Request.Builder request = new Request.Builder()
@@ -2730,13 +2730,13 @@ public class CloudUtils implements ICloudUtils {
             Response response = client.newCall(request.build()).execute();
             if (response.code() == 200) {
                 String body = response.body().string();
-                StringUtils.HaoLog("body=" + body);
+                StringUtils.HaoLog("body= " + body);
                 HttpReturn httpReturn = new Gson().fromJson(body, HttpReturn.class);
                 if (httpReturn != null) {
                     StringUtils.HaoLog(response.request().url().toString(), httpReturn);
                     return httpReturn;
                 } else{
-                    StringUtils.HaoLog(response.request().url() + " " + response.code() + " body=" + body);
+                    StringUtils.HaoLog(response.request().url() + " " + response.code() + " body= " + body);
                 }
             }
         } catch (IOException | JsonSyntaxException | IllegalStateException e) {
@@ -2760,7 +2760,7 @@ public class CloudUtils implements ICloudUtils {
             StringUtils.HaoLog("gethttp2Return= " + new Gson().toJson(response));
             if (response.code() == 200) {
                 String body = response.body().string();
-                StringUtils.HaoLog("body=" + body);
+                StringUtils.HaoLog("body= " + body);
                 HttpReturn httpReturn = new Gson().fromJson(body, HttpReturn.class);
 
                 if (httpReturn != null) {
@@ -2814,10 +2814,10 @@ public class CloudUtils implements ICloudUtils {
         try {
             Response response = client.newCall(request.build()).execute();
             String body = response.body().string();
-            StringUtils.HaoLog("body=" + body);
+            StringUtils.HaoLog("body= " + body);
             HttpAfReturn httpReturn = new Gson().fromJson(body, HttpAfReturn.class);
             StringUtils.HaoLog("getJhttpAfReturn");
-            StringUtils.HaoLog(response.header("url") + " " + httpReturn.success + " " + httpReturn.data);
+            StringUtils.HaoLog(response.header("url") + " " + httpReturn.msg + " " + httpReturn.data);
             StringUtils.HaoLog("getJhttpAfReturn end");
             return httpReturn;
         } catch (IOException | JsonSyntaxException | IllegalStateException e) {
@@ -2825,7 +2825,7 @@ public class CloudUtils implements ICloudUtils {
                 timeoutReturn.Callback((IOException) e);
             }
             e.printStackTrace();
-            StringUtils.HaoLog("getJhttpAfReturn error=" + request + " " + e);
+            StringUtils.HaoLog("getJhttpAfReturn error= " + request + " " + e);
         }
         return new HttpAfReturn();
     }

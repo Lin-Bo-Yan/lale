@@ -9,7 +9,6 @@ import android.graphics.Paint;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 
-import com.flowring.laleents.BuildConfig;
 import com.flowring.laleents.model.HttpAfReturn;
 import com.flowring.laleents.model.HttpReturn;
 
@@ -49,7 +48,7 @@ public class StringUtils {
     static final int MAX_LOG = 800;
 
     static public void HaoLog(String value, HttpAfReturn data) {
-        HaoLog(value + " httpAfReturn " + data.success + " " + data.errorMessage + " " + data.data);
+        HaoLog(value + data.msg + " " + data.code + " " + data.data);
     }
 
     static public void HaoLog(String value, HttpReturn data) {

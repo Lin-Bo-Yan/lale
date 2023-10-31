@@ -62,4 +62,25 @@ public class SharedPreferencesUtils {
         String value = pref.getString("isRepeatDevice", "");
         return value.isEmpty();
     }
+
+    public static void firebasePusherErrorCode(int status){
+        pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
+        pref.edit().putInt("errorCode",status).apply();
+    }
+
+    public static int getFirebasePusherErrorCode(Activity activity){
+        pref = PreferenceManager.getDefaultSharedPreferences(activity);
+        int errorCode = pref.getInt("errorCode", -1);
+        return errorCode;
+    }
+
+    public static boolean clearFirebasePusherErrorCode(Activity activity){
+        pref = PreferenceManager.getDefaultSharedPreferences(activity);
+        pref.edit().remove("errorCode").apply();
+        int errorCode = pref.getInt("errorCode", -1);
+        if(errorCode == -1){
+            return true;
+        }
+        return false;
+    }
 }

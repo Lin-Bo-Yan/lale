@@ -420,6 +420,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                 }).start();
             } else if(userMin.eimUserData.isLaleAppWork){
                 censorAfToken();
+                censorAfFirebasePusher();
             }
         } else {
             goLogin();
@@ -2350,6 +2351,45 @@ public class MainWebActivity extends MainAppCompatActivity {
             } else if(timestamp > afTokenExpiration){
                 afTokenRefresh();
             }
+        }
+    }
+
+    private void censorAfFirebasePusher(){
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //計數計
+                int errorCount = 0;
+                int errorCode = SharedPreferencesUtils.getFirebasePusherErrorCode(MainWebActivity.this);
+                if(errorCode != 200){
+                    retryAfFirebasePusher(errorCount);
+                }
+            }
+        }, 300);
+    }
+
+    private void retryAfFirebasePusher(final int errorCount) {
+        if (errorCount < 3) {
+            StringUtils.HaoLog("AfFirebasePusher 第 " + errorCount + " 次");
+            UserControlCenter.storeAfErrorCode(MainWebActivity.this);
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    int errorCode = SharedPreferencesUtils.getFirebasePusherErrorCode(MainWebActivity.this);
+                    if(errorCode == 200){
+                        return;
+                    }
+                    retryAfFirebasePusher(errorCount + 1);
+                }
+            }, 3000);
+        } else {
+            SharedPreferencesUtils.firebasePusherErrorCode(500);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    CommonUtils.showToast(MainWebActivity.this, getLayoutInflater(), getString(R.string.pusher_toast_title), false);
+                }
+            });
         }
     }
 

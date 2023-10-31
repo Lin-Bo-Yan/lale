@@ -10,6 +10,7 @@ import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 
+import com.flowring.laleents.R;
 import com.flowring.laleents.model.AFtoken;
 import com.flowring.laleents.model.HttpAfReturn;
 import com.flowring.laleents.model.HttpReturn;
@@ -18,6 +19,7 @@ import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.CommonUtils;
 import com.flowring.laleents.tools.DeleteCache;
 import com.flowring.laleents.tools.DialogUtils;
+import com.flowring.laleents.tools.Log;
 import com.flowring.laleents.tools.SharedPreferencesUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.cloud.api.CloudUtils;
@@ -25,6 +27,8 @@ import com.flowring.laleents.tools.cloud.mqtt.MqttService;
 import com.flowring.laleents.tools.phone.AllData;
 import com.flowring.laleents.tools.phone.DefinedUtils;
 import static com.flowring.laleents.ui.main.webBody.MainWebActivity.smartServerDialogLock;
+
+import com.flowring.laleents.ui.main.webBody.EimLoginActivity;
 import com.flowring.laleents.ui.main.webBody.MainWebActivity;
 import com.flowring.laleents.ui.model.EimLogin.LoginInAppFunc;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -699,6 +703,7 @@ public class UserControlCenter {
 
     public static void setLogout(CallbackUtils.LogoutReturn callback) {
         if (getUserMinInfo() != null) {
+            SharedPreferencesUtils.clearFirebasePusherErrorCode(AllData.activity);
             if (getUserMinInfo().eimUserData.isLaleAppEim) {
                 laleAppEimLogout(callback);
             } else {
@@ -963,7 +968,7 @@ public class UserControlCenter {
         }).start();
     }
 
-    public static void laleAfFirebasePusher(Activity activity){
+    public static void laleAfFirebasePusher(Activity activity,CallbackUtils.AfReturnHttp callback){
         StringUtils.HaoLog("AF推播註冊");
         FirebaseMessaging.getInstance().getToken().addOnSuccessListener(new OnSuccessListener<String>() {
             @Override
@@ -985,6 +990,7 @@ public class UserControlCenter {
                                 });
                             }
                         });
+                        callback.Callback(pu);
                         StringUtils.HaoLog("AF推播註冊= ", pu);
                     }).start();
                 }
@@ -992,7 +998,28 @@ public class UserControlCenter {
         });
     }
 
-    public static void laleEimFirebasePusher(Activity activity){
+    public static void storeAfErrorCode(Activity activity){
+        laleAfFirebasePusher(activity, new CallbackUtils.AfReturnHttp() {
+            @Override
+            public void Callback(HttpAfReturn httpAfReturn) {
+                String data = new Gson().toJson(httpAfReturn.data);
+                String success = "false";
+                try {
+                    JSONObject jsonObject = new JSONObject(data);
+                    success = jsonObject.optString("success");
+                } catch (JSONException e){
+                    e.printStackTrace();
+                }
+                if("true".equals(success)){
+                    SharedPreferencesUtils.firebasePusherErrorCode(200);
+                } else {
+                    SharedPreferencesUtils.firebasePusherErrorCode(500);
+                }
+            }
+        });
+    }
+
+    public static void laleEimFirebasePusher(Activity activity, CallbackUtils.ReturnHttp callback){
         StringUtils.HaoLog("IM推播註冊");
         FirebaseMessaging.getInstance().getToken().addOnSuccessListener(new OnSuccessListener<String>() {
             @Override
@@ -1032,6 +1059,7 @@ public class UserControlCenter {
                                     }
                                 });
                             }
+                            callback.Callback(pu);
                             StringUtils.HaoLog("IM推播註冊= " + pu.status);
                         } catch (JSONException e) {
                             e.printStackTrace();

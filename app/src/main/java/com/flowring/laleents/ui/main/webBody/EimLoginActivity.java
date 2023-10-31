@@ -251,7 +251,8 @@ public class EimLoginActivity extends MainAppCompatActivity {
                     loginSimpleThirdParty(activity,eimUserData);
                 }
             } else if (eimUserData.isLaleAppWork == true) {
-                UserControlCenter.laleAfFirebasePusher(activity);
+                UserControlCenter.storeAfErrorCode(activity);
+
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -333,7 +334,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
                     loginSimpleThirdParty(activity,eimUserData);
                 }
             } else if ( eimUserData.isLaleAppWork == true) {
-                UserControlCenter.laleAfFirebasePusher(activity);
+                UserControlCenter.storeAfErrorCode(activity);
 
                 runOnUiThread(new Runnable() {
                     @Override
@@ -371,7 +372,16 @@ public class EimLoginActivity extends MainAppCompatActivity {
             userMin.eimUserData.refresh_token = userMin.refreshToken;
             UserControlCenter.setLogin(userMin);
             UserControlCenter.updateUserMinInfo(userMin);
-            UserControlCenter.laleEimFirebasePusher(activity);
+            UserControlCenter.laleEimFirebasePusher(activity, new CallbackUtils.ReturnHttp() {
+                @Override
+                public void Callback(HttpReturn httpReturn) {
+                    if(httpReturn.status == 200){
+                        SharedPreferencesUtils.firebasePusherErrorCode(200);
+                    } else {
+                        SharedPreferencesUtils.firebasePusherErrorCode(500);
+                    }
+                }
+            });
 
             runOnUiThread(new Runnable() {
                 @Override

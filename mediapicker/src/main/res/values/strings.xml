@@ -17,4 +17,5 @@
     <string name="cant_play_video">無法播放影片</string>
     <string name="READ_EXTERNAL_STORAGE">請開放相簿讀取權限</string>
     <string name="can_not_read_image">圖片無法讀取</string>
+    <string name="pusher_toast_title">推播註冊失敗請聯絡系統管理員</string>
 </resources>
