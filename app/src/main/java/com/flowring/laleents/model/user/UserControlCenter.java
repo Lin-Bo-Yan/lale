@@ -1070,6 +1070,19 @@ public class UserControlCenter {
         });
     }
 
+    public static void storeEimErrorCode(Activity activity){
+        laleEimFirebasePusher(activity, new CallbackUtils.ReturnHttp() {
+            @Override
+            public void Callback(HttpReturn httpReturn) {
+                if(httpReturn.status == 200){
+                    SharedPreferencesUtils.firebasePusherErrorCode(200);
+                } else {
+                    SharedPreferencesUtils.firebasePusherErrorCode(500);
+                }
+            }
+        });
+    }
+
     /**
      * 額外自訂義推送資訊
      */

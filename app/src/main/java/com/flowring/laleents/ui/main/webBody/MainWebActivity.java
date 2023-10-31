@@ -418,6 +418,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                 new Thread(() -> {
                     censorToken();
                 }).start();
+                censorEimFirebasePusher();
             } else if(userMin.eimUserData.isLaleAppWork){
                 censorAfToken();
                 censorAfFirebasePusher();
@@ -2380,6 +2381,45 @@ public class MainWebActivity extends MainAppCompatActivity {
                         return;
                     }
                     retryAfFirebasePusher(errorCount + 1);
+                }
+            }, 3000);
+        } else {
+            SharedPreferencesUtils.firebasePusherErrorCode(500);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    CommonUtils.showToast(MainWebActivity.this, getLayoutInflater(), getString(R.string.pusher_toast_title), false);
+                }
+            });
+        }
+    }
+
+    private void censorEimFirebasePusher(){
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //計數計
+                int errorCount = 0;
+                int errorCode = SharedPreferencesUtils.getFirebasePusherErrorCode(MainWebActivity.this);
+                if(errorCode != 200){
+                    retryEimFirebasePusher(errorCount);
+                }
+            }
+        }, 300);
+    }
+
+    private void retryEimFirebasePusher(final int errorCount){
+        if(errorCount < 3){
+            StringUtils.HaoLog("EimFirebasePusher 第 " + errorCount + " 次");
+            UserControlCenter.storeEimErrorCode(MainWebActivity.this);
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    int errorCode = SharedPreferencesUtils.getFirebasePusherErrorCode(MainWebActivity.this);
+                    if(errorCode == 200){
+                        return;
+                    }
+                    retryEimFirebasePusher(errorCount + 1);
                 }
             }, 3000);
         } else {

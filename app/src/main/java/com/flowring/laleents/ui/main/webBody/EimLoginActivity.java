@@ -372,16 +372,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
             userMin.eimUserData.refresh_token = userMin.refreshToken;
             UserControlCenter.setLogin(userMin);
             UserControlCenter.updateUserMinInfo(userMin);
-            UserControlCenter.laleEimFirebasePusher(activity, new CallbackUtils.ReturnHttp() {
-                @Override
-                public void Callback(HttpReturn httpReturn) {
-                    if(httpReturn.status == 200){
-                        SharedPreferencesUtils.firebasePusherErrorCode(200);
-                    } else {
-                        SharedPreferencesUtils.firebasePusherErrorCode(500);
-                    }
-                }
-            });
+            UserControlCenter.storeEimErrorCode(activity);
 
             runOnUiThread(new Runnable() {
                 @Override
