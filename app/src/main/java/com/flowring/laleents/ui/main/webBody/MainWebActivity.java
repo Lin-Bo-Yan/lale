@@ -135,6 +135,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -204,19 +205,6 @@ public class MainWebActivity extends MainAppCompatActivity {
 * */
 
 
-    //endregion
-
-    //region  test
-    final Handler handler = new Handler();
-    Runnable log = new Runnable() {
-        @Override
-        public void run() {
-            StringUtils.HaoLog("還活著 " + webView.hashCode());
-            sendToWebtest();
-            handler.postDelayed(log, 5000);
-
-        }
-    };
 
     public void testOpenChrome() {
         Intent intent = CommonUtils.openChromeCustomTabs(this, "https://portal.flowring.com/WebAgenda/");
@@ -380,6 +368,18 @@ public class MainWebActivity extends MainAppCompatActivity {
     private int urlsNew = 0;
     private AlertDialog requestDrawOverlaysDialog = null;
 
+    final Handler handler = new Handler();
+    Runnable log = new Runnable() {
+        @Override
+        public void run() {
+            StringUtils.HaoLog("還活著 " + webView.hashCode());
+            sendToWebtest();
+            handler.postDelayed(log, 5000);
+
+        }
+    };
+    public static ExecutorService executorService;
+
     @SuppressLint({"JavascriptInterface", "SetJavaScriptEnabled"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -433,13 +433,17 @@ public class MainWebActivity extends MainAppCompatActivity {
         StringUtils.HaoLog("onDestroy " + webView);
         LocalBroadcastControlCenter.unregisterReceiver(this,shareActivityBroadcastReceiver);
         LocalBroadcastControlCenter.unregisterReceiver(this,FireBaseMsgBroadcastReceiver);
+        if(executorService != null && !executorService.isShutdown()){
+            executorService.shutdown();
+        }
         if (webView != null) {
             webView.loadUrl("about:blank");
             webView.destroy();
             webView = null;
         }
-        if (MqttService.mqttControlCenter != null)
+        if (MqttService.mqttControlCenter != null){
             MqttService.mqttControlCenter.DisConnect();
+        }
 
         super.onDestroy();
     }
@@ -551,7 +555,7 @@ public class MainWebActivity extends MainAppCompatActivity {
     }
 
 
-    public String getMainWebURL(Boolean isWebDomain) {
+    public String getMainWebURL(boolean isWebDomain) {
         UserMin userMin = UserControlCenter.getUserMinInfo();
         if (userMin != null &&
                 userMin.eimUserData != null &&
@@ -1190,7 +1194,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                 } else if(errorResponse.getStatusCode() == 400 || errorResponse.getStatusCode() == 401){
                     UserControlCenter.isErrorCode(new CallbackUtils.DeviceReturn() {
                         @Override
-                        public void Callback(Boolean deviceReturn) {
+                        public void Callback(boolean deviceReturn) {
                             if(deviceReturn){
                                 UserMin userMin = UserControlCenter.getUserMinInfo();
                                 if (userMin != null && !userMin.userId.isEmpty()) {

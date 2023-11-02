@@ -144,13 +144,13 @@ public interface ICloudUtils {
      * 登入後啟動推播
      */
     @WorkerThread
-    HttpAfReturn setAfPusher(String WFCI_URL, String memId, String userId,String FCM_token, String uuid, String customerProperties, CallbackUtils.TimeoutReturn timeoutReturn);
+    HttpReturn setAfPusher(String WFCI_URL, String memId, String userId,String FCM_token, String uuid, String customerProperties, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 登出時關掉通知
      */
     @WorkerThread
-    HttpReturn closeAfPusher(String WFCI_URL, String userId, String FCM_token, String uuid, CallbackUtils.TimeoutReturn timeoutReturn);
+    HttpReturn closeAfPusher(String WFCI_URL, String memId, String userId, String FCM_token, String uuid, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 使用者登出 userLogout

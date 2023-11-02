@@ -152,13 +152,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     //AF 關閉推播
                     String deviceToken = remoteMessage.getData().get("deviceToken");
                     String uuid = Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID);
-                    HttpReturn httpReturn = CloudUtils.iCloudUtils.closeAfPusher(domain, userid, deviceToken, uuid, new CallbackUtils.TimeoutReturn() {
+                    String memId = remoteMessage.getData().get("memId");
+                    HttpReturn httpReturn = CloudUtils.iCloudUtils.closeAfPusher(domain,memId, userid, deviceToken, uuid, new CallbackUtils.TimeoutReturn() {
                         @Override
                         public void Callback(IOException timeout) {
                             StringUtils.HaoLog("AF 關閉推播 api timeout");
                         }
                     });
-                    StringUtils.HaoLog("關閉AF推播成功 "+httpReturn.status);
+                    StringUtils.HaoLog("關閉AF推播成功 ", httpReturn);
                 } else {
                     //EIM 關閉推播
                     if(AllData.getMainServer().equals(domain)){
@@ -169,7 +170,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                 StringUtils.HaoLog("EIM 關閉推播 api timeout");
                             }
                         });
-                        StringUtils.HaoLog("關閉EIM推播成功 "+httpReturn.status);
+                        StringUtils.HaoLog("關閉EIM推播成功 ", httpReturn);
                     }
                 }
             } else {

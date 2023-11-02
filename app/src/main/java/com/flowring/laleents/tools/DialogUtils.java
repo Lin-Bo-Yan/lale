@@ -640,23 +640,6 @@ public class DialogUtils {
 
     }
 
-    public static void showSignOutDialog(Activity activity,CallbackUtils.TokenReturn tokenReturn){
-        runOnUiThread(() -> {
-            Dialog dialog = new Dialog(activity);
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.setContentView(R.layout.dialog_account_logout);
-            dialog.show();
-            Button sureButton = dialog.findViewById(R.id.sureButton);
-            sureButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    dialog.dismiss();
-                    tokenReturn.Callback();
-                }
-            });
-        });
-    }
-
     public static void showUpgradeDialog(Activity activity) {
         runOnUiThread(() -> {
             AlertDialog.Builder alertDialogBuilder =
@@ -676,4 +659,72 @@ public class DialogUtils {
         });
     }
 
+    public static void showCustomizedDialog(Activity activity,String title, String text, List<String> buttons, List<CallbackUtils.noReturn> callbacks){
+        runOnUiThread(() -> {
+            Dialog dialog = new Dialog(activity);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.dialog_customized);
+            dialog.show();
+            Button buttonOne = dialog.findViewById(R.id.buttonOne);
+            Button buttonTwo = dialog.findViewById(R.id.buttonTwo);
+            Button buttonThree = dialog.findViewById(R.id.buttonThree);
+
+            TextView dialogTitle = dialog.findViewById(R.id.customized_dialog_title);
+            dialogTitle.setText(title);
+
+            TextView dialogText = dialog.findViewById(R.id.customized_dialog_text);
+            dialogText.setText(text);
+
+            List<String> translatedButtons = new ArrayList<>();
+            for (String button : buttons) {
+                String translatedButton = translateButton(button);
+                translatedButtons.add(translatedButton);
+            }
+
+            if(translatedButtons.size() == 0){
+                buttonOne.setVisibility(View.GONE);
+                buttonTwo.setVisibility(View.GONE);
+                buttonThree.setVisibility(View.GONE);
+            }
+
+            if(translatedButtons.size() > 0){
+                buttonTwo.setVisibility(View.GONE);
+                buttonThree.setVisibility(View.GONE);
+                buttonOne.setText(translatedButtons.get(0));
+                buttonOne.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                        callbacks.get(0).Callback();
+                    }
+                });
+            }
+
+            if(translatedButtons.size() > 1){
+                buttonTwo.setVisibility(View.VISIBLE);
+                buttonThree.setVisibility(View.GONE);
+                buttonTwo.setText(translatedButtons.get(1));
+                buttonTwo.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                        callbacks.get(1).Callback();
+                    }
+                });
+            }
+
+            if(translatedButtons.size() > 2){
+                buttonThree.setVisibility(View.VISIBLE);
+                buttonThree.setText(translatedButtons.get(2));
+                buttonThree.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                        callbacks.get(2).Callback();
+                    }
+                });
+            }
+
+        });
+    }
 }

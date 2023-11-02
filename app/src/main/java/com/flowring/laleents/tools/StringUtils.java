@@ -48,11 +48,11 @@ public class StringUtils {
     static final int MAX_LOG = 800;
 
     static public void HaoLog(String value, HttpAfReturn data) {
-        HaoLog(value + data.msg + " " + data.code + " " + data.data);
+        HaoLog(value + data.message + " " + data.code + " " + data.data);
     }
 
     static public void HaoLog(String value, HttpReturn data) {
-        HaoLog(value + " httpReturn " + data.status + " " + data.msg + " " + data.data, 5);
+        HaoLog(value + data.status + " " + data.msg + " " + data.data, 5);
     }
 
     static public void HaoLog(HttpReturn data) {

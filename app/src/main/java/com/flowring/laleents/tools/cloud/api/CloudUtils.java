@@ -526,9 +526,9 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
-    public HttpAfReturn setAfPusher(String WFCI_URL, String memId,String userId, String FCM_token, String uuid, String customerProperties, CallbackUtils.TimeoutReturn timeoutReturn) {
+    public HttpReturn setAfPusher(String WFCI_URL, String memId,String userId, String FCM_token, String uuid, String customerProperties, CallbackUtils.TimeoutReturn timeoutReturn) {
         if (WFCI_URL == null || WFCI_URL.isEmpty()){
-            return new HttpAfReturn();
+            return new HttpReturn();
         }
         MediaType mediaType = MediaType.parse("application/json");
         Map<String, Object> map = new HashMap();
@@ -550,17 +550,17 @@ public class CloudUtils implements ICloudUtils {
         Request.Builder request = new Request.Builder()
                 .url(WFCI_URL + "/api/app-pusher")
                 .method("POST", body);
-        HttpAfReturn httpAfReturn = getJhttpAfReturn(request, 15, new CallbackUtils.TimeoutReturn() {
+        HttpReturn httpReturn = gethttp2Return(request, 15, new CallbackUtils.TimeoutReturn() {
             @Override
             public void Callback(IOException timeout) {
                 timeoutReturn.Callback(timeout);
             }
         });
-        return httpAfReturn;
+        return httpReturn;
     }
 
     @Override
-    public HttpReturn closeAfPusher(String WFCI_URL, String memId, String FCM_token, String uuid, CallbackUtils.TimeoutReturn timeoutReturn) {
+    public HttpReturn closeAfPusher(String WFCI_URL, String memId, String userId, String FCM_token, String uuid, CallbackUtils.TimeoutReturn timeoutReturn) {
         if (WFCI_URL == null || WFCI_URL.isEmpty()){
             return new HttpReturn();
         }
@@ -570,7 +570,7 @@ public class CloudUtils implements ICloudUtils {
         map.put("apId", "AF");
         map.put("uuid", uuid);
         map.put("token", FCM_token);
-        map.put("userId", memId);
+        map.put("userId", userId);
         map.put("allowed", false);
         RequestBody body = RequestBody.create(mediaType, new JSONObject(map).toString());
         Request.Builder request = new Request.Builder()
@@ -2817,7 +2817,7 @@ public class CloudUtils implements ICloudUtils {
             StringUtils.HaoLog("body= " + body);
             HttpAfReturn httpReturn = new Gson().fromJson(body, HttpAfReturn.class);
             StringUtils.HaoLog("getJhttpAfReturn");
-            StringUtils.HaoLog(response.header("url") + " " + httpReturn.msg + " " + httpReturn.data);
+            StringUtils.HaoLog(response.header("url") + " " + httpReturn.message + " " + httpReturn.data);
             StringUtils.HaoLog("getJhttpAfReturn end");
             return httpReturn;
         } catch (IOException | JsonSyntaxException | IllegalStateException e) {

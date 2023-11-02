@@ -1,61 +1,54 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="330dp"
-    android:layout_height="160dp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:padding="10dp">
 
     <TextView
-        android:id="@+id/exception_title"
+        android:id="@+id/customized_dialog_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/server_exception_title"
         android:textColor="@color/black"
+        android:text="標題"
         android:textSize="23dp"/>
     <TextView
-        android:id="@+id/exception_text"
+        android:id="@+id/customized_dialog_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
-        android:text="@string/server_exception_text"
         android:textColor="@color/black"
-        android:layout_below="@+id/exception_title"
+        android:layout_below="@+id/customized_dialog_title"
+        android:text="內文"
         android:textSize="16dp"/>
-
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:layout_marginLeft="90dp"
-        android:orientation="horizontal"
-        android:layout_below="@+id/exception_text">
+        android:layout_marginTop="50dp"
+        android:orientation="vertical"
+        android:layout_below="@+id/customized_dialog_text">
 
         <Button
-            android:id="@+id/signoutButton"
-            android:layout_width="60dp"
+            android:id="@+id/buttonOne"
+            android:layout_width="match_parent"
             android:layout_height="40dp"
             android:background="@drawable/white_btn_bg"
-            android:text="登出"
+            android:text="按鈕1"
             android:textColor="@color/colorDateBg" />
-        <Space
-            android:layout_width="10dp"
-            android:layout_height="0dp"/>
+
         <Button
-            android:id="@+id/closedButton"
-            android:layout_width="60dp"
+            android:id="@+id/buttonTwo"
+            android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:text="關閉"
+            android:text="按鈕2"
             android:background="@drawable/white_btn_bg"
             android:textColor="@color/colorDateBg"/>
-        <Space
-            android:layout_width="10dp"
-            android:layout_height="0dp"/>
+
         <Button
-            android:id="@+id/problemReportButton"
-            android:layout_width="70dp"
+            android:id="@+id/buttonThree"
+            android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:text="問題回報"
+            android:text="按鈕3"
             android:background="@drawable/white_btn_bg"
             android:textColor="@color/colorDateBg"/>
     </LinearLayout>

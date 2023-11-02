@@ -17,7 +17,6 @@ import android.widget.Button;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
 
-import com.auth0.android.jwt.Claim;
 import com.auth0.android.jwt.JWT;
 import com.flowring.laleents.R;
 import com.flowring.laleents.model.HttpAfReturn;
@@ -216,7 +215,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
 
             if(eimUserData.isLaleAppEim) {
                 String deviceID = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
-                Boolean isRepeatDevice = UserControlCenter.alreadyLoddedIn("6","",eimUserData.af_mem_id,deviceID);
+                boolean isRepeatDevice = UserControlCenter.alreadyLoddedIn("6","",eimUserData.af_mem_id,deviceID);
                 StringUtils.HaoLog("isRepeatDevice= "+isRepeatDevice);
                 if(isRepeatDevice){
                     //跳出 dialog
@@ -250,7 +249,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
                 } else {
                     loginSimpleThirdParty(activity,eimUserData);
                 }
-            } else if (eimUserData.isLaleAppWork == true) {
+            } else if (eimUserData.isLaleAppWork) {
                 UserControlCenter.storeAfErrorCode(activity);
 
                 runOnUiThread(new Runnable() {
@@ -299,7 +298,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
             }
             if(eimUserData.isLaleAppEim) {
                 String deviceID = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
-                Boolean isRepeatDevice = UserControlCenter.alreadyLoddedIn("6","",eimUserData.af_mem_id,deviceID);
+                boolean isRepeatDevice = UserControlCenter.alreadyLoddedIn("6","",eimUserData.af_mem_id,deviceID);
                 StringUtils.HaoLog("isRepeatDevice= "+isRepeatDevice);
                 if(isRepeatDevice){
                     //跳出 dialog
@@ -333,7 +332,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
                 } else {
                     loginSimpleThirdParty(activity,eimUserData);
                 }
-            } else if ( eimUserData.isLaleAppWork == true) {
+            } else if (eimUserData.isLaleAppWork) {
                 UserControlCenter.storeAfErrorCode(activity);
 
                 runOnUiThread(new Runnable() {
@@ -388,30 +387,24 @@ public class EimLoginActivity extends MainAppCompatActivity {
 
     private void signOut(){
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences((Context) EimLoginActivity.this);
-        Boolean signOut = pref.getBoolean("isSignOut",false);
-        StringUtils.HaoLog("getPref 布林："+signOut);
+        boolean signOut = pref.getBoolean("isSignOut",false);
+        StringUtils.HaoLog("signOut 布林："+signOut);
         if(signOut){
-            DialogUtils.showSignOutDialog(EimLoginActivity.this, new CallbackUtils.TokenReturn() {
-                @Override
-                public void Callback() {}
-            });
+            DialogUtils.showDialogMessage(EimLoginActivity.this,getString(R.string.unused_account_logged_out));
             pref.edit().putBoolean("isSignOut", false).apply();
         } else {
             StringUtils.HaoLog("SharedPreferences 沒有值");
         }
-        //String message = pref.getString("message","");
-        //StringUtils.HaoLog("webMessage= "+message);
-
     }
 
     private void loggedInDialog(){
-        Boolean wasLoggedOut = SharedPreferencesUtils.getRepeatDevice(EimLoginActivity.this);
+        boolean wasLoggedOut = SharedPreferencesUtils.getRepeatDevice(EimLoginActivity.this);
         StringUtils.HaoLog("已被已有其他設備登出 "+wasLoggedOut);
         if(wasLoggedOut){
             DialogUtils.showDialogMessage(EimLoginActivity.this,getString(R.string.single_device_sign_out_title),getString(R.string.single_device_sign_out_text));
-            Boolean clearRepeatDevice = SharedPreferencesUtils.clearRepeatDevice(EimLoginActivity.this);
-            Boolean clearGeneralType = SharedPreferencesUtils.clearGeneralType(EimLoginActivity.this);
-            Boolean clearThirdPartyIdentifier = SharedPreferencesUtils.clearThirdPartyIdentifier(EimLoginActivity.this);
+            boolean clearRepeatDevice = SharedPreferencesUtils.clearRepeatDevice(EimLoginActivity.this);
+            boolean clearGeneralType = SharedPreferencesUtils.clearGeneralType(EimLoginActivity.this);
+            boolean clearThirdPartyIdentifier = SharedPreferencesUtils.clearThirdPartyIdentifier(EimLoginActivity.this);
             StringUtils.HaoLog("已被已有其他設備登出 "+clearRepeatDevice + " / " + clearGeneralType + " / " + clearThirdPartyIdentifier);
         }
     }
@@ -429,7 +422,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
         });
         if(httpReturn.status == 200){
             String msg = httpReturn.msg;
-            boolean data = (Boolean) httpReturn.data;
+            boolean data = (boolean) httpReturn.data;
             switch (msg){
                 case "Success":
                 case "用戶 ID 不得為空":

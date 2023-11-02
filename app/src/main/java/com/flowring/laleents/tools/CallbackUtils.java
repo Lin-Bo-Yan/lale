@@ -84,7 +84,7 @@ public class CallbackUtils {
     }
 
     public interface ReturnData<T> {
-        void Callback(Boolean isOK, String ErrorMsg, T data);
+        void Callback(boolean isOK, String ErrorMsg, T data);
 
     }
 
@@ -141,7 +141,7 @@ public class CallbackUtils {
     }
 
     public interface DeviceReturn{
-        void Callback(Boolean deviceReturn);
+        void Callback(boolean deviceReturn);
 
     }
 
