@@ -1,9 +1,6 @@
 package com.flowring.laleents.model.msg;
 
-import android.app.Activity;
 import android.media.MediaPlayer;
-import android.net.Uri;
-
 import com.flowring.laleents.R;
 import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.model.room.RoomControlCenter;
@@ -30,8 +27,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import static com.flowring.laleents.ui.main.webBody.MainWebActivity.executorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -368,8 +364,7 @@ public class MsgControlCenter {
         new Thread(() -> {
             String type = FileUtils.fileType(file.getName());
             if(".heic".equalsIgnoreCase(type)){
-                ExecutorService executor = Executors.newSingleThreadExecutor();
-                Future<File> future = executor.submit(new ConvertHEICToPNGTask(file,AllData.context));
+                Future<File> future = executorService.submit(new ConvertHEICToPNGTask(file,AllData.context));
                 try {
                     File pngFile = future.get(30, TimeUnit.SECONDS);  // 最多等待30秒
                     HttpReturn httpReturn = CloudUtils.iCloudUtils.sendFile(roomId, pngFile);
@@ -378,8 +373,6 @@ public class MsgControlCenter {
                     }
                 }catch (InterruptedException | ExecutionException | TimeoutException e){
                     StringUtils.HaoLog("webSideSendFile= 錯誤 "+e);
-                }finally {
-                    executor.shutdown();  //關閉 executor!
                 }
             } else {
                 HttpReturn httpReturn = CloudUtils.iCloudUtils.sendFile(roomId, file);

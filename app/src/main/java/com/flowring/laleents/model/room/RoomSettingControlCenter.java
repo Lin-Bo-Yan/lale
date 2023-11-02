@@ -199,7 +199,7 @@ public class RoomSettingControlCenter {
         }).start();
     }
 
-    public static void setShowName(String groupId, Boolean showName, CallbackUtils.ReturnHttp callback) {
+    public static void setShowName(String groupId, boolean showName, CallbackUtils.ReturnHttp callback) {
         new Thread(() -> {
             try {
                 HttpReturn httpReturn = CloudUtils.iCloudUtils.updateGroup(groupId, new JSONObject().put("groupId", groupId).put("isShowDisplayName", showName), new CallbackUtils.TimeoutReturn() {

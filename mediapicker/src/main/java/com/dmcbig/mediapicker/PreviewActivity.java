@@ -90,7 +90,7 @@ public class PreviewActivity extends FragmentActivity implements View.OnClickLis
     private String roomID, userId;
 
     private String sImageUrl, sMimeType, senderName, messagetype, message;
-    private Boolean bZoomImage;
+    private boolean bZoomImage;
     private ArrayList<String> idList;
     private ArrayList<String> refreshUrlList;
     private ArrayList<String> mimeTypeList;

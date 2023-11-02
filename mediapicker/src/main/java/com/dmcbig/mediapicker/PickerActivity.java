@@ -106,7 +106,7 @@ public class PickerActivity extends Activity
         urlList = argsIntent.getStringArrayListExtra("urlList");
         n = urlList.size() + 1;
         mimeTypeList = argsIntent.getStringArrayListExtra("mimeTypeList");
-        Boolean bZoomImage = argsIntent.getBooleanExtra("bZoomImage", false);
+        boolean bZoomImage = argsIntent.getBooleanExtra("bZoomImage", false);
         gridAdapter = new MediaGridAdapter(null, this, null, urlList.size(), maxSize, urlList, bZoomImage, mimeTypeList);
         gridAdapter.setOnItemClickListener(new MediaGridAdapter.OnRecyclerViewItemClickListener() {
             @Override

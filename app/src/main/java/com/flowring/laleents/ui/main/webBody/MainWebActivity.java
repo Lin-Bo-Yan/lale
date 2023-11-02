@@ -136,6 +136,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -392,6 +393,10 @@ public class MainWebActivity extends MainAppCompatActivity {
         if (!init) {
             BootBroadcastReceiver.setReToken(getApplicationContext());
         }
+        if(executorService == null){
+            executorService = Executors.newSingleThreadExecutor();
+        }
+
     }
 
     @Override
@@ -415,9 +420,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         if (userMin != null && !userMin.userId.isEmpty()) {
             checkNetworkAndContinue();
             if(userMin.eimUserData.isLaleAppEim){
-                new Thread(() -> {
-                    censorToken();
-                }).start();
+                censorToken();
                 censorEimFirebasePusher();
             } else if(userMin.eimUserData.isLaleAppWork){
                 censorAfToken();
@@ -433,8 +436,9 @@ public class MainWebActivity extends MainAppCompatActivity {
         StringUtils.HaoLog("onDestroy " + webView);
         LocalBroadcastControlCenter.unregisterReceiver(this,shareActivityBroadcastReceiver);
         LocalBroadcastControlCenter.unregisterReceiver(this,FireBaseMsgBroadcastReceiver);
-        if(executorService != null && !executorService.isShutdown()){
+        if(executorService != null){
             executorService.shutdown();
+            executorService = null;
         }
         if (webView != null) {
             webView.loadUrl("about:blank");
@@ -1200,9 +1204,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                                 if (userMin != null && !userMin.userId.isEmpty()) {
                                     StringUtils.HaoLog("伺服器 400 或 401 " + userMin.eimUserData.isLaleAppEim + "/"+userMin.eimUserData.isLaleAppWork);
                                     if(userMin.eimUserData.isLaleAppEim){
-                                        new Thread(() -> {
-                                            censorToken();
-                                        }).start();
+                                        censorToken();
                                     }
                                 } else if(userMin.eimUserData.isLaleAppWork){
                                     censorAfToken();
@@ -2263,7 +2265,7 @@ public class MainWebActivity extends MainAppCompatActivity {
     }
 
     private void censorToken() {
-        UserControlCenter.tokenRefresh_noThread(new CallbackUtils.ReturnHttp() {
+        UserControlCenter.tokenRefresh(new CallbackUtils.ReturnHttp() {
             @Override
             public void Callback(HttpReturn httpReturn) {
                 StringUtils.HaoLog("censorToken= 1 "+httpReturn.msg + " "+Thread.currentThread().getName());
@@ -2297,24 +2299,24 @@ public class MainWebActivity extends MainAppCompatActivity {
             public void Callback(HttpReturn httpReturn) {
                 if(httpReturn.status != 400){
                     //token有效
-                    StringUtils.HaoLog("censorToken= 3 "+Thread.currentThread().getName()+" token有效");
+                    StringUtils.HaoLog("censorToken= 3 token有效 " + Thread.currentThread().getName());
                 } else {
                     String msg = httpReturn.msg;
                     switch (msg){
                         case "token 不存在":
                             //登出
-                            StringUtils.HaoLog("censorToken= 4 "+Thread.currentThread().getName()+" token 不存在");
+                            StringUtils.HaoLog("censorToken= 4 token 不存在 " + Thread.currentThread().getName());
                             SharedPreferencesUtils.isRepeatDevice(true);
                             Logout();
                             break;
                         case "token 逾時":
                             //更新token 要延遲
-                            StringUtils.HaoLog("censorToken= 5 "+Thread.currentThread().getName()+" token 逾時");
+                            StringUtils.HaoLog("censorToken= 5 token 逾時 " + Thread.currentThread().getName());
                             isFirstCheck = false;
                             censorToken();
                             break;
                         case "token 資料錯誤":
-                            StringUtils.HaoLog("censorToken= 5 "+Thread.currentThread().getName()+" token 資料錯誤");
+                            StringUtils.HaoLog("censorToken= 5 token 資料錯誤 " + Thread.currentThread().getName());
                             Logout();
                             break;
                     }

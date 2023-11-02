@@ -41,7 +41,7 @@ public class MediaGridAdapter extends RecyclerView.Adapter<MediaGridAdapter.MyVi
     long maxSelect, maxSize;
     ArrayList<String> urList = new ArrayList<>();
     ArrayList<String> mimeTypeList = new ArrayList<>();
-    Boolean bZoomImage;
+    boolean bZoomImage;
 
     public MediaGridAdapter(ArrayList<Media> list, Context context, ArrayList<Media> select, int max, long maxSize, ArrayList<String> urlList, Boolean bZoomImage, ArrayList<String> mimeTypeList) {
         if (select != null) {

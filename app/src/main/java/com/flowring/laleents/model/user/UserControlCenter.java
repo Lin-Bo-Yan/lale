@@ -405,38 +405,23 @@ public class UserControlCenter {
 
     public static void tokenRefresh(CallbackUtils.ReturnHttp callback) {
         if (getUserMinInfo().eimUserData.isLaleAppEim) {
-            new Thread(() -> {
-                StringUtils.HaoLog("tokenRefresh 開始");
-                HttpReturn httpReturn = CloudUtils.iCloudUtils.reToken(new CallbackUtils.TimeoutReturn() {
-                    @Override
-                    public void Callback(IOException timeout) {
-                        StringUtils.HaoLog("reToken 網路異常");
-                        new Handler(Looper.getMainLooper()).post(() -> {
-                            CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                        });
-                    }
-                });
-
-                callback.Callback(httpReturn);
-                StringUtils.HaoLog("tokenRefresh 結束");
-            }).start();
-        }
-    }
-
-    public static void tokenRefresh_noThread(CallbackUtils.ReturnHttp callback) {
-        if (getUserMinInfo().eimUserData.isLaleAppEim) {
-            StringUtils.HaoLog("tokenRefresh 開始");
-            HttpReturn httpReturn = CloudUtils.iCloudUtils.reToken(new CallbackUtils.TimeoutReturn() {
+            executorService.execute(new Runnable() {
                 @Override
-                public void Callback(IOException timeout) {
-                    StringUtils.HaoLog("reToken 網路異常");
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                public void run() {
+                    StringUtils.HaoLog("tokenRefresh 開始");
+                    HttpReturn httpReturn = CloudUtils.iCloudUtils.reToken(new CallbackUtils.TimeoutReturn() {
+                        @Override
+                        public void Callback(IOException timeout) {
+                            StringUtils.HaoLog("reToken 網路異常");
+                            new Handler(Looper.getMainLooper()).post(() -> {
+                                CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                            });
+                        }
                     });
+                    callback.Callback(httpReturn);
+                    StringUtils.HaoLog("tokenRefresh 結束");
                 }
             });
-            callback.Callback(httpReturn);
-            StringUtils.HaoLog("tokenRefresh 結束");
         }
     }
 
@@ -979,7 +964,6 @@ public class UserControlCenter {
             public void onSuccess(String deviceToken) {
                 if (!deviceToken.isEmpty() && deviceToken != null) {
                     StringUtils.HaoLog("deviceToken= " + deviceToken);
-                    executorService = Executors.newSingleThreadExecutor();
                     executorService.execute(new Runnable() {
                         @Override
                         public void run() {
@@ -1037,7 +1021,6 @@ public class UserControlCenter {
             @Override
             public void onSuccess(String deviceToken) {
                 if (!deviceToken.isEmpty() && deviceToken != null) {
-                    executorService = Executors.newSingleThreadExecutor();
                     executorService.execute(new Runnable() {
                         @Override
                         public void run() {
