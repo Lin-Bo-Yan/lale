@@ -396,13 +396,13 @@ public class EimLoginActivity extends MainAppCompatActivity {
 
     private void loggedInDialog(){
         boolean wasLoggedOut = SharedPreferencesUtils.getRepeatDevice(EimLoginActivity.this);
-        StringUtils.HaoLog("已被已有其他設備登出 "+wasLoggedOut);
+        StringUtils.HaoLog("已被已有其他設備登出 " + wasLoggedOut);
         if(wasLoggedOut){
             DialogUtils.showDialogMessage(EimLoginActivity.this,getString(R.string.single_device_sign_out_title),getString(R.string.single_device_sign_out_text));
             boolean clearRepeatDevice = SharedPreferencesUtils.clearRepeatDevice(EimLoginActivity.this);
             boolean clearGeneralType = SharedPreferencesUtils.clearGeneralType(EimLoginActivity.this);
             boolean clearThirdPartyIdentifier = SharedPreferencesUtils.clearThirdPartyIdentifier(EimLoginActivity.this);
-            StringUtils.HaoLog("已被已有其他設備登出 "+clearRepeatDevice + " / " + clearGeneralType + " / " + clearThirdPartyIdentifier);
+            StringUtils.HaoLog("已被已有其他設備登出 " + clearRepeatDevice + " / " + clearGeneralType + " / " + clearThirdPartyIdentifier);
         }
     }
 

@@ -184,15 +184,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String channel_id = "lale_channel_id";
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         String body = remoteMessage.getData().get("body");
-        StringUtils.HaoLog("body="+body);
+        StringUtils.HaoLog("body= "+body);
         if (body != null) {
             if (body.contains("command")){
                 SilenceNotifi silenceNotifi = new Gson().fromJson(body, SilenceNotifi.class);
                 if("logout".equals(silenceNotifi.command)){
                     StringUtils.HaoLog("推播登出");
-                    UserControlCenter.setLogout(new CallbackUtils.LogoutReturn() {
+                    UserControlCenter.setLogout(false,new CallbackUtils.LogoutReturn() {
                         @Override
-                        public void Callback(HttpReturn httpReturn, boolean isLaleAppEim) {
+                        public void Callback(int status, boolean isLaleAppEim) {
                             SharedPreferencesUtils.isRepeatDevice(true);
                         }
                     });
@@ -497,9 +497,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             switch (silenceNotifi.command){
                 case "logout":
                     StringUtils.HaoLog("推播登出");
-                    UserControlCenter.setLogout(new CallbackUtils.LogoutReturn() {
+                    UserControlCenter.setLogout(false,new CallbackUtils.LogoutReturn() {
                         @Override
-                        public void Callback(HttpReturn httpReturn, boolean isLaleAppEim) {
+                        public void Callback(int status, boolean isLaleAppEim) {
                             SharedPreferencesUtils.isRepeatDevice(true);
                         }
                     });

@@ -296,7 +296,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                             switch (silenceNotifi.command){
                                 case "logout":
                                     StringUtils.HaoLog("設備被登出");
-                                    Logout();
+                                    Logout(false);
                                     SharedPreferencesUtils.isRepeatDevice(true);
                                     break;
                             }
@@ -1186,6 +1186,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                 StringUtils.HaoLog("還活著 onReceivedHttpError getUrl= " + request.getUrl());
                 StringUtils.HaoLog("還活著 onReceivedHttpError 請求的詳細資訊= " + errorResponse.getData());
                 StringUtils.HaoLog("還活著 onReceivedHttpError 錯誤狀態碼= " + errorResponse.getStatusCode());
+                Logout(false);
                 if(errorResponse.getStatusCode() == 502 || errorResponse.getStatusCode() == 503){
                     if(smartServerDialogLock){
                         announceServerDialog();
@@ -1507,7 +1508,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     newLinkApp(data);
                     break;
                 case "Logout":
-                    Logout();
+                    check(data);
                     break;
                 case "downloadByUrl":
                     downloadByUrl(data);
@@ -1899,7 +1900,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                                 String button = buttons.get(buttonIndex);
                                 switch (button){
                                     case "ok":
-                                        Logout();
+                                        Logout(false);
                                         break;
                                 }
                             }
@@ -1942,7 +1943,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                                 String button = buttons.get(buttonIndex);
                                 switch (button){
                                     case "ok":
-                                        Logout();
+                                        Logout(false);
                                         break;
                                 }
                             }
@@ -2041,13 +2042,26 @@ public class MainWebActivity extends MainAppCompatActivity {
         CommonUtils.addShortcut(this, new Gson().fromJson(data.toString(), Microapp.class));
     }
 
-    private void Logout() {
+    private void check(JSONObject data){
+        if(!data.isNull("check")){
+            boolean check = Boolean.parseBoolean(data.optString("check"));
+            if(check){
+                Logout(true);
+            } else {
+                Logout(false);
+            }
+        } else {
+            Logout(false);
+        }
+    }
+
+    private void Logout(boolean check) {
         StringUtils.HaoLog("登出");
-        UserControlCenter.setLogout(new CallbackUtils.LogoutReturn() {
+        UserControlCenter.setLogout(check,new CallbackUtils.LogoutReturn() {
             @Override
-            public void Callback(HttpReturn httpReturn, boolean isLaleAppEim) {
+            public void Callback(int status, boolean isLaleAppEim) {
                 if(isLaleAppEim){
-                    if(httpReturn.status == 200){
+                    if(status == 200){
                         cancelNotification();
                     } else {
                         DialogUtils.showDialogMessage(MainWebActivity.this,"登出失敗，請重新登出");
@@ -2224,7 +2238,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                             StringUtils.HaoLog("App過久未使用您的帳號已被登出");
                             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
                             pref.edit().putBoolean("isSignOut", true).apply();
-                            Logout();
+                            Logout(false);
                         } else {
                             if(shownLock){
                                 shownLock = false;
@@ -2242,7 +2256,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                                             String button = buttons.get(buttonIndex);
                                             switch (button){
                                                 case "ok":
-                                                    Logout();
+                                                    Logout(false);
                                                     break;
                                             }
                                         }
@@ -2252,8 +2266,8 @@ public class MainWebActivity extends MainAppCompatActivity {
                             }
                         }
                     } else {
-                        JSONObject j = new JSONObject().put("type", "tokenRefresh").put("data", new JSONObject(new Gson().toJson(httpReturn.data)));
-                        sendToWeb(j.toString());
+                        JSONObject jsonObject = new JSONObject().put("type", "tokenRefresh").put("data", new JSONObject(new Gson().toJson(httpReturn.data)));
+                        sendToWeb(jsonObject.toString());
                     }
 
                 } catch (JSONException e) {
@@ -2275,10 +2289,10 @@ public class MainWebActivity extends MainAppCompatActivity {
                         StringUtils.HaoLog("App過久未使用您的帳號已被登出");
                         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
                         pref.edit().putBoolean("isSignOut", true).apply();
-                        Logout();
+                        Logout(false);
                     } else if("token 無效".equals(httpReturn.msg)){
                         StringUtils.HaoLog("censorToken= 6 "+httpReturn.msg + " "+Thread.currentThread().getName());
-                        Logout();
+                        Logout(false);
                     }
                 } else if(httpReturn.status == 200){
                     StringUtils.HaoLog("censorToken= 2 "+httpReturn.msg + " "+Thread.currentThread().getName());
@@ -2307,7 +2321,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                             //登出
                             StringUtils.HaoLog("censorToken= 4 token 不存在 " + Thread.currentThread().getName());
                             SharedPreferencesUtils.isRepeatDevice(true);
-                            Logout();
+                            Logout(false);
                             break;
                         case "token 逾時":
                             //更新token 要延遲
@@ -2317,7 +2331,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                             break;
                         case "token 資料錯誤":
                             StringUtils.HaoLog("censorToken= 5 token 資料錯誤 " + Thread.currentThread().getName());
-                            Logout();
+                            Logout(false);
                             break;
                     }
                 }
@@ -2348,7 +2362,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                             String button = buttons.get(buttonIndex);
                             switch (button){
                                 case "ok":
-                                    Logout();
+                                    Logout(false);
                                     break;
                             }
                         }

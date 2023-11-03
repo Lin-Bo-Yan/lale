@@ -684,11 +684,11 @@ public class UserControlCenter {
         return false;
     }
 
-    public static void setLogout(CallbackUtils.LogoutReturn callback) {
+    public static void setLogout(boolean check, CallbackUtils.LogoutReturn callback) {
         if (getUserMinInfo() != null) {
             SharedPreferencesUtils.clearFirebasePusherErrorCode(AllData.activity);
             if (getUserMinInfo().eimUserData.isLaleAppEim) {
-                laleAppEimLogout(callback);
+                laleAppEimLogout(check,callback);
             } else {
                 laleAppWorkLogout(callback);
             }
@@ -696,48 +696,59 @@ public class UserControlCenter {
         }
     }
 
-    private static void laleAppEimLogout(CallbackUtils.LogoutReturn callback){
+    private static void laleAppEimLogout(boolean activelyLogout, CallbackUtils.LogoutReturn callback){
         StringUtils.HaoLog("登出 2");
         new Thread(() -> {
             StringUtils.HaoLog("登出 3");
-            HttpReturn httpReturn = CloudUtils.iCloudUtils.userLogout(new CallbackUtils.TimeoutReturn() {
+            //刪除實體檔案
+            DeleteCache.checkExternalSharing(AllData.context);
+            DeleteCache.checkSharefile(AllData.context);
+            DeleteCache.checkOpenfile(AllData.context);
+
+            if(activelyLogout){
+                performLaleServerLogout(callback);
+            } else {
+                performLogout(callback);
+            }
+        }).start();
+    }
+
+    private static void performLaleServerLogout(CallbackUtils.LogoutReturn callback){
+        HttpReturn httpReturn = CloudUtils.iCloudUtils.userLogout(new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                handleNetworkError("userLogout 網路異常");
+            }
+        });
+        if(httpReturn.status == 200){
+            HttpReturn pusher = CloudUtils.iCloudUtils.closePusher(getUserMinInfo().eimUserData.af_login_id, Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID), new CallbackUtils.TimeoutReturn() {
                 @Override
                 public void Callback(IOException timeout) {
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                        StringUtils.HaoLog("userLogout 網路異常");
-                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                    });
+                    handleNetworkError("closePusher 網路異常");
                 }
             });
+            clearUserData();
+            StringUtils.HaoLog("登出 4 推播登出? " ,pusher);
+        }
+        callback.Callback(httpReturn.status,true);
+    }
 
-            if(httpReturn.status == 200){
-                //刪除實體檔案
-                DeleteCache.checkExternalSharing(AllData.context);
-                DeleteCache.checkSharefile(AllData.context);
-                DeleteCache.checkOpenfile(AllData.context);
-                HttpReturn pusher = CloudUtils.iCloudUtils.closePusher(getUserMinInfo().eimUserData.af_login_id, Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID), new CallbackUtils.TimeoutReturn() {
-                    @Override
-                    public void Callback(IOException timeout) {
-                        new Handler(Looper.getMainLooper()).post(() -> {
-                            StringUtils.HaoLog("closePusher 網路異常");
-                            CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                        });
-                    }
-                });
-                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
-                pref.edit().putString("nowUserId", "").apply();
-                pref.edit().putString("UserIds", "{}").apply();
-                if (MqttService.mqttControlCenter != null){
-                    MqttService.mqttControlCenter.DisConnect();
-                }
+    private static void performLogout(CallbackUtils.LogoutReturn callback){
+        clearUserData();
+        StringUtils.HaoLog("登出 4 狀態碼：200");
+        callback.Callback(200,true);
+    }
 
-                initVariables();
-                cleanUser();
-                delectAll();
-                StringUtils.HaoLog("登出 4 推播登出? " ,pusher);
-            }
-            callback.Callback(httpReturn,true);
-        }).start();
+    private static void clearUserData(){
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
+        pref.edit().putString("nowUserId", "").apply();
+        pref.edit().putString("UserIds", "{}").apply();
+        if (MqttService.mqttControlCenter != null){
+            MqttService.mqttControlCenter.DisConnect();
+        }
+        initVariables();
+        cleanUser();
+        delectAll();
     }
 
     private static void laleAppWorkLogout(CallbackUtils.LogoutReturn callback){
@@ -768,7 +779,7 @@ public class UserControlCenter {
                         cleanUser();
                         delectAll();
                         StringUtils.HaoLog("登出 4-1 推播登出? " ,httpReturn);
-                        callback.Callback(httpReturn,false);
+                        callback.Callback(httpReturn.status,false);
                     }).start();
                 }
             }
@@ -1120,5 +1131,12 @@ public class UserControlCenter {
         smartServerDialogLock = false;
         LoginInAppFunc.accountValid = null;
         LoginInAppFunc.passwordValid = null;
+    }
+
+    private static void handleNetworkError(String message) {
+        new Handler(Looper.getMainLooper()).post(() -> {
+            StringUtils.HaoLog(message);
+            CommonUtils.showToast(AllData.activity, AllData.activity.getLayoutInflater(), "網路異常", false);
+        });
     }
 }

@@ -161,7 +161,7 @@ public class CallbackUtils {
     }
 
     public interface LogoutReturn {
-        void Callback(HttpReturn httpReturn, boolean isLaleAppEim);
+        void Callback(int status, boolean isLaleAppEim);
 
     }
 }
