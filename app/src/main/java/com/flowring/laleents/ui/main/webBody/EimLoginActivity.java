@@ -38,8 +38,6 @@ import com.flowring.laleents.tools.phone.AllData;
 import com.flowring.laleents.ui.model.EimLogin.LoginInAppFunc;
 import com.flowring.laleents.ui.model.MainAppCompatActivity;
 import com.flowring.laleents.ui.widget.qrCode.ScanCaptureActivity;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -53,7 +51,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class EimLoginActivity extends MainAppCompatActivity {
     private static Button btn_login;
