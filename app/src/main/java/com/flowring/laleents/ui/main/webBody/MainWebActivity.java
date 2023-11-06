@@ -1739,24 +1739,12 @@ public class MainWebActivity extends MainAppCompatActivity {
     private void judgmentFileName(JSONObject data, ActionType type){
         if (PermissionUtils.checkPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) || (Build.VERSION.SDK_INT > Build.VERSION_CODES.R)) {
             String dataUrl = data.optString("url");
-            if (data.isNull("fileName")){
-                switch (type){
-                    case download:
-                        // downloadFile(dataUrl, null); // 原設計沒有開執行續
-                        break;
-                    case openFile:
-                        ActivityUtils.goFileReaderActivity(this,dataUrl,data);
-                        break;
-                }
-            } else {
-                switch (type) {
-                    case download:
-                        //downloadFile(dataUrl, data.optString("fileName")); // 原設計沒有開執行續
-                        break;
-                    case openFile:
-                        ActivityUtils.goFileReaderActivity(this,dataUrl,data);
-                        break;
-                }
+            switch (type){
+                case download:
+                    break;
+                case openFile:
+                    ActivityUtils.goFileReaderActivity(this,dataUrl,data);
+                    break;
             }
         } else {
             switch (type){

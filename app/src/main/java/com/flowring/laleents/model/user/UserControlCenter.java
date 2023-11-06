@@ -725,14 +725,7 @@ public class UserControlCenter {
             }
         });
         if(httpReturn.status == 200){
-            HttpReturn pusher = CloudUtils.iCloudUtils.closePusher(getUserMinInfo().eimUserData.af_login_id, Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID), new CallbackUtils.TimeoutReturn() {
-                @Override
-                public void Callback(IOException timeout) {
-                    handleNetworkError("closePusher 網路異常");
-                }
-            });
             clearUserData();
-            StringUtils.HaoLog("登出 4 推播登出? " ,pusher);
         }
         callback.Callback(httpReturn.status,true);
     }

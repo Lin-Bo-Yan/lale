@@ -153,6 +153,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
             if (result != null && result.has("qrcode_info_url") && result.has("af_token")) {
                 String af_token = result.optString("af_token");
                 String qrcode_info_url = result.optString("qrcode_info_url");
+                String errMsg = result.optString("errMsg");
                 if (af_token.isEmpty() || qrcode_info_url.isEmpty()) {
                     activity.cancelWait();
                     DialogUtils.showDialogMessage(EimLoginActivity.this,"請輸入正確的帳號和密碼");
@@ -180,7 +181,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
         String qrcode_info_url = result.optString("qrcode_info_url");
         String errMsg = result.optString("errMsg");
 
-        if (!errMsg.isEmpty() && errMsg != null) {
+        if (!errMsg.isEmpty()) {
             activity.cancelWait();
             DialogUtils.showDialogMessage(EimLoginActivity.this,errMsg);
             return;
@@ -267,7 +268,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
         String qrcode_info_url = result.optString("qrcode_info_url");
         String errMsg = result.optString("errMsg");
 
-        if (!errMsg.isEmpty() && errMsg != null) {
+        if (!errMsg.isEmpty()) {
             activity.cancelWait();
             DialogUtils.showDialogMessage(EimLoginActivity.this,errMsg);
             return;

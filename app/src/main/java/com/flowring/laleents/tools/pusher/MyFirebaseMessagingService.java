@@ -137,15 +137,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             }
         } else {
             //沒有使用者詳細資訊，表示離線登出，推播server沒有關閉的情況
-            StringUtils.HaoLog("closure_pusher= "+remoteMessage.getData());
-            StringUtils.HaoLog("closure_pusher= "+remoteMessage.getData().containsKey("isAF"));
+            StringUtils.HaoLog("closure_pusher= " + remoteMessage.getData());
             if (remoteMessage.getData().containsKey("domain") &&
                     remoteMessage.getData().containsKey("userId") &&
                     remoteMessage.getData().containsKey("isAF")) {
 
                 String isAF = remoteMessage.getData().get("isAF");
                 boolean isAFBoolean = Boolean.parseBoolean(isAF);
-
+                StringUtils.HaoLog("closure_pusher= 是否是AF? " + isAFBoolean);
                 String domain = remoteMessage.getData().get("domain");
                 String userid = remoteMessage.getData().get("userId");
                 if(isAFBoolean){
