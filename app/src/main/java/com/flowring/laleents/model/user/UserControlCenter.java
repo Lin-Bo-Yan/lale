@@ -230,10 +230,7 @@ public class UserControlCenter {
             HttpReturn httpReturn = CloudUtils.iCloudUtils.announceServer(new CallbackUtils.TimeoutReturn() {
                 @Override
                 public void Callback(IOException timeout) {
-                    StringUtils.HaoLog("announceServer 網路異常");
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                    });
+                    handleNetworkError("announceServer 網路異常");
                 }
             });
             if(httpReturn.status == 200){
@@ -285,10 +282,7 @@ public class UserControlCenter {
             HttpReturn httpReturn = CloudUtils.iCloudUtils.latestAnnounce(new CallbackUtils.TimeoutReturn() {
                 @Override
                 public void Callback(IOException timeout) {
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                        StringUtils.HaoLog("latestAnnounce 網路異常");
-                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                    });
+                    handleNetworkError("latestAnnounce 網路異常");
                 }
             });
             if(httpReturn.status == 200){
@@ -345,10 +339,7 @@ public class UserControlCenter {
                     HttpAfReturn afloginNew = CloudUtils.iCloudUtils.afloginNew(account, password, url, new CallbackUtils.TimeoutReturn() {
                         @Override
                         public void Callback(IOException timeout) {
-                            StringUtils.HaoLog("afloginNew 網路異常");
-                            new Handler(Looper.getMainLooper()).post(() -> {
-                                CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                            });
+                            handleNetworkError("afloginNew 網路異常");
                         }
                     });
                     if(afloginNew.success){
@@ -358,10 +349,7 @@ public class UserControlCenter {
                         HttpAfReturn afReturn = CloudUtils.iCloudUtils.aflogin(account, password, url, new CallbackUtils.TimeoutReturn() {
                             @Override
                             public void Callback(IOException timeout) {
-                                StringUtils.HaoLog("afLogin 網路異常");
-                                new Handler(Looper.getMainLooper()).post(() -> {
-                                    CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                                });
+                                handleNetworkError("afLogin 網路異常");
                             }
                         });
                         if(afReturn.success){
@@ -411,10 +399,7 @@ public class UserControlCenter {
                     HttpReturn httpReturn = CloudUtils.iCloudUtils.reToken(new CallbackUtils.TimeoutReturn() {
                         @Override
                         public void Callback(IOException timeout) {
-                            StringUtils.HaoLog("reToken 網路異常");
-                            new Handler(Looper.getMainLooper()).post(() -> {
-                                CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                            });
+                            handleNetworkError("reToken 網路異常");
                         }
                     });
                     callback.Callback(httpReturn);
@@ -429,10 +414,7 @@ public class UserControlCenter {
         HttpReturn correct = CloudUtils.iCloudUtils.checkToken(new CallbackUtils.TimeoutReturn() {
             @Override
             public void Callback(IOException timeout) {
-                StringUtils.HaoLog("checkToken 網路異常");
-                new Handler(Looper.getMainLooper()).post(() -> {
-                    CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                });
+                handleNetworkError("checkToken 網路異常");
             }
         });
         callback.Callback(correct);
@@ -475,10 +457,7 @@ public class UserControlCenter {
             HttpReturn getUserInfo = CloudUtils.iCloudUtils.getUserInfo(new CallbackUtils.TimeoutReturn() {
                 @Override
                 public void Callback(IOException timeout) {
-                    StringUtils.HaoLog("getUserInfo 網路異常");
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                    });
+                    handleNetworkError("getUserInfo 網路異常");
                 }
             });
             String userInfoData = (String) getUserInfo.data;
@@ -630,10 +609,7 @@ public class UserControlCenter {
                     callback.Callback(CloudUtils.iCloudUtils.updatePusher(nowUserId, Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID), new CallbackUtils.TimeoutReturn() {
                         @Override
                         public void Callback(IOException timeout) {
-                            new Handler(Looper.getMainLooper()).post(() -> {
-                                StringUtils.HaoLog("updatePusher 網路異常");
-                                CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                            });
+                            handleNetworkError("updatePusher 網路異常");
                         }
                     }));
                 }).start();
@@ -665,10 +641,7 @@ public class UserControlCenter {
         HttpReturn httpReturn = CloudUtils.iCloudUtils.alreadyLoddedIn(loginType, userId, thirdPartyIdentifier, deviceId, new CallbackUtils.TimeoutReturn() {
             @Override
             public void Callback(IOException timeout) {
-                new Handler(Looper.getMainLooper()).post(() -> {
-                    StringUtils.HaoLog("alreadyLoddedIn 網路異常");
-                    CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                });
+                handleNetworkError("alreadyLoddedIn 網路異常");
             }
         });
         if(httpReturn.status == 200){
@@ -696,15 +669,46 @@ public class UserControlCenter {
         }
     }
 
+    public static void oldSetLogout(CallbackUtils.LogoutReturn callback) {
+        if (getUserMinInfo() != null) {
+            SharedPreferencesUtils.clearFirebasePusherErrorCode(AllData.activity);
+            if (getUserMinInfo().eimUserData.isLaleAppEim) {
+                laleAppEimLogout(callback);
+            } else {
+                laleAppWorkLogout(callback);
+            }
+            StringUtils.HaoLog("登出 結束");
+        }
+    }
+
+    private static void laleAppEimLogout(CallbackUtils.LogoutReturn callback){
+        StringUtils.HaoLog("登出 2");
+        new Thread(() -> {
+            StringUtils.HaoLog("登出 3");
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.userLogout(new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    handleNetworkError("userLogout 網路異常");
+                }
+            });
+            HttpReturn pusher = CloudUtils.iCloudUtils.closePusher(getUserMinInfo().eimUserData.af_login_id, Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID), new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    handleNetworkError("closePusher 網路異常");
+                }
+            });
+            deleteEntityFile();
+            clearUserData();
+            StringUtils.HaoLog("登出 4 推播登出? " ,pusher);
+            callback.Callback(httpReturn.status,true);
+        }).start();
+    }
+
     private static void laleAppEimLogout(boolean activelyLogout, CallbackUtils.LogoutReturn callback){
         StringUtils.HaoLog("登出 2");
         new Thread(() -> {
             StringUtils.HaoLog("登出 3");
-            //刪除實體檔案
-            DeleteCache.checkExternalSharing(AllData.context);
-            DeleteCache.checkSharefile(AllData.context);
-            DeleteCache.checkOpenfile(AllData.context);
-
+            deleteEntityFile();
             if(activelyLogout){
                 performLaleServerLogout(callback);
             } else {
@@ -746,6 +750,7 @@ public class UserControlCenter {
         if (MqttService.mqttControlCenter != null){
             MqttService.mqttControlCenter.DisConnect();
         }
+        userMin = null;
         initVariables();
         cleanUser();
         delectAll();
@@ -766,24 +771,23 @@ public class UserControlCenter {
                         HttpReturn httpReturn = CloudUtils.iCloudUtils.closeAfPusher(WFCI_URL, memId,userId, deviceToken, uuid, new CallbackUtils.TimeoutReturn() {
                             @Override
                             public void Callback(IOException timeout) {
-                                StringUtils.HaoLog("closeAfPusher 網路異常");
-                                new Handler(Looper.getMainLooper()).post(() -> {
-                                    CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                                });
+                                handleNetworkError("closeAfPusher 網路異常");
                             }
                         });
-                        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
-                        pref.edit().putString("nowUserId", "").apply();
-                        pref.edit().putString("UserIds", "{}").apply();
-                        userMin = null;
-                        cleanUser();
-                        delectAll();
+                        clearUserData();
                         StringUtils.HaoLog("登出 4-1 推播登出? " ,httpReturn);
                         callback.Callback(httpReturn.status,false);
                     }).start();
                 }
             }
         });
+    }
+
+    private static void deleteEntityFile(){
+        //刪除實體檔案
+        DeleteCache.checkExternalSharing(AllData.context);
+        DeleteCache.checkSharefile(AllData.context);
+        DeleteCache.checkOpenfile(AllData.context);
     }
 
     public static UserMin getUserMinInfo() {
@@ -799,10 +803,7 @@ public class UserControlCenter {
             HttpReturn httpReturn = CloudUtils.iCloudUtils.getUserInfo(userId, new CallbackUtils.TimeoutReturn() {
                 @Override
                 public void Callback(IOException timeout) {
-                    StringUtils.HaoLog("getUserInfo 網路異常");
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                    });
+                    handleNetworkError("getUserInfo 網路異常");
                 }
             });
             String data = (String) httpReturn.data;
@@ -833,10 +834,7 @@ public class UserControlCenter {
         HttpAfReturn httpReturn2 = CloudUtils.iCloudUtils.orgtreeuserimage(getUserMinInfo().eimUserData.af_url, new String[]{getUserMinInfo().eimUserData.lale_user_id}, new CallbackUtils.TimeoutReturn() {
             @Override
             public void Callback(IOException timeout) {
-                StringUtils.HaoLog("OrganizationTreeUserImages 網路異常");
-                new Handler(Looper.getMainLooper()).post(() -> {
-                    CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                });
+                handleNetworkError("OrganizationTreeUserImages 網路異常");
             }
         });
         StringUtils.HaoLog("getRoomMembers=", httpReturn2);
@@ -869,10 +867,7 @@ public class UserControlCenter {
             HttpReturn httpReturn = CloudUtils.iCloudUtils.googlePlatformVersion(new CallbackUtils.TimeoutReturn() {
                 @Override
                 public void Callback(IOException timeout) {
-                    StringUtils.HaoLog("googlePlatformVersion 網路異常");
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                    });
+                    handleNetworkError("googlePlatformVersion 網路異常");
                 }
             });
             Gson gson = new Gson();
@@ -903,10 +898,7 @@ public class UserControlCenter {
         Boolean appNeedUpdate = CloudUtils.iCloudUtils.checkAppNeedUpdate(new CallbackUtils.TimeoutReturn() {
             @Override
             public void Callback(IOException timeout) {
-                new Handler(Looper.getMainLooper()).post(() -> {
-                    StringUtils.HaoLog("checkAppNeedUpdate 網路異常");
-                    CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                });
+                handleNetworkError("checkAppNeedUpdate 網路異常");
             }
         });
         if (appNeedUpdate){
@@ -920,10 +912,7 @@ public class UserControlCenter {
             HttpAfReturn httpReturn= CloudUtils.iCloudUtils.renewToken(afDomain, new CallbackUtils.TimeoutReturn() {
                 @Override
                 public void Callback(IOException timeout) {
-                    StringUtils.HaoLog("renewToken 網路異常");
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                    });
+                    handleNetworkError("renewToken 網路異常");
                 }
             });
             afReturnHttp.Callback(httpReturn);
@@ -938,10 +927,7 @@ public class UserControlCenter {
             HttpAfReturn httpReturn= CloudUtils.iCloudUtils.renewTokenHaveDeviceId(afDomain, af_token, deviceID, new CallbackUtils.TimeoutReturn() {
                 @Override
                 public void Callback(IOException timeout) {
-                    StringUtils.HaoLog("renewTokenHaveDeviceId 網路異常");
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                    });
+                    handleNetworkError("renewTokenHaveDeviceId 網路異常");
                 }
             });
             afReturnHttp.Callback(httpReturn);
@@ -953,10 +939,7 @@ public class UserControlCenter {
             HttpReturn httpReturn = CloudUtils.iCloudUtils.getUserInfo(new CallbackUtils.TimeoutReturn() {
                 @Override
                 public void Callback(IOException timeout) {
-                    StringUtils.HaoLog("isErrorCode 網路異常");
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                    });
+                    handleNetworkError("isErrorCode 網路異常");
                 }
             });
             if(httpReturn.status == 200){
@@ -986,10 +969,7 @@ public class UserControlCenter {
                                 HttpReturn pusher = CloudUtils.iCloudUtils.setAfPusher(WFCI_URL, memId, userId, deviceToken, uuid, customerProperties, new CallbackUtils.TimeoutReturn() {
                                     @Override
                                     public void Callback(IOException timeout) {
-                                        StringUtils.HaoLog("setAfPusher 網路異常");
-                                        new Handler(Looper.getMainLooper()).post(() -> {
-                                            CommonUtils.showToast(activity,activity.getLayoutInflater(),"網路異常",false);
-                                        });
+                                        handleNetworkError("setAfPusher 網路異常");
                                     }
                                 });
                                 callback.Callback(pusher);
@@ -1047,10 +1027,7 @@ public class UserControlCenter {
                                     pusher = CloudUtils.iCloudUtils.setPusher(userId, deviceToken, uuid, customerProperties, new CallbackUtils.TimeoutReturn() {
                                         @Override
                                         public void Callback(IOException timeout) {
-                                            new Handler(Looper.getMainLooper()).post(() -> {
-                                                StringUtils.HaoLog("setPusher 網路異常");
-                                                CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                                            });
+                                            handleNetworkError("setPusher 網路異常");
                                         }
                                     });
                                 } else {
@@ -1060,10 +1037,7 @@ public class UserControlCenter {
                                     pusher = CloudUtils.iCloudUtils.updatePusher(userId, uuid, new CallbackUtils.TimeoutReturn() {
                                         @Override
                                         public void Callback(IOException timeout) {
-                                            new Handler(Looper.getMainLooper()).post(() -> {
-                                                StringUtils.HaoLog("updatePusher 網路異常");
-                                                CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                                            });
+                                            handleNetworkError("updatePusher 網路異常");
                                         }
                                     });
                                 }

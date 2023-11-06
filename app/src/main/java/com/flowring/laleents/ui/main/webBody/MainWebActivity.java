@@ -2051,7 +2051,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                 Logout(false);
             }
         } else {
-            Logout(false);
+            oldLogout();
         }
     }
 
@@ -2069,6 +2069,16 @@ public class MainWebActivity extends MainAppCompatActivity {
                 } else {
                     cancelNotification();
                 }
+            }
+        });
+    }
+
+    private void oldLogout() {
+        StringUtils.HaoLog("登出");
+        UserControlCenter.oldSetLogout(new CallbackUtils.LogoutReturn() {
+            @Override
+            public void Callback(int status, boolean isLaleAppEim) {
+                cancelNotification();
             }
         });
     }
