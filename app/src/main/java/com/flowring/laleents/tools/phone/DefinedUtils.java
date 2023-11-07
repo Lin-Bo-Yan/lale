@@ -200,7 +200,7 @@ public class DefinedUtils {
     public static final String ACCOUNT_PATTERN = "^[a-z0-9]+$";
     public static final String PASSWORD_RULE = "^[A-Za-z0-9.\\_]+$";
     public static final String RULE = "^[A-Za-z0-9.:!@#$%^&*()<>?/\\|{}\\[\\]~\\_\\-]+$";
-    public static final String URL_RULE = "^(https?://.*[^/])$";
+    public static final String URL_RULE = "^(https?://.*[^/\\s]+)$";
     public static final String NUMBER_PATTERN = "^[0-9]+$";
     public static final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[a-zA-Z0-9]{6,20}$";
     public static final String PASSWORD_CASE = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[a-zA-Z0-9]{0,}$";

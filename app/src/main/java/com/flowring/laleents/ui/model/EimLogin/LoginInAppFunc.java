@@ -49,7 +49,7 @@ public class LoginInAppFunc {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if(!editable.toString().isEmpty() && editable.toString() != null){
+                if(!editable.toString().isEmpty()){
                     urlIsValid(editable.toString());
                 } else {
                     urlIsValid("");
@@ -113,19 +113,18 @@ public class LoginInAppFunc {
         Matcher matcher = pattern.matcher(value);
         if(matcher.matches()){
             txt_warn_url.setVisibility(View.INVISIBLE);
-            urlValid = value;
         } else {
             if (value.length() > 0) {
                 txt_warn_url.setVisibility(View.VISIBLE);
             } else {
                 txt_warn_url.setVisibility(View.INVISIBLE);
             }
-            urlValid = value;
         }
+        urlValid = value;
     }
 
     private void accountIsValid(String value){
-        if(!value.isEmpty() && value != null){
+        if(!value.isEmpty()){
             Pattern pattern = Pattern.compile(DefinedUtils.RULE);
             Matcher matcher = pattern.matcher(value);
             if (matcher.matches()) {
@@ -140,7 +139,7 @@ public class LoginInAppFunc {
     }
 
     private void passwordIsValid(String value) {
-        if(!value.isEmpty() && value != null){
+        if(!value.isEmpty()){
             Pattern pattern = Pattern.compile(DefinedUtils.RULE);
             Matcher matcher = pattern.matcher(value);
             if (matcher.matches()) {

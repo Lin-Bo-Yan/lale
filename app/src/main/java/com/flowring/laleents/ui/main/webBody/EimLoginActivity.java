@@ -152,11 +152,10 @@ public class EimLoginActivity extends MainAppCompatActivity {
             }
             if (result != null && result.has("qrcode_info_url") && result.has("af_token")) {
                 String af_token = result.optString("af_token");
-                String qrcode_info_url = result.optString("qrcode_info_url");
                 String errMsg = result.optString("errMsg");
-                if (af_token.isEmpty() || qrcode_info_url.isEmpty()) {
+                if (!errMsg.isEmpty()) {
                     activity.cancelWait();
-                    DialogUtils.showDialogMessage(EimLoginActivity.this,"請輸入正確的帳號和密碼");
+                    DialogUtils.showDialogMessage(EimLoginActivity.this,errMsg);
                     return;
                 }
 
@@ -179,13 +178,6 @@ public class EimLoginActivity extends MainAppCompatActivity {
     public void connection_server_get_httpReturn(MainAppCompatActivity activity, JSONObject result){
         String af_token = result.optString("af_token");
         String qrcode_info_url = result.optString("qrcode_info_url");
-        String errMsg = result.optString("errMsg");
-
-        if (!errMsg.isEmpty()) {
-            activity.cancelWait();
-            DialogUtils.showDialogMessage(EimLoginActivity.this,errMsg);
-            return;
-        }
 
         HttpAfReturn httpReturn = CloudUtils.iCloudUtils.getEimQRcode(activity, af_token, qrcode_info_url, new CallbackUtils.TimeoutReturn() {
             @Override
@@ -266,13 +258,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
     public void connection_server_post_httpReturn(MainAppCompatActivity activity, JSONObject result,String uuid){
         String af_token = result.optString("af_token");
         String qrcode_info_url = result.optString("qrcode_info_url");
-        String errMsg = result.optString("errMsg");
 
-        if (!errMsg.isEmpty()) {
-            activity.cancelWait();
-            DialogUtils.showDialogMessage(EimLoginActivity.this,errMsg);
-            return;
-        }
         HttpAfReturn httpReturn = CloudUtils.iCloudUtils.getEimQRcodeNew(activity, af_token, qrcode_info_url, uuid, new CallbackUtils.TimeoutReturn() {
             @Override
             public void Callback(IOException timeout) {

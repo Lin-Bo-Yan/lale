@@ -135,6 +135,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -482,7 +483,6 @@ public class MainWebActivity extends MainAppCompatActivity {
             Uri result = (data == null) ? null : data.getData();
             if (result == null) {
                 if (data != null && data.getClipData() != null) {
-
                     ClipData clipData = data.getClipData();
                     if (clipData == null) {
                         mUploadMessage.onReceiveValue(null);
@@ -491,7 +491,6 @@ public class MainWebActivity extends MainAppCompatActivity {
                     }
                     //取得相簿選取的相片
                     uploadImages(clipData);
-                    return;
                 } else {
                     if (TextUtils.isEmpty(currentPhotoPath)) {
                         mUploadMessage.onReceiveValue(null);
@@ -504,8 +503,8 @@ public class MainWebActivity extends MainAppCompatActivity {
                         mUploadMessage.onReceiveValue(new Uri[]{uri});
                         mUploadMessage = null;
                     }
-                    return;
                 }
+                return;
             }
             if (mUploadMessage != null) {
                 mUploadMessage.onReceiveValue(new Uri[]{result});
@@ -694,7 +693,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         int deletedFiles = 0;
         if(dir != null && dir.isDirectory()){
             try {
-                for(File child : dir.listFiles()){
+                for(File child : Objects.requireNonNull(dir.listFiles())){
                     if(child.isDirectory()){
                         deletedFiles +=  clearCacheFolder(child, time);
                     }
@@ -704,7 +703,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                         }
                     }
                 }
-            }catch (Exception e){
+            }catch (NullPointerException e){
                 e.printStackTrace();
             }
         }

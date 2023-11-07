@@ -36,6 +36,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AllData {
 
@@ -51,6 +53,7 @@ public class AllData {
     private static String AnnounceServer = null;
 
     public static void setMainServer(String mainServer) {
+        mainServer = regularServer(mainServer);
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         pref.edit().putString("MainServer", mainServer).apply();
         MainServer = mainServer;
@@ -72,9 +75,19 @@ public class AllData {
     }
 
     public static void setAnnouncementServer(String announceServer) {
+        announceServer = regularServer(announceServer);
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         pref.edit().putString("AnnounceServer",announceServer).apply();
         AnnounceServer = announceServer;
+    }
+
+    private static String regularServer(String domain){
+        Pattern pattern = Pattern.compile(DefinedUtils.URL_RULE);
+        Matcher matcher = pattern.matcher(domain);
+        if (!matcher.matches()) {
+            domain = domain.replaceAll("[\\s]+", "").replaceAll("/$", "");
+        }
+        return domain;
     }
 
     public static String getAnnouncementServer() {
