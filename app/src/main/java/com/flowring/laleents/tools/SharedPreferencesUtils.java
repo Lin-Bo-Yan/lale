@@ -74,13 +74,4 @@ public class SharedPreferencesUtils {
         return errorCode;
     }
 
-    public static boolean clearFirebasePusherErrorCode(Activity activity){
-        pref = PreferenceManager.getDefaultSharedPreferences(activity);
-        pref.edit().remove("errorCode").apply();
-        int errorCode = pref.getInt("errorCode", -1);
-        if(errorCode == -1){
-            return true;
-        }
-        return false;
-    }
 }

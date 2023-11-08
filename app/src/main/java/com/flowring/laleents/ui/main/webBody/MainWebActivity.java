@@ -354,7 +354,6 @@ public class MainWebActivity extends MainAppCompatActivity {
     //防止伺服器公告Dialog重複顯示
     public static boolean smartServerDialogLock = true;
     private boolean shownLock = true;
-    private boolean isFirstCheck = true;
     private boolean urlsIsOk = true;
     private boolean init = false;
     private boolean cleanCache = false;
@@ -1185,7 +1184,6 @@ public class MainWebActivity extends MainAppCompatActivity {
                 StringUtils.HaoLog("還活著 onReceivedHttpError getUrl= " + request.getUrl());
                 StringUtils.HaoLog("還活著 onReceivedHttpError 請求的詳細資訊= " + errorResponse.getData());
                 StringUtils.HaoLog("還活著 onReceivedHttpError 錯誤狀態碼= " + errorResponse.getStatusCode());
-                Logout(false);
                 if(errorResponse.getStatusCode() == 502 || errorResponse.getStatusCode() == 503){
                     if(smartServerDialogLock){
                         announceServerDialog();
@@ -1205,9 +1203,9 @@ public class MainWebActivity extends MainAppCompatActivity {
                                     StringUtils.HaoLog("伺服器 400 或 401 " + userMin.eimUserData.isLaleAppEim + "/"+userMin.eimUserData.isLaleAppWork);
                                     if(userMin.eimUserData.isLaleAppEim){
                                         censorToken();
+                                    } else if(userMin.eimUserData.isLaleAppWork){
+                                        censorAfToken();
                                     }
-                                } else if(userMin.eimUserData.isLaleAppWork){
-                                    censorAfToken();
                                 }
                             }
                         }
@@ -2293,12 +2291,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     }
                 } else if(httpReturn.status == 200){
                     StringUtils.HaoLog("censorToken= 2 "+httpReturn.msg + " "+Thread.currentThread().getName());
-                    // 驗證 token 是否正確
-                    if(isFirstCheck){
-                        checkToken();
-                    } else {
-                        isFirstCheck = true;
-                    }
+                    checkToken();
                 }
             }
         });
@@ -2308,22 +2301,22 @@ public class MainWebActivity extends MainAppCompatActivity {
         UserControlCenter.checkToken(new CallbackUtils.ReturnHttp() {
             @Override
             public void Callback(HttpReturn httpReturn) {
+                StringUtils.HaoLog("censorToken= 3 " + httpReturn.msg);
                 if(httpReturn.status != 400){
                     //token有效
-                    StringUtils.HaoLog("censorToken= 3 token有效 " + Thread.currentThread().getName());
+                    StringUtils.HaoLog("censorToken= 4 token有效 " + Thread.currentThread().getName());
                 } else {
                     String msg = httpReturn.msg;
                     switch (msg){
                         case "token 不存在":
                             //登出
-                            StringUtils.HaoLog("censorToken= 4 token 不存在 " + Thread.currentThread().getName());
+                            StringUtils.HaoLog("censorToken= 5 token 不存在 " + Thread.currentThread().getName());
                             SharedPreferencesUtils.isRepeatDevice(true);
                             Logout(false);
                             break;
                         case "token 逾時":
                             //更新token 要延遲
                             StringUtils.HaoLog("censorToken= 5 token 逾時 " + Thread.currentThread().getName());
-                            isFirstCheck = false;
                             censorToken();
                             break;
                         case "token 資料錯誤":

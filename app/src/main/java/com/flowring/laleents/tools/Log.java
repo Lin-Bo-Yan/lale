@@ -13,7 +13,9 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Log {
     private static final String NEW_LINE = System.getProperty("line.separator");
@@ -101,32 +103,43 @@ public class Log {
     }
 
     public static void saveLog(Activity activity) {
-        activity.runOnUiThread(()->{
-            DialogUtils.showDialogMessage(activity, "將log","存到down" ,new CallbackUtils.noReturn() {
-                        @Override
-                        public void Callback() {
-
-                            File downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-
-
-                            File targetFile = new File(downloadDir, "log.log");
-                            try {
-                                FileInputStream fis = new FileInputStream( com.flowring.laleents.tools.Log.mLogFile);
-                                FileOutputStream fos = new FileOutputStream(targetFile);
-                                byte[] buffer = new byte[1024];
-                                int read;
-                                while ((read = fis.read(buffer)) != -1) {
-                                    fos.write(buffer, 0, read);
-                                }
-                                fis.close();
-                                fos.flush();
-                                fos.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
+        List<String> buttons = new ArrayList<>();
+        buttons.add("ok");
+        List<CallbackUtils.noReturn> callbacks = new ArrayList<>();
+        DialogUtils.showDialog(activity,"將log","存到downloadDir",buttons,callbacks);
+        for (int i = 0; i < buttons.size(); i++) {
+            final int buttonIndex = i;
+            CallbackUtils.noReturn callback = new CallbackUtils.noReturn() {
+                @Override
+                public void Callback() {
+                    String button = buttons.get(buttonIndex);
+                    switch (button){
+                        case "ok":
+                            downloadDir();
+                            break;
                     }
-            );
-        });
+                }
+            };
+            callbacks.add(callback);
+        }
+    }
+
+    private static void downloadDir(){
+        File downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File targetFile = new File(downloadDir, "log.log");
+        try {
+            FileInputStream fis = new FileInputStream( com.flowring.laleents.tools.Log.mLogFile);
+            FileOutputStream fos = new FileOutputStream(targetFile);
+            byte[] buffer = new byte[1024];
+            int read;
+            while ((read = fis.read(buffer)) != -1) {
+                fos.write(buffer, 0, read);
+            }
+            fis.close();
+            fos.flush();
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

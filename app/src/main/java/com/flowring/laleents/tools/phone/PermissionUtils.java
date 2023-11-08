@@ -157,7 +157,7 @@ public class PermissionUtils {
         if (Settings.canDrawOverlays(activity)) {
             return null;
         } else {
-            //若没有权限，提示获取.
+            //若沒有權限，提示取得
 
             return DialogUtils.showDialogMessage(activity, "請求懸浮視窗權限", "視訊/通話接通訊息需要此權限", new CallbackUtils.noReturn() {
                 @Override

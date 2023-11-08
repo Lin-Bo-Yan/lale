@@ -659,7 +659,6 @@ public class UserControlCenter {
 
     public static void setLogout(boolean check, CallbackUtils.LogoutReturn callback) {
         if (getUserMinInfo() != null) {
-            SharedPreferencesUtils.clearFirebasePusherErrorCode(AllData.activity);
             if (getUserMinInfo().eimUserData.isLaleAppEim) {
                 laleAppEimLogout(check,callback);
             } else {
@@ -671,7 +670,6 @@ public class UserControlCenter {
 
     public static void oldSetLogout(CallbackUtils.LogoutReturn callback) {
         if (getUserMinInfo() != null) {
-            SharedPreferencesUtils.clearFirebasePusherErrorCode(AllData.activity);
             if (getUserMinInfo().eimUserData.isLaleAppEim) {
                 laleAppEimLogout(callback);
             } else {
