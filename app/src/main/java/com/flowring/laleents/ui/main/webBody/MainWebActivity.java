@@ -2028,7 +2028,7 @@ public class MainWebActivity extends MainAppCompatActivity {
     }
 
     private void check(JSONObject data){
-        if(!data.isNull("check")){
+        if(data != null){
             boolean check = Boolean.parseBoolean(data.optString("check"));
             if(check){
                 Logout(true);
