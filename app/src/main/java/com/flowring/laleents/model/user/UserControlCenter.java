@@ -8,7 +8,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-
+import static com.flowring.laleents.ui.main.webBody.MainWebActivity.isThreadStarted;
+import static com.flowring.laleents.ui.main.webBody.MainWebActivity.isFirstDisplay;
 import com.flowring.laleents.model.AFtoken;
 import com.flowring.laleents.model.Http2Return;
 import com.flowring.laleents.model.HttpAfReturn;
@@ -486,7 +487,7 @@ public class UserControlCenter {
                 String info = new Gson().toJson(httpReturn.data);
                 Gson gson = new Gson();
                 WatermarkDefault watermarkDefault = gson.fromJson(info,WatermarkDefault.class);
-            watermark.Callback(watermarkDefault);
+                watermark.Callback(watermarkDefault);
             }
         }).start();
     }
@@ -1272,6 +1273,8 @@ public class UserControlCenter {
 
     private static void initVariables(){
         smartServerDialogLock = false;
+        isThreadStarted = false;
+        isFirstDisplay = true;
         LoginInAppFunc.accountValid = null;
         LoginInAppFunc.passwordValid = null;
     }

@@ -253,6 +253,24 @@ public class DialogUtils {
         return alertDialog;
     }
 
+    // 空白處無法關閉
+    public static AlertDialog showDialogMessageCannotClosed(Context context, String title, String text, CallbackUtils.noReturn callback) {
+        AlertDialog alertDialog = new AlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage(text)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        callback.Callback();
+                    }
+                })
+                .setCancelable(false)
+                .create();
+        alertDialog.show();
+        return alertDialog;
+    }
+
     // 按鈕可調，按鈕有後續動作，按空白處不可關閉Dialog
     public static void showDialog(Context context, String title, List<String> buttons, List<CallbackUtils.noReturn> callbacks) {
         runOnUiThread(() -> {

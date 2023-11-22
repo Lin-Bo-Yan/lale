@@ -51,9 +51,7 @@ public class PermissionUtils {
     }
 
     public static void requestPermission(Activity activity, @NonNull String permission, String requestText) {
-
         requestPermission(activity, new String[]{permission}, null, requestText);
-
     }
 
     public static void requestPermission(Activity activity, @NonNull String[] permission, Integer newRequestCode, String requestText) {
@@ -65,13 +63,14 @@ public class PermissionUtils {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        if (newRequestCode != null)
+                        if(newRequestCode != null){
                             activity.requestPermissions(permission, newRequestCode);
-                        else
+                        }else{
                             activity.requestPermissions(permission, requestCode++);
+                        }
                     }
-                }).setCancelable(true)
-
+                })
+                .setCancelable(true)
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -79,18 +78,14 @@ public class PermissionUtils {
                     }
                 }).setCancelable(true)
                 .create().show();
-
-
     }
 
     public static void requestPermission(Fragment fragment, @NonNull String permission, Integer newRequestCode, String requestText) {
         requestPermission(fragment, new String[]{permission}, newRequestCode, requestText);
-
     }
 
     public static void requestPermission(Fragment fragment, @NonNull String permission, String requestText) {
         requestPermission(fragment, new String[]{permission}, null, requestText);
-
     }
 
     public static void requestPermission(Fragment fragment, @NonNull String[] permission, Integer newRequestCode, String requestText) {
@@ -101,13 +96,14 @@ public class PermissionUtils {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        if (newRequestCode != null)
+                        if (newRequestCode != null){
                             fragment.requestPermissions(permission, newRequestCode);
-                        else
+                        }else{
                             fragment.requestPermissions(permission, requestCode++);
+                        }
                     }
-                }).setCancelable(true)
-
+                })
+                .setCancelable(true)
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -115,8 +111,6 @@ public class PermissionUtils {
                     }
                 }).setCancelable(true)
                 .create().show();
-
-
     }
 
     public static boolean checkPermission(Context context, @NonNull String permission) {

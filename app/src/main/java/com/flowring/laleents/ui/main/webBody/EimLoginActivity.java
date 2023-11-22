@@ -366,6 +366,11 @@ public class EimLoginActivity extends MainAppCompatActivity {
                         DialogUtils.showDialogMessage(EimLoginActivity.this,"管理員以設定此裝置不允許登入","請更換其他裝置登入");
                     });
                     break;
+                case "LLU-0002:用戶帳號已停用":
+                    runOnUiThread(()->{
+                        DialogUtils.showDialogMessage(EimLoginActivity.this,"管理員以設定此帳號不允許登入","");
+                    });
+                    break;
             }
             activity.cancelWait();
         }

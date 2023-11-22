@@ -169,21 +169,17 @@ public class MainWebActivity extends MainAppCompatActivity {
                 StringUtils.HaoLog("詢問使用重啟");
                 PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.RECEIVE_BOOT_COMPLETED, "開機後重新啟動背景服務");
             }
-            if (PermissionUtils.checkPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) || (Build.VERSION.SDK_INT > Build.VERSION_CODES.R)) {
-                StringUtils.HaoLog("可以使用讀寫");
-            } else {
-                PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE, "該功能需要下載權限");
+
+            if((Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)){
+                if (PermissionUtils.checkPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    StringUtils.HaoLog("可以使用讀寫");
+                } else {
+                    PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE, "該功能需要下載權限");
+                }
             }
         });
-
     }
 
-    private boolean checkContactaPermission() {
-        boolean check = PermissionUtils.checkPermission(MainWebActivity.this,Manifest.permission.READ_CONTACTS);
-        return check;
-        //        boolean check = PermissionChecker.checkSelfPermission(MainWebActivity.this, Manifest.permission.READ_CONTACTS)
-        //                == PermissionChecker.PERMISSION_GRANTED;
-    }
 /*
 * 登入 - token 傳遞, 保持 token 更新避免 mqtt 斷線及 api auth 失效
 呼叫token更新-ok
@@ -349,7 +345,10 @@ public class MainWebActivity extends MainAppCompatActivity {
 
     //防止伺服器公告Dialog重複顯示
     public static boolean smartServerDialogLock = true;
-    private static boolean isThreadStarted = false;
+    //防止執行續重複建立
+    public static boolean isThreadStarted = false;
+    //防止裝置管理訊息框重複顯示
+    public static boolean isFirstDisplay = true;
     private boolean shownLock = true;
     private boolean urlsIsOk = true;
     private boolean init = false;
@@ -1208,9 +1207,15 @@ public class MainWebActivity extends MainAppCompatActivity {
                                 if (userMin != null && !userMin.userId.isEmpty()) {
                                     StringUtils.HaoLog("伺服器 400 或 401 " + userMin.eimUserData.isLaleAppEim + "/"+userMin.eimUserData.isLaleAppWork);
                                     if(userMin.eimUserData.isLaleAppEim){
-                                        censorToken();
+                                        if(!isThreadStarted){
+                                            censorToken();
+                                            isThreadStarted = true;
+                                        }
                                     } else if(userMin.eimUserData.isLaleAppWork){
-                                        censorAfToken();
+                                        if(!isThreadStarted){
+                                            censorAfToken();
+                                            isThreadStarted = true;
+                                        }
                                     }
                                 }
                             }
@@ -2278,19 +2283,70 @@ public class MainWebActivity extends MainAppCompatActivity {
         UserControlCenter.tokenRefresh(new CallbackUtils.ReturnHttp() {
             @Override
             public void Callback(HttpReturn httpReturn) {
-                StringUtils.HaoLog("censorToken= 1 "+httpReturn.msg + " "+Thread.currentThread().getName());
-                if(httpReturn.status == 500){
-                    // token 和 refresh token 都過期 -> 登出
-                    if ("refresh token 逾時".equals(httpReturn.msg)) {
-                        StringUtils.HaoLog("App過久未使用您的帳號已被登出");
-                        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
-                        pref.edit().putBoolean("isSignOut", true).apply();
-                        Logout(false);
-                    } else if("token 無效".equals(httpReturn.msg)){
-                        StringUtils.HaoLog("censorToken= 6 "+httpReturn.msg + " "+Thread.currentThread().getName());
-                        Logout(false);
+                StringUtils.HaoLog("censorToken= 1 " + httpReturn.msg + " "+Thread.currentThread().getName());
+                if(httpReturn.status != 200){
+                    switch (httpReturn.msg){
+                        // token 和 refresh token 都過期 -> 登出
+                        case "refresh token 逾時":
+                            StringUtils.HaoLog("App過久未使用您的帳號已被登出");
+                            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
+                            pref.edit().putBoolean("isSignOut", true).apply();
+                            Logout(false);
+                            break;
+                        case "LLUD-0003:FORCED_LOGOUT":
+                            if(isFirstDisplay){
+                                runOnUiThread(()->{
+                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "此裝置已被管理員強制登出", "若需繼續使用請在次登入", new CallbackUtils.noReturn() {
+                                        @Override
+                                        public void Callback() {
+                                            Logout(false);
+                                        }
+                                    });
+                                });
+                            }
+                            isFirstDisplay = false;
+                            break;
+                        case "LLUD-0003:CHANGE_DEVICE":
+                            if(isFirstDisplay){
+                                runOnUiThread(()->{
+                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, getString(R.string.single_device_sign_out_title),getString(R.string.single_device_sign_out_text), new CallbackUtils.noReturn() {
+                                        @Override
+                                        public void Callback() {
+                                            Logout(false);
+                                        }
+                                    });
+                                });
+                            }
+                            isFirstDisplay = false;
+                            break;
+                        case "LLUD-0003:LOGIN_FORBIDDEN":
+                            if(isFirstDisplay){
+                                runOnUiThread(()->{
+                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "管理員以設定此裝置不允許登入", "請更換其他裝置登入", new CallbackUtils.noReturn() {
+                                        @Override
+                                        public void Callback() {
+                                            Logout(false);
+                                        }
+                                    });
+                                });
+                            }
+                            isFirstDisplay = false;
+                            break;
+                        case "LLU-0002:用戶帳號已停用":
+                            if(isFirstDisplay){
+                                runOnUiThread(()->{
+                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "管理員以設定此帳號不允許登入", "", new CallbackUtils.noReturn() {
+                                        @Override
+                                        public void Callback() {
+                                            Logout(false);
+                                        }
+                                    });
+                                });
+                            }
+                            isFirstDisplay = false;
+                            break;
                     }
-                } else if(httpReturn.status == 200){
+                } else {
                     StringUtils.HaoLog("censorToken= 2 "+httpReturn.msg + " "+Thread.currentThread().getName());
                     checkToken();
                 }
@@ -2324,38 +2380,66 @@ public class MainWebActivity extends MainAppCompatActivity {
                             StringUtils.HaoLog("censorToken= 5 token 資料錯誤 " + Thread.currentThread().getName());
                             Logout(false);
                             break;
+                        case "LLUD-0003:LOGOUT":
+                        case "LLUD-0003:DELETED":
+                            StringUtils.HaoLog("censorToken= 5 LOGOUT");
+                            Logout(false);
+                            break;
                         case "LLUD-0003:FORCED_LOGOUT":
                             StringUtils.HaoLog("censorToken= 5 " + " 強制登出 ");
-                            runOnUiThread(()->{
-                                DialogUtils.showDialogMessage(MainWebActivity.this, "此裝置已被管理員強制登出", "若需繼續使用請在次登入", new CallbackUtils.noReturn() {
-                                    @Override
-                                    public void Callback() {
-                                        Logout(false);
-                                    }
+                            if(isFirstDisplay){
+                                runOnUiThread(()->{
+                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "此裝置已被管理員強制登出", "若需繼續使用請在次登入", new CallbackUtils.noReturn() {
+                                        @Override
+                                        public void Callback() {
+                                            Logout(false);
+                                        }
+                                    });
                                 });
-                            });
+                            }
+                            isFirstDisplay = false;
                             break;
                         case "LLUD-0003:CHANGE_DEVICE":
                             StringUtils.HaoLog("censorToken= 5 " + " 更換設備");
-                            runOnUiThread(()->{
-                                DialogUtils.showDialogMessage(MainWebActivity.this, getString(R.string.single_device_sign_out_title),getString(R.string.single_device_sign_out_text), new CallbackUtils.noReturn() {
-                                    @Override
-                                    public void Callback() {
-                                        Logout(false);
-                                    }
+                            if(isFirstDisplay){
+                                runOnUiThread(()->{
+                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, getString(R.string.single_device_sign_out_title),getString(R.string.single_device_sign_out_text), new CallbackUtils.noReturn() {
+                                        @Override
+                                        public void Callback() {
+                                            Logout(false);
+                                        }
+                                    });
                                 });
-                            });
+                            }
+                            isFirstDisplay = false;
                             break;
                         case "LLUD-0003:LOGIN_FORBIDDEN":
-                            StringUtils.HaoLog("censorToken= 5 " + " 不允許登入");
-                            runOnUiThread(()->{
-                                DialogUtils.showDialogMessage(MainWebActivity.this, "管理員以設定此裝置不允許登入", "請更換其他裝置登入", new CallbackUtils.noReturn() {
-                                    @Override
-                                    public void Callback() {
-                                        Logout(false);
-                                    }
+                            StringUtils.HaoLog("censorToken= 5 " + " 裝置不允許登入");
+                            if(isFirstDisplay){
+                                runOnUiThread(()->{
+                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "管理員以設定此裝置不允許登入", "請更換其他裝置登入", new CallbackUtils.noReturn() {
+                                        @Override
+                                        public void Callback() {
+                                            Logout(false);
+                                        }
+                                    });
                                 });
-                            });
+                            }
+                            isFirstDisplay = false;
+                            break;
+                        case "LLU-0002:用戶帳號已停用":
+                            StringUtils.HaoLog("censorToken= 5 " + " 帳號不允許登入");
+                            if(isFirstDisplay){
+                                runOnUiThread(()->{
+                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "管理員以設定此帳號不允許登入", "", new CallbackUtils.noReturn() {
+                                        @Override
+                                        public void Callback() {
+                                            Logout(false);
+                                        }
+                                    });
+                                });
+                            }
+                            isFirstDisplay = false;
                             break;
                     }
                 }
@@ -3360,12 +3444,10 @@ public class MainWebActivity extends MainAppCompatActivity {
                                             @Override
                                             public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                                                 mBitmap = resource;
-                                                if (mBitmap != null) {
-                                                    //圖片資訊不為空時才保存
-                                                    String fileName = FormatUtils.getDateFormat(System.currentTimeMillis(), "yyyyMMddHHmmss");
-                                                    Uri uri = FileUtils.saveBitmapToGallery(MainWebActivity.this, fileName, mBitmap);
-                                                    emitter.onNext(uri != null);
-                                                }
+                                                //圖片資訊不為空時才保存
+                                                String fileName = FormatUtils.getDateFormat(System.currentTimeMillis(), "yyyyMMddHHmmss");
+                                                Uri uri = FileUtils.saveBitmapToGallery(MainWebActivity.this, fileName, mBitmap);
+                                                emitter.onNext(uri != null);
                                             }
 
                                             @Override
