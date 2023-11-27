@@ -2288,10 +2288,13 @@ public class MainWebActivity extends MainAppCompatActivity {
                     switch (httpReturn.msg){
                         // token 和 refresh token 都過期 -> 登出
                         case "refresh token 逾時":
-                            StringUtils.HaoLog("App過久未使用您的帳號已被登出");
-                            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
-                            pref.edit().putBoolean("isSignOut", true).apply();
-                            Logout(false);
+                            if(isFirstDisplay){
+                                StringUtils.HaoLog("App過久未使用您的帳號已被登出");
+                                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
+                                pref.edit().putBoolean("isSignOut", true).apply();
+                                Logout(false);
+                            }
+                            isFirstDisplay = false;
                             break;
                         case "LLUD-0003:FORCED_LOGOUT":
                             if(isFirstDisplay){
@@ -2345,6 +2348,12 @@ public class MainWebActivity extends MainAppCompatActivity {
                             }
                             isFirstDisplay = false;
                             break;
+                        default:
+                            if(isFirstDisplay){
+                                Logout(false);
+                            }
+                            isFirstDisplay = false;
+                            break;
                     }
                 } else {
                     StringUtils.HaoLog("censorToken= 2 "+httpReturn.msg + " "+Thread.currentThread().getName());
@@ -2378,11 +2387,6 @@ public class MainWebActivity extends MainAppCompatActivity {
                             break;
                         case "token 資料錯誤":
                             StringUtils.HaoLog("censorToken= 5 token 資料錯誤 " + Thread.currentThread().getName());
-                            Logout(false);
-                            break;
-                        case "LLUD-0003:LOGOUT":
-                        case "LLUD-0003:DELETED":
-                            StringUtils.HaoLog("censorToken= 5 LOGOUT");
                             Logout(false);
                             break;
                         case "LLUD-0003:FORCED_LOGOUT":
@@ -2440,6 +2444,10 @@ public class MainWebActivity extends MainAppCompatActivity {
                                 });
                             }
                             isFirstDisplay = false;
+                            break;
+                        default:
+                            StringUtils.HaoLog("censorToken= 5 default LOGOUT");
+                            Logout(false);
                             break;
                     }
                 }
