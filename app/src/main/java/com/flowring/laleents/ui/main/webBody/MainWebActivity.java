@@ -975,7 +975,7 @@ public class MainWebActivity extends MainAppCompatActivity {
     }
 
     void initOnMainWebPageFinished() {
-        StringUtils.HaoLog("initOnMainWebPageFinished= tob 1"+init);
+        StringUtils.HaoLog("initOnMainWebPageFinished= tob 1" + init);
         if (!init) {
             init = true;
             if (getIntent().getAction() != null && getIntent().getAction().equals(Intent.ACTION_SEND)) {
@@ -1111,11 +1111,11 @@ public class MainWebActivity extends MainAppCompatActivity {
                 try {
                     JSONObject j = new JSONObject().put("type", "gotoWeb").put("data", new JSONObject().put("url",intent.getStringExtra("isHomeMICRO_APPurl")).put("title",intent.getStringExtra("isHomeMICRO_APPName")));
                     sendToWeb(j.toString());
-                   intent.removeExtra("isHome");
+                    intent.removeExtra("isHome");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-            } else if (intent.getBooleanExtra("bFromPhone", false) &&intent.getStringExtra("Notification") != null) {
+            } else if (intent.getBooleanExtra("bFromPhone", false) && intent.getStringExtra("Notification") != null) {
                 try {
                     sendToWeb("Notification", new JSONObject(intent.getStringExtra("Notification")));
                     intent.removeExtra("bFromPhone");
@@ -1219,10 +1219,8 @@ public class MainWebActivity extends MainAppCompatActivity {
             @Override
             public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
                 StringUtils.HaoLog("還活著 onReceivedSslError error=" + error.toString());
-
                 StringUtils.HaoLog("還活著 SSL憑證過期" + error);
                 //handler.proceed();
-
                 super.onReceivedSslError(view, handler, error);
             }
         });
@@ -1324,7 +1322,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                         break;
                     case "*/*":
                         String str = DefinedUtils.URL.substring(getMainWebURL(true).length());
-                        Boolean isRoom = str.matches(DefinedUtils.CHATROOM);
+                        boolean isRoom = str.matches(DefinedUtils.CHATROOM);
                         if(isRoom){
                             StringUtils.HaoLog("onShowFileChooser "+"直接開檔案");
                             chooseFileOnlyForRoom();
@@ -1976,7 +1974,7 @@ public class MainWebActivity extends MainAppCompatActivity {
            checkPermission();
            Login();
         } else {
-            StringUtils.HaoLog("login 沒開始"+userMin+" "+userMin.userId);
+            StringUtils.HaoLog("login 沒開始" + userMin);
         }
         initOnMainWebPageFinished();
     }

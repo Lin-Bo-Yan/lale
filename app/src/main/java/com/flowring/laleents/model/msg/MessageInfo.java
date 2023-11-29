@@ -618,27 +618,27 @@ public class MessageInfo implements Serializable, IMessage2 {
     public static String getSubType(int subType,String body) {
         switch (subType){
             case 1:
-                return "help; 或 指令;指令回覆";
+                return AllData.context.getString(R.string.instruction);
             case 2:
-                return "流程列表;指令回覆";
+                return AllData.context.getString(R.string.process_list);
             case 3:
-                return "流程列表;關鍵字指令回覆";
+                return AllData.context.getString(R.string.process_list_keywords);
             case 4:
-                return "查看待辦;指令回覆";
+                return AllData.context.getString(R.string.view_todo);
             case 5:
-                return "查看待辦;筆數指令回覆";
+                return AllData.context.getString(R.string.view_todo_number_of_pens);
             case 6:
-                return "查看行程;指令回覆";
+                return AllData.context.getString(R.string.view_itinerary);
             case 7:
-                return "查看公告;指令回覆";
+                return AllData.context.getString(R.string.view_announcement);
             case 8:
-                return "查看公告;筆數指令回覆";
+                return AllData.context.getString(R.string.view_announcement_number_of_pens);
             case 9:
-                return "查看會議;指令回覆";
+                return AllData.context.getString(R.string.view_meeting);
             case 10:
-                return "查看會議;筆數指令回覆";
+                return AllData.context.getString(R.string.view_meeting_number_of_pens);
             case 11:
-                return "查看專案;指令回覆";
+                return AllData.context.getString(R.string.view_project);
             default:
                 return body;
         }

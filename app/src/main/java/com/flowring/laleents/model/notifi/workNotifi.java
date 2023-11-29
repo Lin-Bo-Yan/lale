@@ -1,8 +1,13 @@
 package com.flowring.laleents.model.notifi;
 
 public class workNotifi {
-    // 欄位跟 "AF 寄送訊息到 EIM 或 Lale App " 一樣
+
+    //共用變數
     public String msgType;
+    public String title = "系統管理員";
+    public String content;
+
+    // 欄位跟 "AF 寄送訊息到 EIM 或 Lale App " 一樣
     public String memID;
     public String userName;
     public String exeMemID;
@@ -26,13 +31,18 @@ public class workNotifi {
     // 會議 新增、修改、刪除、會議開始通知
     // oldTitle為後端給的push開頭，因設計需要故將原始開頭保留並改成oldTitle
     public String oldTitle;
-    public String title = "系統管理員";
-    public String content;
     public String button_link;
     public String img_url;
     public MeetInfo meetInfo;
     public String type;
 
-    // 辦公秘書 msgType變數共用
+    // 辦公秘書
     public int subType = 0;
+
+    // 公佈欄通知
+    public String boardOwner;
+    public String boardOwnerAavatarUrl;
+    public String buttonLink;
+    public String messageId;
+    public String startTime;
 }

@@ -129,6 +129,18 @@
     <string name="shared_message">A shared message</string>
     <string name="retracted_message">Message retracted</string>
     <string name="link_format">[Link]%s</string>
+    <string name="office_secretary">office secretary</string>
+    <string name="instruction">help; or command; command reply</string>
+    <string name="process_list">process list; command reply</string>
+    <string name="process_list_keywords">process list; keyword command reply</string>
+    <string name="view_todo">view to-do; command reply</string>
+    <string name="view_todo_number_of_pens">view to-do; number of orders to reply to</string>
+    <string name="view_itinerary">view itinerary; command reply</string>
+    <string name="view_announcement">view announcements; command replies</string>
+    <string name="view_announcement_number_of_pens">view announcements; reply to order number</string>
+    <string name="view_meeting">view meetings; command replies</string>
+    <string name="view_meeting_number_of_pens">view conference; reply to order number</string>
+    <string name="view_project">view Project;Command Reply</string>
 
     <!-- mediapicker\string.xml -->
     <string name="all_dir_name">all dir</string>

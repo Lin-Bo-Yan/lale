@@ -94,7 +94,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     //判斷是否在前景
                     boolean isAppForeground = CommonUtils.foregrounded();
                     if (messageInfo.is_lale_call_request()) {
-                            StringUtils.HaoLog("群組視訊/語音通話");
+                        StringUtils.HaoLog("群組視訊/語音通話");
                     } else if (messageInfo.is_lale_call_response()) {
                         if (messageInfo.getCallRequest().result.equals("unavailable")) {
                             sendNotification(messageInfo, remoteMessage.getData().get("body"));
@@ -219,6 +219,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     title = workNotifi.frontUserName;
                     body = workNotifi.taskName + ":" + workNotifi.keyword + "\n您有一份工作需盡速處理";
                 } else if (workNotifi.msgType != null && workNotifi.msgType.equals("AF_MEETING")) {
+                    title = workNotifi.title;
+                    body = workNotifi.content;
+                } else if (workNotifi.msgType != null && workNotifi.msgType.equals("AF_BBSMESSAGE")) {
                     title = workNotifi.title;
                     body = workNotifi.content;
                 }
@@ -363,8 +366,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 body = workNotifi.content;
             }
             if (workNotifi.msgType.contains("chatbotAf")) {
-                title = data.roomName;
+                title = AllData.context.getString(R.string.office_secretary);
                 body = MessageInfo.getSubType(workNotifi.subType,body);
+            }
+            if (workNotifi.msgType.contains("AF_BBSMESSAGE")) {
+                title = workNotifi.title;
+                body = workNotifi.content;
             }
         }
 

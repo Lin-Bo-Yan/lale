@@ -128,6 +128,18 @@
     <string name="shared_message">一則分享訊息</string>
     <string name="retracted_message">已收回訊息</string>
     <string name="link_format">[連結]%s</string>
+    <string name="office_secretary">辦公秘書</string>
+    <string name="instruction">help; 或 指令;指令回覆</string>
+    <string name="process_list">流程列表;指令回覆</string>
+    <string name="process_list_keywords">流程列表;關鍵字指令回覆</string>
+    <string name="view_todo">查看待辦;指令回覆</string>
+    <string name="view_todo_number_of_pens">查看待辦;筆數指令回覆</string>
+    <string name="view_itinerary">查看行程;指令回覆</string>
+    <string name="view_announcement">查看公告;指令回覆</string>
+    <string name="view_announcement_number_of_pens">查看公告;筆數指令回覆</string>
+    <string name="view_meeting">查看會議;指令回覆</string>
+    <string name="view_meeting_number_of_pens">查看會議;筆數指令回覆</string>
+    <string name="view_project">查看專案;指令回覆</string>
 
     <!-- mediapicker\string.xml -->
     <string name="all_dir_name">全部</string>
