@@ -128,7 +128,6 @@
     <string name="shared_message">一則分享訊息</string>
     <string name="retracted_message">已收回訊息</string>
     <string name="link_format">[連結]%s</string>
-    <string name="office_secretary">辦公秘書</string>
     <string name="instruction">help; 或 指令;指令回覆</string>
     <string name="process_list">流程列表;指令回覆</string>
     <string name="process_list_keywords">流程列表;關鍵字指令回覆</string>

@@ -266,7 +266,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getAction();
-                StringUtils.HaoLog("BroadcastReceiver=" + action + " " + intent.getStringExtra("data"));
+                StringUtils.HaoLog("BroadcastReceiver= " + action + " " + intent.getStringExtra("data"));
                 switch (action){
                     case LocalBroadcastControlCenter.ACTION_NOTIFI_AF:
                         String data = intent.getStringExtra("data");
@@ -1116,6 +1116,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     e.printStackTrace();
                 }
             } else if (intent.getBooleanExtra("bFromPhone", false) && intent.getStringExtra("Notification") != null) {
+                //當應用程式存在於背景時，點下推播會進來
                 try {
                     sendToWeb("Notification", new JSONObject(intent.getStringExtra("Notification")));
                     intent.removeExtra("bFromPhone");

@@ -366,7 +366,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 body = workNotifi.content;
             }
             if (workNotifi.msgType.contains("chatbotAf")) {
-                title = AllData.context.getString(R.string.office_secretary);
+                title = data.roomName;
                 body = MessageInfo.getSubType(workNotifi.subType,body);
             }
             if (workNotifi.msgType.contains("AF_BBSMESSAGE")) {
