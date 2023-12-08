@@ -363,12 +363,12 @@ public class EimLoginActivity extends MainAppCompatActivity {
             switch (httpReturn.msg){
                 case "LLUD-0002:人員裝置禁止登入":
                     runOnUiThread(()->{
-                        DialogUtils.showDialogMessage(EimLoginActivity.this,"管理員以設定此裝置不允許登入","請更換其他裝置登入");
+                        DialogUtils.showDialogMessage(EimLoginActivity.this,"管理員已設定此裝置不允許登入","請更換其他裝置登入");
                     });
                     break;
                 case "LLU-0002:用戶帳號已停用":
                     runOnUiThread(()->{
-                        DialogUtils.showDialogMessage(EimLoginActivity.this,"管理員以設定此帳號不允許登入","");
+                        DialogUtils.showDialogMessage(EimLoginActivity.this,"管理員已設定此帳號不允許登入","");
                     });
                     break;
             }

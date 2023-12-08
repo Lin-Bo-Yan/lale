@@ -504,26 +504,26 @@ public class MainWebActivity extends MainAppCompatActivity {
                 }
                 return;
             }
-            if(result != null){
-                //如果限制副檔名啟用，則只能上傳符合的白名單
-                String fileName = FileUtils.getRealPathFromURI(MainWebActivity.this,result);
-                String fileType = FileUtils.fileType(fileName);
-                boolean restrictFileExtEnabled = SharedPreferencesUtils.getRestrictFileExt(MainWebActivity.this);
-                String fileExtension = SharedPreferencesUtils.getFileExtension(MainWebActivity.this);
-                if(restrictFileExtEnabled){
-                    boolean allowUpload = FileUtils.isStringInFileExtensions(fileExtension,fileType);
-                    if (!allowUpload) {
-                        String replacedSymbol = fileExtension.replace(";", "、");
-                        DialogUtils.showDialogMessage(MainWebActivity.this,"上傳失敗","上傳格式未在指定範圍內\n可上傳的副檔名：" + replacedSymbol);
-                        uris = new Uri[0];
-                    }
-                }
-                if (mUploadMessage != null) {
-                    mUploadMessage.onReceiveValue(uris);
-                    mUploadMessage = null;
+
+            //如果限制副檔名啟用，則只能上傳符合的白名單
+            String fileName = FileUtils.getRealPathFromURI(MainWebActivity.this,result);
+            String fileType = FileUtils.fileType(fileName);
+            boolean restrictFileExtEnabled = SharedPreferencesUtils.getRestrictFileExt(MainWebActivity.this);
+            String fileExtension = SharedPreferencesUtils.getFileExtension(MainWebActivity.this);
+            if(restrictFileExtEnabled){
+                boolean allowUpload = FileUtils.isStringInFileExtensions(fileExtension,fileType);
+                if (!allowUpload) {
+                    String replacedSymbol = fileExtension.replace(";", "、");
+                    DialogUtils.showDialogMessage(MainWebActivity.this,"上傳失敗","上傳格式未在指定範圍內\n可上傳的副檔名：" + replacedSymbol);
+                    uris = new Uri[0];
                 }
             }
+            if (mUploadMessage != null) {
+                mUploadMessage.onReceiveValue(uris);
+                mUploadMessage = null;
+            }
         }
+
         if (requestCode == DefinedUtils.REQUEST_IMAGE_PICKER) {
             ArrayList<Media> images = data.getParcelableArrayListExtra(PickerConfig.EXTRA_RESULT);
             if (images == null) {
@@ -2299,7 +2299,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                         case "LLUD-0003:FORCED_LOGOUT":
                             if(isFirstDisplay){
                                 runOnUiThread(()->{
-                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "此裝置已被管理員強制登出", "若需繼續使用請在次登入", new CallbackUtils.noReturn() {
+                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "此裝置已被管理員強制登出", "若需繼續使用請再次登入", new CallbackUtils.noReturn() {
                                         @Override
                                         public void Callback() {
                                             Logout(false);
@@ -2325,7 +2325,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                         case "LLUD-0003:LOGIN_FORBIDDEN":
                             if(isFirstDisplay){
                                 runOnUiThread(()->{
-                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "管理員以設定此裝置不允許登入", "請更換其他裝置登入", new CallbackUtils.noReturn() {
+                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "管理員已設定此裝置不允許登入", "請更換其他裝置登入", new CallbackUtils.noReturn() {
                                         @Override
                                         public void Callback() {
                                             Logout(false);
@@ -2338,7 +2338,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                         case "LLU-0002:用戶帳號已停用":
                             if(isFirstDisplay){
                                 runOnUiThread(()->{
-                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "管理員以設定此帳號不允許登入", "", new CallbackUtils.noReturn() {
+                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "管理員已設定此帳號不允許登入", "", new CallbackUtils.noReturn() {
                                         @Override
                                         public void Callback() {
                                             Logout(false);
@@ -2393,7 +2393,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                             StringUtils.HaoLog("censorToken= 5 " + " 強制登出 ");
                             if(isFirstDisplay){
                                 runOnUiThread(()->{
-                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "此裝置已被管理員強制登出", "若需繼續使用請在次登入", new CallbackUtils.noReturn() {
+                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "此裝置已被管理員強制登出", "若需繼續使用請再次登入", new CallbackUtils.noReturn() {
                                         @Override
                                         public void Callback() {
                                             Logout(false);
@@ -2421,7 +2421,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                             StringUtils.HaoLog("censorToken= 5 " + " 裝置不允許登入");
                             if(isFirstDisplay){
                                 runOnUiThread(()->{
-                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "管理員以設定此裝置不允許登入", "請更換其他裝置登入", new CallbackUtils.noReturn() {
+                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "管理員已設定此裝置不允許登入", "請更換其他裝置登入", new CallbackUtils.noReturn() {
                                         @Override
                                         public void Callback() {
                                             Logout(false);
@@ -2435,7 +2435,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                             StringUtils.HaoLog("censorToken= 5 " + " 帳號不允許登入");
                             if(isFirstDisplay){
                                 runOnUiThread(()->{
-                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "管理員以設定此帳號不允許登入", "", new CallbackUtils.noReturn() {
+                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "管理員已設定此帳號不允許登入", "", new CallbackUtils.noReturn() {
                                         @Override
                                         public void Callback() {
                                             Logout(false);

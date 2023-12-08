@@ -2,13 +2,13 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.jfrog.bintray'
 //apply plugin: 'com.github.dcendents.android-maven'
 
-def siteUrl = 'https://github.com/DmcSDK/MediaPickerPoject'   // 项目的主页
-def gitUrl = 'https://github.com/DmcSDK/MediaPickerPoject.git'   // Git仓库的url
+def siteUrl = 'https://github.com/DmcSDK/MediaPickerPoject'   // 專案的主頁
+def gitUrl = 'https://github.com/DmcSDK/MediaPickerPoject.git'   // Git倉庫的url
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
-version = "3.3" //发布版本号
-group = "com.dmcBig" //最终引用形式，如compile 'com.**;
+version = "3.3" // 發布版本號
+group = "com.dmcBig" //最終引用形式，如compile 'com.**;
 android {
     compileSdkVersion 33
     buildToolsVersion "33.0.0"
@@ -18,9 +18,7 @@ android {
         targetSdkVersion 33
         versionCode 1
         versionName "3.3"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
     }
     buildTypes {
         release {
@@ -31,33 +29,37 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'androidx.appcompat:appcompat:1.0.0'
-    testCompile 'junit:junit:4.12'
-    compile 'androidx.recyclerview:recyclerview:1.0.0'
-    compile 'com.github.bumptech.glide:glide:4.5.0'
-    compile 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+    testImplementation 'junit:junit:4.12'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    implementation 'com.github.bumptech.glide:glide:4.5.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.5.0'
-    compile 'pub.devrel:easypermissions:1.0.0'
-    compile 'com.github.chrisbanes.photoview:library:1.2.4'
+    implementation 'pub.devrel:easypermissions:1.0.0'
+    implementation 'com.github.chrisbanes.photoview:library:1.2.4'
     //OKHttp
     implementation 'com.squareup.okhttp:okhttp:2.5.0'
     // 發送大量數據的活動之間的控制，用於解耦組件間的通信
     implementation 'org.greenrobot:eventbus:3.3.1'
 }
+
 task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
+    archiveClassifier.set('sources')
 }
+
 task javadoc(type: Javadoc) {
-    failOnError false //必须添加以免出错
+    failOnError false // 必須添加以免出錯
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
 }
+
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
+    archiveClassifier.set('javadoc')
     from javadoc.destinationDir
 }
+
 artifacts {
     archives javadocJar
     archives sourcesJar
@@ -65,7 +67,7 @@ artifacts {
 
 javadoc {
     options {
-        //如果你的项目里面有中文注释的话，必须将格式设置为UTF-8，不然会出现乱码
+        // 如果你的項目裡面有中文註解的話，必須將格式設為UTF-8，不然會出現亂碼
         encoding "UTF-8"
         charSet 'UTF-8'
         author true
