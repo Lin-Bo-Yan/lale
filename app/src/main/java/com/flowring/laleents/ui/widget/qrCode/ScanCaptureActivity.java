@@ -199,7 +199,7 @@ public class ScanCaptureActivity extends MainAppCompatActivity {
     }
 
     private void showErrorHint() {
-        Toast.makeText(getApplicationContext(), "無法讀取行動條碼，\n請選擇其他照片。 ", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), getString(R.string.unable_to_read_mobile_barcode), Toast.LENGTH_SHORT).show();
     }
 
     @Override

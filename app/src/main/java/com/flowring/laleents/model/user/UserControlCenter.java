@@ -377,10 +377,7 @@ public class UserControlCenter {
             HttpReturn httpReturn = CloudUtils.iCloudUtils.getEimAllSystemInfor(new CallbackUtils.TimeoutReturn() {
                 @Override
                 public void Callback(IOException timeout) {
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                        StringUtils.HaoLog("getEimAllSystemInfor 網路異常");
-                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                    });
+                    handleNetworkError("getEimAllSystemInfor 網路異常");
                 }
             });
 
@@ -459,10 +456,7 @@ public class UserControlCenter {
             HttpReturn httpReturn = CloudUtils.iCloudUtils.getAllWatermarkTemplates(new CallbackUtils.TimeoutReturn() {
                 @Override
                 public void Callback(IOException timeout) {
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                        StringUtils.HaoLog("getAllWatermarkTemplates 網路異常");
-                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                    });
+                    handleNetworkError("getAllWatermarkTemplates 網路異常");
                 }
             });
 
@@ -477,10 +471,7 @@ public class UserControlCenter {
             HttpReturn httpReturn = CloudUtils.iCloudUtils.getDefaultWatermarkTemplate(new CallbackUtils.TimeoutReturn() {
                 @Override
                 public void Callback(IOException timeout) {
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                        StringUtils.HaoLog("getDefaultWatermarkTemplate 網路異常");
-                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                    });
+                    handleNetworkError("getDefaultWatermarkTemplate 網路異常");
                 }
             });
 
@@ -525,10 +516,7 @@ public class UserControlCenter {
             Http2Return http2Return = CloudUtils.iCloudUtils.getAppWorkAllSystemInfor(new CallbackUtils.TimeoutReturn() {
                 @Override
                 public void Callback(IOException timeout) {
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                        StringUtils.HaoLog("getAppWorkAllSystemInfor 網路異常");
-                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
-                    });
+                    handleNetworkError("getAppWorkAllSystemInfor 網路異常");
                 }
             });
 
@@ -826,7 +814,7 @@ public class UserControlCenter {
         });
         if(httpReturn.status == 200){
             String msg = httpReturn.msg;
-            boolean data = (Boolean) httpReturn.data;
+            boolean data = (boolean) httpReturn.data;
             switch (msg){
                 case "Success":
                 case "用戶 ID 不得為空":
@@ -1051,7 +1039,7 @@ public class UserControlCenter {
                         if("android".equals(googlePlatformVersion.platformName)){
                             StringUtils.HaoLog("googlePlatformVersion= appVersion " + appVersion);
                             StringUtils.HaoLog("googlePlatformVersion= dbVersion " + googlePlatformVersion.version);
-                            Boolean needUpdated = StringUtils.version(appVersion,googlePlatformVersion.version);
+                            boolean needUpdated = StringUtils.version(appVersion,googlePlatformVersion.version);
                             StringUtils.HaoLog("googlePlatformVersion= 需要更新嗎? " + needUpdated);
                             if(needUpdated){
                                 DialogUtils.showUpgradeDialog(activity);
@@ -1066,7 +1054,7 @@ public class UserControlCenter {
     }
 
     public static void checkAppNeedUpdate(Activity activity) {
-        Boolean appNeedUpdate = CloudUtils.iCloudUtils.checkAppNeedUpdate(new CallbackUtils.TimeoutReturn() {
+        boolean appNeedUpdate = CloudUtils.iCloudUtils.checkAppNeedUpdate(new CallbackUtils.TimeoutReturn() {
             @Override
             public void Callback(IOException timeout) {
                 handleNetworkError("checkAppNeedUpdate 網路異常");
@@ -1240,7 +1228,7 @@ public class UserControlCenter {
     /**
      * 額外自訂義推送資訊
      */
-    public static String HashMapToJson(String domain, String userId, Boolean isAF, String deviceToken, String memId) {
+    public static String HashMapToJson(String domain, String userId, boolean isAF, String deviceToken, String memId) {
         JSONObject json = new JSONObject();
         try{
             json.put("domain",domain);
@@ -1283,7 +1271,7 @@ public class UserControlCenter {
     private static void handleNetworkError(String message) {
         new Handler(Looper.getMainLooper()).post(() -> {
             StringUtils.HaoLog(message);
-            CommonUtils.showToast(AllData.activity, AllData.activity.getLayoutInflater(), "網路異常", false);
+            CommonUtils.showToast(AllData.activity, AllData.activity.getLayoutInflater(), AllData.activity.getString(R.string.network_anomaly), false);
         });
     }
 }

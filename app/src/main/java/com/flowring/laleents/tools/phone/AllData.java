@@ -13,6 +13,7 @@ import android.preference.PreferenceManager;
 
 import androidx.annotation.WorkerThread;
 
+import com.flowring.laleents.R;
 import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.model.friend.FriendInfo;
 import com.flowring.laleents.model.msg.MessageInfo;
@@ -53,10 +54,14 @@ public class AllData {
     private static String AnnounceServer = null;
 
     public static void setMainServer(String mainServer) {
-        mainServer = regularServer(mainServer);
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        pref.edit().putString("MainServer", mainServer).apply();
-        MainServer = mainServer;
+        if(mainServer != null && !mainServer.isEmpty()){
+            mainServer = regularServer(mainServer);
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+            pref.edit().putString("MainServer", mainServer).apply();
+            MainServer = mainServer;
+        } else {
+            StringUtils.HaoLog("lale Domain 空值");
+        }
     }
 
     public static String getMainServer() {
@@ -75,10 +80,14 @@ public class AllData {
     }
 
     public static void setAnnouncementServer(String announceServer) {
-        announceServer = regularServer(announceServer);
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        pref.edit().putString("AnnounceServer",announceServer).apply();
-        AnnounceServer = announceServer;
+        if(announceServer != null && !announceServer.isEmpty()){
+            announceServer = regularServer(announceServer);
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+            pref.edit().putString("AnnounceServer",announceServer).apply();
+            AnnounceServer = announceServer;
+        } else {
+            StringUtils.HaoLog("公告 Domain 空值");
+        }
     }
 
     private static String regularServer(String domain){
@@ -247,7 +256,7 @@ public class AllData {
                 public void Callback(IOException timeout) {
                     StringUtils.HaoLog("getOneRoom 網路異常");
                     new Handler(Looper.getMainLooper()).post(() -> {
-                        CommonUtils.showToast(activity,activity.getLayoutInflater(),"網路異常",false);
+                        CommonUtils.showToast(activity,activity.getLayoutInflater(),AllData.activity.getString(R.string.network_anomaly),false);
                     });
                 }
             });

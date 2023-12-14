@@ -68,7 +68,7 @@ public class MediaLoader extends LoaderM implements LoaderManager.LoaderCallback
             ArrayList<Folder> folders = new ArrayList<>();
             Folder allFolder = new Folder(mContext.getResources().getString(R.string.all_dir_name));
             folders.add(allFolder);
-            Folder allVideoDir = new Folder(mContext.getResources().getString(R.string.video_dir_name));
+            Folder allVideoDir = new Folder(mContext.getResources().getString(R.string.all_video));
             folders.add(allVideoDir);
             Cursor cursor = (Cursor) o;
             while (cursor.moveToNext()) {

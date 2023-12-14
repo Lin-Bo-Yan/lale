@@ -559,9 +559,6 @@ public class MsgControlCenter {
                     LocalBroadcastControlCenter.send(AllData.context, LocalBroadcastControlCenter.ACTION_MQTT_MSG, value);
                 }
             }
-            //存入dp
-
-            //修改房間
 
         }
         return messageInfo;

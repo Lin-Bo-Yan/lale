@@ -65,7 +65,7 @@ public class FileNotSupportedActivity extends MainAppCompatActivity {
                     String jsonString = getIntent().getStringExtra("JSONObject");
                     judgmentFileName(jsonString);
                 } else {
-                    PermissionUtils.requestPermission(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, null, "該功能需要下載權限");
+                    PermissionUtils.requestPermission(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, null, getString(R.string.dialog_download_permissions));
                 }
             });
         }

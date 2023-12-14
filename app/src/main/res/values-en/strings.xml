@@ -15,7 +15,6 @@
     <string name="server_exception_title">Server Abnormal Notification</string>
     <string name="server_exception_text">Please try again later</string>
     <string name="server_maintenance_title">Server Maintenance Notice</string>
-
     <string name="other_apps_open">Other apps open</string>
     <string name="file_not_supported_title">Title</string>
     <string name="file_not_supported_file_name">File name</string>
@@ -44,7 +43,7 @@
     <string name="problem_report_button">Problem Report</string>
     <string name="dialog_wait">Please Wait</string>
     <string name="toast_layout">Press back again to leave the APP</string>
-    <string name="dialog_abnormal_text">The connection status is abnormal, do you want to log out?</string>
+    <string name="dialog_abnormal_text">The connection status is abnormal, do you wanna log out?</string>
     <string name="dialog_check_network_text">Please check your network connection.</string>
     <string name="dialog_showGetImage_photograph">Photograph</string>
     <string name="dialog_showGetImage_album">Album</string>
@@ -58,14 +57,40 @@
     <string name="requestDrawOverlays_title">Request floating window permission</string>
     <string name="requestDrawOverlays_text">This permission is required for video/call connection information</string>
     <string name="checkLocation_title">Please enable location services</string>
-    <string name="saveLog_title">Login failed, please update QR code</string>
-    <string name="saveLog_text">Please log in again</string>
+    <string name="saveLog_title">Login failed</string>
+    <string name="saveLog_text">please update QR code, log in again</string>
+    <string name="feedback_problem_description">User Lale ID：%s\nProblem Description：</string>
+    <string name="feedback_problem_report">Problem Report</string>
+    <string name="feedback_transmit">Please select an email address for delivery</string>
+    <string name="unable_to_read_mobile_barcode">Unable to read mobile barcode.</string>
+    <string name="no_application_installed_yet">No application installed yet</string>
+    <string name="line_is_not_installed_yet">Line is not installed yet</string>
+    <string name="wechat_is_not_installed_yet">Wechat is not installed yet</string>
+    <string name="gmail_is_not_installed_yet">Gmail is not installed yet</string>
+    <string name="download_successful">download successful</string>
+    <string name="download_failed">download failed</string>
+    <string name="downloaded">Downloaded</string>
     <string name="account_password_error">Incorrect Password！</string>
     <string name="account_password_errMsg">User does not exist!</string>
     <string name="login_not_allowed">Login not allowed !</string>
     <string name="unable_find_path">Unable to find webAgendaUrl4LaleAuth path configuration !</string>
     <string name="work_notification_format">%s:%s\nYou have a job that needs to be processed as soon as possible</string>
     <string name="change_language">Change Language</string>
+    <string name="server_connection_abnormality">server connection abnormality</string>
+    <string name="device_management_login_not_allowed_title">The administrator has configured this device to not allow login</string>
+    <string name="device_management_login_not_allowed_text">Please change another device to log in</string>
+    <string name="device_management_force_logout_title">This device has been forced to log out by the administrator</string>
+    <string name="device_management_force_logout_text">If you wanna continue using it, please log in again.</string>
+    <string name="personnel_usage_management_title">The administrator has set this account to not allow login</string>
+    <string name="upload_failed_title">Upload failed</string>
+    <string name="upload_failed_text">The upload format is not within the specified range\nuploadable file extensions：</string>
+    <string name="logout_failed_title">Logout failed, please log out again</string>
+    <string name="connection_failed_title">Connection failed</string>
+    <string name="connection_failed_text">The connection status is abnormal. Do you wanna log out?</string>
+    <string name="network_anomaly">network anomaly</string>
+    <string name="chat_list_upload_file_warning">File Too Large</string>
+    <string name="file_type_not_supported">file type not supported</string>
+    <string name="pusher_toast_title">push registration fails, please contact the system administrator</string>
 
     <!-- FileUtils.java -->
     <string name="file_too_large">File size exceeds 50MB and cannot be uploaded</string>
@@ -104,4 +129,24 @@
     <string name="shared_message">A shared message</string>
     <string name="retracted_message">Message retracted</string>
     <string name="link_format">[Link]%s</string>
+
+    <!-- mediapicker\string.xml -->
+    <string name="all_dir_name">all dir</string>
+    <string name="all_video">all video</string>
+    <string name="all_image">all image</string>
+    <string name="select_title">select title</string>
+    <string name="select_video_title">select video</string>
+    <string name="select_image_title">select image</string>
+    <string name="msg_amount_limit">Select up to%dphotos at a time</string>
+    <string name="msg_size_limit">File exceeds 100MB</string>
+    <string name="select_null">Please select a photo or video</string>
+    <string name="done">transmit</string>
+    <string name="count_string">count</string>
+    <string name="preview">preview</string>
+    <string name="select">select</string>
+    <string name="cant_play_video">Unable to play video</string>
+    <string name="READ_EXTERNAL_STORAGE">Please allow access to the photo album</string>
+    <string name="can_not_read_image">Image Unable Read</string>
+    <string name="toast_error">error</string>
+    <string name="wanna_delete">You sure you wanna delete it？</string>
 </resources>

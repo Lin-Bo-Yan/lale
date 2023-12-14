@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 
+import com.flowring.laleents.R;
 import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.CommonUtils;
@@ -37,7 +38,7 @@ public class RoomControlCenter {
             public void Callback(IOException timeout) {
                 StringUtils.HaoLog("getSimpleRooms 網路異常");
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                    CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),AllData.activity.getString(R.string.network_anomaly),false);
                 });
             }
         });
@@ -67,7 +68,7 @@ public class RoomControlCenter {
                 public void Callback(IOException timeout) {
                     StringUtils.HaoLog("getAllSimpleRooms 網路異常");
                     new Handler(Looper.getMainLooper()).post(() -> {
-                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),AllData.activity.getString(R.string.network_anomaly),false);
                     });
                 }
             });
@@ -110,7 +111,7 @@ public class RoomControlCenter {
                 public void Callback(IOException timeout) {
                     StringUtils.HaoLog("getAllSimpleRooms 網路異常");
                     new Handler(Looper.getMainLooper()).post(() -> {
-                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),AllData.activity.getString(R.string.network_anomaly),false);
                     });
                 }
             });

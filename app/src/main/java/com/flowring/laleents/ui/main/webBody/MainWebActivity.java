@@ -1,8 +1,7 @@
 package com.flowring.laleents.ui.main.webBody;
 
-import static com.flowring.laleents.ui.main.webBody.EimLoginActivity.loginFunction;
-import static java.security.AccessController.getContext;
 
+import static java.security.AccessController.getContext;
 import android.Manifest;
 import android.animation.LayoutTransition;
 import android.animation.ObjectAnimator;
@@ -62,13 +61,11 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ShareCompat;
 import androidx.core.content.FileProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
@@ -115,11 +112,9 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.zxing.BarcodeFormat;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -138,7 +133,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -175,7 +169,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                 if (PermissionUtils.checkPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                     StringUtils.HaoLog("可以使用讀寫");
                 } else {
-                    PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE, "該功能需要下載權限");
+                    PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE, getString(R.string.dialog_download_permissions));
                 }
             }
         });
@@ -260,14 +254,12 @@ public class MainWebActivity extends MainAppCompatActivity {
 
 
 //        try {
-//
 //            sendToWeb(new JSONObject().put("type", "downloadFile").put("data", new JSONObject().put("isSuccess", true)).toString());
 //        } catch (JSONException e) {
 //            e.printStackTrace();
 //        }
         StringUtils.HaoLog("DownloadManager=end");
     }
-    //endregion
 
     private void initFireBaseMsgBroadcastReceiver() {
         FireBaseMsgBroadcastReceiver = new BroadcastReceiver() {
@@ -302,7 +294,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                         String user_avatar_url = intent.getStringExtra("user_avatar_url");
                         break;
                     case LocalBroadcastControlCenter.ACTION_MQTT_Error:
-                        DialogUtils.showDialogMessage(MainWebActivity.this, "伺服器連線異常");
+                        DialogUtils.showDialogMessage(MainWebActivity.this, getString(R.string.server_connection_abnormality));
                         break;
                 }
             }
@@ -365,6 +357,7 @@ public class MainWebActivity extends MainAppCompatActivity {
     private int urlsMax = 0;
     private int urlsNew = 0;
     private AlertDialog requestDrawOverlaysDialog = null;
+    public static ExecutorService executorService;
 
     final Handler handler = new Handler();
     Runnable log = new Runnable() {
@@ -373,10 +366,8 @@ public class MainWebActivity extends MainAppCompatActivity {
             StringUtils.HaoLog("還活著 " + webView.hashCode());
             sendToWebtest();
             handler.postDelayed(log, 5000);
-
         }
     };
-    public static ExecutorService executorService;
 
     @SuppressLint({"JavascriptInterface", "SetJavaScriptEnabled"})
     @Override
@@ -447,7 +438,6 @@ public class MainWebActivity extends MainAppCompatActivity {
         if (MqttService.mqttControlCenter != null){
             MqttService.mqttControlCenter.DisConnect();
         }
-
         super.onDestroy();
     }
     @Override
@@ -515,7 +505,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                 boolean allowUpload = FileUtils.isStringInFileExtensions(fileExtension,fileType);
                 if (!allowUpload) {
                     String replacedSymbol = fileExtension.replace(";", "、");
-                    DialogUtils.showDialogMessage(MainWebActivity.this,"上傳失敗","上傳格式未在指定範圍內\n可上傳的副檔名：" + replacedSymbol);
+                    DialogUtils.showDialogMessage(MainWebActivity.this,getString(R.string.upload_failed_title),getString(R.string.upload_failed_text) + replacedSymbol);
                     uris = new Uri[0];
                 }
             }
@@ -1591,19 +1581,17 @@ public class MainWebActivity extends MainAppCompatActivity {
     }
 
     private void feedback() {
-
         ShareCompat.IntentBuilder sb = ShareCompat.IntentBuilder.from(this);
         String[] tos = {"lalereport@flowring.com"};
         sb.setEmailTo(tos);
-        sb.setText("使用者Lale ID : " + UserControlCenter.getUserMinInfo().userId + "\n問題描述:");
+        String problemDescription = String.format(getString(R.string.feedback_problem_description), UserControlCenter.getUserMinInfo().userId);
+        sb.setText(problemDescription);
         sb.setType("message/rfc822");
-
         Uri NuriForFile = FileProvider.getUriForFile(this, "com.flowring.laleents.fileprovider", com.flowring.laleents.tools.Log.mLogFile);
         sb.setStream(NuriForFile);
-        sb.setSubject("問題回報");
+        sb.setSubject(getString(R.string.feedback_problem_report));
         sb.startChooser();
-        Toast.makeText(this, "請選擇電子信箱進行傳送", Toast.LENGTH_LONG).show();
-
+        Toast.makeText(this, getString(R.string.feedback_transmit), Toast.LENGTH_LONG).show();
     }
 
     private void openWebView(JSONObject data) {
@@ -1912,7 +1900,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     Type listType = new TypeToken<List<String>>(){}.getType();
                     List<String> buttons = new Gson().fromJson(buttonString, listType);
                     List<CallbackUtils.noReturn> callbacks = new ArrayList<>();
-                    DialogUtils.showDialog(MainWebActivity.this,"您的應用程式長期未使用","系統已將您的帳號登出",buttons,callbacks);
+                    DialogUtils.showDialog(MainWebActivity.this,getString(R.string.unused_account_logged_out),buttons,callbacks);
                     for (int i = 0; i < buttons.size(); i++) {
                         final int buttonIndex = i;
                         CallbackUtils.noReturn callback = new CallbackUtils.noReturn() {
@@ -1955,7 +1943,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     Type listType = new TypeToken<List<String>>(){}.getType();
                     List<String> buttons = new Gson().fromJson(buttonString, listType);
                     List<CallbackUtils.noReturn> callbacks = new ArrayList<>();
-                    DialogUtils.showDialog(MainWebActivity.this,"您的應用程式長期未使用","系統已將您的帳號登出",buttons,callbacks);
+                    DialogUtils.showDialog(MainWebActivity.this,getString(R.string.unused_account_logged_out),buttons,callbacks);
                     for (int i = 0; i < buttons.size(); i++) {
                         final int buttonIndex = i;
                         CallbackUtils.noReturn callback = new CallbackUtils.noReturn() {
@@ -2088,7 +2076,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     if(status == 200){
                         cancelNotification();
                     } else {
-                        DialogUtils.showDialogMessage(MainWebActivity.this,"登出失敗，請重新登出");
+                        DialogUtils.showDialogMessage(MainWebActivity.this,getString(R.string.logout_failed_title));
                     }
                 } else {
                     cancelNotification();
@@ -2188,7 +2176,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     }
                 });
             } else {
-                CommonUtils.showToast(MainWebActivity.this,getLayoutInflater(),"檔案過大",false);
+                CommonUtils.showToast(MainWebActivity.this,getLayoutInflater(),getString(R.string.chat_list_upload_file_warning),false);
             }
         }
     }
@@ -2281,7 +2269,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                                 Type listType = new TypeToken<List<String>>(){}.getType();
                                 List<String> buttons = new Gson().fromJson(buttonString, listType);
                                 List<CallbackUtils.noReturn> callbacks = new ArrayList<>();
-                                DialogUtils.showDialogCancelable(MainWebActivity.this,"連線失敗","連線狀態異常，是否要登出？",buttons,callbacks);
+                                DialogUtils.showDialogCancelable(MainWebActivity.this,getString(R.string.connection_failed_title),getString(R.string.connection_failed_text),buttons,callbacks);
                                 for (int i = 0; i < buttons.size(); i++) {
                                     // 建立一個有效最終變數的副本
                                     final int buttonIndex = i;
@@ -2333,7 +2321,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                         case "LLUD-0003:FORCED_LOGOUT":
                             if(isFirstDisplay){
                                 runOnUiThread(()->{
-                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "此裝置已被管理員強制登出", "若需繼續使用請再次登入", new CallbackUtils.noReturn() {
+                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, getString(R.string.device_management_force_logout_title), getString(R.string.device_management_force_logout_text), new CallbackUtils.noReturn() {
                                         @Override
                                         public void Callback() {
                                             Logout(false);
@@ -2359,7 +2347,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                         case "LLUD-0003:LOGIN_FORBIDDEN":
                             if(isFirstDisplay){
                                 runOnUiThread(()->{
-                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "管理員已設定此裝置不允許登入", "請更換其他裝置登入", new CallbackUtils.noReturn() {
+                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, getString(R.string.device_management_login_not_allowed_title), getString(R.string.device_management_login_not_allowed_text), new CallbackUtils.noReturn() {
                                         @Override
                                         public void Callback() {
                                             Logout(false);
@@ -2372,7 +2360,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                         case "LLU-0002:用戶帳號已停用":
                             if(isFirstDisplay){
                                 runOnUiThread(()->{
-                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "管理員已設定此帳號不允許登入", "", new CallbackUtils.noReturn() {
+                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, getString(R.string.personnel_usage_management_title), "", new CallbackUtils.noReturn() {
                                         @Override
                                         public void Callback() {
                                             Logout(false);
@@ -2427,7 +2415,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                             StringUtils.HaoLog("censorToken= 5 " + " 強制登出 ");
                             if(isFirstDisplay){
                                 runOnUiThread(()->{
-                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "此裝置已被管理員強制登出", "若需繼續使用請再次登入", new CallbackUtils.noReturn() {
+                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, getString(R.string.device_management_force_logout_title), getString(R.string.device_management_force_logout_text), new CallbackUtils.noReturn() {
                                         @Override
                                         public void Callback() {
                                             Logout(false);
@@ -2455,7 +2443,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                             StringUtils.HaoLog("censorToken= 5 " + " 裝置不允許登入");
                             if(isFirstDisplay){
                                 runOnUiThread(()->{
-                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "管理員已設定此裝置不允許登入", "請更換其他裝置登入", new CallbackUtils.noReturn() {
+                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, getString(R.string.device_management_login_not_allowed_title),getString(R.string.device_management_login_not_allowed_text), new CallbackUtils.noReturn() {
                                         @Override
                                         public void Callback() {
                                             Logout(false);
@@ -2469,7 +2457,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                             StringUtils.HaoLog("censorToken= 5 " + " 帳號不允許登入");
                             if(isFirstDisplay){
                                 runOnUiThread(()->{
-                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, "管理員已設定此帳號不允許登入", "", new CallbackUtils.noReturn() {
+                                    DialogUtils.showDialogMessageCannotClosed(MainWebActivity.this, getString(R.string.personnel_usage_management_title), "", new CallbackUtils.noReturn() {
                                         @Override
                                         public void Callback() {
                                             Logout(false);
@@ -2503,7 +2491,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                 Type listType = new TypeToken<List<String>>(){}.getType();
                 List<String> buttons = new Gson().fromJson(buttonString, listType);
                 List<CallbackUtils.noReturn> callbacks = new ArrayList<>();
-                DialogUtils.showDialog(MainWebActivity.this,"您的應用程式長期未使用","系統已將您的帳號登出",buttons,callbacks);
+                DialogUtils.showDialog(MainWebActivity.this,getString(R.string.unused_account_logged_out),buttons,callbacks);
                 for (int i = 0; i < buttons.size(); i++) {
                     final int buttonIndex = i;
                     CallbackUtils.noReturn callback = new CallbackUtils.noReturn() {
@@ -2675,7 +2663,6 @@ public class MainWebActivity extends MainAppCompatActivity {
             runOnUiThread(() -> {
                 downloadByUrlsReturn(false, null);
                 PermissionUtils.requestPermission(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, null, getString(R.string.dialog_download_permissions));
-
             });
         }
 
@@ -2698,8 +2685,6 @@ public class MainWebActivity extends MainAppCompatActivity {
                 StringUtils.HaoLog("sendToWeb Error=" + e2);
                 e2.printStackTrace();
             }
-
-
         });
     }
 
@@ -2758,7 +2743,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             thirdPartyAppIntent.putExtra(Intent.EXTRA_TEXT, textMessage);
             startActivity(Intent.createChooser(thirdPartyAppIntent,"分享文本訊息"));
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(getApplicationContext(), "尚未安裝應用程式。", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.no_application_installed_yet), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -2914,7 +2899,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             Uri uri = Uri.parse(scheme);
             startActivity(new Intent(Intent.ACTION_VIEW, uri));
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(MainWebActivity.this, "尚未安裝Line。", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainWebActivity.this, getString(R.string.line_is_not_installed_yet), Toast.LENGTH_SHORT).show();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -2928,7 +2913,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             wechatIntent.putExtra(Intent.EXTRA_TEXT, inviteMessage);
             startActivity(wechatIntent);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(MainWebActivity.this, "尚未安裝Wechat。", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainWebActivity.this, getString(R.string.wechat_is_not_installed_yet), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -2947,42 +2932,34 @@ public class MainWebActivity extends MainAppCompatActivity {
             wechatIntent.putExtra(Intent.EXTRA_SUBJECT, "一起來用Lale吧!");
             startActivity(wechatIntent);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(MainWebActivity.this, "尚未安裝Gmail。", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainWebActivity.this, getString(R.string.gmail_is_not_installed_yet), Toast.LENGTH_SHORT).show();
         }
     }
 
     private void openMessage(String inviteMessage) {
-
         Intent smsIntent = new Intent(Intent.ACTION_VIEW);
         smsIntent.setType("vnd.android-dir/mms-sms");
         smsIntent.putExtra("sms_body", inviteMessage);
         startActivity(smsIntent);
-
     }
 
     private ArrayList<String> getPhoneContactsData() {
-
         ArrayList<String> phones = new ArrayList<>();
-
         ContentResolver reContentResolverol = getContentResolver();
-
         Uri contactData = Uri.parse("content://com.android.contacts/contacts");
         @SuppressWarnings("deprecation")
         Cursor cursor = reContentResolverol.query(contactData, null, null, null, null);
         try {
-            while (cursor.moveToNext())  // 將資料讀到最後一筆時會回傳false
-            {
-
+            // 將資料讀到最後一筆時會回傳false
+            while (cursor.moveToNext()) {
                 @SuppressLint("Range") String contactId = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
                 Cursor phone = reContentResolverol.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
                         ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + contactId, null, null);
 
-                while (phone.moveToNext()) {
+                while(phone.moveToNext()){
                     @SuppressLint("Range") String phoneNumber = phone.getString(phone.getColumnIndex(
                             ContactsContract.CommonDataKinds.Phone.NUMBER));
                     phones.add(phoneNumber);
-
-
                 }
             }
         } catch (Exception e) {
@@ -2992,7 +2969,6 @@ public class MainWebActivity extends MainAppCompatActivity {
     }
 
     void sendToWebtest() {
-
         webView.evaluateJavascript("callAndroid2()", new ValueCallback<String>() {
             @Override
             public void onReceiveValue(String s) {
@@ -3001,10 +2977,8 @@ public class MainWebActivity extends MainAppCompatActivity {
         });
     }
 
-    void sendToWeb(String type, JSONObject data) {
-
+    void sendToWeb(String type, JSONObject data){
         try {
-
             sendToWeb(new JSONObject().put("type", type).put("data", data).toString());
         } catch (JSONException e2) {
             StringUtils.HaoLog("sendToWeb Error=" + e2);
@@ -3024,7 +2998,6 @@ public class MainWebActivity extends MainAppCompatActivity {
                         Log.d("hao", "發訊息回傳:" + s);
                     }
                 });
-
             }
         });
     }
@@ -3032,15 +3005,11 @@ public class MainWebActivity extends MainAppCompatActivity {
     @Override
     public void onBackPressed() {
         try {
-
             sendToWeb(new JSONObject().put("type", "back").toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
-    //endregion
-
-    //region  舊版webView JavascriptInterface
 
     @JavascriptInterface
     public void openWebViewByChrome(String url) {
@@ -3050,8 +3019,6 @@ public class MainWebActivity extends MainAppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
     }
 
     @JavascriptInterface
@@ -3423,7 +3390,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         os.write(imgBytesData);
         os.flush();
         if (downloadFile.exists()) {
-            Toast.makeText(this, "下載成功", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.download_successful), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -3508,14 +3475,14 @@ public class MainWebActivity extends MainAppCompatActivity {
                                     }
                                     if (photos.size() == count.get()) {
                                         cancelWait();
-                                        Toast.makeText(MainWebActivity.this, "已下載", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(MainWebActivity.this, getString(R.string.downloaded), Toast.LENGTH_SHORT).show();
                                     }
 
                                 }
                             }, new Consumer<Throwable>() {
                                 @Override
                                 public void accept(Throwable throwable) throws Exception {
-                                    Toast.makeText(MainWebActivity.this, "下載失敗", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(MainWebActivity.this, getString(R.string.download_failed), Toast.LENGTH_SHORT).show();
                                 }
                             }, new Action() {
                                 @Override

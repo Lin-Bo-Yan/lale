@@ -8,6 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.flowring.laleents.R;
 import com.flowring.laleents.tools.CommonUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.phone.AllData;
@@ -53,7 +54,7 @@ public class shareActivity extends Activity {
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent1); //發送廣播訊息
             startActivity(intent);
         } else {
-            CommonUtils.showToast(shareActivity.this,getLayoutInflater(),"檔案類型不支援",false);
+            CommonUtils.showToast(shareActivity.this,getLayoutInflater(),getString(R.string.file_type_not_supported),false);
         }
         finish();
     }

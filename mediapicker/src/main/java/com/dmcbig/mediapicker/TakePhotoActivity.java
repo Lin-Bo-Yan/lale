@@ -39,7 +39,7 @@ public class TakePhotoActivity extends Activity {
             e.printStackTrace();
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {//如果大于等于7.0使用FileProvider
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {//如果大於等於7.0使用FileProvider
             NuriForFile = FileProvider.getUriForFile(this, this.getPackageName() + ".dmc", mTmpFile);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, NuriForFile);
             startActivityForResult(intent, 100);
@@ -48,7 +48,7 @@ public class TakePhotoActivity extends Activity {
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mTmpFile));
                 startActivityForResult(intent, 101);
             } else {
-                Toast.makeText(this, "take error", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.toast_error), Toast.LENGTH_SHORT).show();
                 finish();
             }
         }

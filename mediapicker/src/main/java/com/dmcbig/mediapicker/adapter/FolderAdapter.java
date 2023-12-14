@@ -76,7 +76,6 @@ public class FolderAdapter extends BaseAdapter {
         }
 
         holder.name.setText(folder.name);
-
         holder.size.setText(folder.getMedias().size() + "" + mContext.getString(R.string.count_string));
         holder.indicator.setVisibility(lastSelected == position ? View.VISIBLE : View.INVISIBLE);
         return view;

@@ -210,7 +210,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
             public void Callback(IOException timeout) {
                 StringUtils.HaoLog("getEimQRcode 網路異常");
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    CommonUtils.showToast(EimLoginActivity.this,getLayoutInflater(),"網路異常",false);
+                    CommonUtils.showToast(EimLoginActivity.this,getLayoutInflater(),getString(R.string.network_anomaly),false);
                 });
             }
         });
@@ -290,7 +290,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
             public void Callback(IOException timeout) {
                 StringUtils.HaoLog("getEimQRcodeNew 網路異常");
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    CommonUtils.showToast(EimLoginActivity.this,getLayoutInflater(),"網路異常",false);
+                    CommonUtils.showToast(EimLoginActivity.this,getLayoutInflater(),getString(R.string.network_anomaly),false);
                 });
             }
         });
@@ -367,7 +367,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
             public void Callback(IOException timeout) {
                 new Handler(Looper.getMainLooper()).post(() -> {
                     StringUtils.HaoLog("loginSimpleThirdParty 網路異常");
-                    CommonUtils.showToast(EimLoginActivity.this,getLayoutInflater(),"網路異常",false);
+                    CommonUtils.showToast(EimLoginActivity.this,getLayoutInflater(),getString(R.string.network_anomaly),false);
                 });
             }
         });
@@ -393,12 +393,12 @@ public class EimLoginActivity extends MainAppCompatActivity {
             switch (httpReturn.msg){
                 case "LLUD-0002:人員裝置禁止登入":
                     runOnUiThread(()->{
-                        DialogUtils.showDialogMessage(EimLoginActivity.this,"管理員已設定此裝置不允許登入","請更換其他裝置登入");
+                        DialogUtils.showDialogMessage(EimLoginActivity.this,getString(R.string.device_management_login_not_allowed_title),getString(R.string.device_management_login_not_allowed_text));
                     });
                     break;
                 case "LLU-0002:用戶帳號已停用":
                     runOnUiThread(()->{
-                        DialogUtils.showDialogMessage(EimLoginActivity.this,"管理員已設定此帳號不允許登入","");
+                        DialogUtils.showDialogMessage(EimLoginActivity.this,getString(R.string.personnel_usage_management_title),"");
                     });
                     break;
             }

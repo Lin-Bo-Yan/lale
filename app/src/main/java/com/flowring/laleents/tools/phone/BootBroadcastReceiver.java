@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 
+import com.flowring.laleents.R;
 import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.model.msg.MessageInfo;
 import com.flowring.laleents.model.msg.MsgControlCenter;
@@ -66,7 +67,7 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
                             public void Callback(IOException timeout) {
                                 StringUtils.HaoLog("reToken 網路異常");
                                 new Handler(Looper.getMainLooper()).post(() -> {
-                                    CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),"網路異常",false);
+                                    CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),AllData.activity.getString(R.string.network_anomaly),false);
                                 });
                             }
                         });

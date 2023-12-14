@@ -15,7 +15,6 @@
     <string name="server_exception_title">伺服器異常通知</string>
     <string name="server_exception_text">請稍後再嘗試使用</string>
     <string name="server_maintenance_title">伺服器維護通知</string>
-
     <string name="other_apps_open">其他應用程式開啟</string>
     <string name="file_not_supported_title">標題</string>
     <string name="file_not_supported_file_name">檔案名稱</string>
@@ -58,14 +57,40 @@
     <string name="requestDrawOverlays_title">請求懸浮視窗權限</string>
     <string name="requestDrawOverlays_text">視訊/通話接通訊息需要此權限</string>
     <string name="checkLocation_title">請開啟定位服務</string>
-    <string name="saveLog_title">登入失敗，請更新 QR code</string>
-    <string name="saveLog_text">請重新登入</string>
+    <string name="saveLog_title">登入失敗</string>
+    <string name="saveLog_text">請更新 QR code，重新登入</string>
+    <string name="feedback_problem_description">使用者Lale ID：%s\n問題描述：</string>
+    <string name="feedback_problem_report">問題回報</string>
+    <string name="feedback_transmit">請選擇電子信箱進行傳送</string>
+    <string name="unable_to_read_mobile_barcode">無法讀取行動條碼，\n請選擇其他照片。</string>
+    <string name="no_application_installed_yet">尚未安裝應用程式</string>
+    <string name="line_is_not_installed_yet">尚未安裝Line</string>
+    <string name="wechat_is_not_installed_yet">尚未安裝Wechat</string>
+    <string name="gmail_is_not_installed_yet">尚未安裝Gmail</string>
+    <string name="download_successful">下載成功</string>
+    <string name="download_failed">下載失敗</string>
+    <string name="downloaded">已下載</string>
     <string name="account_password_error">密碼錯誤!</string>
     <string name="account_password_errMsg">使用者不存在!</string>
     <string name="login_not_allowed">不允許登入!</string>
     <string name="unable_find_path">無法找到 webAgendaUrl4LaleAuth 路徑設定!</string>
     <string name="work_notification_format">%s:%s\n您有一份工作需盡速處理</string>
     <string name="change_language">變更語言</string>
+    <string name="server_connection_abnormality">伺服器連線異常</string>
+    <string name="device_management_login_not_allowed_title">管理員已設定此裝置不允許登入</string>
+    <string name="device_management_login_not_allowed_text">請更換其他裝置登入</string>
+    <string name="device_management_force_logout_title">此裝置已被管理員強制登出</string>
+    <string name="device_management_force_logout_text">若需繼續使用請再次登入</string>
+    <string name="personnel_usage_management_title">管理員已設定此帳號不允許登入</string>
+    <string name="upload_failed_title">上傳失敗</string>
+    <string name="upload_failed_text">上傳格式未在指定範圍內\n可上傳的副檔名：</string>
+    <string name="logout_failed_title">登出失敗，請重新登出</string>
+    <string name="connection_failed_title">連線失敗</string>
+    <string name="connection_failed_text">連線狀態異常，是否要登出？</string>
+    <string name="network_anomaly">網路異常</string>
+    <string name="chat_list_upload_file_warning">檔案過大</string>
+    <string name="file_type_not_supported">檔案類型不支援</string>
+    <string name="pusher_toast_title">推播註冊失敗請聯絡系統管理員</string>
 
     <!-- FileUtils.java -->
     <string name="file_too_large">檔案大小超過50MB，無法上傳</string>
@@ -104,4 +129,24 @@
     <string name="shared_message">一則分享訊息</string>
     <string name="retracted_message">已收回訊息</string>
     <string name="link_format">[連結]%s</string>
+
+    <!-- mediapicker\string.xml -->
+    <string name="all_dir_name">全部</string>
+    <string name="all_video">所有影片</string>
+    <string name="all_image">所有照片</string>
+    <string name="select_title">選擇標題</string>
+    <string name="select_video_title">選擇影片</string>
+    <string name="select_image_title">選擇照片</string>
+    <string name="msg_amount_limit">一次最多選取%d張照片</string>
+    <string name="msg_size_limit">檔案超過100MB</string>
+    <string name="select_null">請選擇照片或影片</string>
+    <string name="done">傳送</string>
+    <string name="count_string">計數</string>
+    <string name="preview">預覽</string>
+    <string name="select">選取</string>
+    <string name="cant_play_video">無法播放影片</string>
+    <string name="READ_EXTERNAL_STORAGE">請開放相簿讀取權限</string>
+    <string name="can_not_read_image">圖片無法讀取</string>
+    <string name="toast_error">錯誤</string>
+    <string name="wanna_delete">確定要刪除嗎？</string>
 </resources>

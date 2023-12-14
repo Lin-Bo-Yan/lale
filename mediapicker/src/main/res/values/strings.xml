@@ -2,20 +2,22 @@
     <string name="all_dir_name">全部</string>
     <string name="all_video">所有影片</string>
     <string name="all_image">所有照片</string>
-    <string name="select_title"> </string>
+    <string name="select_title">選擇標題</string>
     <string name="select_video_title">選擇影片</string>
     <string name="select_image_title">選擇照片</string>
-    <string name="video_dir_name">所有影片</string>
     <string name="msg_amount_limit">一次最多選取%d張照片</string>
     <string name="msg_size_limit">檔案超過100MB</string>
     <string name="select_null">請選擇照片或影片</string>
     <string name="done">傳送</string>
-    <string name="count_string"> </string>
+    <string name="count_string">計數</string>
     <string name="preview">預覽</string>
     <string name="select">選取</string>
-    <string name="video"> </string>
+    <string name="video">影片</string>
     <string name="cant_play_video">無法播放影片</string>
     <string name="READ_EXTERNAL_STORAGE">請開放相簿讀取權限</string>
     <string name="can_not_read_image">圖片無法讀取</string>
-    <string name="pusher_toast_title">推播註冊失敗請聯絡系統管理員</string>
+    <string name="toast_error">錯誤</string>
+    <string name="sure_button">確定</string>
+    <string name="downloaded">已下載</string>
+    <string name="wanna_delete">確定要刪除嗎？</string>
 </resources>

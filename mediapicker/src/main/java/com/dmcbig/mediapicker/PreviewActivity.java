@@ -505,7 +505,7 @@ public class PreviewActivity extends FragmentActivity implements View.OnClickLis
                             String fileName = formatter.format(calendar.getTime());
                             Uri uri = saveBitmapToGallery(getApplicationContext(), fileName, bitmap, videoUri);
                             if (uri != null) {
-                                Toast.makeText(getApplicationContext(), "已下載", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), getString(R.string.downloaded), Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
@@ -531,10 +531,10 @@ public class PreviewActivity extends FragmentActivity implements View.OnClickLis
     }
 
     private void showConfirmDialog(final MessageInfo message) {
-        String text = "確定要刪除嗎？";
+        String text = getString(R.string.wanna_delete);
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setMessage(text)
-                .setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.sure_button), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         try {
@@ -610,7 +610,6 @@ public class PreviewActivity extends FragmentActivity implements View.OnClickLis
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                 long size = stream.size();
                 stream.close();
-
                 mPicDir.mkdirs();
                 File filePicture = new File(mPicDir, fileName + ".jpg");
                 if (filePicture.exists()) {
@@ -794,7 +793,6 @@ public class PreviewActivity extends FragmentActivity implements View.OnClickLis
 
     public class AdapterFragment extends FragmentStatePagerAdapter {
         private List<Fragment> mFragments;
-
         public AdapterFragment(FragmentManager fm, List<Fragment> mFragments) {
             super(fm);
             this.mFragments = mFragments;

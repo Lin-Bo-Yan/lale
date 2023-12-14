@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
+import com.flowring.laleents.R;
 import com.flowring.laleents.model.msg.MessageInfo;
 import com.flowring.laleents.model.msg.MessageItem;
 import com.flowring.laleents.tools.CallbackUtils;
@@ -81,7 +82,7 @@ public class MainAppCompatActivity extends AppCompatActivity {
                     String user_avatar_url = intent.getStringExtra("user_avatar_url");
                     break;
                 case LocalBroadcastControlCenter.ACTION_MQTT_Error: //通訊連線異常
-                    DialogUtils.showDialogMessage(MainAppCompatActivity.this, "伺服器連線異常");
+                    DialogUtils.showDialogMessage(MainAppCompatActivity.this, getString(R.string.server_connection_abnormality));
                     break;
             }
         }

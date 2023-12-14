@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Environment;
 
 import com.flowring.laleents.BuildConfig;
+import com.flowring.laleents.R;
 import com.flowring.laleents.tools.phone.DefinedUtils;
 
 import java.io.File;
@@ -106,7 +107,7 @@ public class Log {
         List<String> buttons = new ArrayList<>();
         buttons.add("ok");
         List<CallbackUtils.noReturn> callbacks = new ArrayList<>();
-        DialogUtils.showDialog(activity,"將log","存到downloadDir",buttons,callbacks);
+        DialogUtils.showDialog(activity,activity.getString(R.string.saveLog_title),activity.getString(R.string.saveLog_text),buttons,callbacks);
         for (int i = 0; i < buttons.size(); i++) {
             final int buttonIndex = i;
             CallbackUtils.noReturn callback = new CallbackUtils.noReturn() {

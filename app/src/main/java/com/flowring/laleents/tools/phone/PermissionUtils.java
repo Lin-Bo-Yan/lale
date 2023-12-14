@@ -46,9 +46,7 @@ public class PermissionUtils {
     static int requestCode = 666;
 
     public static void requestPermission(Activity activity, @NonNull String permission, Integer newRequestCode, String requestText) {
-
         requestPermission(activity, new String[]{permission}, newRequestCode, requestText);
-
     }
 
     public static void requestPermission(Activity activity, @NonNull String permission, String requestText) {
@@ -141,7 +139,6 @@ public class PermissionUtils {
             }
         } else {
             Toast.makeText(context, context.getString(R.string.checkLocation_title), Toast.LENGTH_LONG).show();
-
             context.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
         }
     }
