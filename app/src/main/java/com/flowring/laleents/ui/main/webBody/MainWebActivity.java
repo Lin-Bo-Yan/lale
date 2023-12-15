@@ -140,6 +140,7 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
+import org.jitsi.meet.sdk.JitsiMeet;
 
 public class MainWebActivity extends MainAppCompatActivity {
 

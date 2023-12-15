@@ -1,9 +1,5 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.jfrog.bintray'
-//apply plugin: 'com.github.dcendents.android-maven'
-
-def siteUrl = 'https://github.com/DmcSDK/MediaPickerPoject'   // 專案的主頁
-def gitUrl = 'https://github.com/DmcSDK/MediaPickerPoject.git'   // Git倉庫的url
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
@@ -29,16 +25,13 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.0.0'
-    testImplementation 'junit:junit:4.12'
-    implementation 'androidx.recyclerview:recyclerview:1.0.0'
-    implementation 'com.github.bumptech.glide:glide:4.5.0'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.5.0'
-    implementation 'pub.devrel:easypermissions:1.0.0'
+
+    implementation 'com.github.bumptech.glide:glide:4.0.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0'
+    implementation 'pub.devrel:easypermissions:3.0.0'
     implementation 'com.github.chrisbanes.photoview:library:1.2.4'
-    //OKHttp
+    implementation "androidx.recyclerview:recyclerview:1.2.1"
+    implementation "androidx.activity:activity:1.6.1"
     implementation 'com.squareup.okhttp:okhttp:2.5.0'
     // 發送大量數據的活動之間的控制，用於解耦組件間的通信
     implementation 'org.greenrobot:eventbus:3.3.1'
