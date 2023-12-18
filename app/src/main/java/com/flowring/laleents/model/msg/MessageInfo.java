@@ -123,10 +123,9 @@ public class MessageInfo implements Serializable, IMessage2 {
 
 
     public boolean is_lale_room() {
-
-        if (type.startsWith("lale.room"))
+        if (type.startsWith("lale.room")){
             return true;
-
+        }
         return false;
     }
 
@@ -163,25 +162,33 @@ public class MessageInfo implements Serializable, IMessage2 {
     }
 
     public boolean is_no_save() {
-        if (is_lale_room_settings_name())
+        if (is_lale_room_settings_name()){
             return true;
-        if (is_lale_room_settings_desc())
+        }
+        if (is_lale_room_settings_desc()){
             return true;
-        if (is_lale_room_settings_admin())
+        }
+        if (is_lale_room_settings_admin()){
             return true;
-        if (is_lale_room_settings_avatar())
+        }
+        if (is_lale_room_settings_avatar()){
             return true;
-        if (is_lale_room_created())
+        }
+        if (is_lale_room_created()){
             return true;
-
-        if (is_lale_message_read())
+        }
+        if (is_lale_message_read()){
             return true;
-        if (is_lale_call_status())
+        }
+        if (is_lale_call_status()){
             return true;
-        if (is_lale_call_group_status())
+        }
+        if (is_lale_call_group_status()){
             return true;
-        if (is_lale_call_left_request())
+        }
+        if (is_lale_call_left_request()){
             return true;
+        }
         return false;
     }
 
@@ -194,16 +201,21 @@ public class MessageInfo implements Serializable, IMessage2 {
     }
 
     public boolean is_update_room() {
-        if (is_lale_room_settings_name())
+        if (is_lale_room_settings_name()){
             return true;
-        if (is_lale_room_settings_desc())
+        }
+        if (is_lale_room_settings_desc()){
             return true;
-        if (is_lale_room_settings_admin())
+        }
+        if (is_lale_room_settings_admin()){
             return true;
-        if (is_lale_room_settings_avatar())
+        }
+        if (is_lale_room_settings_avatar()){
             return true;
-        if (is_lale_room_created())
+        }
+        if (is_lale_room_created()){
             return true;
+        }
         return false;
     }
 
@@ -292,7 +304,7 @@ public class MessageInfo implements Serializable, IMessage2 {
     public MessageInfo(JSONObject jsonObj) {
         try {
             if (jsonObj != null) {
-                StringUtils.HaoLog("hhh= "+jsonObj);
+                StringUtils.HaoLog("messageInfo= " + jsonObj);
                 if (!jsonObj.isNull("id")){
                     id = jsonObj.optString("id");
                 }
@@ -336,20 +348,22 @@ public class MessageInfo implements Serializable, IMessage2 {
     }
 
     public boolean isGroup() {
-
         RoomMinInfo roomMinInfo = AllData.getRoomMinInfo(room_id);
-        if (roomMinInfo != null)
+        if (roomMinInfo != null){
             return roomMinInfo.isGroup();
+        }
         return false;
     }
 
     String CallRequest(String value) {
         String type = "";
-        if (getCallRequest() != null && getCallRequest().type != null)
+        if (getCallRequest() != null && getCallRequest().type != null){
             type = getCallRequest().type.equals("audio") ? "語音" : "視訊";
+        }
 
-        if (value == null)
+        if (value == null){
             return "通話邀請中";
+        }
         if (isGroup()) {
             switch (value) {
                 case "call":
@@ -577,29 +591,58 @@ public class MessageInfo implements Serializable, IMessage2 {
         });
     }
 
+    public static String getSubType(int subType,String body) {
+        switch (subType){
+            case 1:
+                return "help; 或 指令";
+            case 2:
+                return "流程列表";
+            case 3:
+                return "流程列表;關鍵字";
+            case 4:
+                return "查看待辦";
+            case 5:
+                return "查看待辦;筆數";
+            case 6:
+                return "查看行程";
+            case 7:
+                return "查看公告";
+            case 8:
+                return "查看公告;筆數";
+            case 9:
+                return "查看文管中心";
+            case 10:
+                return "查看會議;筆數";
+            case 11:
+                return "查看專案";
+            default:
+                return body;
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
-
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o){
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()){
+            return false;
+        }
         return Objects.equals(((MessageInfo) o).getCreatedAt(), getCreatedAt());
     }
 
     public boolean canCall() {
         callRequest callRequest = getCallRequest();
         callSpendtime callSpendtime = getCallSpendtime();
-        if (callSpendtime.duration != null)
+        if (callSpendtime.duration != null){
             return false;
-
+        }
         if (callRequest.result == null || callRequest.result.equals("incomming")) {
             return true;
         } else if (callRequest.result.equals("end") || callRequest.result.equals("cancel") || callRequest.result.equals("timeout") || callRequest.result.equals("unavailable") || (callRequest.result.equals("reject"))) {
-
             return false;
-
         } else {
             return true;
-
         }
     }
 }

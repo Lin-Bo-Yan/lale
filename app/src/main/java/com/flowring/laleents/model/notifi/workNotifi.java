@@ -32,4 +32,7 @@ public class workNotifi {
     public String img_url;
     public MeetInfo meetInfo;
     public String type;
+
+    // 辦公秘書 msgType變數共用
+    public int subType = 0;
 }

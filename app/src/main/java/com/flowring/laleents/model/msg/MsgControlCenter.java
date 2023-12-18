@@ -353,11 +353,7 @@ public class MsgControlCenter {
 
     // 此段程式是回給web端fileId，檔案上傳是由web做的
     public static HttpReturn webSideSendFile(String roomId, File file) {
-        HttpReturn httpReturn = CloudUtils.iCloudUtils.sendFile(roomId, file);
-        if (httpReturn.status == 200) {
-            return httpReturn;
-        }
-        return httpReturn;
+        return CloudUtils.iCloudUtils.sendFile(roomId, file);
     }
 
     public static void webSideSendFile(String roomId, File file, CallbackUtils.FileReturn fileReturn) {
@@ -434,8 +430,10 @@ public class MsgControlCenter {
 
         MessageInfo messageInfo = null;
         //檢查訊息是否符合格式;
-        if (value == null)
+        if (value == null){
             return messageInfo;
+        }
+
         try {
             messageInfo = new MessageInfo(new JSONObject(value));
             RoomMinInfo roomMinInfo = AllData.getRoomMinInfo(messageInfo.room_id);
@@ -459,7 +457,7 @@ public class MsgControlCenter {
                 }
             } else {
 
-                if (messageInfo.is_no_save()) {
+                if(messageInfo.is_no_save()) {
                     RoomMinInfo roomMinInfo = AllData.getRoomMinInfo(messageInfo.room_id);
                     if (messageInfo.is_lale_read()) {
                         if (roomMinInfo != null) {
@@ -468,47 +466,44 @@ public class MsgControlCenter {
                             AllData.updateRoom(roomMinInfo);
                         }
                     } else if (messageInfo.is_update_room()) {
-                        if (roomMinInfo == null)
+                        if (roomMinInfo == null){
                             roomMinInfo = new RoomMinInfo();
+                        }
 
                         AllData.updateRoom(new Gson().fromJson(StringUtils.SetNoNull(roomMinInfo, messageInfo.content), RoomMinInfo.class));
                         LocalBroadcastControlCenter.send(AllData.context, LocalBroadcastControlCenter.ACTION_MQTT_ROOM, value);
                     }
                 } else {
                     if (messageInfo.is_lale_call_request()) { // 通話視訊請求通知，通話類型 = lale.call.request
-                        {
-                            RoomMinInfo roomMinInfo = AllData.getRoomMinInfo(messageInfo.room_id);
-                            if (roomMinInfo != null) {
-                                if (messageInfo.getCallRequest().result == null){
-                                    roomMinInfo.call_status = messageInfo.getCallRequest().type.equals("audio") ? 2 : 1;
-                                }
-                                if (messageInfo.getCallRequest().result.equals("unavailable")){
-                                    roomMinInfo.call_status = 0;
-                                }
-                                AllData.updateRoom(roomMinInfo);
+                        RoomMinInfo roomMinInfo = AllData.getRoomMinInfo(messageInfo.room_id);
+                        if (roomMinInfo != null) {
+                            if (messageInfo.getCallRequest().result == null){
+                                roomMinInfo.call_status = messageInfo.getCallRequest().type.equals("audio") ? 2 : 1;
                             }
-                            if (source == Source.mqtt) {
-                                if (!messageInfo.sender.equals(UserControlCenter.getUserMinInfo().userId)&&!messageInfo.isGroup()){
-                                    DialogUtils.showCall(AllData.context, messageInfo);
-                                }
-                                LocalBroadcastControlCenter.send(AllData.context, LocalBroadcastControlCenter.ACTION_MQTT_CALL_REQUEST, value);
+                            if (messageInfo.getCallRequest().result.equals("unavailable")){
+                                roomMinInfo.call_status = 0;
                             }
+                            AllData.updateRoom(roomMinInfo);
                         }
-
+                        if (source == Source.mqtt) {
+                            if (!messageInfo.sender.equals(UserControlCenter.getUserMinInfo().userId)&&!messageInfo.isGroup()){
+                                DialogUtils.showCall(AllData.context, messageInfo);
+                            }
+                            LocalBroadcastControlCenter.send(AllData.context, LocalBroadcastControlCenter.ACTION_MQTT_CALL_REQUEST, value);
+                        }
                     } else if (messageInfo.is_lale_call_response()) {
-
                         RoomMinInfo roomMinInfo = AllData.getRoomMinInfo(messageInfo.room_id);
                         if (roomMinInfo != null) {
                             MessageInfo requestEvent = AllData.getMsg(messageInfo.getCallRequest().requestEventId);
-                            if (requestEvent != null)
+                            if (requestEvent != null){
                                 if (messageInfo.getCallRequest().result.equals("cancel") || (!roomMinInfo.isGroup() && messageInfo.getCallRequest().result.equals("reject")) || (!roomMinInfo.isGroup() && messageInfo.getCallRequest().result.equals("call"))) {
                                     roomMinInfo.call_status = 0;
                                     AllData.updateRoom(roomMinInfo);
                                     DialogUtils.hideCall(AllData.context,messageInfo);
-//                                    MsgControlCenter.stopRing();
                                     requestEvent.content = messageInfo.content;
                                     AllData.updateMsg(requestEvent);
                                 }
+                            }
                         }
                         if (source == Source.mqtt) {
                             LocalBroadcastControlCenter.send(AllData.context, LocalBroadcastControlCenter.ACTION_MQTT_CALL_MSG, value);
@@ -541,14 +536,14 @@ public class MsgControlCenter {
                         RoomMinInfo roomMinInfo = AllData.getRoomMinInfo(messageInfo.room_id);
                         if (roomMinInfo != null) {
                             if (roomMinInfo.last_msg_time < messageInfo.timestamp) {
-                                if (messageInfo.unreadCount != -1)
+                                if (messageInfo.unreadCount != -1){
                                     roomMinInfo.unread_count = messageInfo.unreadCount;
+                                }
                                 roomMinInfo.last_msg_time = messageInfo.timestamp;
                                 roomMinInfo.last_msg = messageInfo.getText();
                             }
                             if (roomMinInfo.status == 0 || roomMinInfo.status == 2) {
                                 roomMinInfo.status = 1;
-
                                 RoomSettingControlCenter.setStatus(roomMinInfo, 1, new CallbackUtils.ReturnHttp() {
                                     @Override
                                     public void Callback(HttpReturn httpReturn) {

@@ -266,7 +266,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (data.content == null){
             return;
         }
-        StringUtils.HaoLog("is_lale_ecosystem_af_notify()=" + data.is_lale_ecosystem_af_notify());
+        StringUtils.HaoLog("is_lale_ecosystem_af_notify= " + data.is_lale_ecosystem_af_notify());
         if (data.is_lale_ecosystem_af_notify()) {
             try {
                 String msg = new JSONObject(data.content).optString("data");
@@ -280,7 +280,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             StringUtils.HaoLog("Notification= " + data.room_id);
             intent.putExtra("roomInfo", data.room_id);
         }
-        StringUtils.HaoLog("workNotifi =" + new Gson().toJson(workNotifi));
+        StringUtils.HaoLog("workNotifi= " + new Gson().toJson(workNotifi));
         PendingIntent pendingIntent = PendingIntent.getActivity(this, id, intent, FLAG_IMMUTABLE );
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -338,7 +338,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 }
             }
         } else {
-            StringUtils.HaoLog("到關通知" + workNotifi.msgType);
+            StringUtils.HaoLog("到關通知= " + workNotifi.msgType);
             if (workNotifi.msgType.contains("AF_TASK")) {
                 title = workNotifi.frontUserName;
                 body = workNotifi.taskName + ":" + workNotifi.keyword + "\n您有一份工作需盡速處理";
@@ -346,6 +346,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             if (workNotifi.msgType.contains("AF_MEETING")) {
                 title = workNotifi.title;
                 body = workNotifi.content;
+            }
+            if (workNotifi.msgType.contains("chatbotAf")) {
+                title = data.roomName;
+                body = MessageInfo.getSubType(workNotifi.subType,body);
             }
         }
 

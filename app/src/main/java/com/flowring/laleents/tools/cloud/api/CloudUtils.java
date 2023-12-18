@@ -2391,7 +2391,7 @@ public class CloudUtils implements ICloudUtils {
         if (httpReturn.status == 200) {
             UserMin userMin = UserControlCenter.getUserMinInfo();
             TokenInfo tokenInfo = new Gson().fromJson(new Gson().toJson(httpReturn.data), TokenInfo.class);
-            if (tokenInfo != null && userMin!=null) {
+            if (tokenInfo != null && userMin != null) {
                 userMin.token = tokenInfo.token;
                 userMin.refreshExpiration = tokenInfo.refreshExpiration;
                 userMin.expiration = tokenInfo.expiration;
