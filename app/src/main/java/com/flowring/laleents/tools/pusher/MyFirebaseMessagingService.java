@@ -268,6 +268,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         //處理點選訊息的跳轉
         Intent intent = new Intent(this, MainWebActivity.class);
         intent.putExtra("bFromPhone", true);
+        intent.putExtra("roomInfo", data.room_id);
         workNotifi workNotifi = null;
         Bitmap bitmap = null;
         StringUtils.HaoLog("data.content=" + data.content);
@@ -415,6 +416,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         //處理點選訊息的跳轉
         Intent intent = new Intent(this, MainWebActivity.class);
         intent.putExtra("bFromPhone",true);
+        intent.putExtra("roomInfo", data.room_id);
         if(data.is_lale_member_join() || data.is_lale_member_left()){
             intent.putExtra("roomInfo", data.room_id);
         }

@@ -1405,17 +1405,19 @@ public class MainWebActivity extends MainAppCompatActivity {
         WebView.setWebContentsDebuggingEnabled(true);
         webView.setWebChromeClient(mWebChromeClient);
 //        webView.loadData(testUrl, "text/html; charset=utf-8", "UTF-8");
+        StringUtils.HaoLog("點推播 init是?" + init);
         if (!init) {
             String roomInfo = getIntent().getStringExtra("roomInfo");
             boolean bFromPhone = getIntent().getBooleanExtra("bFromPhone", false);
+            StringUtils.HaoLog("點推播 bFromPhone是?" + bFromPhone);
+            StringUtils.HaoLog("點推播 roomInfo是?" + roomInfo);
             if(bFromPhone && roomInfo != null){
-                String urlToLoad = bFromPhone && roomInfo != null ? getMainWebURL(true) + "chatroom/" + roomInfo : url;
-                StringUtils.HaoLog("init 點推播 " + (init ? "true" : "false")+" urlToLoad= "+urlToLoad);
-                StringUtils.HaoLog("init 點推播 " + url);
-                StringUtils.HaoLog("init 點推播 " + roomInfo);
-                StringUtils.HaoLog("init 點推播 " + bFromPhone);
+                String urlToLoad = getMainWebURL(true) + "chatroom/" + roomInfo;
+                StringUtils.HaoLog("點推播 " + (init ? "true" : "false")+" urlToLoad= "+urlToLoad);
+                StringUtils.HaoLog("點推播 " + url);
+                StringUtils.HaoLog("點推播 " + roomInfo);
+                StringUtils.HaoLog("點推播 " + bFromPhone);
                 webView.loadUrl(urlToLoad);
-                StringUtils.HaoLog("init 點推播 "+init);
                 init = true;
             } else {
                 NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
