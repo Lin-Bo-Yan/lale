@@ -276,7 +276,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         //處理點選訊息的跳轉
         Intent intent = new Intent(this, MainWebActivity.class);
         intent.putExtra("bFromPhone", true);
-        intent.putExtra("roomInfo", data.room_id);
         workNotifi workNotifi = null;
         Bitmap bitmap = null;
         StringUtils.HaoLog("data.content=" + data.content);
@@ -290,11 +289,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 StringUtils.HaoLog("Notification= "+msg);
                 workNotifi = new Gson().fromJson(msg, workNotifi.class);
                 intent.putExtra("Notification", notificationBody);
+                intent.putExtra("roomInfo", data.room_id);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         } else {
-            StringUtils.HaoLog("Notification= " + data.room_id);
+            StringUtils.HaoLog("notification= " + data.room_id);
             intent.putExtra("roomInfo", data.room_id);
         }
         StringUtils.HaoLog("workNotifi= " + new Gson().toJson(workNotifi));

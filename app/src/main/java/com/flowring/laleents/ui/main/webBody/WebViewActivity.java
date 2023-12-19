@@ -1,33 +1,17 @@
 package com.flowring.laleents.ui.main.webBody;
 
-import static java.security.AccessController.getContext;
-
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.webkit.DownloadListener;
-import android.webkit.GeolocationPermissions;
-import android.webkit.JsResult;
-import android.webkit.PermissionRequest;
-import android.webkit.ValueCallback;
-import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
-
 import androidx.annotation.Nullable;
-
-import com.dmcbig.mediapicker.PickerConfig;
 import com.flowring.laleents.R;
-import com.flowring.laleents.tools.CallbackUtils;
-import com.flowring.laleents.tools.CommonUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.ui.model.MainAppCompatActivity;
 

@@ -50,6 +50,9 @@
     <string name="dialog_showGetImage_preset">Preset</string>
     <string name="dialog_camera_permissions">This feature requires camera permission</string>
     <string name="dialog_download_permissions">This feature requires download permission</string>
+    <string name="dialog_notifications_permissions">This feature requires notifications permission</string>
+    <string name="dialog_fine_location_permissions">Requires your location permission</string>
+    <string name="dialog_record_audio_permissions">Requires your microphone permission</string>
     <string name="dialog_background_execution_permissions">Background Execution Permissions</string>
     <string name="dialog_reboot_permissions">Restart background services after boot</string>
     <string name="dialog_access_permissions">File access permission is required to get the QRcode image in the album</string>
@@ -60,7 +63,6 @@
     <string name="saveLog_title">Login failed</string>
     <string name="saveLog_text">please update QR code, log in again</string>
     <string name="feedback_problem_description">User Lale ID：%s\nProblem Description：</string>
-    <string name="feedback_problem_report">Problem Report</string>
     <string name="feedback_transmit">Please select an email address for delivery</string>
     <string name="unable_to_read_mobile_barcode">Unable to read mobile barcode.</string>
     <string name="no_application_installed_yet">No application installed yet</string>

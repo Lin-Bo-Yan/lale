@@ -244,13 +244,13 @@ public class UserControlCenter {
                 StringUtils.HaoLog("getAnnounceServer= "+ date);
                 //回傳是一個jsonArray
                 ServerAnnouncement[] serverAnnouncements = gson.fromJson(date, ServerAnnouncement[].class);
+                ServerAnnouncement serverAnnouncement;
                 if (serverAnnouncements != null && serverAnnouncements.length > 0) {
-                    ServerAnnouncement serverAnnouncement = serverAnnouncements[0];
-                    announceReturn.Callback(serverAnnouncement);
+                    serverAnnouncement = serverAnnouncements[0];
                 } else {
-                    ServerAnnouncement serverAnnouncement = new ServerAnnouncement();
-                    announceReturn.Callback(serverAnnouncement);
+                    serverAnnouncement = new ServerAnnouncement();
                 }
+                announceReturn.Callback(serverAnnouncement);
             } else {
                 StringUtils.HaoLog("查詢伺服器執行中維護公告api，錯誤碼：500");
                 ServerAnnouncement serverAnnouncement = new ServerAnnouncement();
@@ -267,13 +267,13 @@ public class UserControlCenter {
                 String date = gson.toJson(httpReturn.data);
                 //回傳是一個jsonArray
                 ServerAnnouncement[] serverAnnouncements = gson.fromJson(date, ServerAnnouncement[].class);
+                ServerAnnouncement serverAnnouncement;
                 if (serverAnnouncements != null && serverAnnouncements.length > 0) {
-                    ServerAnnouncement serverAnnouncement = serverAnnouncements[0];
-                    announceReturn.Callback(serverAnnouncement);
+                    serverAnnouncement = serverAnnouncements[0];
                 } else {
-                    ServerAnnouncement serverAnnouncement = new ServerAnnouncement();
-                    announceReturn.Callback(serverAnnouncement);
+                    serverAnnouncement = new ServerAnnouncement();
                 }
+                announceReturn.Callback(serverAnnouncement);
             } else {
                 StringUtils.HaoLog("查詢伺服器執行中維護公告api，錯誤碼：500");
                 ServerAnnouncement serverAnnouncement = new ServerAnnouncement();

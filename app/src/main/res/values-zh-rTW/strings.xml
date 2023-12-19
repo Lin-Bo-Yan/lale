@@ -50,6 +50,9 @@
     <string name="dialog_showGetImage_preset">預設</string>
     <string name="dialog_camera_permissions">該功能需要相機權限</string>
     <string name="dialog_download_permissions">該功能需要下載權限</string>
+    <string name="dialog_notifications_permissions">該功能需要通知權限</string>
+    <string name="dialog_fine_location_permissions">需要您的位置權限</string>
+    <string name="dialog_record_audio_permissions">需要您的麥克風權限</string>
     <string name="dialog_background_execution_permissions">背景執行權限</string>
     <string name="dialog_reboot_permissions">開機後重新啟動背景服務</string>
     <string name="dialog_access_permissions">拿取相簿中的QRcode圖片需要檔案存取權限</string>
@@ -60,7 +63,6 @@
     <string name="saveLog_title">登入失敗</string>
     <string name="saveLog_text">請更新 QR code，重新登入</string>
     <string name="feedback_problem_description">使用者Lale ID：%s\n問題描述：</string>
-    <string name="feedback_problem_report">問題回報</string>
     <string name="feedback_transmit">請選擇電子信箱進行傳送</string>
     <string name="unable_to_read_mobile_barcode">無法讀取行動條碼，\n請選擇其他照片。</string>
     <string name="no_application_installed_yet">尚未安裝應用程式</string>

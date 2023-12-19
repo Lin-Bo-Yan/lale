@@ -164,12 +164,21 @@ public class MainWebActivity extends MainAppCompatActivity {
                 StringUtils.HaoLog("詢問使用重啟");
                 PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.RECEIVE_BOOT_COMPLETED, getString(R.string.dialog_reboot_permissions));
             }
-
             if((Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)){
                 if (PermissionUtils.checkPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                     StringUtils.HaoLog("可以使用讀寫");
                 } else {
                     PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE, getString(R.string.dialog_download_permissions));
+                }
+            }
+
+            StringUtils.HaoLog("權限檢查= 手機設備幾版?" + Build.VERSION.SDK_INT);
+            StringUtils.HaoLog("權限檢查= 是否大於33?" + (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU));
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+                if(PermissionUtils.checkPermission(MainWebActivity.this, Manifest.permission.POST_NOTIFICATIONS)){
+                    StringUtils.HaoLog("Android 13版之後，可以使用通知");
+                } else {
+                    PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.POST_NOTIFICATIONS, getString(R.string.dialog_notifications_permissions));
                 }
             }
         });
@@ -446,8 +455,8 @@ public class MainWebActivity extends MainAppCompatActivity {
 
         if(requestCode == DefinedUtils.ACCESS_FINE_LOCATION_CODE) {
             try {
-                JSONObject j = new JSONObject().put("type", "authorize").put("data", new JSONObject().put("type","location").put("isSuccess",grantResults[0]==PackageManager.PERMISSION_GRANTED));
-                sendToWeb(j.toString());
+                JSONObject jsonObject = new JSONObject().put("type", "authorize").put("data", new JSONObject().put("type","location").put("isSuccess",grantResults[0] == PackageManager.PERMISSION_GRANTED));
+                sendToWeb(jsonObject.toString());
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -1109,8 +1118,8 @@ public class MainWebActivity extends MainAppCompatActivity {
             StringUtils.HaoLog("checkUpApp2 " +intent.hasExtra("isHome"));
             if (intent.getBooleanExtra("isHome", false)) {
                 try {
-                    JSONObject j = new JSONObject().put("type", "gotoWeb").put("data", new JSONObject().put("url",intent.getStringExtra("isHomeMICRO_APPurl")).put("title",intent.getStringExtra("isHomeMICRO_APPName")));
-                    sendToWeb(j.toString());
+                    JSONObject jsonObject = new JSONObject().put("type", "gotoWeb").put("data", new JSONObject().put("url",intent.getStringExtra("isHomeMICRO_APPurl")).put("title",intent.getStringExtra("isHomeMICRO_APPName")));
+                    sendToWeb(jsonObject.toString());
                     intent.removeExtra("isHome");
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -1588,7 +1597,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         sb.setType("message/rfc822");
         Uri NuriForFile = FileProvider.getUriForFile(this, "com.flowring.laleents.fileprovider", com.flowring.laleents.tools.Log.mLogFile);
         sb.setStream(NuriForFile);
-        sb.setSubject(getString(R.string.feedback_problem_report));
+        sb.setSubject(getString(R.string.problem_report_button));
         sb.startChooser();
         Toast.makeText(this, getString(R.string.feedback_transmit), Toast.LENGTH_LONG).show();
     }
@@ -2243,8 +2252,8 @@ public class MainWebActivity extends MainAppCompatActivity {
         }
         AllData.updateRoomInPhone(roomInfoInPhone);
         try {
-            JSONObject j = new JSONObject().put("type", "getRoomBackground").put("bytesBase64", roomInfoInPhone.bg);
-            sendToWeb(j.toString());
+            JSONObject jsonObject = new JSONObject().put("type", "getRoomBackground").put("bytesBase64", roomInfoInPhone.bg);
+            sendToWeb(jsonObject.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -2832,24 +2841,24 @@ public class MainWebActivity extends MainAppCompatActivity {
             if(type.equals("location")) {
                 if(PermissionUtils.checkPermission(MainWebActivity.this,"android.permission.ACCESS_FINE_LOCATION")) {
                     try {
-                        JSONObject j = new JSONObject().put("type", "authorize").put("data", new JSONObject().put("type","location").put("isSuccess",true));
-                        sendToWeb(j.toString());
+                        JSONObject jsonObject = new JSONObject().put("type", "authorize").put("data", new JSONObject().put("type","location").put("isSuccess",true));
+                        sendToWeb(jsonObject.toString());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 } else {
-                    PermissionUtils.requestPermission(MainWebActivity.this,"android.permission.ACCESS_FINE_LOCATION","需要您的位置權限");
+                    PermissionUtils.requestPermission(MainWebActivity.this,"android.permission.ACCESS_FINE_LOCATION",getString(R.string.dialog_fine_location_permissions));
                 }
             } else if (type.equals("audio")) {
                 if (PermissionUtils.checkPermission(MainWebActivity.this, "android.permission.RECORD_AUDIO")) {
                     try {
-                        JSONObject j = new JSONObject().put("type", "authorize").put("data", new JSONObject().put("type", "audio").put("isSuccess", true));
-                        sendToWeb(j.toString());
+                        JSONObject jsonObject = new JSONObject().put("type", "authorize").put("data", new JSONObject().put("type", "audio").put("isSuccess", true));
+                        sendToWeb(jsonObject.toString());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 } else {
-                    PermissionUtils.requestPermission(MainWebActivity.this, "android.permission.RECORD_AUDIO", DefinedUtils.RECORD_AUDIO_CODE, "需要您的麥可風權限");
+                    PermissionUtils.requestPermission(MainWebActivity.this, "android.permission.RECORD_AUDIO", DefinedUtils.RECORD_AUDIO_CODE, getString(R.string.dialog_record_audio_permissions));
                 }
             }
         }
@@ -2857,7 +2866,6 @@ public class MainWebActivity extends MainAppCompatActivity {
     void openChrome(JSONObject data) {
         String sURL;
         try {
-
             if (data.has("url")) {
                 sURL = data.getString("url");
                 chromeCallbackUrl = data.optString("callBackUrl");
@@ -2868,7 +2876,6 @@ public class MainWebActivity extends MainAppCompatActivity {
         } catch (Exception e) {
             StringUtils.HaoLog("JS openWebViewByChrome ERROR = " + e);
         }
-
     }
 
     private void openQRcode(JSONObject data) {
@@ -2876,16 +2883,16 @@ public class MainWebActivity extends MainAppCompatActivity {
             @Override
             public void Callback(androidx.activity.result.ActivityResult activityResult) {
                 String SCAN_QRCODE = null;
-                if (activityResult.getData() != null)
+                if (activityResult.getData() != null){
                     SCAN_QRCODE = activityResult.getData().getStringExtra("SCAN_QRCODE");
-                StringUtils.HaoLog("openQRcode= "+SCAN_QRCODE);
+                }
+                StringUtils.HaoLog("openQRcode= " + SCAN_QRCODE);
                 try {
-                    JSONObject j = new JSONObject().put("type", "getQRcode").put("data", SCAN_QRCODE);
-                    sendToWeb(j.toString());
+                    JSONObject jsonObject = new JSONObject().put("type", "getQRcode").put("data", SCAN_QRCODE);
+                    sendToWeb(jsonObject.toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
             }
         };
         ActivityUtils.gotoQRcode(this, ScanCaptureActivity.ScanCaptureType.Json, ActivityResult);
@@ -3013,8 +3020,8 @@ public class MainWebActivity extends MainAppCompatActivity {
     @JavascriptInterface
     public void openWebViewByChrome(String url) {
         try {
-            JSONObject j = new JSONObject().put("type", "webviewJI").put("name", "openWebViewByChrome(String url)").put("url", url);
-            sendToWeb(j.toString());
+            JSONObject jsonObject = new JSONObject().put("type", "webviewJI").put("name", "openWebViewByChrome(String url)").put("url", url);
+            sendToWeb(jsonObject.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -3407,8 +3414,8 @@ public class MainWebActivity extends MainAppCompatActivity {
     @JavascriptInterface
     public void openWithChrome(String url) {
         try {
-            JSONObject j = new JSONObject().put("type", "webviewJI").put("name", "openWithChrome(String url)").put("url", url);
-            sendToWeb(j.toString());
+            JSONObject jsonObject = new JSONObject().put("type", "webviewJI").put("name", "openWithChrome(String url)").put("url", url);
+            sendToWeb(jsonObject.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }

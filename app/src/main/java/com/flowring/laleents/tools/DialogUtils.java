@@ -458,15 +458,15 @@ public class DialogUtils {
     private static String translateButton(String button) {
         switch (button) {
             case "logout":
-                return "登出";
+                return AllData.context.getString(R.string.sign_out_button);
             case "ok":
-                return "確定";
+                return AllData.context.getString(R.string.sure_button);
             case "cancel":
-                return "取消";
+                return AllData.context.getString(R.string.cancel_button);
             case "closure":
-                return "關閉";
+                return AllData.context.getString(R.string.closure_button);
             case "feedback":
-                return "問題回報";
+                return AllData.context.getString(R.string.problem_report_button);
             default:
                 return button;
         }
