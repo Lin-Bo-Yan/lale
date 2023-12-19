@@ -594,27 +594,27 @@ public class MessageInfo implements Serializable, IMessage2 {
     public static String getSubType(int subType,String body) {
         switch (subType){
             case 1:
-                return "help; 或 指令";
+                return "help; 或 指令;指令回覆";
             case 2:
-                return "流程列表";
+                return "流程列表;指令回覆";
             case 3:
-                return "流程列表;關鍵字";
+                return "流程列表;關鍵字指令回覆";
             case 4:
-                return "查看待辦";
+                return "查看待辦;指令回覆";
             case 5:
-                return "查看待辦;筆數";
+                return "查看待辦;筆數指令回覆";
             case 6:
-                return "查看行程";
+                return "查看行程;指令回覆";
             case 7:
-                return "查看公告";
+                return "查看公告;指令回覆";
             case 8:
-                return "查看公告;筆數";
+                return "查看公告;筆數指令回覆";
             case 9:
-                return "查看文管中心";
+                return "查看會議;指令回覆";
             case 10:
-                return "查看會議;筆數";
+                return "查看會議;筆數指令回覆";
             case 11:
-                return "查看專案";
+                return "查看專案;指令回覆";
             default:
                 return body;
         }

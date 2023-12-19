@@ -54,6 +54,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Objects;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -115,9 +116,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         StringUtils.HaoLog("是否在前景"+isAppForeground);
                         if(messageInfo != null) {
                             if (!isAppForeground ) {
-                                //檢查 EIM commit 是不是logout，如果不是就執行sendNotification
-                                if(!commandLogout(remoteMessage.getData().get("body"))){
-                                    sendNotification(messageInfo, remoteMessage.getData().get("body"));
+                                try {
+                                    //檢查 EIM commit 是不是logout，如果不是就執行sendNotification
+                                    if(!commandLogout(Objects.requireNonNull(remoteMessage.getData().get("body"),"remoteMessage的body不能為null"))){
+                                        sendNotification(messageInfo, remoteMessage.getData().get("body"));
+                                    }
+                                }catch (NullPointerException e){
+                                    e.printStackTrace();
+                                    StringUtils.HaoLog("remoteMessage的body不能為null " + e);
                                 }
                             } else {
                                 LocalBroadcastControlCenter.send(this, LocalBroadcastControlCenter.ACTION_NOTIFI_AF, remoteMessage.getData().get("body"));
@@ -183,18 +189,20 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String channel_id = "lale_channel_id";
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         String body = remoteMessage.getData().get("body");
-        StringUtils.HaoLog("body= "+body);
+        StringUtils.HaoLog("body= " + body);
         if (body != null) {
-            if (body.contains("command")){
+            if(body.contains("command")){
                 SilenceNotifi silenceNotifi = new Gson().fromJson(body, SilenceNotifi.class);
-                if("logout".equals(silenceNotifi.command)){
-                    StringUtils.HaoLog("推播登出");
-                    UserControlCenter.setLogout(false,new CallbackUtils.LogoutReturn() {
-                        @Override
-                        public void Callback(int status, boolean isLaleAppEim) {
-                            SharedPreferencesUtils.isRepeatDevice(true);
-                        }
-                    });
+                if(silenceNotifi != null){
+                    if("logout".equals(silenceNotifi.command)){
+                        StringUtils.HaoLog("推播登出");
+                        UserControlCenter.setLogout(false,new CallbackUtils.LogoutReturn() {
+                            @Override
+                            public void Callback(int status, boolean isLaleAppEim) {
+                                SharedPreferencesUtils.isRepeatDevice(true);
+                            }
+                        });
+                    }
                 }
             } else if (body.contains("msgType")) {
                 workNotifi workNotifi = new Gson().fromJson(body, workNotifi.class);
@@ -209,7 +217,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     title = workNotifi.title;
                     body = workNotifi.content;
                 }
-                StringUtils.HaoLog("body= "+body);
+                StringUtils.HaoLog("body= " + body);
                 PendingIntent pendingIntent = PendingIntent.getActivity(this, afid, intent,  FLAG_IMMUTABLE);
 
                 NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channel_id)
@@ -497,6 +505,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private boolean commandLogout(String body){
         if (body.contains("command")){
             SilenceNotifi silenceNotifi = new Gson().fromJson(body, SilenceNotifi.class);
+            if(silenceNotifi.command == null){
+                return false;
+            }
             switch (silenceNotifi.command){
                 case "logout":
                     StringUtils.HaoLog("推播登出");
@@ -507,6 +518,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         }
                     });
                     return true;
+                default:
+                    return false;
             }
         }
         return false;
