@@ -3023,8 +3023,7 @@ public class CloudUtils implements ICloudUtils {
 
             final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
             OkHttpClient.Builder builder = new OkHttpClient.Builder();
-            builder.sslSocketFactory(sslSocketFactory);
-
+            builder.sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0]);
             //hostnameVerifier 是對服務端返回的一些信息進行相關校驗的地方
             builder.hostnameVerifier(new HostnameVerifier() {
                 @Override

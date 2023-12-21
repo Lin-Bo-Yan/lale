@@ -93,6 +93,16 @@ public class JitsiMeetConferenceOptions implements Parcelable {
 
         private JitsiMeetUserInfo userInfo;
 
+        private String displayName;
+
+        private String userId;
+
+        private String avatar;
+
+        private String callType;
+
+        private boolean isGroupCall;
+
         public Builder() {
             config = new Bundle();
             featureFlags = new Bundle();
@@ -196,6 +206,31 @@ public class JitsiMeetConferenceOptions implements Parcelable {
         public Builder setUserInfo(JitsiMeetUserInfo userInfo) {
             this.userInfo = userInfo;
 
+            return this;
+        }
+
+        public Builder setDisplayName(String displayName) {
+            this.displayName = displayName;
+            return this;
+        }
+
+        public Builder setUserId(String userId) {
+            this.userId = userId;
+            return this;
+        }
+
+        public Builder setAvatar(String avatar) {
+            this.avatar = avatar;
+            return this;
+        }
+
+        public Builder setCallType(String callType) {
+            this.callType = callType;
+            return this;
+        }
+
+        public Builder setGroupCall(boolean groupCall) {
+            isGroupCall = groupCall;
             return this;
         }
 

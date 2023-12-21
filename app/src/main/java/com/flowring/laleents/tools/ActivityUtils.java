@@ -16,6 +16,12 @@ import com.flowring.laleents.ui.main.webBody.WebViewActivity;
 import com.flowring.laleents.ui.widget.jitsiMeet.WebJitisiMeetActivity;
 import com.flowring.laleents.ui.widget.qrCode.ScanCaptureActivity;
 import org.json.JSONObject;
+import org.jitsi.meet.sdk.JitsiMeetActivity;
+import org.jitsi.meet.sdk.JitsiMeetConferenceOptions;
+import org.json.JSONObject;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 
 public class ActivityUtils {
 
@@ -39,39 +45,70 @@ public class ActivityUtils {
                                          String avatar,
                                          String laleToken,
                                          String mqttHost, String jitsiDomain, String callType, String msgId, String roomId, String roomName, boolean isGroupCall) {
-        UserControlCenter.getMainUserInfo(new CallbackUtils.userReturn() {
-            @Override
-            public void Callback(UserInfo userInfo) {
-                runOnUiThread(() -> {
-                    MsgControlCenter.stopRing();
-                    Intent intent = new Intent(AllData.context, WebJitisiMeetActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    if (displayName == null || displayName.isEmpty()){
-                        intent.putExtra("displayName", UserControlCenter.getUserMinInfo().displayName);
-                    } else{
-                        intent.putExtra("displayName", displayName);
-                    }
-                    intent.putExtra("userId", userId);
-                    if (avatar == null || avatar.isEmpty()){
-                        intent.putExtra("avatar", UserControlCenter.getUserMinInfo().avatarUrl);
-                    } else {
-                        intent.putExtra("avatar", avatar);
-                    }
-                    intent.putExtra("laleToken", laleToken);
-                    intent.putExtra("mqttHost", mqttHost);
-                    intent.putExtra("jitsiDomain", jitsiDomain);
-                    intent.putExtra("callType", callType);
-                    intent.putExtra("msgId", msgId);
-                    intent.putExtra("roomId", roomId);
-                    intent.putExtra("roomName", roomName);
-
-                    intent.putExtra("messageDomain", UserControlCenter.getUserMinInfo().eimUserData.lale_external_server_info.messageServerUrl);
-                    intent.putExtra("isGroupCall", isGroupCall);
-
-                    AllData.context.getApplicationContext().startActivity(intent);
-                });
+        //判斷lale server是不是新版
+        if(true){
+            MsgControlCenter.stopRing();
+            JitsiMeetConferenceOptions options;
+            String roomIdParse = roomId.replace("room_", ""); //取 'room_' 後面數字
+            String msgIdParse = msgId.replace("event_", ""); //取 'event_' 後面數字
+            String roomSecret = String.format("%s%s",roomIdParse,msgIdParse);// 組成房間獨立 code
+            try {
+                options = new JitsiMeetConferenceOptions.Builder()
+                        .setServerURL(new URL(jitsiDomain))
+                        .setFeatureFlag("pip.enabled",  true)
+                        .setFeatureFlag("welcomepage.enabled",  false)
+                        .setFeatureFlag("readOnlyName",  true)
+                        .setFeatureFlag("prejoinpage.enabled",  false)
+                        .setFeatureFlag("meeting-name.enabled",  true)
+                        .setFeatureFlag("raise-hand.enabled",  false)
+                        .setFeatureFlag("reactions.enabled",  false)
+                        .setFeatureFlag("recording.enabled",  false)
+                        .setUserId(userId)
+                        .setAvatar(avatar)
+                        .setCallType(callType)
+                        .setGroupCall(isGroupCall)
+                        .setRoom(roomSecret)
+                        .setToken(laleToken)
+                        .build();
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
             }
-        });
+            JitsiMeetActivity.launch(context,options);
+        } else {
+            UserControlCenter.getMainUserInfo(new CallbackUtils.userReturn() {
+                @Override
+                public void Callback(UserInfo userInfo) {
+                    runOnUiThread(() -> {
+                        MsgControlCenter.stopRing();
+                        Intent intent = new Intent(AllData.context, WebJitisiMeetActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        if (displayName == null || displayName.isEmpty()){
+                            intent.putExtra("displayName", UserControlCenter.getUserMinInfo().displayName);
+                        } else{
+                            intent.putExtra("displayName", displayName);
+                        }
+                        intent.putExtra("userId", userId);
+                        if (avatar == null || avatar.isEmpty()){
+                            intent.putExtra("avatar", UserControlCenter.getUserMinInfo().avatarUrl);
+                        } else {
+                            intent.putExtra("avatar", avatar);
+                        }
+                        intent.putExtra("laleToken", laleToken);
+                        intent.putExtra("mqttHost", mqttHost);
+                        intent.putExtra("jitsiDomain", jitsiDomain);
+                        intent.putExtra("callType", callType);
+                        intent.putExtra("msgId", msgId);
+                        intent.putExtra("roomId", roomId);
+                        intent.putExtra("roomName", roomName);
+
+                        intent.putExtra("messageDomain", UserControlCenter.getUserMinInfo().eimUserData.lale_external_server_info.messageServerUrl);
+                        intent.putExtra("isGroupCall", isGroupCall);
+
+                        AllData.context.getApplicationContext().startActivity(intent);
+                    });
+                }
+            });
+        }
 
     }
 
