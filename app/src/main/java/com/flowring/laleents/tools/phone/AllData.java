@@ -256,7 +256,11 @@ public class AllData {
                 public void Callback(IOException timeout) {
                     StringUtils.HaoLog("getOneRoom 網路異常");
                     new Handler(Looper.getMainLooper()).post(() -> {
-                        CommonUtils.showToast(activity,activity.getLayoutInflater(),AllData.activity.getString(R.string.network_anomaly),false);
+                        if (AllData.activity != null){
+                            CommonUtils.showToast(activity,activity.getLayoutInflater(),activity.getString(R.string.network_anomaly),false);
+                        } else {
+                            StringUtils.HaoLog("activity 為 null，無法顯示 Toast");
+                        }
                     });
                 }
             });

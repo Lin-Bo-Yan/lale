@@ -1,5 +1,6 @@
 package com.flowring.laleents.model.user;
 
+import static com.flowring.laleents.tools.UiThreadUtil.runOnUiThread;
 import static com.flowring.laleents.tools.phone.AllData.delectAll;
 import android.app.Activity;
 import android.content.Context;
@@ -401,9 +402,7 @@ public class UserControlCenter {
             HttpReturn httpReturn = CloudUtils.iCloudUtils.updataSystemInfor(settingsArray, new CallbackUtils.TimeoutReturn() {
                 @Override
                 public void Callback(IOException timeout) {
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                        StringUtils.HaoLog("updataSystemInfor 網路異常");
-                    });
+                    handleNetworkError("updataSystemInfor 網路異常");
                 }
             });
 
@@ -1269,9 +1268,16 @@ public class UserControlCenter {
     }
 
     private static void handleNetworkError(String message) {
-        new Handler(Looper.getMainLooper()).post(() -> {
-            StringUtils.HaoLog(message);
-            CommonUtils.showToast(AllData.activity, AllData.activity.getLayoutInflater(), AllData.activity.getString(R.string.network_anomaly), false);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                StringUtils.HaoLog(message);
+                if (AllData.activity != null){
+                    CommonUtils.showToast(AllData.activity, AllData.activity.getLayoutInflater(), AllData.activity.getString(R.string.network_anomaly), false);
+                } else {
+                    StringUtils.HaoLog("AllData.activity 為 null，無法顯示 Toast");
+                }
+            }
         });
     }
 }

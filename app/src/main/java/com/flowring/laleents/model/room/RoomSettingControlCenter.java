@@ -72,7 +72,11 @@ public class RoomSettingControlCenter {
             public void Callback(IOException timeout) {
                 StringUtils.HaoLog("getGroupMembers 網路異常");
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),AllData.activity.getString(R.string.network_anomaly),false);
+                    if (AllData.activity != null){
+                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),AllData.activity.getString(R.string.network_anomaly),false);
+                    } else {
+                        StringUtils.HaoLog("AllData.activity 為 null，無法顯示 Toast");
+                    }
                 });
             }
         });
@@ -92,7 +96,11 @@ public class RoomSettingControlCenter {
             public void Callback(IOException timeout) {
                 StringUtils.HaoLog("getRoomMembers 網路異常");
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),AllData.activity.getString(R.string.network_anomaly),false);
+                    if (AllData.activity != null){
+                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),AllData.activity.getString(R.string.network_anomaly),false);
+                    } else {
+                        StringUtils.HaoLog("AllData.activity 為 null，無法顯示 Toast");
+                    }
                 });
             }
         });
@@ -109,7 +117,11 @@ public class RoomSettingControlCenter {
                 public void Callback(IOException timeout) {
                     StringUtils.HaoLog("OrganizationTreeUserImages 網路異常");
                     new Handler(Looper.getMainLooper()).post(() -> {
-                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),AllData.activity.getString(R.string.network_anomaly),false);
+                        if (AllData.activity != null){
+                            CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),AllData.activity.getString(R.string.network_anomaly),false);
+                        } else {
+                            StringUtils.HaoLog("AllData.activity 為 null，無法顯示 Toast");
+                        }
                     });
                 }
             });
@@ -154,7 +166,11 @@ public class RoomSettingControlCenter {
                         public void Callback(IOException timeout) {
                             StringUtils.HaoLog("updateRoom 網路異常");
                             new Handler(Looper.getMainLooper()).post(() -> {
-                                CommonUtils.showToast(AllData.activity, AllData.activity.getLayoutInflater(), AllData.activity.getString(R.string.network_anomaly), false);
+                                if (AllData.activity != null){
+                                    CommonUtils.showToast(AllData.activity, AllData.activity.getLayoutInflater(), AllData.activity.getString(R.string.network_anomaly), false);
+                                } else {
+                                    StringUtils.HaoLog("AllData.activity 為 null，無法顯示 Toast");
+                                }
                             });
                         }
                     });
@@ -164,7 +180,11 @@ public class RoomSettingControlCenter {
                         public void Callback(IOException timeout) {
                             StringUtils.HaoLog("updateGroup 網路異常");
                             new Handler(Looper.getMainLooper()).post(() -> {
-                                CommonUtils.showToast(AllData.activity, AllData.activity.getLayoutInflater(), AllData.activity.getString(R.string.network_anomaly), false);
+                                if (AllData.activity != null){
+                                    CommonUtils.showToast(AllData.activity, AllData.activity.getLayoutInflater(), AllData.activity.getString(R.string.network_anomaly), false);
+                                } else {
+                                    StringUtils.HaoLog("AllData.activity 為 null，無法顯示 Toast");
+                                }
                             });
                         }
                     });
@@ -208,7 +228,11 @@ public class RoomSettingControlCenter {
                     public void Callback(IOException timeout) {
                         StringUtils.HaoLog("updateGroup 網路異常");
                         new Handler(Looper.getMainLooper()).post(() -> {
-                            CommonUtils.showToast(AllData.activity, AllData.activity.getLayoutInflater(), AllData.activity.getString(R.string.network_anomaly), false);
+                            if (AllData.activity != null){
+                                CommonUtils.showToast(AllData.activity, AllData.activity.getLayoutInflater(), AllData.activity.getString(R.string.network_anomaly), false);
+                            } else {
+                                StringUtils.HaoLog("AllData.activity 為 null，無法顯示 Toast");
+                            }
                         });
                     }
                 });

@@ -153,7 +153,7 @@
     <string name="msg_size_limit">檔案超過100MB</string>
     <string name="select_null">請選擇照片或影片</string>
     <string name="done">傳送</string>
-    <string name="count_string">計數</string>
+    <string name="count_string">張</string>
     <string name="preview">預覽</string>
     <string name="select">選取</string>
     <string name="cant_play_video">無法播放影片</string>
