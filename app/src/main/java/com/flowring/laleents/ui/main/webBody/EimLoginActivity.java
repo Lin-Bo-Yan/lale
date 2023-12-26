@@ -231,7 +231,8 @@ public class EimLoginActivity extends MainAppCompatActivity {
 
             if(eimUserData.isLaleAppEim) {
                 String deviceID = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
-                boolean isRepeatDevice = UserControlCenter.alreadyLoddedIn("6","",eimUserData.af_mem_id,deviceID);
+                String userId = UserControlCenter.getUserMinInfo().userId;
+                boolean isRepeatDevice = UserControlCenter.alreadyLoddedIn("6",userId,eimUserData.af_mem_id,deviceID);
                 StringUtils.HaoLog("isRepeatDevice= "+isRepeatDevice);
                 if(isRepeatDevice){
                     //跳出 dialog
@@ -308,7 +309,8 @@ public class EimLoginActivity extends MainAppCompatActivity {
             }
             if(eimUserData.isLaleAppEim) {
                 String deviceID = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
-                boolean isRepeatDevice = UserControlCenter.alreadyLoddedIn("6","",eimUserData.af_mem_id,deviceID);
+                String userId = UserControlCenter.getUserMinInfo().userId;
+                boolean isRepeatDevice = UserControlCenter.alreadyLoddedIn("6",userId,eimUserData.af_mem_id,deviceID);
                 StringUtils.HaoLog("isRepeatDevice= "+isRepeatDevice);
                 if(isRepeatDevice){
                     //跳出 dialog
@@ -362,7 +364,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
         //存loginType
         SharedPreferencesUtils.generalType();
         SharedPreferencesUtils.thirdPartyIdentifier(eimUserData.af_mem_id);
-        HttpReturn httpReturn = CloudUtils.iCloudUtils.loginSimpleThirdParty(eimUserData.af_mem_id, Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID), new CallbackUtils.TimeoutReturn() {
+        HttpReturn httpReturn = CloudUtils.iCloudUtils.loginSimpleThirdParty(eimUserData.af_mem_id, UserControlCenter.getUserMinInfo().userId, Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID), new CallbackUtils.TimeoutReturn() {
             @Override
             public void Callback(IOException timeout) {
                 new Handler(Looper.getMainLooper()).post(() -> {

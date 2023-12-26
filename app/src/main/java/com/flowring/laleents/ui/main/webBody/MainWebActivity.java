@@ -2378,12 +2378,6 @@ public class MainWebActivity extends MainAppCompatActivity {
                             }
                             isFirstDisplay = false;
                             break;
-                        default:
-                            if(isFirstDisplay){
-                                Logout(false);
-                            }
-                            isFirstDisplay = false;
-                            break;
                     }
                 } else {
                     StringUtils.HaoLog("censorToken= 2 "+httpReturn.msg + " "+Thread.currentThread().getName());

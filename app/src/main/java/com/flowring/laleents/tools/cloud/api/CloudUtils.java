@@ -285,11 +285,8 @@ public class CloudUtils implements ICloudUtils {
             if(loginType != null && !loginType.isEmpty()){
                 jbody.put("loginType",loginType);
                 jbody.put("deviceId",deviceId);
-                if("0".equals(loginType)){
-                    jbody.put("userId",userId);
-                } else {
-                    jbody.put("thirdPartyIdentifier",thirdPartyIdentifier);
-                }
+                jbody.put("userId",userId);
+                jbody.put("thirdPartyIdentifier",thirdPartyIdentifier);
             } else {
                 StringUtils.HaoLog("alreadyLoddedIn loginType 為空");
             }
@@ -312,7 +309,7 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
-    public HttpReturn loginSimpleThirdParty(String thirdPartyIdentifier, String deviceId, CallbackUtils.TimeoutReturn timeoutReturn) {
+    public HttpReturn loginSimpleThirdParty(String thirdPartyIdentifier,String userId, String deviceId, CallbackUtils.TimeoutReturn timeoutReturn) {
         MediaType mediaType = MediaType.parse("application/json");
         String androidVersion = Build.VERSION.RELEASE;
         String manufacturer = Build.MANUFACTURER;
@@ -328,6 +325,7 @@ public class CloudUtils implements ICloudUtils {
             jbody.put("devicePlatform","android");
             jbody.put("devicePlatformVersion",androidVersion);
             jbody.put("deviceName",deviceName);
+            jbody.put("userId",userId);
         }catch (JSONException e){
             e.printStackTrace();
         }

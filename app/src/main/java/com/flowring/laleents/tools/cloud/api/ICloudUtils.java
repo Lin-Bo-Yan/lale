@@ -74,7 +74,7 @@ public interface ICloudUtils {
      * 接收到第三方登入token 發起登入
      */
     @WorkerThread
-    HttpReturn loginSimpleThirdParty(String thirdPartyIdentifier, String deviceId, CallbackUtils.TimeoutReturn timeoutReturn);
+    HttpReturn loginSimpleThirdParty(String thirdPartyIdentifier, String userId, String deviceId, CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
      * 開啟google play下載頁面
