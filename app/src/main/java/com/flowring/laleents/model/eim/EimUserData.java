@@ -19,7 +19,7 @@ public class EimUserData {
     public Long afRefreshTokenExpiration = 0l;
     public String deviceId = null;
 
-    public String af_wfci_service_url = null;
+    public String af_wfci_service_url = "";
 
 
     public String lale_server = null;
@@ -29,7 +29,7 @@ public class EimUserData {
     public LaleExternalServerInfo lale_external_server_info = null;
     public boolean isLaleCall = false;
     public String call_service_url = "";
-    public String announceServerUrl = null;
+    public String announceServerUrl = "";
 
     public UserMin getUserMin() {
         UserMin userMin = new UserMin();

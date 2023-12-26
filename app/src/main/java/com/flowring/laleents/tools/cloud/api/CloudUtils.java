@@ -2587,6 +2587,9 @@ public class CloudUtils implements ICloudUtils {
 
     @Override
     public HttpReturn announceServer(CallbackUtils.TimeoutReturn timeoutReturn) {
+        if(AllData.getAnnouncementServer() == null || AllData.getAnnouncementServer().isEmpty()){
+            return new HttpReturn();
+        }
         Request.Builder request = new Request.Builder()
                 .url(AllData.getAnnouncementServer() + "/ann/in-range/")
                 .get();
@@ -2602,6 +2605,9 @@ public class CloudUtils implements ICloudUtils {
 
     @Override
     public HttpReturn announceServerGivenTime(String givenTime) {
+        if(AllData.getAnnouncementServer() == null || AllData.getAnnouncementServer().isEmpty()){
+            return new HttpReturn();
+        }
         Request.Builder request = new Request.Builder()
                 .url(AllData.getAnnouncementServer() + "/ann/in-range/" + givenTime)
                 .get();
@@ -2616,6 +2622,9 @@ public class CloudUtils implements ICloudUtils {
 
     @Override
     public HttpReturn latestAnnounce(CallbackUtils.TimeoutReturn timeoutReturn) {
+        if(AllData.getAnnouncementServer() == null || AllData.getAnnouncementServer().isEmpty()){
+            return new HttpReturn();
+        }
         Request.Builder request = new Request.Builder()
                 .url(AllData.getAnnouncementServer() + "/ann/closest/")
                 .get();
@@ -2630,6 +2639,9 @@ public class CloudUtils implements ICloudUtils {
 
     @Override
     public HttpReturn latestAnnounceGivenTime(String givenTime) {
+        if(AllData.getAnnouncementServer() == null || AllData.getAnnouncementServer().isEmpty()){
+            return new HttpReturn();
+        }
         Request.Builder request = new Request.Builder()
                 .url(AllData.getAnnouncementServer() + "/ann/closest/" + givenTime)
                 .get();
@@ -2706,6 +2718,9 @@ public class CloudUtils implements ICloudUtils {
     @Override
     public Http2Return textWatermark(String textContent, CallbackUtils.TimeoutReturn timeoutReturn) {
         String WFCI_URL = UserControlCenter.getUserMinInfo().eimUserData.af_wfci_service_url;
+        if(WFCI_URL == null || WFCI_URL.isEmpty()){
+            return new Http2Return();
+        }
         MediaType mediaType = MediaType.parse("application/json");
         JSONObject bodyJect = new JSONObject();
         try {
@@ -2730,7 +2745,11 @@ public class CloudUtils implements ICloudUtils {
 
     @Override
     public Http2Return getAppWorkAllSystemInfor(CallbackUtils.TimeoutReturn timeoutReturn) {
-        String afWfciServiceUrl = UserControlCenter.getUserMinInfo().eimUserData.af_wfci_service_url;
+        String afWfciServiceUrl = AllData.regularServer(UserControlCenter.getUserMinInfo().eimUserData.af_wfci_service_url);
+        if(afWfciServiceUrl == null || afWfciServiceUrl.isEmpty()){
+            return new Http2Return();
+        }
+
         String sysId = "LSC00000000000000003";
         String WFCI_URL = String.format("%s/api/lalesystem/sysid/%s", afWfciServiceUrl, sysId);
         Request.Builder request = new Request.Builder()

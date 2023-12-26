@@ -530,6 +530,8 @@ public class UserControlCenter {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            } else {
+                StringUtils.HaoLog("沒有拿到 afWfciServiceUrl");
             }
         }).start();
     }

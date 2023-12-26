@@ -67,7 +67,6 @@ public class AllData {
     public static String getMainServer() {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         return pref.getString("MainServer", MainServer);
-
     }
 
     public static void setJitsiServer(String jitsiServer) {
@@ -90,7 +89,7 @@ public class AllData {
         }
     }
 
-    private static String regularServer(String domain){
+    public static String regularServer(String domain){
         Pattern pattern = Pattern.compile(DefinedUtils.URL_RULE);
         Matcher matcher = pattern.matcher(domain);
         if (!matcher.matches()) {
