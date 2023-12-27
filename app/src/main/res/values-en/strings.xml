@@ -24,7 +24,7 @@
     <string name="login_account_body">Please enter your account</string>
     <string name="login_warn_url_title">Please enter the correct format</string>
     <string name="dialog_login_warn_url">Incorrect Format</string>
-    <string name="dialog_login_error">Please enter the correct account number and password</string>
+    <string name="enter_account_password">Please enter the correct account number and password</string>
     <string name="login_password">Password</string>
     <string name="login_password_body">please enter your password</string>
     <string name="login_button_title">Scan QR code to login</string>

@@ -458,15 +458,15 @@ public class DialogUtils {
     private static String translateButton(String button) {
         switch (button) {
             case "logout":
-                return AllData.context.getString(R.string.sign_out_button);
+                return AllData.activity.getString(R.string.sign_out_button);
             case "ok":
-                return AllData.context.getString(R.string.sure_button);
+                return AllData.activity.getString(R.string.sure_button);
             case "cancel":
-                return AllData.context.getString(R.string.cancel_button);
+                return AllData.activity.getString(R.string.cancel_button);
             case "closure":
-                return AllData.context.getString(R.string.closure_button);
+                return AllData.activity.getString(R.string.closure_button);
             case "feedback":
-                return AllData.context.getString(R.string.problem_report_button);
+                return AllData.activity.getString(R.string.problem_report_button);
             default:
                 return button;
         }

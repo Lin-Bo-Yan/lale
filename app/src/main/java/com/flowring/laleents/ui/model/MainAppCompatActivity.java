@@ -82,7 +82,7 @@ public class MainAppCompatActivity extends AppCompatActivity {
                     String user_avatar_url = intent.getStringExtra("user_avatar_url");
                     break;
                 case LocalBroadcastControlCenter.ACTION_MQTT_Error: //通訊連線異常
-                    DialogUtils.showDialogMessage(MainAppCompatActivity.this, getString(R.string.server_connection_abnormality));
+                    //DialogUtils.showDialogMessage(MainAppCompatActivity.this, getString(R.string.server_connection_abnormality));
                     break;
             }
         }

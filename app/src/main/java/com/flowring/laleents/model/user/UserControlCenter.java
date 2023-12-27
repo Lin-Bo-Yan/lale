@@ -362,7 +362,7 @@ public class UserControlCenter {
                             String info = new Gson().toJson(afReturn.data);
                             callback.Callback(info);
                         } else {
-                            DialogUtils.showDialogMessage(context,context.getString(R.string.account_password_error));
+                            DialogUtils.showDialogMessage(context,context.getString(R.string.enter_account_password));
                         }
                     }
                 }).start();

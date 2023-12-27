@@ -302,8 +302,8 @@ public class MainWebActivity extends MainAppCompatActivity {
                         String user_name = intent.getStringExtra("user_name");
                         String user_avatar_url = intent.getStringExtra("user_avatar_url");
                         break;
-                    case LocalBroadcastControlCenter.ACTION_MQTT_Error:
-                        DialogUtils.showDialogMessage(MainWebActivity.this, getString(R.string.server_connection_abnormality));
+                    case LocalBroadcastControlCenter.ACTION_MQTT_Error: //通訊連線異常
+                        //DialogUtils.showDialogMessage(MainWebActivity.this, getString(R.string.server_connection_abnormality));
                         break;
                 }
             }

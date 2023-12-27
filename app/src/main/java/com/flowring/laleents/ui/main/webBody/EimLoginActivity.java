@@ -178,10 +178,11 @@ public class EimLoginActivity extends MainAppCompatActivity {
                 if (!errMsg.isEmpty()) {
                     activity.cancelWait();
                     // 根據語言設定替換錯誤訊息
-                    if (Arrays.asList("zh-CN", "zh", "en").contains(language)) {
-                        errMsg = getErrorMessage(errMsg);
-                    }
-                    DialogUtils.showDialogMessage(EimLoginActivity.this,errMsg);
+                    //if (Arrays.asList("zh-CN", "zh", "en").contains(language)) {
+                    //errMsg = getErrorMessage(errMsg);
+                    //}
+                    StringUtils.HaoLog(errMsg);
+                    DialogUtils.showDialogMessage(EimLoginActivity.this,getString(R.string.enter_account_password));
                     return;
                 }
 
