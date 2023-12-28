@@ -164,12 +164,10 @@ public class MainWebActivity extends MainAppCompatActivity {
                 StringUtils.HaoLog("詢問使用重啟");
                 PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.RECEIVE_BOOT_COMPLETED, getString(R.string.dialog_reboot_permissions));
             }
-            if((Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)){
-                if (PermissionUtils.checkPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    StringUtils.HaoLog("可以使用讀寫");
-                } else {
-                    PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE, getString(R.string.dialog_download_permissions));
-                }
+            if (PermissionUtils.checkPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                StringUtils.HaoLog("可以使用讀寫");
+            } else {
+                PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE, getString(R.string.dialog_download_permissions));
             }
 
             StringUtils.HaoLog("權限檢查= 手機設備幾版?" + Build.VERSION.SDK_INT);
@@ -877,7 +875,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     jsonObject.put("onlyKey","hashcode");
                     jsonObject.put("mimeType",type);
                     jsonObject.put("name",fileName);
-                    jsonObject.put("thumbnail", ThumbnailUtils.resizeAndConvertToBase64(outputFile.getAbsolutePath(),50));//縮圖
+                    jsonObject.put("thumbnail", "thumbnail");//縮圖
                     jsonArray.put(jsonObject);
                     sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
                 } catch (JSONException e) {
@@ -2064,6 +2062,8 @@ public class MainWebActivity extends MainAppCompatActivity {
 
     private void check(JSONObject data){
         if(data != null){
+            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            manager.cancelAll();
             boolean check = Boolean.parseBoolean(data.optString("check"));
             if(check){
                 Logout(true);
