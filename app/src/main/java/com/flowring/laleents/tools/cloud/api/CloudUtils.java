@@ -2587,11 +2587,12 @@ public class CloudUtils implements ICloudUtils {
 
     @Override
     public HttpReturn announceServer(CallbackUtils.TimeoutReturn timeoutReturn) {
-        if(AllData.getAnnouncementServer() == null || AllData.getAnnouncementServer().isEmpty()){
+        String announceUrl = AllData.regularServer(UserControlCenter.getUserMinInfo().eimUserData.announceServerUrl);
+        if(announceUrl == null || announceUrl.isEmpty()){
             return new HttpReturn();
         }
         Request.Builder request = new Request.Builder()
-                .url(AllData.getAnnouncementServer() + "/ann/in-range/")
+                .url(announceUrl + "/ann/in-range/")
                 .get();
 
         HttpReturn httpReturn = gethttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
@@ -2605,11 +2606,12 @@ public class CloudUtils implements ICloudUtils {
 
     @Override
     public HttpReturn announceServerGivenTime(String givenTime) {
-        if(AllData.getAnnouncementServer() == null || AllData.getAnnouncementServer().isEmpty()){
+        String announceUrl = AllData.regularServer(UserControlCenter.getUserMinInfo().eimUserData.announceServerUrl);
+        if(announceUrl == null || announceUrl.isEmpty()){
             return new HttpReturn();
         }
         Request.Builder request = new Request.Builder()
-                .url(AllData.getAnnouncementServer() + "/ann/in-range/" + givenTime)
+                .url(announceUrl + "/ann/in-range/" + givenTime)
                 .get();
         HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
             @Override
@@ -2622,11 +2624,12 @@ public class CloudUtils implements ICloudUtils {
 
     @Override
     public HttpReturn latestAnnounce(CallbackUtils.TimeoutReturn timeoutReturn) {
-        if(AllData.getAnnouncementServer() == null || AllData.getAnnouncementServer().isEmpty()){
+        String announceUrl = AllData.regularServer(UserControlCenter.getUserMinInfo().eimUserData.announceServerUrl);
+        if(announceUrl == null || announceUrl.isEmpty()){
             return new HttpReturn();
         }
         Request.Builder request = new Request.Builder()
-                .url(AllData.getAnnouncementServer() + "/ann/closest/")
+                .url(announceUrl + "/ann/closest/")
                 .get();
         HttpReturn httpReturn = gethttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
             @Override
@@ -2639,11 +2642,12 @@ public class CloudUtils implements ICloudUtils {
 
     @Override
     public HttpReturn latestAnnounceGivenTime(String givenTime) {
-        if(AllData.getAnnouncementServer() == null || AllData.getAnnouncementServer().isEmpty()){
+        String announceUrl = AllData.regularServer(UserControlCenter.getUserMinInfo().eimUserData.announceServerUrl);
+        if(announceUrl == null || announceUrl.isEmpty()){
             return new HttpReturn();
         }
         Request.Builder request = new Request.Builder()
-                .url(AllData.getAnnouncementServer() + "/ann/closest/" + givenTime)
+                .url(announceUrl + "/ann/closest/" + givenTime)
                 .get();
         HttpReturn httpReturn = gethttpReturn(request, 0, new CallbackUtils.TimeoutReturn() {
             @Override

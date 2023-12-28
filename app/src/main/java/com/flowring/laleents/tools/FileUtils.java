@@ -770,6 +770,29 @@ public class FileUtils {
         return jsonObject;
     }
 
+    public static JSONObject forActionSend(File file, String type, String fileName){
+        JSONObject jsonObject = new JSONObject();
+        String pic = "thumbnail"; // 預設縮圖值
+        try {
+            if(file.exists()){
+                if(type.startsWith("image/")){
+                    pic = ThumbnailUtils.resizeAndConvertToBase64(file.getAbsolutePath(),50);
+                }
+            } else {
+                if(type.startsWith("image/")){
+                    pic = ThumbnailUtils.getImageThumbnail();
+                }
+            }
+            jsonObject.put("onlyKey","hashcode");
+            jsonObject.put("mimeType",type);
+            jsonObject.put("name",fileName);
+            jsonObject.put("thumbnail",pic);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
+
     public static BitmapFactory.Options getBitmapFactory(File file){
         // 使用 BitmapFactory 讀取圖片檔案
         BitmapFactory.Options options = new BitmapFactory.Options();

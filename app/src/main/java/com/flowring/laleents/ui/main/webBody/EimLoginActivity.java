@@ -94,7 +94,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
                             public void Callback(String message) {
                                 StringUtils.HaoLog("結果:" + message);
                                 if(message != null){
-                                    Loginback(EimLoginActivity.this, message,"source_aflogin");
+                                    Loginback(EimLoginActivity.this, message);
                                 }
                             }
                         });
@@ -113,7 +113,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
                         StringUtils.HaoLog("結果:" + SCAN_QRCODE);
                         boolean haveInternet = checkNetworkAndContinue();
                         if(haveInternet && SCAN_QRCODE != null){
-                            Loginback(EimLoginActivity.this, SCAN_QRCODE,"source_scan_qrcode");
+                            Loginback(EimLoginActivity.this, SCAN_QRCODE);
                         }
                     }
                 }
@@ -147,36 +147,26 @@ public class EimLoginActivity extends MainAppCompatActivity {
         SharedPreferencesUtils.clearWatermark(EimLoginActivity.this);
     }
 
-    public static void saveLog(MainAppCompatActivity activity, String source) {
+    public static void saveLog(MainAppCompatActivity activity) {
         activity.runOnUiThread(()->{
-            if("source_scan_qrcode".equals(source)){
-                DialogUtils.showDialogMessage(activity, activity.getString(R.string.saveLog_title), activity.getString(R.string.saveLog_text),new CallbackUtils.noReturn() {
-                            @Override
-                            public void Callback() {
-                                downloadDir();
-                            }
+            DialogUtils.showDialogMessage(activity, activity.getString(R.string.saveLog_title), activity.getString(R.string.saveLog_text),new CallbackUtils.noReturn() {
+                        @Override
+                        public void Callback() {
+                            downloadDir();
                         }
-                );
-            } else if("source_aflogin".equals(source)){
-                DialogUtils.showDialogMessage(activity, activity.getString(R.string.saveLog_title), "",new CallbackUtils.noReturn() {
-                            @Override
-                            public void Callback() {
-                                downloadDir();
-                            }
-                        }
-                );
-            }
+                    }
+            );
         });
     }
 
-    public void Loginback(MainAppCompatActivity activity, final String resultData, String source) {
+    public void Loginback(MainAppCompatActivity activity, final String resultData) {
         activity.showWait();
 
         new Thread(() -> {
             StringUtils.HaoLog("onActivityResult Scan QRcode = " + resultData);
             if (resultData == null) {
                 activity.cancelWait();
-                saveLog(activity,source);
+                saveLog(activity);
                 return;
             }
 
@@ -205,18 +195,18 @@ public class EimLoginActivity extends MainAppCompatActivity {
                 String deviceId = jwt.getClaim("dev_id").asString();
                 String uuid = Settings.Secure.getString(AllData.context.getContentResolver(), Settings.Secure.ANDROID_ID);
                 if(deviceId != null && !deviceId.isEmpty()){
-                    connection_server_post_httpReturn(activity,result,uuid,source);
+                    connection_server_post_httpReturn(activity,result,uuid);
                 } else {
-                    connection_server_get_httpReturn(activity,result,source);
+                    connection_server_get_httpReturn(activity,result);
                 }
             } else {
                 activity.cancelWait();
-                saveLog(activity,source);
+                saveLog(activity);
             }
         }).start();
     }
 
-    public void connection_server_get_httpReturn(MainAppCompatActivity activity, JSONObject result, String source){
+    public void connection_server_get_httpReturn(MainAppCompatActivity activity, JSONObject result){
         String af_token = result.optString("af_token");
         String qrcode_info_url = result.optString("qrcode_info_url");
 
@@ -293,11 +283,11 @@ public class EimLoginActivity extends MainAppCompatActivity {
             }
         } else {
             activity.cancelWait();
-            saveLog(activity,source);
+            saveLog(activity);
         }
     }
 
-    public void connection_server_post_httpReturn(MainAppCompatActivity activity, JSONObject result,String uuid, String source){
+    public void connection_server_post_httpReturn(MainAppCompatActivity activity, JSONObject result,String uuid){
         String af_token = result.optString("af_token");
         String qrcode_info_url = result.optString("qrcode_info_url");
 
@@ -371,7 +361,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
             }
         } else {
             activity.cancelWait();
-            saveLog(activity,source);
+            saveLog(activity);
         }
     }
 
@@ -407,6 +397,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
                 }
             });
         } else {
+            StringUtils.HaoLog(httpReturn.msg);
             switch (httpReturn.msg){
                 case "LLUD-0002:人員裝置禁止登入":
                     runOnUiThread(()->{

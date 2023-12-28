@@ -39,7 +39,6 @@ public class EimUserData {
             userMin.userId = af_mem_id;
         } else {
             AllData.setMainServer(lale_server);
-            AllData.setAnnouncementServer(announceServerUrl);
         }
         userMin.token = lale_token;
         userMin.refreshToken = refresh_token;

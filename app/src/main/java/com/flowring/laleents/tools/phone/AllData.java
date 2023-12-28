@@ -78,17 +78,6 @@ public class AllData {
         return newsDomain;
     }
 
-    public static void setAnnouncementServer(String announceServer) {
-        if(announceServer != null && !announceServer.isEmpty()){
-            announceServer = regularServer(announceServer);
-            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-            pref.edit().putString("AnnounceServer",announceServer).apply();
-            AnnounceServer = announceServer;
-        } else {
-            StringUtils.HaoLog("公告 Domain 空值");
-        }
-    }
-
     public static String regularServer(String domain){
         Pattern pattern = Pattern.compile(DefinedUtils.URL_RULE);
         Matcher matcher = pattern.matcher(domain);
@@ -96,11 +85,6 @@ public class AllData {
             domain = domain.replaceAll("[\\s]+", "").replaceAll("/$", "");
         }
         return domain;
-    }
-
-    public static String getAnnouncementServer() {
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        return pref.getString("AnnounceServer",AnnounceServer);
     }
 
     public static String getMemiaDomain() {

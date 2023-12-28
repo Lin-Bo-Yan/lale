@@ -647,38 +647,10 @@ public class MainWebActivity extends MainAppCompatActivity {
             @Override
             public void Callback(IOException timeout) {
                 if(timeout instanceof java.net.SocketTimeoutException){
-                    showTimeoutDialog();
+                    problemReport();
                 }
             }
         });
-    }
-
-    private void showTimeoutDialog(){
-        Gson gson = new Gson();
-        String buttonString = "[\"feedback\",\"closure\"]";
-        Type listType = new TypeToken<List<String>>(){}.getType();
-        List<String> buttons = gson.fromJson(buttonString, listType);
-        List<CallbackUtils.noReturn> callbacks = new ArrayList<>();
-        for (int i = 0; i < buttons.size(); i++) {
-            // 建立一個有效最終變數的副本
-            final int buttonIndex = i;
-            CallbackUtils.noReturn callback = new CallbackUtils.noReturn() {
-                @Override
-                public void Callback() {
-                    String button = buttons.get(buttonIndex);
-                    switch (button){
-                        case "closure":
-                            finish();
-                            break;
-                        case "feedback":
-                            feedback();
-                            break;
-                    }
-                }
-            };
-            callbacks.add(callback);
-        }
-        DialogUtils.showDialogCancelable(MainWebActivity.this,getString(R.string.server_exception_title),getString(R.string.server_exception_text),buttons,callbacks);
     }
 
     void cleanWebviewCache() {
@@ -745,7 +717,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             try {
                 photoFile = createImageFile();
             } catch (Exception ex) {
-
+                ex.printStackTrace();
             }
             if (photoFile != null) {
                 Uri photoURI = FileProvider.getUriForFile(this,
@@ -776,7 +748,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             try {
                 photoFile = createImageFile();
             } catch (Exception ex) {
-
+                ex.printStackTrace();
             }
             if (photoFile != null) {
                 Uri photoURI = FileProvider.getUriForFile(this,
@@ -848,11 +820,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     outputFile = FileUtils.getFilePathFromUri(this,txtUri,fileName);
                     try {
                         JSONArray jsonArray = new JSONArray();
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("onlyKey","hashcode");
-                        jsonObject.put("mimeType",type);
-                        jsonObject.put("name",fileName);
-                        jsonObject.put("thumbnail","thumbnail");//縮圖
+                        JSONObject jsonObject = FileUtils.forActionSend(outputFile,type,fileName);
                         jsonArray.put(jsonObject);
                         sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
                     } catch (JSONException e) {
@@ -871,11 +839,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                 outputFile = FileUtils.getFilePathFromUri(this,imageUri,fileName);
                 try {
                     JSONArray jsonArray = new JSONArray();
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("onlyKey","hashcode");
-                    jsonObject.put("mimeType",type);
-                    jsonObject.put("name",fileName);
-                    jsonObject.put("thumbnail", "thumbnail");//縮圖
+                    JSONObject jsonObject = FileUtils.forActionSend(outputFile,type,fileName);
                     jsonArray.put(jsonObject);
                     sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
                 } catch (JSONException e) {
@@ -887,11 +851,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                 outputFile = FileUtils.getFilePathFromUri(this,videoUri,fileName);
                 try {
                     JSONArray jsonArray = new JSONArray();
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("onlyKey","hashcode");
-                    jsonObject.put("mimeType",type);
-                    jsonObject.put("name",fileName);
-                    jsonObject.put("thumbnail","thumbnail");//縮圖
+                    JSONObject jsonObject = FileUtils.forActionSend(outputFile,type,fileName);
                     jsonArray.put(jsonObject);
                     sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
                 } catch (JSONException e) {
@@ -905,11 +865,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                 outputFile = FileUtils.getFilePathFromUri(this,fileUri,fileName);
                 try {
                     JSONArray jsonArray = new JSONArray();
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("onlyKey","hashcode");
-                    jsonObject.put("mimeType",type);
-                    jsonObject.put("name",fileName);
-                    jsonObject.put("thumbnail","thumbnail");//縮圖
+                    JSONObject jsonObject = FileUtils.forActionSend(outputFile,type,fileName);
                     jsonArray.put(jsonObject);
                     sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
                 } catch (JSONException e) {
@@ -947,7 +903,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     try {
                         JSONObject jsonObject = new JSONObject();
                         jsonObject.put("mimeType","message");
-                        jsonObject.put("string",matcher.group());
+                        jsonObject.put("string",matcher.group().replaceAll("\\[", ""));
                         jsonArray.put(jsonObject);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -999,7 +955,8 @@ public class MainWebActivity extends MainAppCompatActivity {
 
     //查詢伺服器最近公告
     public void latestAnnounceDialog(){
-        if(AllData.getAnnouncementServer() != null && !AllData.getAnnouncementServer().isEmpty()){
+        String announceUrl = AllData.regularServer(UserControlCenter.getUserMinInfo().eimUserData.announceServerUrl);
+        if(announceUrl != null && !announceUrl.isEmpty()){
             UserControlCenter.getLatestAnnounce( new CallbackUtils.AnnounceReturn() {
                 @Override
                 public void Callback(ServerAnnouncement serverAnnouncement) {
@@ -1027,7 +984,8 @@ public class MainWebActivity extends MainAppCompatActivity {
 
     //查詢伺服器執行中維護公告
     public void announceServerDialog(){
-        if(AllData.getAnnouncementServer() != null && !AllData.getAnnouncementServer().isEmpty()){
+        String announceUrl = AllData.regularServer(UserControlCenter.getUserMinInfo().eimUserData.announceServerUrl);
+        if(announceUrl != null && !announceUrl.isEmpty()){
             UserControlCenter.getAnnounceServer( new CallbackUtils.AnnounceReturn() {
                 @Override
                 public void Callback(ServerAnnouncement serverAnnouncement) {
@@ -1178,7 +1136,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                 StringUtils.HaoLog("還活著 onReceivedError getUrl= " + request.getUrl());
                 StringUtils.HaoLog("還活著 onReceivedError getMethod= " + request.getMethod());
                 if (error.getErrorCode() == ERROR_TIMEOUT || error.getErrorCode() == ERROR_CONNECT) {
-                    showTimeoutDialog();
+                    problemReport();
                 }
                 super.onReceivedError(view, request, error);
             }
@@ -1217,9 +1175,13 @@ public class MainWebActivity extends MainAppCompatActivity {
                                         }
                                     }
                                 }
+                            } else {
+                                problemReport();
                             }
                         }
                     });
+                } else {
+                    problemReport();
                 }
                 super.onReceivedHttpError(view, request, errorResponse);
             }
@@ -1228,6 +1190,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
                 StringUtils.HaoLog("還活著 onReceivedSslError error=" + error.toString());
                 StringUtils.HaoLog("還活著 SSL憑證過期" + error);
+                problemReport();
                 //handler.proceed();
                 super.onReceivedSslError(view, handler, error);
             }
@@ -1328,7 +1291,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                             });
                         }
                         break;
-                    case "*/*":
+                    default:
                         String str = DefinedUtils.URL.substring(getMainWebURL(true).length());
                         boolean isRoom = str.matches(DefinedUtils.CHATROOM);
                         if(isRoom){
