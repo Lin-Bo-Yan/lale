@@ -2,6 +2,7 @@ package com.flowring.laleents.ui.main.webBody;
 
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -71,6 +72,9 @@ public class EimLoginActivity extends MainAppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_eim);
+        // 清除通知
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.cancelAll();
         signOut();
         loggedInDialog();
         loginFunction = new LoginInAppFunc(EimLoginActivity.this);

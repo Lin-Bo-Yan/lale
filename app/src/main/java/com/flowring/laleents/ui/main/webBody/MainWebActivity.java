@@ -2062,8 +2062,6 @@ public class MainWebActivity extends MainAppCompatActivity {
 
     private void check(JSONObject data){
         if(data != null){
-            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            manager.cancelAll();
             boolean check = Boolean.parseBoolean(data.optString("check"));
             if(check){
                 Logout(true);
