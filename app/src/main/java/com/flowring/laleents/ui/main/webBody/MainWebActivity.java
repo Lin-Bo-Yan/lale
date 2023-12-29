@@ -804,36 +804,49 @@ public class MainWebActivity extends MainAppCompatActivity {
     File outputFile = null;
     String fileName = null;
     File[] outputFiles = null;
-    void shareToWeb(Intent intent) {
+    private void shareToWeb(Intent intent) {
         String type = intent.getType();
         String action = intent.getAction();
         Parcelable stream = intent.getParcelableExtra(Intent.EXTRA_STREAM);
         StringUtils.HaoLog("BroadcastReceiver EXTRA_TEXT=" + intent.getStringExtra(Intent.EXTRA_TEXT));
         StringUtils.HaoLog("BroadcastReceiver EXTRA_STREAM=" + intent.getParcelableExtra(Intent.EXTRA_STREAM));
+        // 裝置管理 - 限制副檔名
+        boolean restrictFileExtEnabled = SharedPreferencesUtils.getRestrictFileExt(MainWebActivity.this);
+        String fileExtension = SharedPreferencesUtils.getFileExtension(MainWebActivity.this);
+
         if (Intent.ACTION_SEND.equals(action) && type != null) {
             //從手機分享純文字，但txt檔案會被當成純文字，txt檔案exteaStream會有值
             if (type.startsWith("text/")) {
                 if(stream != null){
                     StringUtils.HaoLog("txt檔分享");
-                    Uri txtUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-                    fileName = FileUtils.getContentURIFileName(this,txtUri);
-                    outputFile = FileUtils.getFilePathFromUri(this,txtUri,fileName);
-                    try {
-                        JSONArray jsonArray = new JSONArray();
-                        JSONObject jsonObject = FileUtils.forActionSend(outputFile,type,fileName);
-                        jsonArray.put(jsonObject);
-                        sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                    boolean proceedWithSharing = true;
+                    if (restrictFileExtEnabled) {
+                        boolean allowUpload = FileUtils.isStringInFileExtensions(fileExtension, type);
+                        if (!allowUpload) {
+                            String replacedSymbol = fileExtension.replace(";", "、");
+                            DialogUtils.showDialogMessage(MainWebActivity.this, getString(R.string.upload_failed_title), getString(R.string.upload_failed_text) + replacedSymbol);
+                            proceedWithSharing = false;
+                        }
+                    }
+                    if(proceedWithSharing){
+                        Uri txtUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                        fileName = FileUtils.getContentURIFileName(this,txtUri);
+                        outputFile = FileUtils.getFilePathFromUri(this,txtUri,fileName);
+                        try {
+                            JSONArray jsonArray = new JSONArray();
+                            JSONObject jsonObject = FileUtils.forActionSend(outputFile,type,fileName);
+                            jsonArray.put(jsonObject);
+                            sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 } else {
                     StringUtils.HaoLog("文字分享");
                     plainText(intent);
                 }
-            }
-            //從手機分享單張圖片
-            else if (type.startsWith("image/")) {
-                //需要下載權限
+            } else if (type.startsWith("image/")) {
+                //從手機分享單張圖片，需要下載權限
                 Uri imageUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
                 fileName = FileUtils.getContentURIFileName(this,imageUri);
                 outputFile = FileUtils.getFilePathFromUri(this,imageUri,fileName);
@@ -857,19 +870,30 @@ public class MainWebActivity extends MainAppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-            }
-            //從手機其他檔案
-            else {
-                Uri fileUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-                fileName = FileUtils.getContentURIFileName(this,fileUri);
-                outputFile = FileUtils.getFilePathFromUri(this,fileUri,fileName);
-                try {
-                    JSONArray jsonArray = new JSONArray();
-                    JSONObject jsonObject = FileUtils.forActionSend(outputFile,type,fileName);
-                    jsonArray.put(jsonObject);
-                    sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
+            } else {
+                //從手機其他檔案
+                boolean proceedWithSharing = true;
+                if (restrictFileExtEnabled) {
+                    boolean allowUpload = FileUtils.isStringInFileExtensions(fileExtension, type);
+                    if (!allowUpload) {
+                        String replacedSymbol = fileExtension.replace(";", "、");
+                        DialogUtils.showDialogMessage(MainWebActivity.this, getString(R.string.upload_failed_title), getString(R.string.upload_failed_text) + replacedSymbol);
+                        proceedWithSharing = false;
+                    }
+                }
+
+                if(proceedWithSharing){
+                    Uri fileUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                    fileName = FileUtils.getContentURIFileName(this,fileUri);
+                    outputFile = FileUtils.getFilePathFromUri(this,fileUri,fileName);
+                    try {
+                        JSONArray jsonArray = new JSONArray();
+                        JSONObject jsonObject = FileUtils.forActionSend(outputFile,type,fileName);
+                        jsonArray.put(jsonObject);
+                        sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -1175,13 +1199,9 @@ public class MainWebActivity extends MainAppCompatActivity {
                                         }
                                     }
                                 }
-                            } else {
-                                problemReport();
                             }
                         }
                     });
-                } else {
-                    problemReport();
                 }
                 super.onReceivedHttpError(view, request, errorResponse);
             }
