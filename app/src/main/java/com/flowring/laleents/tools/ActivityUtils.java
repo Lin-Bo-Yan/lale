@@ -1,14 +1,11 @@
 package com.flowring.laleents.tools;
 
-
 import static com.flowring.laleents.tools.UiThreadUtil.runOnUiThread;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-
-import androidx.activity.ComponentActivity;
 import androidx.activity.result.ActivityResultLauncher;
-
 import com.flowring.laleents.model.msg.MsgControlCenter;
 import com.flowring.laleents.model.user.UserControlCenter;
 import com.flowring.laleents.model.user.UserInfo;
@@ -18,19 +15,17 @@ import com.flowring.laleents.ui.main.webBody.MainWebActivity;
 import com.flowring.laleents.ui.main.webBody.WebViewActivity;
 import com.flowring.laleents.ui.widget.jitsiMeet.WebJitisiMeetActivity;
 import com.flowring.laleents.ui.widget.qrCode.ScanCaptureActivity;
-
 import org.json.JSONObject;
-
 
 public class ActivityUtils {
 
-    static public void gotoWebViewActivity(Context context, String url) {
+    static public void gotoWebViewActivity(Activity activity, String url, ActivityResultLauncher<Intent> recodeResult) {
         runOnUiThread(() -> {
             MsgControlCenter.stopRing();
-            Intent intent = new Intent(AllData.context, WebViewActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            Intent intent = new Intent(activity, WebViewActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             intent.putExtra("url", url);
-            context.startActivity(intent);
+            recodeResult.launch(intent);
         });
     }
     static public void gotoMainWebActivity(Context context) {
@@ -80,20 +75,20 @@ public class ActivityUtils {
 
     }
 
-    static public void gotoQRcode(ComponentActivity activity, ScanCaptureActivity.ScanCaptureType type, ActivityResultLauncher RcodeResult) {
-        Intent intent = new Intent((Context) activity, ScanCaptureActivity.class);
+    static public void gotoQRcode(Activity activity, ScanCaptureActivity.ScanCaptureType type, ActivityResultLauncher<Intent> recodeResult) {
+        Intent intent = new Intent(activity, ScanCaptureActivity.class);
         intent.putExtra("ScanCaptureType", type);
-        RcodeResult.launch(intent);
+        recodeResult.launch(intent);
     }
 
-    public static void goFileReaderActivity(Context context, String url, JSONObject data){
+    public static void goFileReaderActivity(Activity activity, String url, JSONObject data){
         String googleDocs = "http://docs.google.com/gview?embedded=true&url=";
         runOnUiThread(() -> {
-            Intent intent = new Intent(context, FileReaderActivity.class);
+            Intent intent = new Intent(activity, FileReaderActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra("url", googleDocs + url);
             intent.putExtra("jsonData",data.toString());
-            context.startActivity(intent);
+            activity.startActivity(intent);
         });
     }
 }

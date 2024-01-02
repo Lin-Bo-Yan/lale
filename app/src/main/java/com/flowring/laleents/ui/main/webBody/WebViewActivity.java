@@ -15,6 +15,8 @@ import android.webkit.WebViewClient;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import com.flowring.laleents.R;
+import com.flowring.laleents.tools.ActivityUtils;
+import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.TimeUtils;
 import com.flowring.laleents.ui.model.MainAppCompatActivity;
@@ -121,13 +123,8 @@ public class WebViewActivity extends MainAppCompatActivity {
     private void closeWebView(JSONObject data){
         // 設置返回結果
         Intent closeWebView = new Intent();
-        if(data != null){
-            closeWebView.putExtra("closeWebView", data.toString());
-        } else {
-            closeWebView.putExtra("closeWebView", "{\"callBack\":\"\"}");
-        }
+        closeWebView.putExtra("closeWebView", data.toString());
         setResult(Activity.RESULT_OK, closeWebView);
-        StringUtils.HaoLog("openWebView= 1 " + data);
         finish();
     }
 }

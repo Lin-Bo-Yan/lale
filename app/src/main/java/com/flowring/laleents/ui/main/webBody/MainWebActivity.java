@@ -521,7 +521,6 @@ public class MainWebActivity extends MainAppCompatActivity {
                 mUploadMessage = null;
             }
         }
-
         if (requestCode == DefinedUtils.REQUEST_IMAGE_PICKER) {
             ArrayList<Media> images = data.getParcelableArrayListExtra(PickerConfig.EXTRA_RESULT);
             if (images == null) {
@@ -1616,7 +1615,22 @@ public class MainWebActivity extends MainAppCompatActivity {
     }
 
     private void openWebView(JSONObject data) {
-        ActivityUtils.gotoWebViewActivity(MainWebActivity.this, data.optString("url"));
+        activityReturn = new CallbackUtils.ActivityReturn() {
+            @Override
+            public void Callback(androidx.activity.result.ActivityResult activityResult) {
+                String closeWebView = null;
+                if (activityResult.getData() != null){
+                    closeWebView = activityResult.getData().getStringExtra("closeWebView");
+                }
+                try {
+                    JSONObject jsonObject = new JSONObject().put("type", "closeWebView").put("data", closeWebView);
+                    sendToWeb(jsonObject.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        ActivityUtils.gotoWebViewActivity(MainWebActivity.this, data.optString("url"), ActivityResult);
     }
 
     private String getFileExtension(Uri uri) {
@@ -2837,7 +2851,11 @@ public class MainWebActivity extends MainAppCompatActivity {
         String sURL;
         if (data.has("url")) {
             sURL = data.optString("url");
-            ActivityUtils.gotoWebViewActivity(MainWebActivity.this, sURL);
+            ActivityUtils.gotoWebViewActivity(MainWebActivity.this, sURL, ActivityResult);
+            activityReturn = new CallbackUtils.ActivityReturn() {
+                @Override
+                public void Callback(androidx.activity.result.ActivityResult activityResult) {}
+            };
         }
 
     }
