@@ -1,10 +1,13 @@
 package com.flowring.laleents.ui.main.webBody;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.DownloadListener;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -13,7 +16,10 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import com.flowring.laleents.R;
 import com.flowring.laleents.tools.StringUtils;
+import com.flowring.laleents.tools.TimeUtils;
 import com.flowring.laleents.ui.model.MainAppCompatActivity;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class WebViewActivity extends MainAppCompatActivity {
     public TextView url;
@@ -38,7 +44,7 @@ public class WebViewActivity extends MainAppCompatActivity {
         webview.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                view.loadUrl(  request.getUrl().toString());
+                view.loadUrl(request.getUrl().toString());
                 return false;
             }
         });
@@ -65,7 +71,38 @@ public class WebViewActivity extends MainAppCompatActivity {
         webSettings.setMediaPlaybackRequiresUserGesture(false);
 
         WebView.setWebContentsDebuggingEnabled(true);
+        webview.addJavascriptInterface(this, "laleIm");
         webview.loadUrl(url.getText().toString());
+    }
+
+    @SuppressLint("JavascriptInterface")
+    @JavascriptInterface
+    public String postMessage(String json) {
+        StringUtils.HaoLog("WebViewActivity命令= " + TimeUtils.NowTime() + "/" + json);
+        if (json == null || json.isEmpty()){
+            return json;
+        }
+        try {
+            JSONObject jsonObject = new JSONObject(json);
+            if(jsonObject.isNull("command")){
+                return json;
+            }
+            String command = jsonObject.optString("command");
+            JSONObject data = null;
+            if (!jsonObject.isNull("data")){
+                data = jsonObject.optJSONObject("data");
+            }
+
+            switch (command) {
+                case "closeWebView":
+                    closeWebView(data);
+                    break;
+            }
+        } catch (JSONException e) {
+            StringUtils.HaoLog("WebViewActivity 命令失敗");
+            e.printStackTrace();
+        }
+        return json;
     }
 
     DownloadListener mWebDownloadListener = new DownloadListener() {
@@ -80,4 +117,17 @@ public class WebViewActivity extends MainAppCompatActivity {
             startActivity(intent);
         }
     };
+
+    private void closeWebView(JSONObject data){
+        // 設置返回結果
+        Intent closeWebView = new Intent();
+        if(data != null){
+            closeWebView.putExtra("closeWebView", data.toString());
+        } else {
+            closeWebView.putExtra("closeWebView", "{\"callBack\":\"\"}");
+        }
+        setResult(Activity.RESULT_OK, closeWebView);
+        StringUtils.HaoLog("openWebView= 1 " + data);
+        finish();
+    }
 }

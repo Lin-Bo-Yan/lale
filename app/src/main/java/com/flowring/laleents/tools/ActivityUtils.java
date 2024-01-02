@@ -33,12 +33,12 @@ public class ActivityUtils {
             context.startActivity(intent);
         });
     }
-    static public void gotoMainWebActivity(Context context)
-    {
+    static public void gotoMainWebActivity(Context context) {
         Intent intent = new Intent(AllData.context, MainWebActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         AllData.context.getApplicationContext().startActivity(intent);
     }
+
     static public void gotoWebJitisiMeet(Context context, String displayName,
                                          String userId,
                                          String avatar,
