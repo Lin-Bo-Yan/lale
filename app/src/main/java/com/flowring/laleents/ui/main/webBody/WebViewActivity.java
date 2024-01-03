@@ -19,19 +19,27 @@ import com.flowring.laleents.tools.ActivityUtils;
 import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.TimeUtils;
+import com.flowring.laleents.tools.room.GlobalDataManager;
 import com.flowring.laleents.ui.model.MainAppCompatActivity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class WebViewActivity extends MainAppCompatActivity {
     public TextView url;
     public WebView webview;
+    private static final List<WebViewActivity> activities = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_webview);
         StringUtils.HaoLog("WebViewActivity onCreate");
+        // 將當前實例添加到列表中
+        activities.add(this);
+
         findViewById(R.id.close).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -99,6 +107,9 @@ public class WebViewActivity extends MainAppCompatActivity {
                 case "closeWebView":
                     closeWebView(data);
                     break;
+                case "openWebView":
+                    openWebView(data);
+                    break;
             }
         } catch (JSONException e) {
             StringUtils.HaoLog("WebViewActivity 命令失敗");
@@ -121,10 +132,27 @@ public class WebViewActivity extends MainAppCompatActivity {
     };
 
     private void closeWebView(JSONObject data){
-        // 設置返回結果
-        Intent closeWebView = new Intent();
-        closeWebView.putExtra("closeWebView", data.toString());
-        setResult(Activity.RESULT_OK, closeWebView);
-        finish();
+        String callBack = data.optString("callBack");
+        if("workToTasks".equalsIgnoreCase(callBack)){
+            // 將數據保存到全局數據管理器中
+            GlobalDataManager.getInstance().setCloseWebViewData(data);
+            for (WebViewActivity activity : new ArrayList<>(activities)) {
+                activity.finish();
+            }
+        } else {
+            // 設置返回結果
+            Intent closeWebView = new Intent();
+            closeWebView.putExtra("closeWebView", data.toString());
+            setResult(Activity.RESULT_OK, closeWebView);
+            finish();
+        }
+    }
+
+    private void openWebView(JSONObject data) {
+        activityReturn = new CallbackUtils.ActivityReturn() {
+            @Override
+            public void Callback(androidx.activity.result.ActivityResult activityResult) {}
+        };
+        ActivityUtils.gotoWebViewActivity(WebViewActivity.this, data.optString("url"), ActivityResult);
     }
 }

@@ -106,6 +106,7 @@ import com.flowring.laleents.tools.phone.LocalBroadcastControlCenter;
 import com.flowring.laleents.tools.phone.MultilingualControlCenter;
 import com.flowring.laleents.tools.phone.PermissionUtils;
 import com.flowring.laleents.tools.phone.ServiceUtils;
+import com.flowring.laleents.tools.room.GlobalDataManager;
 import com.flowring.laleents.ui.model.MainAppCompatActivity;
 import com.flowring.laleents.ui.widget.qrCode.ScanCaptureActivity;
 import com.google.gson.Gson;
@@ -1618,9 +1619,18 @@ public class MainWebActivity extends MainAppCompatActivity {
         activityReturn = new CallbackUtils.ActivityReturn() {
             @Override
             public void Callback(androidx.activity.result.ActivityResult activityResult) {
-                String closeWebView = null;
+                String closeWebView;
                 if (activityResult.getData() != null){
                     closeWebView = activityResult.getData().getStringExtra("closeWebView");
+                } else {
+                    JSONObject data = GlobalDataManager.getInstance().getCloseWebViewData();
+                    if(data != null){
+                        closeWebView = data.toString();
+                        // 數據處理完畢，清理全局數據
+                        GlobalDataManager.getInstance().clearCloseWebViewData();
+                    } else {
+                        closeWebView = "{\"callBack\":\"\"}";
+                    }
                 }
                 try {
                     JSONObject jsonObject = new JSONObject().put("type", "closeWebView").put("data", closeWebView);
