@@ -32,6 +32,12 @@ import java.net.URL;
  * conference will be joined.
  */
 public class JitsiMeetConferenceOptions implements Parcelable {
+    private String isGroupCall;
+    private String callType;
+    private String avatar;
+    private String userId;
+    private String displayName;
+    private String roomName;
     /**
      * Server where the conference should take place.
      */
@@ -84,6 +90,12 @@ public class JitsiMeetConferenceOptions implements Parcelable {
      * Class used to build the immutable {@link JitsiMeetConferenceOptions} object.
      */
     public static class Builder {
+        private String isGroupCall;
+        private String callType;
+        private String avatar;
+        private String userId;
+        private String displayName;
+        private String roomName;
         private URL serverURL;
         private String room;
         private String token;
@@ -93,21 +105,38 @@ public class JitsiMeetConferenceOptions implements Parcelable {
 
         private JitsiMeetUserInfo userInfo;
 
-        private String displayName;
-
-        private String userId;
-
-        private String avatar;
-
-        private String callType;
-
-        private boolean isGroupCall;
-
         public Builder() {
             config = new Bundle();
             featureFlags = new Bundle();
         }
+        public Builder isGroupCall(String isGroupCall) {
+            this.isGroupCall = isGroupCall;
 
+            return this;
+        }
+
+        public Builder setCallType(String callType) {
+            this.callType = callType;
+
+            return this;
+        }
+        public Builder setAvatar(String avatar) {
+            this.avatar = avatar;
+
+            return this;
+        }
+        public Builder setUserId(String userId) {
+            this.userId = userId;
+            return this;
+        }
+        public Builder setDisplayName(String displayName) {
+            this.displayName = displayName;
+            return this;
+        }
+        public Builder setRoomName(String roomName){
+            this.roomName = roomName;
+            return this;
+        }
         /**\
          * Sets the server URL.
          * @param url - {@link URL} of the server where the conference should take place.
@@ -209,31 +238,6 @@ public class JitsiMeetConferenceOptions implements Parcelable {
             return this;
         }
 
-        public Builder setDisplayName(String displayName) {
-            this.displayName = displayName;
-            return this;
-        }
-
-        public Builder setUserId(String userId) {
-            this.userId = userId;
-            return this;
-        }
-
-        public Builder setAvatar(String avatar) {
-            this.avatar = avatar;
-            return this;
-        }
-
-        public Builder setCallType(String callType) {
-            this.callType = callType;
-            return this;
-        }
-
-        public Builder setGroupCall(boolean groupCall) {
-            isGroupCall = groupCall;
-            return this;
-        }
-
         public Builder setConfigOverride(String config, String value) {
             this.config.putString(config, value);
 
@@ -277,8 +281,13 @@ public class JitsiMeetConferenceOptions implements Parcelable {
             options.token = this.token;
             options.config = this.config;
             options.featureFlags = this.featureFlags;
+            options.callType =this.callType;
+            options.isGroupCall = this.isGroupCall;
+            options.avatar = this.avatar;
+            options.userId = this.userId;
+            options.displayName = this.displayName;
+            options.roomName = this.roomName;
             options.userInfo = this.userInfo;
-
             return options;
         }
     }
@@ -292,6 +301,12 @@ public class JitsiMeetConferenceOptions implements Parcelable {
         token = in.readString();
         config = in.readBundle();
         featureFlags = in.readBundle();
+        callType = in.readString();
+        isGroupCall = in.readString();
+        avatar = in.readString();
+        userId = in.readString();
+        displayName = in.readString();
+        roomName = in.readString();
         userInfo = new JitsiMeetUserInfo(in.readBundle());
     }
 
@@ -316,6 +331,24 @@ public class JitsiMeetConferenceOptions implements Parcelable {
             }
             if (room != null) {
                 urlProps.putString("room", room);
+            }
+            if (isGroupCall != null) {
+                urlProps.putString("isGroupCall", isGroupCall);
+            }
+            if (callType != null) {
+                urlProps.putString("callType", callType);
+            }
+            if (avatar != null) {
+                urlProps.putString("avatar", avatar);
+            }
+            if (userId != null){
+                urlProps.putString("userId", userId);
+            }
+            if (displayName != null){
+                urlProps.putString("displayName", displayName);
+            }
+            if (roomName != null){
+                urlProps.putString("roomName", roomName);
             }
         }
 
@@ -355,6 +388,12 @@ public class JitsiMeetConferenceOptions implements Parcelable {
         dest.writeString(token);
         dest.writeBundle(config);
         dest.writeBundle(featureFlags);
+        dest.writeString(callType);
+        dest.writeString(isGroupCall);
+        dest.writeString(avatar);
+        dest.writeString(userId);
+        dest.writeString(displayName);
+        dest.writeString(roomName);
         dest.writeBundle(userInfo != null ? userInfo.asBundle() : new Bundle());
     }
 
