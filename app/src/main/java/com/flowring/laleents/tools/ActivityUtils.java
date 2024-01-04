@@ -5,6 +5,9 @@ import static com.flowring.laleents.tools.UiThreadUtil.runOnUiThread;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import androidx.activity.ComponentActivity;
 import androidx.activity.result.ActivityResultLauncher;
 import com.flowring.laleents.model.msg.MsgControlCenter;
 import com.flowring.laleents.model.user.UserControlCenter;
@@ -18,6 +21,7 @@ import com.flowring.laleents.ui.widget.qrCode.ScanCaptureActivity;
 import org.json.JSONObject;
 import org.jitsi.meet.sdk.JitsiMeetActivity;
 import org.jitsi.meet.sdk.JitsiMeetConferenceOptions;
+import org.jitsi.meet.sdk.JitsiMeetUserInfo;
 import org.json.JSONObject;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -47,11 +51,19 @@ public class ActivityUtils {
                                          String mqttHost, String jitsiDomain, String callType, String msgId, String roomId, String roomName, boolean isGroupCall) {
         //判斷lale server是不是新版
         if(true){
+            Bundle bundle = new Bundle();
+            bundle.putString("displayName", displayName);
+            bundle.putString("email", "your.email@example.com");
+            bundle.putString("avatar", avatar);
+
+            JitsiMeetUserInfo userInfo = new JitsiMeetUserInfo(bundle);
             MsgControlCenter.stopRing();
             JitsiMeetConferenceOptions options;
             String roomIdParse = roomId.replace("room_", ""); //取 'room_' 後面數字
             String msgIdParse = msgId.replace("event_", ""); //取 'event_' 後面數字
             String roomSecret = String.format("%s%s",roomIdParse,msgIdParse);// 組成房間獨立 code
+            Log.e("測試","roomSecret="+roomSecret);
+            Log.e("測試","roomName="+roomName);
             try {
                 options = new JitsiMeetConferenceOptions.Builder()
                         .setServerURL(new URL(jitsiDomain))
@@ -64,11 +76,12 @@ public class ActivityUtils {
                         .setFeatureFlag("reactions.enabled",  false)
                         .setFeatureFlag("recording.enabled",  false)
                         .setAvatar(avatar)
+                        .setUserInfo(userInfo)
                         .setCallType(callType)
                         .isGroupCall(String.valueOf(isGroupCall))
                         .setUserId(userId)
                         .setDisplayName(displayName)
-                        .setRoomName(roomName)
+                        .setRoomName(roomSecret)
                         .setRoom(roomSecret)
                         .setToken(laleToken)
                         .build();
@@ -76,6 +89,7 @@ public class ActivityUtils {
                 throw new RuntimeException(e);
             }
             JitsiMeetActivity.launch(context,options);
+
         } else {
             UserControlCenter.getMainUserInfo(new CallbackUtils.userReturn() {
                 @Override
