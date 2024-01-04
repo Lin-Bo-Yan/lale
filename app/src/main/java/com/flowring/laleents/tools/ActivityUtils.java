@@ -62,8 +62,8 @@ public class ActivityUtils {
             String roomIdParse = roomId.replace("room_", ""); //取 'room_' 後面數字
             String msgIdParse = msgId.replace("event_", ""); //取 'event_' 後面數字
             String roomSecret = String.format("%s%s",roomIdParse,msgIdParse);// 組成房間獨立 code
-            Log.e("測試","roomSecret="+roomSecret);
-            Log.e("測試","roomName="+roomName);
+            Log.e("測試","roomSecret=" + roomSecret);
+            Log.e("測試","roomName=" + roomName);
             try {
                 options = new JitsiMeetConferenceOptions.Builder()
                         .setServerURL(new URL(jitsiDomain))
@@ -89,7 +89,7 @@ public class ActivityUtils {
                 throw new RuntimeException(e);
             }
             JitsiMeetActivity.launch(context,options);
-
+            TimeUtils.startCallHeartbeat();
         } else {
             UserControlCenter.getMainUserInfo(new CallbackUtils.userReturn() {
                 @Override

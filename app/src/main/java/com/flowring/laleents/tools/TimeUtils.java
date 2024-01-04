@@ -5,6 +5,7 @@ import static com.flowring.laleents.tools.StringUtils.HaoLog;
 import android.icu.text.SimpleDateFormat;
 import com.flowring.laleents.R;
 import com.flowring.laleents.tools.phone.AllData;
+import com.flowring.laleents.tools.phone.DateTask;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,10 +13,12 @@ import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Timer;
 
 public class TimeUtils {
 
     static long Timestamp = 0;
+    public static Timer timer;
 
     public static long NowTimestamp() {
         long newTimestamp = new Date().getTime();
@@ -164,5 +167,19 @@ public class TimeUtils {
         String time = String.format("%s:%s", hour, minute);
 
         return time;
+    }
+
+    public static void startCallHeartbeat(){
+        timer = new Timer();
+        DateTask heartbeatTask  = new DateTask();
+        long period = 5000; // 5秒
+        timer.scheduleAtFixedRate(heartbeatTask, 0, period); //scheduleAtFixedRate 補償機制
+    }
+
+    public static void endCallHeartbeat(){
+        if(timer != null){
+            timer.cancel();
+            timer = null;
+        }
     }
 }

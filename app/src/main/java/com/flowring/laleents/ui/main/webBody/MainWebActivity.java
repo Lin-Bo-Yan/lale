@@ -1666,6 +1666,9 @@ public class MainWebActivity extends MainAppCompatActivity {
     }
 
     private void feedback() {
+
+        TimeUtils.endCallHeartbeat();
+
         ShareCompat.IntentBuilder sb = ShareCompat.IntentBuilder.from(this);
         String[] tos = {"lalereport@flowring.com"};
         sb.setEmailTo(tos);
