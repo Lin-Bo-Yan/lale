@@ -74,10 +74,15 @@ public class ActivityUtils {
                 public void onReceive(Context context, Intent intent) {
                     if (intent != null) {
                         BroadcastEvent event = new BroadcastEvent(intent);
-                        if (event.getType()!=null && event.getType().equals("CONFERENCE_TERMINATED")){
-                            MsgControlCenter.sendEndRequest(roomId,msgId);
-                            LocalBroadcastManager.getInstance(context).unregisterReceiver(broadcastReceiver);
-                            broadcastReceiver = null ;
+                        if(event.getType()!=null){
+                            switch (event.getType()){
+                                case CONFERENCE_TERMINATED:
+                                    MsgControlCenter.sendEndRequest(roomId,msgId);
+                                    TimeUtils.endCallHeartbeat();
+                                    LocalBroadcastManager.getInstance(context).unregisterReceiver(broadcastReceiver);
+                                    broadcastReceiver = null ;
+                                    break;
+                            }
                         }
                     }
                 }

@@ -179,7 +179,6 @@ public class TimeUtils {
     public static void endCallHeartbeat(){
         if(timer != null){
             timer.cancel();
-            timer = null;
         }
     }
 }
