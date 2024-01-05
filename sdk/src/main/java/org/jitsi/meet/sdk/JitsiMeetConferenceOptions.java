@@ -37,7 +37,7 @@ public class JitsiMeetConferenceOptions implements Parcelable {
     private String avatar;
     private String userId;
     private String displayName;
-    private String roomName;
+    private String conferenceName;// conferenceName
     /**
      * Server where the conference should take place.
      */
@@ -95,7 +95,7 @@ public class JitsiMeetConferenceOptions implements Parcelable {
         private String avatar;
         private String userId;
         private String displayName;
-        private String roomName;
+        private String conferenceName;
         private URL serverURL;
         private String room;
         private String token;
@@ -133,8 +133,8 @@ public class JitsiMeetConferenceOptions implements Parcelable {
             this.displayName = displayName;
             return this;
         }
-        public Builder setRoomName(String roomName){
-            this.roomName = roomName;
+        public Builder setRoomName(String conferenceName){
+            this.conferenceName = conferenceName;
             return this;
         }
         /**\
@@ -286,7 +286,7 @@ public class JitsiMeetConferenceOptions implements Parcelable {
             options.avatar = this.avatar;
             options.userId = this.userId;
             options.displayName = this.displayName;
-            options.roomName = this.roomName;
+            options.conferenceName = this.conferenceName;
             options.userInfo = this.userInfo;
             return options;
         }
@@ -306,7 +306,7 @@ public class JitsiMeetConferenceOptions implements Parcelable {
         avatar = in.readString();
         userId = in.readString();
         displayName = in.readString();
-        roomName = in.readString();
+        conferenceName = in.readString();
         userInfo = new JitsiMeetUserInfo(in.readBundle());
     }
 
@@ -347,8 +347,8 @@ public class JitsiMeetConferenceOptions implements Parcelable {
             if (displayName != null){
                 urlProps.putString("displayName", displayName);
             }
-            if (roomName != null){
-                urlProps.putString("roomName", roomName);
+            if (conferenceName != null){
+                urlProps.putString("conferenceName", conferenceName);
             }
         }
 
@@ -393,7 +393,7 @@ public class JitsiMeetConferenceOptions implements Parcelable {
         dest.writeString(avatar);
         dest.writeString(userId);
         dest.writeString(displayName);
-        dest.writeString(roomName);
+        dest.writeString(conferenceName);
         dest.writeBundle(userInfo != null ? userInfo.asBundle() : new Bundle());
     }
 

@@ -112,7 +112,7 @@ public class ActivityUtils {
                         .isGroupCall(String.valueOf(isGroupCall))
                         .setUserId(userId)
                         .setDisplayName(displayName)
-                        .setRoomName(roomSecret)
+                        .setRoomName(roomName)
                         .setRoom(roomSecret)
                         .setToken(laleToken)
                         .build();
