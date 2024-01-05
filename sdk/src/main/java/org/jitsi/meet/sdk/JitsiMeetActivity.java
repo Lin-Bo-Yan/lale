@@ -25,27 +25,21 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.facebook.react.modules.core.PermissionListener;
+import com.google.gson.Gson;
 
 import org.jitsi.meet.sdk.log.JitsiMeetLogger;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 
-/**
- * A base activity for SDK users to embed.  It contains all the required wiring
- * between the {@code JitsiMeetView} and the Activity lifecycle methods.
- *
- * In this activity we use a single {@code JitsiMeetView} instance. This
- * instance gives us access to a view which displays the welcome page and the
- * conference itself. All lifecycle methods associated with this Activity are
- * hooked to the React Native subsystem via proxy calls through the
- * {@code JitsiMeetActivityDelegate} static methods.
- */
 public class JitsiMeetActivity extends AppCompatActivity
     implements JitsiMeetActivityInterface {
 
@@ -69,10 +63,13 @@ public class JitsiMeetActivity extends AppCompatActivity
     // Helpers for starting the activity
     //
 
-    public static void launch(Context context, JitsiMeetConferenceOptions options) {
+    public static void launch(Context context, JitsiMeetConferenceOptions options,String roomId,String eventId,boolean isGroupCall) {
         Intent intent = new Intent(context, JitsiMeetActivity.class);
         intent.setAction(ACTION_JITSI_MEET_CONFERENCE);
         intent.putExtra(JITSI_MEET_CONFERENCE_OPTIONS, options);
+        intent.putExtra("roomId", roomId);
+        intent.putExtra("eventId", eventId);
+        intent.putExtra("isGroupCall", isGroupCall);
         if (!(context instanceof Activity)) {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         }
@@ -82,7 +79,7 @@ public class JitsiMeetActivity extends AppCompatActivity
     public static void launch(Context context, String url) {
         JitsiMeetConferenceOptions options
             = new JitsiMeetConferenceOptions.Builder().setRoom(url).build();
-        launch(context, options);
+        launch(context, options,"","",false);
     }
 
     // Overrides
@@ -95,11 +92,15 @@ public class JitsiMeetActivity extends AppCompatActivity
         intent.putExtra("newConfig", newConfig);
         this.sendBroadcast(intent);
     }
-
+String  roomId = "";
+    String  eventId = "";
+    boolean isGroupCall = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        roomId = getIntent().getStringExtra("roomId");
+        eventId = getIntent().getStringExtra("eventId");
+        isGroupCall = getIntent().getBooleanExtra("eventId",false);
         setContentView(R.layout.activity_jitsi_meet);
         this.jitsiView = findViewById(R.id.jitsiView);
 
@@ -228,6 +229,7 @@ public class JitsiMeetActivity extends AppCompatActivity
 
     protected void onConferenceTerminated(HashMap<String, Object> extraData) {
         JitsiMeetLogger.i("Conference terminated: " + extraData);
+        //這裡是通話離開時
     }
 
     protected void onConferenceWillJoin(HashMap<String, Object> extraData) {
@@ -311,33 +313,61 @@ public class JitsiMeetActivity extends AppCompatActivity
         for (BroadcastEvent.Type type : BroadcastEvent.Type.values()) {
             intentFilter.addAction(type.getAction());
         }
-
+        intentFilter.addAction("聊天室內訊息");
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, intentFilter);
     }
+    public void checkJsonAndExecute(String jsonString) {
+        try {
+            JSONObject jsonObject = new JSONObject(jsonString.replace("data=","data:"));
 
+            if (jsonObject.has("data")) {
+                JSONObject data = jsonObject.getJSONObject("data");
+
+                String type = data.optString("type");
+                String roomId = data.optString("roomId");
+                String id = data.optString("id");
+                if ("lale.call.left.request".equals(type) &&
+                      this.roomId.equals(roomId) &&
+                       this.eventId.equals(id)) {
+                    JSONObject content = data.optJSONObject("content");
+                    if (content != null) {
+                        String result = content.optString("result");
+                        if ("left".equals(result) && !isGroupCall) {
+                            finish();
+                        }
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
     private void onBroadcastReceived(Intent intent) {
         if (intent != null) {
             BroadcastEvent event = new BroadcastEvent(intent);
-
-            switch (event.getType()) {
-                case CONFERENCE_JOINED:
-                    onConferenceJoined(event.getData());
-                    break;
-                case CONFERENCE_WILL_JOIN:
-                    onConferenceWillJoin(event.getData());
-                    break;
-                case CONFERENCE_TERMINATED:
-                    onConferenceTerminated(event.getData());
-                    break;
-                case PARTICIPANT_JOINED:
-                    onParticipantJoined(event.getData());
-                    break;
-                case PARTICIPANT_LEFT:
-                    onParticipantLeft(event.getData());
-                    break;
-                case READY_TO_CLOSE:
-                    onReadyToClose();
-                    break;
+            if(event.getType()!=null){
+                switch (event.getType()) {
+                    case CONFERENCE_JOINED:
+                        onConferenceJoined(event.getData());
+                        break;
+                    case CONFERENCE_WILL_JOIN:
+                        onConferenceWillJoin(event.getData());
+                        break;
+                    case CONFERENCE_TERMINATED:
+                        onConferenceTerminated(event.getData());
+                        break;
+                    case PARTICIPANT_JOINED:
+                        onParticipantJoined(event.getData());
+                        break;
+                    case PARTICIPANT_LEFT:
+                        onParticipantLeft(event.getData());
+                        break;
+                    case READY_TO_CLOSE:
+                        onReadyToClose();
+                        break;
+                }
+            } else if ( event.getData() != null){
+                checkJsonAndExecute(event.getData().toString());
             }
         }
     }
