@@ -74,13 +74,16 @@ public class ActivityUtils {
                 public void onReceive(Context context, Intent intent) {
                     if (intent != null) {
                         BroadcastEvent event = new BroadcastEvent(intent);
-                        if(event.getType()!=null){
+                        if(event.getType() != null){
                             switch (event.getType()){
-                                case CONFERENCE_TERMINATED:
+                                case CONFERENCE_TERMINATED: // 自己關閉會議室，
                                     MsgControlCenter.sendEndRequest(roomId,msgId);
                                     TimeUtils.endCallHeartbeat();
                                     LocalBroadcastManager.getInstance(context).unregisterReceiver(broadcastReceiver);
                                     broadcastReceiver = null ;
+                                    break;
+                                case CONFERENCE_JOINED:
+                                    TimeUtils.startCallHeartbeat();
                                     break;
                             }
                         }
@@ -120,7 +123,6 @@ public class ActivityUtils {
                 throw new RuntimeException(e);
             }
             JitsiMeetActivity.launch(context,options,roomId,msgId,isGroupCall);
-            TimeUtils.startCallHeartbeat();
         } else {
             UserControlCenter.getMainUserInfo(new CallbackUtils.userReturn() {
                 @Override

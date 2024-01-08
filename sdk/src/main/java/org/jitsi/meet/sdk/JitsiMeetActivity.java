@@ -35,6 +35,7 @@ import com.facebook.react.modules.core.PermissionListener;
 import com.google.gson.Gson;
 
 import org.jitsi.meet.sdk.log.JitsiMeetLogger;
+import org.jitsi.meet.sdk.log.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -100,7 +101,7 @@ String  roomId = "";
         super.onCreate(savedInstanceState);
         roomId = getIntent().getStringExtra("roomId");
         eventId = getIntent().getStringExtra("eventId");
-        isGroupCall = getIntent().getBooleanExtra("eventId",false);
+        isGroupCall = getIntent().getBooleanExtra("isGroupCall",false);
         setContentView(R.layout.activity_jitsi_meet);
         this.jitsiView = findViewById(R.id.jitsiView);
 

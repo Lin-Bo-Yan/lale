@@ -17,5 +17,6 @@ public class DateTask extends TimerTask {
                 StringUtils.HaoLog("TimerTask 網路異常");
             }
         });
+        StringUtils.HaoLog("計時器："+httpReturn.status);
     }
 }
