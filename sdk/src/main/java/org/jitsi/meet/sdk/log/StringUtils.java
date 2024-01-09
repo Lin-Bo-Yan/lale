@@ -2,10 +2,16 @@ package org.jitsi.meet.sdk.log;
 
 import android.util.Log;
 
+import org.jitsi.meet.sdk.model.HttpReturn;
+
 public class StringUtils {
     static final int MAX_LOG = 800;
     public static void HaoLog(String data) {
         HaoLog(data, 4);
+    }
+
+    public static void HaoLog(String value, HttpReturn data) {
+        HaoLog(value + data.status + " " + data.msg + " " + data.data, 5);
     }
 
     public static void HaoLog(String data, int showC) {

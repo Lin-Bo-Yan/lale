@@ -8,8 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.util.Log;
-import androidx.activity.ComponentActivity;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -27,7 +25,7 @@ import org.jitsi.meet.sdk.BroadcastEvent;
 import org.jitsi.meet.sdk.JitsiMeetActivity;
 import org.jitsi.meet.sdk.JitsiMeetConferenceOptions;
 import org.jitsi.meet.sdk.JitsiMeetUserInfo;
-import org.json.JSONObject;
+import org.jitsi.meet.sdk.log.StringUtils;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -78,12 +76,8 @@ public class ActivityUtils {
                             switch (event.getType()){
                                 case CONFERENCE_TERMINATED: // 自己關閉會議室，
                                     MsgControlCenter.sendEndRequest(roomId,msgId);
-                                    TimeUtils.endCallHeartbeat();
                                     LocalBroadcastManager.getInstance(context).unregisterReceiver(broadcastReceiver);
                                     broadcastReceiver = null ;
-                                    break;
-                                case CONFERENCE_JOINED:
-                                    TimeUtils.startCallHeartbeat();
                                     break;
                             }
                         }

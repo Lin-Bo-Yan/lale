@@ -2797,30 +2797,6 @@ public class CloudUtils implements ICloudUtils {
     }
 
     @Override
-    public HttpReturn callHeartbeat(CallbackUtils.TimeoutReturn timeoutReturn) {
-        String jitsiServerUrl = AllData.regularServer(UserControlCenter.getUserMinInfo().externalServerSetting.jitsiServerUrl);
-        if(jitsiServerUrl == null || jitsiServerUrl.isEmpty()){
-            return new HttpReturn();
-        }
-
-        Map<String, Object> map = new HashMap();
-        map.put("userId", UserControlCenter.getUserMinInfo().userId);
-        RequestBody body = getRequestBody(MediaType.parse("application/json"), map);
-        Request.Builder request = new Request.Builder()
-                .url(jitsiServerUrl + "/lalemessage/api/messages/calling/alive")
-                .method("PUT", body)
-                .addHeader("Authorization", "Bearer " + UserControlCenter.getUserMinInfo().token);
-
-        HttpReturn httpReturn = gethttpReturn(request, 15, new CallbackUtils.TimeoutReturn() {
-            @Override
-            public void Callback(IOException timeout) {
-                timeoutReturn.Callback(timeout);
-            }
-        });
-        return httpReturn;
-    }
-
-    @Override
     public HttpReturn googlePlatformVersion(CallbackUtils.TimeoutReturn timeoutReturn) {
         Request.Builder request = new Request.Builder()
                 .url(AllData.getMainServer() + "/util/app/platform/tob")

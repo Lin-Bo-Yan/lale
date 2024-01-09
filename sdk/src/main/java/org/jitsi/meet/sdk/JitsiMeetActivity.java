@@ -36,6 +36,7 @@ import com.google.gson.Gson;
 
 import org.jitsi.meet.sdk.log.JitsiMeetLogger;
 import org.jitsi.meet.sdk.log.StringUtils;
+import org.jitsi.meet.sdk.tools.TimeUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -173,7 +174,8 @@ String  roomId = "";
 
     public void join(JitsiMeetConferenceOptions options) {
         if (this.jitsiView  != null) {
-            this.jitsiView .join(options);
+            TimeUtils.startCallHeartbeat(options.getToken(), options.getUserId(), String.valueOf(options.getServerURL()));
+            this.jitsiView.join(options);
         } else {
             JitsiMeetLogger.w("Cannot join, view is null");
         }
@@ -181,6 +183,7 @@ String  roomId = "";
 
     protected void leave() {
         if (this.jitsiView != null) {
+            TimeUtils.endCallHeartbeat();
             this.jitsiView.abort();
         } else {
             JitsiMeetLogger.w("Cannot leave, view is null");

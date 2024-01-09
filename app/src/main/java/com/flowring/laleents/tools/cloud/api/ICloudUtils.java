@@ -860,12 +860,6 @@ public interface ICloudUtils {
     String webVersion(String url,CallbackUtils.TimeoutReturn timeoutReturn);
 
     /**
-     * 通話心跳包
-     */
-    @WorkerThread
-    HttpReturn callHeartbeat(CallbackUtils.TimeoutReturn timeoutReturn);
-
-    /**
      * 帳號登入
      */
     @WorkerThread

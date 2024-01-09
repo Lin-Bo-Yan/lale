@@ -78,6 +78,10 @@ public class JitsiMeetConferenceOptions implements Parcelable {
         return token;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
     public Bundle getFeatureFlags() {
         return featureFlags;
     }
@@ -365,9 +369,6 @@ public class JitsiMeetConferenceOptions implements Parcelable {
 
         return props;
     }
-
-    // Parcelable interface
-    //
 
     public static final Creator<JitsiMeetConferenceOptions> CREATOR = new Creator<JitsiMeetConferenceOptions>() {
         @Override
