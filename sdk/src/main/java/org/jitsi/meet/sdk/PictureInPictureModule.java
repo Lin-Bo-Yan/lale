@@ -100,15 +100,12 @@ class PictureInPictureModule extends ReactContextBaseJavaModule {
 
         JitsiMeetLogger.i(TAG + " Entering Picture-in-Picture");
 
-        PictureInPictureParams.Builder builder
-            = new PictureInPictureParams.Builder()
-                .setAspectRatio(new Rational(1, 1));
+        PictureInPictureParams.Builder builder = new PictureInPictureParams.Builder()
+                .setAspectRatio(new Rational(1, 2));
 
-        // https://developer.android.com/reference/android/app/Activity.html#enterPictureInPictureMode(android.app.PictureInPictureParams)
-        //
-        // The system may disallow entering picture-in-picture in various cases,
-        // including when the activity is not visible, if the screen is locked
-        // or if the user has an activity pinned.
+        // 系統可能在各種情況下不允許進入畫中畫，
+        // 包含當 Activity 不可見時，如果螢幕被鎖定
+        // 或如果使用者有固定的活動。
         if (!currentActivity.enterPictureInPictureMode(builder.build())) {
             throw new RuntimeException("Failed to enter Picture-in-Picture");
         }

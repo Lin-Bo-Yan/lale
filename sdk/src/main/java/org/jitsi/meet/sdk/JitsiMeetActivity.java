@@ -27,15 +27,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import com.facebook.react.modules.core.PermissionListener;
-import com.google.gson.Gson;
-
 import org.jitsi.meet.sdk.log.JitsiMeetLogger;
-import org.jitsi.meet.sdk.log.StringUtils;
 import org.jitsi.meet.sdk.tools.TimeUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,6 +46,12 @@ public class JitsiMeetActivity extends AppCompatActivity
 
     private static final String ACTION_JITSI_MEET_CONFERENCE = "org.jitsi.meet.CONFERENCE";
     private static final String JITSI_MEET_CONFERENCE_OPTIONS = "JitsiMeetConferenceOptions";
+    private static final String ACTION_MQTT_MSG = "聊天室內訊息";
+    private JitsiMeetView jitsiView;
+    private String  roomId = "";
+    private String  eventId = "";
+    private boolean isGroupCall = false;
+    private boolean isPipFinish = false;
 
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -60,10 +63,6 @@ public class JitsiMeetActivity extends AppCompatActivity
     /**
      * Instance of the {@link JitsiMeetView} which this activity will display.
      */
-    private JitsiMeetView jitsiView;
-
-    // Helpers for starting the activity
-    //
 
     public static void launch(Context context, JitsiMeetConferenceOptions options,String roomId,String eventId,boolean isGroupCall) {
         Intent intent = new Intent(context, JitsiMeetActivity.class);
@@ -84,19 +83,14 @@ public class JitsiMeetActivity extends AppCompatActivity
         launch(context, options,"","",false);
     }
 
-    // Overrides
-    //
-
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         Intent intent = new Intent("onConfigurationChanged");
         intent.putExtra("newConfig", newConfig);
         this.sendBroadcast(intent);
     }
-String  roomId = "";
-    String  eventId = "";
-    boolean isGroupCall = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -122,43 +116,45 @@ String  roomId = "";
     @Override
     public void onStop() {
         JitsiMeetActivityDelegate.onHostPause(this);
+        Log.v("是pip離開的嗎？", String.valueOf(isPipFinish));
+        if(isPipFinish){
+            finish();
+        }
         super.onStop();
     }
 
     @Override
     public void onDestroy() {
-        // Here we are trying to handle the following corner case: an application using the SDK
-        // is using this Activity for displaying meetings, but there is another "main" Activity
-        // with other content. If this Activity is "swiped out" from the recent list we will get
-        // Activity#onDestroy() called without warning. At this point we can try to leave the
-        // current meeting, but when our view is detached from React the JS <-> Native bridge won't
-        // be operational so the external API won't be able to notify the native side that the
-        // conference terminated. Thus, try our best to clean up.
+        // 這裡我們嘗試處理以下極端情況：使用 SDK 的應用程式
+        // 正在使用此 Activity 來顯示會議，但還有另一個「主要」Activity
+        // 與其他內容。如果此 Activity 從最近的清單中“刷出”，我們將得到
+        // Activity#onDestroy() 呼叫時沒有警告。此時我們可以嘗試離開
+        // 目前會議，但是當我們的視圖與 React 分離時，JS <-> Native 橋將不會
+        // 可操作，因此外部 API 將無法通知本機端
+        // 會議終止。因此，要盡力清理。
         leave();
-
         this.jitsiView = null;
-
         if (AudioModeModule.useConnectionService()) {
             ConnectionService.abortConnections();
         }
         JitsiMeetOngoingConferenceService.abort(this);
-
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
-
         JitsiMeetActivityDelegate.onHostDestroy(this);
-
         super.onDestroy();
     }
 
     @Override
     public void finish() {
         leave();
-
         super.finish();
     }
 
-    // Helper methods
-    //
+    @Override
+    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode);
+        // 離開 pip 模式該值回傳false，進入 pip 模式該值回傳true
+        isPipFinish = isInPictureInPictureMode;
+    }
 
     protected JitsiMeetView getJitsiView() {
         return jitsiView;
@@ -190,8 +186,7 @@ String  roomId = "";
         }
     }
 
-    private @Nullable
-    JitsiMeetConferenceOptions getConferenceOptions(Intent intent) {
+    private JitsiMeetConferenceOptions getConferenceOptions(Intent intent) {
         String action = intent.getAction();
 
         if (Intent.ACTION_VIEW.equals(action)) {
@@ -220,14 +215,14 @@ String  roomId = "";
     }
 
     protected void initialize() {
-        // Join the room specified by the URL the app was launched with.
-        // Joining without the room option displays the welcome page.
+        // 加入啟動應用程式時使用的 URL 指定的房間。
+        // 在沒有房間選項的情況下加入會顯示歡迎頁面。
         join(getConferenceOptions(getIntent()));
     }
 
     protected void onConferenceJoined(HashMap<String, Object> extraData) {
         JitsiMeetLogger.i("Conference joined: " + extraData);
-        // Launch the service for the ongoing notification.
+        // 啟動持續通知的服務。
         JitsiMeetOngoingConferenceService.launch(this, extraData);
     }
 
@@ -260,9 +255,6 @@ String  roomId = "";
         JitsiMeetLogger.i("SDK is ready to close");
         finish();
     }
-
-    // Activity lifecycle methods
-    //
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -297,9 +289,6 @@ String  roomId = "";
         }
     }
 
-    // JitsiMeetActivityInterface
-    //
-
     @Override
     public void requestPermissions(String[] permissions, int requestCode, PermissionListener listener) {
         JitsiMeetActivityDelegate.requestPermissions(this, permissions, requestCode, listener);
@@ -317,7 +306,7 @@ String  roomId = "";
         for (BroadcastEvent.Type type : BroadcastEvent.Type.values()) {
             intentFilter.addAction(type.getAction());
         }
-        intentFilter.addAction("聊天室內訊息");
+        intentFilter.addAction(ACTION_MQTT_MSG);
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, intentFilter);
     }
     public void checkJsonAndExecute(String jsonString) {
