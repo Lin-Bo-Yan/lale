@@ -98,7 +98,7 @@ public class CloudUtils implements ICloudUtils {
             String appVersion = MainWebActivity.getVersionName(AllData.context);
             StringUtils.HaoLog("checkAppNeedUpdate= appVersion " + appVersion);
             StringUtils.HaoLog("checkAppNeedUpdate= dbVersion " + dbVersion.version);
-            Boolean needUpdated = StringUtils.version(appVersion,dbVersion.version);
+            boolean needUpdated = StringUtils.version(appVersion,dbVersion.version);
             StringUtils.HaoLog("checkAppNeedUpdate= 需要更新嗎? " + needUpdated);
             return needUpdated;
         }catch (JsonSyntaxException e){
@@ -2919,17 +2919,15 @@ public class CloudUtils implements ICloudUtils {
                 .build();
         try {
             Response response = client.newCall(request.build()).execute();
-            StringUtils.HaoLog("gethttp2Return= "+new Gson().toJson(response));
             if (response.code() == 200) {
                 String body = response.body().string();
                 StringUtils.HaoLog("body=" + body);
                 Http2Return http2Return = new Gson().fromJson(body, Http2Return.class);
 
                 if (http2Return != null) {
-                    StringUtils.HaoLog("http2Return= "+response.request().url());
+                    StringUtils.HaoLog("gethttp2Return= "+response.request().url());
                     return http2Return;
                 } else{
-                    StringUtils.HaoLog("gethttp2Return");
                     StringUtils.HaoLog(response.request().url() + " " + response.code() + " body=" + body);
                     StringUtils.HaoLog("gethttp2Return end");
                 }

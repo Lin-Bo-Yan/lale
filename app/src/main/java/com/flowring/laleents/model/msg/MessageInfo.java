@@ -79,55 +79,52 @@ public class MessageInfo implements Serializable, IMessage2 {
     }
 
     public boolean is_lale_message_read() {
-        return type.equals("lale.message.read");
+        return "lale.message.read".equals(type);
     }
 
     public boolean is_lale_retracted() {
-        return type.equals("lale.message.retracted");
+        return "lale.message.retracted".equals(type);
     }
 
     public boolean is_lale_call_response() {
-        return type.equals("lale.call.response");
+        return "lale.call.response".equals(type);
     }
 
     public boolean is_lale_call_status() {
-        return type.equals("lale.call.status");
+        return "lale.call.status".equals(type);
     }
 
     public boolean is_lale_nomessage() {
-        return type.equals("lale.nomessage");
+        return "lale.nomessage".equals(type);
     }
 
     public boolean is_lale_room_settings_name() {
-        return type.equals("lale.room.settings.name");
+        return "lale.room.settings.name".equals(type);
     }
 
     public boolean is_lale_room_settings_desc() {
-        return type.equals("lale.room.settings.desc");
+        return "lale.room.settings.desc".equals(type);
     }
 
     public boolean is_lale_room_settings_admin() {
-        return type.equals("lale.room.settings.admin");
+        return "lale.room.settings.admin".equals(type);
     }
 
     public boolean is_lale_room_settings_avatar() {
-        return type.equals("lale.room.settings.avatar");
+        return "lale.room.settings.avatar".equals(type);
     }
 
     public boolean is_lale_room_created() {
-        return type.equals("lale.room.created");
+        return "lale.room.created".equals(type);
     }
 
     public boolean is_lale_member_invite() {
-        return type.equals("lale.member.invite");
+        return "lale.member.invite".equals(type);
     }
 
 
     public boolean is_lale_room() {
-        if (type.startsWith("lale.room")){
-            return true;
-        }
-        return false;
+        return "lale.room".startsWith(type);
     }
 
     public MessageItem getMessage(Map<String, MemberInfo> roomFriends) {
@@ -147,19 +144,19 @@ public class MessageInfo implements Serializable, IMessage2 {
     }
 
     public boolean is_lale_bot_lami() {
-        return type.equals("lale.bot.lami");
+        return "lale.bot.lami".equals(type);
     }
 
     public boolean is_lale_image_received() {
-        return type.equals("lale.image.received");
+        return "lale.image.received".equals(type);
     }
 
     public boolean is_lale_file_received() {
-        return type.equals("lale.file.received");
+        return "lale.file.received".equals(type);
     }
 
     public boolean is_lale_reply() {
-        return type.equals("lale.message.received.reply");
+        return "lale.message.received.reply".equals(type);
     }
 
     public boolean is_no_save() {
@@ -194,11 +191,11 @@ public class MessageInfo implements Serializable, IMessage2 {
     }
 
     public boolean is_lale_call_group_status() {
-        return type.equals("lale.call.left.request");
+        return "lale.call.left.request".equals(type);
     }
 
     public boolean is_lale_call_left_request() {
-        return type.equals("lale.call.group.status");
+        return "lale.call.group.status".equals(type);
     }
 
     public boolean is_update_room() {
@@ -221,71 +218,71 @@ public class MessageInfo implements Serializable, IMessage2 {
     }
 
     public boolean is_lale_read() {
-        return type.equals("lale.message.read");
+        return "lale.message.read".equals(type);
     }
 
     public boolean is_lale_member_join() {
-        return type.equals("lale.member.join");
+        return "lale.member.join".equals(type);
     }
 
     public boolean is_lale_member_left() {
-        return type.equals("lale.member.left");
+        return "lale.member.left".equals(type);
     }
 
     public boolean is_lale_call_spendtime() {
-        return type.equals("lale.call.spendtime");
+        return "lale.call.spendtime".equals(type);
     }
 
     public boolean is_lale_call_request() {
-        return type.equals("lale.call.request");
+        return "lale.call.request".equals(type);
     }
 
     public boolean is_lale_video_received() {
-        return type.equals("lale.video.received");
+        return "lale.video.received".equals(type);
     }
 
     public boolean is_lale_message_sticker() {
-        return type.equals("lale.message.sticker");
+        return "lale.message.sticker".equals(type);
     }
 
     public boolean is_lale_audio_received() {
-        return type.equals("lale.audio.received");
+        return "lale.audio.received".equals(type);
     }
 
     public boolean is_lale_location_received() {
-        return type.equals("lale.location.received");
+        return "lale.location.received".equals(type);
     }
 
     public boolean is_lale_message_received() {
-        return type.equals("lale.message.received");
+        return "lale.message.received".equals(type);
     }
 
     public boolean is_lale_message_retract() {
-        return type.equals("lale.message.retract");
+        return "lale.message.retract".equals(type);
     }
 
     public boolean is_lale_message_app() {
-        return type.equals("lale.message.app");
+        return "lale.message.app".equals(type);
     }
 
     public boolean is_lale_ecosystem_af_notify() {
-        return type.equals("lale.ecosystem.af.notify");
+        return "lale.ecosystem.af.notify".equals(type);
     }
 
     public boolean is_lale_message_announcement() {
-        return type.equals("lale.message.announcement");
+        return "lale.message.announcement".equals(type);
     }
     public boolean is_lale_message_announcement_cancel() {
-        return type.equals("lale.message.announcement.cancel");
+        return "lale.message.announcement.cancel".equals(type);
     }
     public boolean is_lale_bot_reply() {
-        return type.equals("lale.bot.reply");
+        return "lale.bot.reply".equals(type);
     }
     public boolean is_lale_bot_send() {
-        return type.equals("lale.bot.send");
+        return "lale.bot.send".equals(type);
     }
     public boolean is_lale_message_share() {
-        return type.equals("lale.message.share");
+        return "lale.message.share".equals(type);
     }
 
 
@@ -359,7 +356,7 @@ public class MessageInfo implements Serializable, IMessage2 {
     String CallRequest(String value) {
         String type = "";
         if (getCallRequest() != null && getCallRequest().type != null){
-            type = getCallRequest().type.equals("audio") ? AllData.context.getString(R.string.call_voice_text) : AllData.context.getString(R.string.call_video_text);
+            type = "audio".equals(getCallRequest().type) ? AllData.context.getString(R.string.call_voice_text) : AllData.context.getString(R.string.call_video_text);
         }
 
         if (value == null){
@@ -661,9 +658,9 @@ public class MessageInfo implements Serializable, IMessage2 {
         if (callSpendtime.duration != null){
             return false;
         }
-        if (callRequest.result == null || callRequest.result.equals("incomming")) {
+        if (callRequest.result == null || "incomming".equals(callRequest.result)) {
             return true;
-        } else if (callRequest.result.equals("end") || callRequest.result.equals("cancel") || callRequest.result.equals("timeout") || callRequest.result.equals("unavailable") || (callRequest.result.equals("reject"))) {
+        } else if ("end".equals(callRequest.result) || "cancel".equals(callRequest.result) || "timeout".equals(callRequest.result) || "unavailable".equals(callRequest.result) || "reject".equals(callRequest.result)) {
             return false;
         } else {
             return true;

@@ -93,7 +93,7 @@ public class MediaGridAdapter extends RecyclerView.Adapter<MediaGridAdapter.MyVi
         if (bZoomImage) {
             String sImageUrl = urList.get(position);
             String mimeType = mimeTypeList.get(position);
-            if (mimeType.equals("video")) {
+            if ("video".equals(mimeType)) {
                 String sVideoUrl = downloadVideo(sImageUrl);
                 Uri uri = Uri.parse("file://" + sVideoUrl);
                 holder.gif_info.setVisibility(View.INVISIBLE);

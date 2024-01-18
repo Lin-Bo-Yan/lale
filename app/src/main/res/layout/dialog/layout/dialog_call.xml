@@ -48,7 +48,7 @@
                 android:layout_below="@+id/title"
                 android:layout_marginStart="34dp"
                 android:lines="1"
-                android:text="@string/dialog_call_text"
+                android:text="@string/wait_answer_voice"
                 android:textColor="#FFFFFF"
                 android:textSize="16dp" />
         </RelativeLayout>

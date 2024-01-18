@@ -111,14 +111,14 @@ public class PreviewFragment extends Fragment {
         if (media == null) {
             String sImageUrl = getArguments().getString("url");
             String fileName = getArguments().getString("fileName");
-            if (sImageUrl.equals("null") || sImageUrl.isEmpty()) {
+            if ("null".equals(sImageUrl) || sImageUrl.isEmpty()) {
                 cannot_read_image.setVisibility(View.VISIBLE);
                 return;
             } else {
                 cannot_read_image.setVisibility(View.GONE);
             }
             String mimetype = getArguments().getString("mimetype");
-            if (mimetype.equals("video")) {
+            if ("video".equals(mimetype)) {
                 sVideoUrl = ((PreviewActivity) getActivity()).downloadVideo(sImageUrl);
                 uri = Uri.parse(sVideoUrl);
                 play_view.setVisibility(View.VISIBLE);

@@ -219,9 +219,9 @@ public class MessageItem extends MessageInfo {
     }
 
     public boolean canReRdit() {
-        return isMainUser() && isRedactInRoom && (type.equals("lale.message.received") ||
-                type.equals("lale.message.announcement") ||
-                type.equals("lale.message.received.reply"));
+        return isMainUser() && isRedactInRoom && ("lale.message.received".equals(type) ||
+                "lale.message.announcement".equals(type) ||
+                "lale.message.received.reply".equals(type));
     }
 
     public boolean CanCheckMessage() {
@@ -286,7 +286,7 @@ public class MessageItem extends MessageInfo {
         try {
             JSONObject jsonObject = new JSONObject(content);
 
-            String type = jsonObject.optString("type").equals("audio") ? "語音" : "視訊";
+            String type = "audio".equals(jsonObject.optString("type")) ? "語音" : "視訊";
 
             String duration = FormatUtils.formatDateTime(jsonObject.optLong("duration") / 1000);
             String strDesc = String.format("%s\n已結束%s通話", duration, type);

@@ -139,7 +139,7 @@ public class RoomControlCenter {
                     StringUtils.HaoLog(newRoomId + " = room0.get(i).id");
                 }
             }
-            callback.Callback(newGroupRoom.msg.equals("Success"), newRoomId);
+            callback.Callback("Success".equals(newGroupRoom.msg), newRoomId);
         }).start();
     }
 

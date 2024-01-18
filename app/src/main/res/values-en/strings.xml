@@ -15,6 +15,9 @@
     <string name="server_exception_title">Server Abnormal Notification</string>
     <string name="server_exception_text">Please try again later</string>
     <string name="server_maintenance_title">Server Maintenance Notice</string>
+    <string name="server_maintenance_text">%s\nServer scheduled maintenance\nYou will not be able to log in during this period</string>
+    <string name="datetime_formatter_haveYear">M d, Y HH:mm</string>
+    <string name="datetime_formatter">M d HH:mm</string>
     <string name="other_apps_open">Other apps open</string>
     <string name="file_not_supported_title">Title</string>
     <string name="file_not_supported_file_name">File name</string>
@@ -33,11 +36,11 @@
     <string name="abnegation_button">Reject</string>
     <string name="answer_button">Answer</string>
     <string name="wait_answer_title">Name</string>
-    <string name="wait_answer_text">Lale Business Voice...</string>
+    <string name="wait_answer_voice">Lale Business Voice…</string>
+    <string name="wait_answer_video">Lale Business Video…</string>
     <string name="sure_button">Sure</string>
     <string name="cancel_button">Cancel</string>
     <string name="dialog_call_title">Inviter</string>
-    <string name="dialog_call_text">Lale Enterprise Voice Call</string>
     <string name="sign_out_button">sign out</string>
     <string name="closure_button">Close</string>
     <string name="problem_report_button">Problem Report</string>

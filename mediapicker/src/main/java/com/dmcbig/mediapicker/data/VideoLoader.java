@@ -75,10 +75,10 @@ public class VideoLoader extends LoaderM implements LoaderManager.LoaderCallback
                 String mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns.MIME_TYPE));
 
                 if (size < 1) continue;
-                if (path == null || path.equals("")) continue;
+                if (path == null || "".equals(path)) continue;
                 String dirName = getParent(path);
                 // don't show lale background folder
-                if (dirName.equals(".background")) {
+                if (".background".equals(dirName)) {
                     continue;
                 }
                 Media media = new Media(path, name, dateTime, mediaType, size, id, dirName, mimeType);

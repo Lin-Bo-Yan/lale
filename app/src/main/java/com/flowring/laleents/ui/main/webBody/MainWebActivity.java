@@ -735,7 +735,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         //Intent開啟相簿
         Intent intentFile = new Intent(Intent.ACTION_GET_CONTENT);
         intentFile.addCategory(Intent.CATEGORY_OPENABLE);
-        intentFile.setType("application/*");
+        intentFile.setType("*/*");
 
         //Intent開啟相機
         Intent intentCamera = null;
@@ -921,16 +921,29 @@ public class MainWebActivity extends MainAppCompatActivity {
             String text = extras.getString(Intent.EXTRA_TEXT);
             ArrayList<Uri> uris = extras.getParcelableArrayList(Intent.EXTRA_STREAM);
             if(text != null && !text.isEmpty()){
-                Pattern pattern = Pattern.compile("(?<=\\n\\n)(?![\\p{L}\\d]+\\s+\\d{2}:\\d{2}|—+)\\S+");
+                String firstExtractedChar = "";
+                String secondExtractedChar = "";
+                Pattern regularChar = Pattern.compile(DefinedUtils.BOUNDED_CONTENT_PATTERN);
+                Matcher matcherChar = regularChar.matcher(text);
+                if (matcherChar.find()) {
+                    firstExtractedChar = matcherChar.group(1);
+                    secondExtractedChar = matcherChar.group(2);
+                }
+
+                Pattern pattern = Pattern.compile(DefinedUtils.NONEMPTY_LINE_POST_NEW_LINE);
                 Matcher matcher = pattern.matcher(text);
                 while (matcher.find()) {
-                    try {
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("mimeType","message");
-                        jsonObject.put("string",matcher.group().replaceAll("\\[", ""));
-                        jsonArray.put(jsonObject);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                    boolean startsWithFirstChar = matcher.group().startsWith(firstExtractedChar);
+                    boolean startsWithSecondChar = matcher.group().startsWith(secondExtractedChar);
+                    if(firstExtractedChar.isEmpty() || (!startsWithFirstChar && !startsWithSecondChar)){
+                        try {
+                            JSONObject jsonObject = new JSONObject();
+                            jsonObject.put("mimeType","message");
+                            jsonObject.put("string",matcher.group());
+                            jsonArray.put(jsonObject);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
@@ -1256,7 +1269,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                 String[]  PermissionRequest=request.getResources();
                 for (int i = 0; i < PermissionRequest.length; i++) {
                     StringUtils.HaoLog("onPermissionRequest:"+PermissionRequest[i]);
-                    if(PermissionRequest[i].equals("android.webkit.resource.AUDIO_CAPTURE")) {
+                    if("android.webkit.resource.AUDIO_CAPTURE".equals(PermissionRequest[i])) {
                         if(!PermissionUtils.checkPermission(MainWebActivity.this,"android.permission.RECORD_AUDIO")) {
                             runOnUiThread(()->{
                                 requestPermissions(new String[]{"android.permission.RECORD_AUDIO"}, 466);

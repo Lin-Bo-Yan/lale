@@ -155,11 +155,10 @@ public class DialogUtils {
                 title.setText(roomMinInfo == null ? callMessageInfo.room_id : roomMinInfo.name);
 
                 TextView text = callDialog.findViewById(R.id.text);
-                if ((callMessageInfo.getCallRequest().type.equals("audio"))) {
-                    text.setText(context.getString(R.string.wait_answer_text));
+                if ("audio".equals(callMessageInfo.getCallRequest().type)) {
+                    text.setText(context.getString(R.string.wait_answer_voice));
                 } else {
-                    text.setText(context.getString(R.string.wait_answer_text));
-
+                    text.setText(context.getString(R.string.wait_answer_video));
                 }
                 ImageView call_light = callDialog.findViewById(R.id.call_light);
                 if (AllData.context == null) {

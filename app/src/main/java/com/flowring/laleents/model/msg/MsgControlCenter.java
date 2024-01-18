@@ -478,9 +478,9 @@ public class MsgControlCenter {
                         RoomMinInfo roomMinInfo = AllData.getRoomMinInfo(messageInfo.room_id);
                         if (roomMinInfo != null) {
                             if (messageInfo.getCallRequest().result == null){
-                                roomMinInfo.call_status = messageInfo.getCallRequest().type.equals("audio") ? 2 : 1;
+                                roomMinInfo.call_status = "audio".equals(messageInfo.getCallRequest().type) ? 2 : 1;
                             }
-                            if (messageInfo.getCallRequest().result.equals("unavailable")){
+                            if ("unavailable".equals(messageInfo.getCallRequest().result)){
                                 roomMinInfo.call_status = 0;
                             }
                             AllData.updateRoom(roomMinInfo);
@@ -496,7 +496,7 @@ public class MsgControlCenter {
                         if (roomMinInfo != null) {
                             MessageInfo requestEvent = AllData.getMsg(messageInfo.getCallRequest().requestEventId);
                             if (requestEvent != null){
-                                if (messageInfo.getCallRequest().result.equals("cancel") || (!roomMinInfo.isGroup() && messageInfo.getCallRequest().result.equals("reject")) || (!roomMinInfo.isGroup() && messageInfo.getCallRequest().result.equals("call"))) {
+                                if ("cancel".equals(messageInfo.getCallRequest().result) || (!roomMinInfo.isGroup() && "reject".equals(messageInfo.getCallRequest().result)) || (!roomMinInfo.isGroup() && "call".equals(messageInfo.getCallRequest().result))) {
                                     roomMinInfo.call_status = 0;
                                     AllData.updateRoom(roomMinInfo);
                                     DialogUtils.hideCall(AllData.context,messageInfo);

@@ -29,7 +29,7 @@ public class WaitAnswerActivity extends MainAppCompatActivity {
     public LinearLayout end;
     public LinearLayout ok;
     public TextView video_user_caller_name;
-    public TextView video_user_caller_txst;
+    public TextView video_user_caller_txt;
     MessageInfo MessageInfo;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +58,7 @@ public class WaitAnswerActivity extends MainAppCompatActivity {
                                 if (messageInfo.sender.equals(UserControlCenter.getUserMinInfo().userId)) {
                                     finish();
                                 } else {
-                                    if (messageInfo.getCallRequest().result.equals("cancel") || messageInfo.getCallRequest().result.equals("timeout"))
+                                    if ("cancel".equals(messageInfo.getCallRequest().result) || "timeout".equals(messageInfo.getCallRequest().result))
                                         finish();
                                 }
                             }
@@ -89,10 +89,11 @@ public class WaitAnswerActivity extends MainAppCompatActivity {
                     finish();
                 StringUtils.HaoLog("roomMinInfo=" + new Gson().toJson(roomMinInfo));
 
-                video_user_caller_txst = findViewById(R.id.video_user_caller_txst);
+                video_user_caller_txt = findViewById(R.id.video_user_caller_txt);
                 video_user_caller_name = findViewById(R.id.video_user_caller_name);
-                StringUtils.HaoLog("MessageInfo.getCallRequest().type=" + MessageInfo.getCallRequest().type);
-                video_user_caller_txst.setText("Lale " + (MessageInfo.getCallRequest().type.equals("audio") ? "語音" : "視訊") + "...");
+                StringUtils.HaoLog("MessageInfo.getCallRequest.type=" + MessageInfo.getCallRequest().type);
+                String callerTxtType = ("audio".equals(MessageInfo.getCallRequest().type) ? getString(R.string.wait_answer_voice) : getString(R.string.wait_answer_video));
+                video_user_caller_txt.setText(callerTxtType);
                 video_user_caller_name.setText(roomMinInfo.name);
                 end = findViewById(R.id.end);
                 findViewById(R.id.endButton).setOnClickListener(view -> {

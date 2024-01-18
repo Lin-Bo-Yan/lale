@@ -175,7 +175,7 @@ public class UserControlCenter {
     public static void getCompanyDashboard(CallbackUtils.CompanyDashboardReturn callback) {
         if (dashboards != null) {
             for (Dashboard dashboard : dashboards) {
-                if (dashboard.name != null && dashboard.name.equals("待處理工作") && dashboard.dashboardInfo != null) {
+                if (dashboard.name != null && "待處理工作".equals(dashboard.name) && dashboard.dashboardInfo != null) {
                     StringUtils.HaoLog("紀錄待辦數量");
                 }
             }
@@ -1149,14 +1149,14 @@ public class UserControlCenter {
             @Override
             public void Callback(HttpReturn httpReturn) {
                 String data = new Gson().toJson(httpReturn.data);
-                String success = "false";
+                boolean success = false;
                 try {
                     JSONObject jsonObject = new JSONObject(data);
-                    success = jsonObject.optString("success");
+                    success = jsonObject.optBoolean("success");
                 } catch (JSONException e){
                     e.printStackTrace();
                 }
-                if("true".equals(success)){
+                if(success){
                     SharedPreferencesUtils.firebasePusherErrorCode(200);
                 } else {
                     SharedPreferencesUtils.firebasePusherErrorCode(500);

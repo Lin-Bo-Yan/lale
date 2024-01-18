@@ -3,7 +3,8 @@ package com.flowring.laleents.tools;
 import static com.flowring.laleents.tools.StringUtils.HaoLog;
 
 import android.icu.text.SimpleDateFormat;
-
+import com.flowring.laleents.R;
+import com.flowring.laleents.tools.phone.AllData;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,8 +33,9 @@ public class TimeUtils {
     }
 
     public static long RoomTopToLong(String dateString) {
-        if (dateString == null)
+        if (dateString == null){
             return 0;
+        }
 
         //設定日期格式
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:sss");
@@ -44,8 +46,6 @@ public class TimeUtils {
             return 0;
         }
     }
-    //欲轉換的日期字串
-
 
     //判斷 跨日 or 跨月 or 跨年
     public static String yearMonthDay(String startTime, String endTime){
@@ -79,16 +79,17 @@ public class TimeUtils {
     //根據 跨日 or 跨月 or 跨年 回傳相對應的字串格式
     public static String formatDate(String result,String startTime, String endTime){
         if(result != null && !result.isEmpty()){
+            String maintenance = AllData.activity.getString(R.string.server_maintenance_text);
             switch (result){
                 case "跨年完成":
                     String yearDate = yearFormatDate(startTime,endTime);
-                    return String.format("%s\n預計進行伺服器維護\n期間將無法登入",yearDate);
+                    return String.format(maintenance,yearDate);
                 case "跨日完成":
                     String crossDay = crossDayFormatDate(startTime,endTime);
-                    return String.format("%s\n預計進行伺服器維護\n期間將無法登入",crossDay);
+                    return String.format(maintenance,crossDay);
                 case "當日完成":
                     String date = dayFormatDate(startTime,endTime);
-                    return String.format("%s\n預計進行伺服器維護\n期間將無法登入",date);
+                    return String.format(maintenance,date);
             }
         }
         return "";
@@ -98,7 +99,8 @@ public class TimeUtils {
         LocalDateTime startDateTime = LocalDateTime.parse(startTime.replace(" ", "T"));
         LocalDateTime endDateTime = LocalDateTime.parse(endTime.replace(" ", "T"));
 
-        DateTimeFormatter startFormatter = DateTimeFormatter.ofPattern("M月d日 HH:mm");
+        String datetimeFormatter = AllData.activity.getString(R.string.datetime_formatter);
+        DateTimeFormatter startFormatter = DateTimeFormatter.ofPattern(datetimeFormatter);
         DateTimeFormatter endFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
         String formattedStartTime = startDateTime.format(startFormatter);
@@ -110,7 +112,8 @@ public class TimeUtils {
     private static String yearFormatDate(String startTime, String endTime){
         LocalDateTime startDateTime = LocalDateTime.parse(startTime.replace(" ", "T"));
         LocalDateTime endDateTime = LocalDateTime.parse(endTime.replace(" ", "T"));
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("Y年M月d日 HH:mm");
+        String datetimeFormatter = AllData.activity.getString(R.string.datetime_formatter_haveYear);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(datetimeFormatter);
         String formattedStartTime = startDateTime.format(formatter);
         String formattedEndTime = endDateTime.format(formatter);
         return String.format("%s ~ \n%s", formattedStartTime, formattedEndTime);
@@ -119,7 +122,8 @@ public class TimeUtils {
     private static String crossDayFormatDate(String startTime, String endTime){
         LocalDateTime startDateTime = LocalDateTime.parse(startTime.replace(" ", "T"));
         LocalDateTime endDateTime = LocalDateTime.parse(endTime.replace(" ", "T"));
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M月d日 HH:mm");
+        String datetimeFormatter = AllData.activity.getString(R.string.datetime_formatter);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(datetimeFormatter);
         String formattedStartTime = startDateTime.format(formatter);
         String formattedEndTime = endDateTime.format(formatter);
         return String.format("%s ~ %s", formattedStartTime, formattedEndTime);
@@ -128,8 +132,9 @@ public class TimeUtils {
     public static String formatDateTime(String dateTime) {
         if(dateTime != null && !dateTime.isEmpty()){
             try {
+                String datetimeFormatter = AllData.activity.getString(R.string.datetime_formatter);
                 SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                SimpleDateFormat outputFormat = new SimpleDateFormat("M月d日 HH:mm");
+                SimpleDateFormat outputFormat = new SimpleDateFormat(datetimeFormatter);
                 Date date = inputFormat.parse(dateTime);
                 return outputFormat.format(date);
             }catch (Exception e){
@@ -139,11 +144,11 @@ public class TimeUtils {
         return "";
     }
 
-    static public void EndTimestamp() {
+    public static void EndTimestamp() {
         HaoLog("時戳:" + NowTimestamp());
     }
 
-    static public void EndTimestamp(String value) {
+    public static void EndTimestamp(String value) {
         HaoLog("時戳" + "(" + value + "):" + NowTimestamp());
     }
     public static String customTime(){

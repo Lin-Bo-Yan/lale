@@ -15,6 +15,9 @@
     <string name="server_exception_title">服务器异常通知</string>
     <string name="server_exception_text">请稍后再尝试使用</string>
     <string name="server_maintenance_title">服务器维护通知</string>
+    <string name="server_maintenance_text">%s\n预计进行伺服器维护\n期间将无法登入</string>
+    <string name="datetime_formatter_haveYear">Y年M月d日 HH:mm</string>
+    <string name="datetime_formatter">M月d日 HH:mm</string>
     <string name="other_apps_open">其他应用程序开启</string>
     <string name="file_not_supported_title">标题</string>
     <string name="file_not_supported_file_name">档案名称</string>
@@ -33,11 +36,11 @@
     <string name="abnegation_button">拒绝</string>
     <string name="answer_button">接听</string>
     <string name="wait_answer_title">Name</string>
-    <string name="wait_answer_text">Lale 企业语音....</string>
+    <string name="wait_answer_voice">Lale 企业语音…</string>
+    <string name="wait_answer_video">Lale 企业视频…</string>
     <string name="sure_button">确定</string>
     <string name="cancel_button">取消</string>
     <string name="dialog_call_title">邀请者</string>
-    <string name="dialog_call_text">Lale 企业语音</string>
     <string name="sign_out_button">登出</string>
     <string name="closure_button">关闭</string>
     <string name="problem_report_button">问题回报</string>

@@ -215,9 +215,9 @@ public class FileUtils {
         if (mimeType == null) {
             return ".jpg";
         }
-        if (mimeType.equals("image/png")) {
+        if ("image/png".equals(mimeType)) {
             return ".png";
-        } else if (mimeType.equals("image/gif")) {
+        } else if ("image/gif".equals(mimeType)) {
             return ".gif";
         } else {
             return ".jpg";

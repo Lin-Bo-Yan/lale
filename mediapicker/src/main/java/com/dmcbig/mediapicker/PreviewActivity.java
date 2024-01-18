@@ -476,7 +476,7 @@ public class PreviewActivity extends FragmentActivity implements View.OnClickLis
                 return;
             }
             String url = messagesList.get(pos).url;
-            if (url.equals("null")) {
+            if ("null".equals(url)) {
                 return;
             }
             forwardImage();
@@ -486,10 +486,10 @@ public class PreviewActivity extends FragmentActivity implements View.OnClickLis
                 return;
             }
             String url = messagesList.get(pos).url;
-            if (url.equals("null")) {
+            if ("null".equals(url)) {
                 return;
             }
-            if (messagesList.get(pos).mimeType.equals("video")) {
+            if ("video".equals(messagesList.get(pos).mimeType)) {
                 url = "file://" + downloadVideo(url);
                 videoUri = Uri.parse(url);
             }
