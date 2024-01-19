@@ -947,29 +947,48 @@ public class MainWebActivity extends MainAppCompatActivity {
                     }
                 }
             }
-
             if(uris != null){
-                // 這裡就可以對 Uri 做處理了
-                String[] fileNames = FileUtils.getContentURIFileNames(this,uris);
-                outputFiles = FileUtils.getFilePathsFromUris(this,uris,fileNames);
-                for(String fileName :fileNames){
-                    int hashCode = fileName.hashCode();
-                    try {
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("onlyKey",String.valueOf(hashCode));
-                        jsonObject.put("mimeType",type);
-                        jsonObject.put("name",fileName);
-                        jsonObject.put("thumbnail","thumbnail");//縮圖
-                        jsonArray.put(jsonObject);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                // 裝置管理 - 限制副檔名
+                boolean restrictFileExtEnabled = SharedPreferencesUtils.getRestrictFileExt(MainWebActivity.this);
+                String fileExtension = SharedPreferencesUtils.getFileExtension(MainWebActivity.this);
+
+                //從手機其他檔案
+                boolean proceedWithSharing = true;
+                if(restrictFileExtEnabled){
+                    String[] fileNames = FileUtils.getContentURIFileNames(this,uris);
+                    boolean allowUpload = FileUtils.isStringInFileExtensions(fileExtension,fileNames);
+                    if (!allowUpload) {
+                        String replacedSymbol = fileExtension.replace(";", "、");
+                        DialogUtils.showDialogMessage(MainWebActivity.this, getString(R.string.upload_failed_title), getString(R.string.upload_failed_text) + replacedSymbol);
+                        proceedWithSharing = false;
+                    }
+                }
+                if(proceedWithSharing){
+                    // 這裡就可以對 Uri 做處理了
+                    String[] fileNames = FileUtils.getContentURIFileNames(this,uris);
+                    outputFiles = FileUtils.getFilePathsFromUris(this,uris,fileNames);
+                    for(String fileName : fileNames){
+                        int hashCode = fileName.hashCode();
+                        try {
+                            JSONObject jsonObject = new JSONObject();
+                            jsonObject.put("onlyKey",String.valueOf(hashCode));
+                            jsonObject.put("mimeType",type);
+                            jsonObject.put("name",fileName);
+                            jsonObject.put("thumbnail","thumbnail");//縮圖
+                            jsonArray.put(jsonObject);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
-            try{
-                sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
-            } catch (JSONException e){
-                e.printStackTrace();
+
+            if(jsonArray.length() != 0){
+                try{
+                    sendToWeb(new JSONObject().put("type","gotoShare").put("data",jsonArray).toString());
+                } catch (JSONException e){
+                    e.printStackTrace();
+                }
             }
         }
     }

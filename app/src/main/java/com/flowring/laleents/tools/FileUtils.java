@@ -1167,31 +1167,35 @@ public class FileUtils {
 
     public static String getUrlFileName(String url, String fileType) {
         String fileName = url.substring(url.lastIndexOf("/") + 1);
-        if (fileName.isEmpty())
+        if(fileName.isEmpty()){
             return "mxcFile" + fileType;
+        }
         return fileName + fileType;
     }
 
     public static String getImageUrlFileName(String url, String mimeType) {
         String fileName = url.substring(url.lastIndexOf("/") + 1);
-        if (fileName.isEmpty())
+        if(fileName.isEmpty()){
             return "mxcFile" + getImageExtension(mimeType);
+        }
         return fileName + getImageExtension(mimeType);
     }
 
     public static String getStickerUrlFileName(String url, String mimeType) {
         url = url.replace("/download", "");
         String fileName = url.substring(url.lastIndexOf("/") + 1);
-        if (fileName.isEmpty())
+        if(fileName.isEmpty()){
             return "sticker" + getImageExtension(mimeType);
+        }
         return fileName;
     }
 
     public static String getApplicationFolder(Context context, String subFolder) {
         File file = new File(context.getExternalFilesDir("").getParentFile(), subFolder);
-        if (file != null) {
-            if (!file.exists())
+        if(file != null) {
+            if(!file.exists()){
                 file.mkdirs();
+            }
             return file.getAbsolutePath();
         }
         return context.getExternalCacheDir().getAbsolutePath();
@@ -1359,6 +1363,28 @@ public class FileUtils {
             }
         }
         return false;
+    }
+
+    public static boolean isStringInFileExtensions(String fileExtension, String[] inputFileType){
+        if(fileExtension.isEmpty()){
+            return false;
+        }
+        String[] extensions = fileExtension.split(";");
+        for (String fileType : inputFileType){
+            boolean matchFound = false;
+            for (String ext : extensions){
+                String fileName = fileType(fileType).replace(".", "");
+                if (fileName.equalsIgnoreCase(ext.trim())) {
+                    matchFound = true;
+                    break;
+                }
+            }
+
+            if(!matchFound){
+                return false;
+            }
+        }
+        return true;
     }
 
     public static String toExtension(String value) {

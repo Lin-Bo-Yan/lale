@@ -140,11 +140,6 @@ public class StringUtils {
 
     }
 
-    //移除 .
-    public static String replace(String data){
-        return data.replace(".", "");
-    }
-
     /**
      * Covert dp to px
      *
