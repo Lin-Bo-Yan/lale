@@ -32,6 +32,9 @@ import java.net.URL;
 
 public class ActivityUtils {
 
+    static String msgIdStatic = "";
+    static String roomIdStatic = "";
+
     static public void gotoWebViewActivity(Activity activity, String url, ActivityResultLauncher<Intent> recodeResult) {
         runOnUiThread(() -> {
             MsgControlCenter.stopRing();
@@ -41,6 +44,7 @@ public class ActivityUtils {
             recodeResult.launch(intent);
         });
     }
+
     static public void gotoMainWebActivity(Context context) {
         Intent intent = new Intent(AllData.context, MainWebActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -66,7 +70,8 @@ public class ActivityUtils {
             String roomIdParse = roomId.replace("room_", ""); //取 'room_' 後面數字
             String msgIdParse = msgId.replace("event_", ""); //取 'event_' 後面數字
             String roomSecret = String.format("%s%s",roomIdParse,msgIdParse);// 組成房間獨立 code
-
+            msgIdStatic = msgId;
+            roomIdStatic = roomId;
             broadcastReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
@@ -74,10 +79,12 @@ public class ActivityUtils {
                         BroadcastEvent event = new BroadcastEvent(intent);
                         if(event.getType() != null){
                             switch (event.getType()){
-                                case CONFERENCE_TERMINATED: // 自己關閉會議室，
-                                    MsgControlCenter.sendEndRequest(roomId,msgId);
+                                case READY_TO_CLOSE: // 自己關閉會議室，
+                                    MsgControlCenter.sendEndRequest(roomIdStatic,msgIdStatic);
                                     LocalBroadcastManager.getInstance(context).unregisterReceiver(broadcastReceiver);
                                     broadcastReceiver = null ;
+                                    msgIdStatic = "";
+                                    roomIdStatic = "";
                                     break;
                             }
                         }

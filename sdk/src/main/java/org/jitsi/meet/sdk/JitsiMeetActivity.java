@@ -359,7 +359,7 @@ public class JitsiMeetActivity extends AppCompatActivity
                         onReadyToClose();
                         break;
                 }
-            } else if ( event.getData() != null){
+            } else if (event.getData() != null){
                 checkJsonAndExecute(event.getData().toString());
             }
         }
