@@ -49,7 +49,7 @@
     <string name="dialog_abnormal_text">The connection status is abnormal, do you wanna log out?</string>
     <string name="dialog_check_network_text">Please check your network connection.</string>
     <string name="dialog_showGetImage_photograph">Photograph</string>
-    <string name="dialog_showGetImage_album">Album</string>
+    <string name="dialog_showGetImage_album">Photo</string>
     <string name="dialog_showGetImage_preset">Preset</string>
     <string name="dialog_camera_permissions">This feature requires camera permission</string>
     <string name="dialog_download_permissions">This feature requires download permission</string>
@@ -164,5 +164,5 @@
     <string name="READ_EXTERNAL_STORAGE">Please allow access to the photo album</string>
     <string name="can_not_read_image">Image Unable Read</string>
     <string name="toast_error">error</string>
-    <string name="wanna_delete">You sure you wanna delete it？</string>
+    <string name="wanna_delete">You sure wanna delete it？</string>
 </resources>

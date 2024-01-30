@@ -11,18 +11,17 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.flowring.laleents.R;
 import com.flowring.laleents.tools.CommonUtils;
 import com.flowring.laleents.tools.StringUtils;
-import com.flowring.laleents.tools.phone.AllData;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class shareActivity extends Activity {
+public class ShareActivity extends Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent intent = new Intent(shareActivity.this, MainWebActivity.class);
+        Intent intent = new Intent(ShareActivity.this, MainWebActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         intent.setType(getIntent().getType());
         StringUtils.HaoLog("testWebActivity BroadcastReceiver " + getIntent().getAction());
@@ -54,7 +53,7 @@ public class shareActivity extends Activity {
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent1); //發送廣播訊息
             startActivity(intent);
         } else {
-            CommonUtils.showToast(shareActivity.this,getLayoutInflater(),getString(R.string.file_type_not_supported),false);
+            CommonUtils.showToast(ShareActivity.this,getLayoutInflater(),getString(R.string.file_type_not_supported),false);
         }
         finish();
     }

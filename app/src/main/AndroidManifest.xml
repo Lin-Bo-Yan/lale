@@ -149,7 +149,7 @@
                 android:value="" />
         </activity>
 
-        <activity android:name=".ui.main.webBody.shareActivity"
+        <activity android:name=".ui.main.webBody.ShareActivity"
             android:exported ="true">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />

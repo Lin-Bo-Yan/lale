@@ -406,7 +406,7 @@ public class EimLoginActivity extends MainAppCompatActivity {
                     break;
                 case "LLU-0002:用戶帳號已停用":
                     runOnUiThread(()->{
-                        DialogUtils.showDialogMessage(EimLoginActivity.this,getString(R.string.personnel_usage_management_title),"");
+                        DialogUtils.showDialogMessage(EimLoginActivity.this,getString(R.string.personnel_usage_management_title));
                     });
                     break;
             }

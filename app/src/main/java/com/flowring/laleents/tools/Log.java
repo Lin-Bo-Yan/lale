@@ -21,7 +21,7 @@ import java.util.List;
 public class Log {
     private static final String NEW_LINE = System.getProperty("line.separator");
     public static boolean mLogcatAppender = BuildConfig.DEBUG;
-  public   static File mLogFile = null;
+    public static File mLogFile = null;
 
 
     public static void i(String TAG, String message) {
@@ -60,8 +60,7 @@ public class Log {
     }
 
     public static void setContext(Context mContext) {
-        if(mLogFile == null)
-        {
+        if(mLogFile == null) {
             mLogFile = new File(FileUtils.getApplicationFolder(mContext, DefinedUtils.FOLDER_FILES) +
                 "/" + "laleToB_logs.log");
             if (!mLogFile.exists()) {
@@ -75,6 +74,7 @@ public class Log {
         }
     }
 
+    // 寫入Log
     private static synchronized void appendLog(String text) {
         final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         android.util.Log.d("TAG", "進行寫入");
@@ -88,8 +88,7 @@ public class Log {
                 android.util.Log.d("TAG", "寫入失敗");
                 e.printStackTrace();
             }
-        }else
-        {
+        } else {
             android.util.Log.d("TAG", "寫入失敗 mLogFile = null");
         }
     }

@@ -2585,7 +2585,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    CommonUtils.showToast(MainWebActivity.this, getLayoutInflater(), getString(R.string.pusher_toast_title), false);
+                    DialogUtils.showDialogMessage(MainWebActivity.this,getString(R.string.pusher_toast_title));
                 }
             });
         }
@@ -2624,7 +2624,7 @@ public class MainWebActivity extends MainAppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    CommonUtils.showToast(MainWebActivity.this, getLayoutInflater(), getString(R.string.pusher_toast_title), false);
+                    DialogUtils.showDialogMessage(MainWebActivity.this,getString(R.string.pusher_toast_title));
                 }
             });
         }
