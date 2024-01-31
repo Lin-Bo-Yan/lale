@@ -417,12 +417,11 @@ public class EimLoginActivity extends MainAppCompatActivity {
     }
 
     private void signOut(){
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences((Context) EimLoginActivity.this);
-        boolean signOut = pref.getBoolean("isSignOut",false);
-        StringUtils.HaoLog("signOut 布林："+signOut);
+        boolean signOut = SharedPreferencesUtils.getSignOut(EimLoginActivity.this);
+        StringUtils.HaoLog("signOut 布林：" + signOut);
         if(signOut){
             DialogUtils.showDialogMessage(EimLoginActivity.this,getString(R.string.unused_account_logged_out));
-            pref.edit().putBoolean("isSignOut", false).apply();
+            SharedPreferencesUtils.clearSignOut(EimLoginActivity.this);
         } else {
             StringUtils.HaoLog("SharedPreferences 沒有值");
         }

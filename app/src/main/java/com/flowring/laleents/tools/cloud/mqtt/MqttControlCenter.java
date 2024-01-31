@@ -4,14 +4,11 @@ import static com.pubnub.api.vendor.Base64.NO_WRAP;
 
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Looper;
-
-import com.flowring.laleents.R;
 import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.model.msg.MsgControlCenter;
 import com.flowring.laleents.model.user.UserControlCenter;
 import com.flowring.laleents.tools.CallbackUtils;
-import com.flowring.laleents.tools.CommonUtils;
+import com.flowring.laleents.tools.SharedPreferencesUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.cloud.api.CloudUtils;
 import com.flowring.laleents.tools.phone.AllData;
@@ -23,19 +20,20 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
 
 public class MqttControlCenter {
+    boolean stopNew;
     String pubTopic = "/event/send";
-
     public MqttClient client;
     int qos = 2;
     int retry = 0;
-    android.os.Handler handler;
+    private MqttConnectOptions connOpts;
+
+    Handler handler;
     Runnable subscribe = new Runnable() {
         @Override
         public void run() {
@@ -81,10 +79,7 @@ public class MqttControlCenter {
     public void DisConnect() {
         stopNew = true;
         handler.post(EndMqtt);
-
     }
-
-    boolean stopNew = false;
 
     public void NewConnect() {
         StringUtils.HaoLog("handler.post 開啟");
@@ -126,10 +121,16 @@ public class MqttControlCenter {
                     client.close();
                 }
             } catch (MqttException | NullPointerException e) {
+                StringUtils.HaoLog("NewConnect錯誤 " + e);
                 e.printStackTrace();
             }
+
             try {
-                connection();
+                if(correct()){
+                    connection();
+                } else {
+                    tokenRefresh();
+                }
             } catch (MqttException e) {
                 e.printStackTrace();
                 if (AllData.context != null) {
@@ -139,8 +140,6 @@ public class MqttControlCenter {
             }
         }
     };
-
-    MqttConnectOptions connOpts;
 
     synchronized String getBroker() {
         String Broker = UserControlCenter.getUserMinInfo().getExternalServerSetting().mqttUrl;
@@ -183,8 +182,6 @@ public class MqttControlCenter {
                 StringUtils.HaoLog("接收消息内容" + new String(message.getPayload()));
                 MsgControlCenter.receiveMsg(new String(message.getPayload()), MsgControlCenter.Source.mqtt);
             }).start();
-
-
         }
 
         @Override
@@ -192,7 +189,6 @@ public class MqttControlCenter {
             new Thread(() -> {
                 System.out.println("hao deliveryComplete" + token.toString());
             }).start();
-
         }
     };
 
@@ -205,37 +201,47 @@ public class MqttControlCenter {
         // MQTT 連接選項
         initConnOpts();
         StringUtils.HaoLog("handler.post 關閉");
-        if(notIsForcedLogOut()){
-            handler.post(NewConnect);
-        } else {
-            DisConnect();
-        }
+        handler.post(NewConnect);
     }
 
-    public boolean notIsForcedLogOut(){
-        HttpReturn httpReturn = CloudUtils.iCloudUtils.checkToken(new CallbackUtils.TimeoutReturn() {
-            @Override
-            public void Callback(IOException timeout) {
-                StringUtils.HaoLog("checkToken 網路異常");
-                new Handler(Looper.getMainLooper()).post(() -> {
-                    if (AllData.activity != null){
-                        CommonUtils.showToast(AllData.activity,AllData.activity.getLayoutInflater(),AllData.activity.getString(R.string.network_anomaly),false);
-                    } else {
-                        StringUtils.HaoLog("AllData.activity 為 null，無法顯示 Toast");
-                    }
-                });
+    private boolean correct(){
+        if(UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim){
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.checkToken(new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("checkToken 網路異常");
+                }
+            });
+            if(httpReturn.status != 200){
+                String msg = httpReturn.msg;
+                StringUtils.HaoLog("MQ檢查token是否有效= " + msg);
+                return false;
             }
-        });
-        if(httpReturn.status != 200){
-            String msg = httpReturn.msg;
-            StringUtils.HaoLog("notIsForcedLogOut MQ檢查token是否正確= " + msg);
-            switch (msg){
-                case "LLUD-0003:FORCED_LOGOUT":
-                case "LLUD-0003:LOGIN_FORBIDDEN":
-                    return false;
+            return true;
+        }
+        return false;
+    }
+
+    private void tokenRefresh() throws MqttException{
+        if(UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim){
+            HttpReturn httpReturn = CloudUtils.iCloudUtils.reToken(new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("reToken 網路異常");
+                }
+            });
+            if(httpReturn.status != 200){
+                if ("refresh token 逾時".equals(httpReturn.msg)) {
+                    StringUtils.HaoLog("App過久未使用您的帳號已被登出");
+                    SharedPreferencesUtils.saveSignOut(true);
+                } else {
+                    StringUtils.HaoLog("連線狀態異常 " + httpReturn.msg);
+                }
+            } else {
+                StringUtils.HaoLog("tokenRefresh " + httpReturn.msg);
+                connection();
             }
         }
-        return true;
     }
 
     void initConnOpts() {
@@ -258,13 +264,13 @@ public class MqttControlCenter {
                     client.close();
                 } catch (MqttException | NullPointerException e) {
                     e.printStackTrace();
+                    StringUtils.HaoLog("EndMqtt錯誤 " + e);
                 }
             }
         }
     };
 
     public void publishMessage(String data) {
-
         handler.post(new Runnable() {
             @Override
             public void run() {

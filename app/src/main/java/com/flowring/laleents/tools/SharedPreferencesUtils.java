@@ -194,4 +194,21 @@ public class SharedPreferencesUtils {
         pref = PreferenceManager.getDefaultSharedPreferences(context);
         return pref.getString("chosen_language", "zh-TW");
     }
+
+    public static void saveSignOut(boolean SignOutBoolean){
+        pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
+        pref.edit().putBoolean("isSignOut", SignOutBoolean).apply();
+    }
+
+    public static boolean getSignOut(Activity activity){
+        pref = PreferenceManager.getDefaultSharedPreferences(activity);
+        return pref.getBoolean("isSignOut",false);
+    }
+
+    public static void clearSignOut(Activity activity) {
+        pref = PreferenceManager.getDefaultSharedPreferences(activity);
+        if (pref.contains("isSignOut")) {
+            pref.edit().remove("isSignOut").apply();
+        }
+    }
 }

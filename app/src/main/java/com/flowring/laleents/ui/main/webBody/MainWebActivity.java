@@ -91,7 +91,6 @@ import com.flowring.laleents.tools.ActivityUtils;
 import com.flowring.laleents.tools.CallbackUtils;
 import com.flowring.laleents.tools.CommonUtils;
 import com.flowring.laleents.tools.NetUtils;
-import com.flowring.laleents.tools.ThumbnailUtils;
 import com.flowring.laleents.tools.DialogUtils;
 import com.flowring.laleents.tools.download.DownloadUtils;
 import com.flowring.laleents.tools.FileUtils;
@@ -2316,8 +2315,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                     if (httpReturn.status != 200) {
                         if ("refresh token 逾時".equals(httpReturn.msg)) {
                             StringUtils.HaoLog("App過久未使用您的帳號已被登出");
-                            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
-                            pref.edit().putBoolean("isSignOut", true).apply();
+                            SharedPreferencesUtils.saveSignOut(true);
                             Logout(false);
                         } else {
                             if(shownLock){
@@ -2369,8 +2367,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                         case "refresh token 逾時":
                             if(isFirstDisplay){
                                 StringUtils.HaoLog("App過久未使用您的帳號已被登出");
-                                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(AllData.context);
-                                pref.edit().putBoolean("isSignOut", true).apply();
+                                SharedPreferencesUtils.saveSignOut(true);
                                 Logout(false);
                             }
                             isFirstDisplay = false;
