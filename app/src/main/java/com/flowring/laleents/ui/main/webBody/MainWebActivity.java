@@ -350,6 +350,7 @@ public class MainWebActivity extends MainAppCompatActivity {
     public static boolean isThreadStarted = false;
     //防止裝置管理訊息框重複顯示
     public static boolean isFirstDisplay = true;
+    private static AlertDialog pusherFirstDisplay = null;
     private boolean shownLock = true;
     private boolean urlsIsOk = true;
     private boolean init = false;
@@ -2582,12 +2583,12 @@ public class MainWebActivity extends MainAppCompatActivity {
             }, 3000);
         } else {
             SharedPreferencesUtils.firebasePusherErrorCode(500);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    DialogUtils.showDialogMessage(MainWebActivity.this,getString(R.string.pusher_toast_title));
-                }
-            });
+            if(pusherFirstDisplay == null || !pusherFirstDisplay.isShowing()){
+                pusherFirstDisplay = DialogUtils.showDialogMessage(MainWebActivity.this, "", getString(R.string.pusher_toast_title), new CallbackUtils.noReturn() {
+                    @Override
+                    public void Callback() {}
+                });
+            }
         }
     }
 
@@ -2621,12 +2622,12 @@ public class MainWebActivity extends MainAppCompatActivity {
             }, 3000);
         } else {
             SharedPreferencesUtils.firebasePusherErrorCode(500);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    DialogUtils.showDialogMessage(MainWebActivity.this,getString(R.string.pusher_toast_title));
-                }
-            });
+            if(pusherFirstDisplay == null || !pusherFirstDisplay.isShowing()){
+                pusherFirstDisplay = DialogUtils.showDialogMessage(MainWebActivity.this, "", getString(R.string.pusher_toast_title), new CallbackUtils.noReturn() {
+                    @Override
+                    public void Callback() {}
+                });
+            }
         }
     }
     private void setEimSystemInfor(){
