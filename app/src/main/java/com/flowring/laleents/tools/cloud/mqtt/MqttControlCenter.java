@@ -8,6 +8,7 @@ import com.flowring.laleents.model.HttpReturn;
 import com.flowring.laleents.model.msg.MsgControlCenter;
 import com.flowring.laleents.model.user.UserControlCenter;
 import com.flowring.laleents.tools.CallbackUtils;
+import com.flowring.laleents.tools.CommonUtils;
 import com.flowring.laleents.tools.SharedPreferencesUtils;
 import com.flowring.laleents.tools.StringUtils;
 import com.flowring.laleents.tools.cloud.api.CloudUtils;
@@ -90,11 +91,8 @@ public class MqttControlCenter {
     Runnable NewConnect = new Runnable() {
         @Override
         synchronized public void run() {
-            if (stopNew){
-                return;
-            }
             StringUtils.HaoLog("NewConnect " + Thread.currentThread().getName());
-            if (UserControlCenter.getUserMinInfo() == null || !UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim){
+            if (stopNew || UserControlCenter.getUserMinInfo() == null || !UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim){
                 return;
             }
             try {
@@ -126,17 +124,9 @@ public class MqttControlCenter {
             }
 
             try {
-                if(correct()){
-                    connection();
-                } else {
-                    tokenRefresh();
-                }
+                attemptConnection();
             } catch (MqttException e) {
-                e.printStackTrace();
-                if (AllData.context != null) {
-                    LocalBroadcastControlCenter.send(AllData.context, LocalBroadcastControlCenter.ACTION_MQTT_Error, e.toString());
-                }
-                StringUtils.HaoLog("重新連線失敗 " + e);
+                handleMqttException(e);
             }
         }
     };
@@ -204,47 +194,7 @@ public class MqttControlCenter {
         handler.post(NewConnect);
     }
 
-    private boolean correct(){
-        if(UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim){
-            HttpReturn httpReturn = CloudUtils.iCloudUtils.checkToken(new CallbackUtils.TimeoutReturn() {
-                @Override
-                public void Callback(IOException timeout) {
-                    StringUtils.HaoLog("checkToken 網路異常");
-                }
-            });
-            if(httpReturn.status != 200){
-                String msg = httpReturn.msg;
-                StringUtils.HaoLog("MQ檢查token是否有效= " + msg);
-                return false;
-            }
-            return true;
-        }
-        return false;
-    }
-
-    private void tokenRefresh() throws MqttException{
-        if(UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim){
-            HttpReturn httpReturn = CloudUtils.iCloudUtils.reToken(new CallbackUtils.TimeoutReturn() {
-                @Override
-                public void Callback(IOException timeout) {
-                    StringUtils.HaoLog("reToken 網路異常");
-                }
-            });
-            if(httpReturn.status != 200){
-                if ("refresh token 逾時".equals(httpReturn.msg)) {
-                    StringUtils.HaoLog("App過久未使用您的帳號已被登出");
-                    SharedPreferencesUtils.saveSignOut(true);
-                } else {
-                    StringUtils.HaoLog("連線狀態異常 " + httpReturn.msg);
-                }
-            } else {
-                StringUtils.HaoLog("tokenRefresh " + httpReturn.msg);
-                connection();
-            }
-        }
-    }
-
-    void initConnOpts() {
+    private void initConnOpts() {
         connOpts = new MqttConnectOptions();
         connOpts.setCleanSession(true);
         connOpts.setAutomaticReconnect(true);
@@ -305,6 +255,49 @@ public class MqttControlCenter {
         StringUtils.HaoLog("connOpts");
         handler.post(subscribe);
         StringUtils.HaoLog("重新連線成功");
+    }
+
+    private void attemptConnection() throws MqttException {
+        boolean isAppForeground = CommonUtils.foregrounded();
+        if (isAppForeground || correct()) {
+            connection();
+        }
+    }
+
+    private boolean correct(){
+        HttpReturn reToken = CloudUtils.iCloudUtils.reToken(new CallbackUtils.TimeoutReturn() {
+            @Override
+            public void Callback(IOException timeout) {
+                StringUtils.HaoLog("reToken 網路異常");
+            }
+        });
+        if(reToken.status != 200){
+            String msg = reToken.msg;
+            StringUtils.HaoLog("MQ檢查token是否過期= " + msg);
+            return false;
+        } else {
+            HttpReturn checkToken = CloudUtils.iCloudUtils.checkToken(new CallbackUtils.TimeoutReturn() {
+                @Override
+                public void Callback(IOException timeout) {
+                    StringUtils.HaoLog("checkToken 網路異常");
+                }
+            });
+            if(checkToken.status != 200 ){
+                String msg = checkToken.msg;
+                StringUtils.HaoLog("MQ檢查token是否有效= " + msg);
+                return false;
+            } else {
+                return true;
+            }
+        }
+    }
+
+    private void handleMqttException(MqttException e) {
+        e.printStackTrace();
+        if (AllData.context != null) {
+            LocalBroadcastControlCenter.send(AllData.context, LocalBroadcastControlCenter.ACTION_MQTT_Error, e.toString());
+        }
+        StringUtils.HaoLog("重新連線失敗 " + e);
     }
 
 }
