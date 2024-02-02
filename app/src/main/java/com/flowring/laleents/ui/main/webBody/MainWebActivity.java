@@ -1,6 +1,7 @@
 package com.flowring.laleents.ui.main.webBody;
 
 
+import static com.flowring.laleents.tools.UiThreadUtil.runOnUiThread;
 import static java.security.AccessController.getContext;
 import android.Manifest;
 import android.animation.LayoutTransition;
@@ -514,7 +515,9 @@ public class MainWebActivity extends MainAppCompatActivity {
                 boolean allowUpload = FileUtils.isStringInFileExtensions(fileExtension,fileType);
                 if (!allowUpload) {
                     String replacedSymbol = fileExtension.replace(";", "、");
-                    DialogUtils.showDialogMessage(MainWebActivity.this,getString(R.string.upload_failed_title),getString(R.string.upload_failed_text) + replacedSymbol);
+                    runOnUiThread(()->{
+                        DialogUtils.showDialogMessage(MainWebActivity.this,getString(R.string.upload_failed_title),getString(R.string.upload_failed_text) + replacedSymbol);
+                    });
                     uris = new Uri[0];
                 }
             }
@@ -825,7 +828,9 @@ public class MainWebActivity extends MainAppCompatActivity {
                         boolean allowUpload = FileUtils.isStringInFileExtensions(fileExtension, type);
                         if (!allowUpload) {
                             String replacedSymbol = fileExtension.replace(";", "、");
-                            DialogUtils.showDialogMessage(MainWebActivity.this, getString(R.string.upload_failed_title), getString(R.string.upload_failed_text) + replacedSymbol);
+                            runOnUiThread(()->{
+                                DialogUtils.showDialogMessage(MainWebActivity.this, getString(R.string.upload_failed_title), getString(R.string.upload_failed_text) + replacedSymbol);
+                            });
                             proceedWithSharing = false;
                         }
                     }
@@ -878,7 +883,9 @@ public class MainWebActivity extends MainAppCompatActivity {
                     boolean allowUpload = FileUtils.isStringInFileExtensions(fileExtension, type);
                     if (!allowUpload) {
                         String replacedSymbol = fileExtension.replace(";", "、");
-                        DialogUtils.showDialogMessage(MainWebActivity.this, getString(R.string.upload_failed_title), getString(R.string.upload_failed_text) + replacedSymbol);
+                        runOnUiThread(()->{
+                            DialogUtils.showDialogMessage(MainWebActivity.this, getString(R.string.upload_failed_title), getString(R.string.upload_failed_text) + replacedSymbol);
+                        });
                         proceedWithSharing = false;
                     }
                 }
@@ -960,7 +967,9 @@ public class MainWebActivity extends MainAppCompatActivity {
                     boolean allowUpload = FileUtils.isStringInFileExtensions(fileExtension,fileNames);
                     if (!allowUpload) {
                         String replacedSymbol = fileExtension.replace(";", "、");
-                        DialogUtils.showDialogMessage(MainWebActivity.this, getString(R.string.upload_failed_title), getString(R.string.upload_failed_text) + replacedSymbol);
+                        runOnUiThread(()->{
+                            DialogUtils.showDialogMessage(MainWebActivity.this, getString(R.string.upload_failed_title), getString(R.string.upload_failed_text) + replacedSymbol);
+                        });
                         proceedWithSharing = false;
                     }
                 }
@@ -2122,7 +2131,9 @@ public class MainWebActivity extends MainAppCompatActivity {
                     if(status == 200){
                         cancelNotification();
                     } else {
-                        DialogUtils.showDialogMessage(MainWebActivity.this,getString(R.string.logout_failed_title));
+                        runOnUiThread(()->{
+                            DialogUtils.showDialogMessage(MainWebActivity.this,getString(R.string.logout_failed_title));
+                        });
                     }
                 } else {
                     cancelNotification();
@@ -2584,10 +2595,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         } else {
             SharedPreferencesUtils.firebasePusherErrorCode(500);
             if(pusherFirstDisplay == null || !pusherFirstDisplay.isShowing()){
-                pusherFirstDisplay = DialogUtils.showDialogMessage(MainWebActivity.this, "", getString(R.string.pusher_toast_title), new CallbackUtils.noReturn() {
-                    @Override
-                    public void Callback() {}
-                });
+                pusherFirstDisplay = DialogUtils.showDialogMessage(MainWebActivity.this,getString(R.string.pusher_toast_title));
             }
         }
     }
@@ -2623,10 +2631,7 @@ public class MainWebActivity extends MainAppCompatActivity {
         } else {
             SharedPreferencesUtils.firebasePusherErrorCode(500);
             if(pusherFirstDisplay == null || !pusherFirstDisplay.isShowing()){
-                pusherFirstDisplay = DialogUtils.showDialogMessage(MainWebActivity.this, "", getString(R.string.pusher_toast_title), new CallbackUtils.noReturn() {
-                    @Override
-                    public void Callback() {}
-                });
+                pusherFirstDisplay = DialogUtils.showDialogMessage(MainWebActivity.this,getString(R.string.pusher_toast_title));
             }
         }
     }

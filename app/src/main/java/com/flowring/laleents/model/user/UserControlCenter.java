@@ -362,12 +362,14 @@ public class UserControlCenter {
                             String info = new Gson().toJson(afReturn.data);
                             callback.Callback(info);
                         } else {
-                            DialogUtils.showDialogMessage(context,context.getString(R.string.enter_account_password));
+                            runOnUiThread(()->{
+                                DialogUtils.showDialogMessage(context,context.getString(R.string.enter_account_password));
+                            });
                         }
                     }
                 }).start();
             } else {
-                StringUtils.HaoLog("getAflogin= "+"url 格式不正確");
+                StringUtils.HaoLog("getAflogin= " + "url 格式不正確");
                 DialogUtils.showDialogMessage(context,context.getString(R.string.dialog_login_warn_url));
             }
         }

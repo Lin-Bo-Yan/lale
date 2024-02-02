@@ -209,34 +209,33 @@ public class DialogUtils {
         }
     }
 
-    static public void showDialogMessage(Context context, String text) {
-        runOnUiThread(()->{
-            new AlertDialog.Builder(context)
-                    .setMessage(text)
-                    .setPositiveButton(context.getString(R.string.sure_button), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    }).setCancelable(true)
-                    .create().show();
-        });
-
+    public static AlertDialog showDialogMessage(Context context, String text) {
+        AlertDialog alertDialog = new AlertDialog.Builder(context)
+                .setMessage(text)
+                .setPositiveButton(context.getString(R.string.sure_button), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).setCancelable(true)
+                .create();
+        alertDialog.show();
+        return alertDialog;
     }
 
-    static public void showDialogMessage(Context context, String title, String text) {
-        runOnUiThread(()->{
-            new AlertDialog.Builder(context)
-                    .setTitle(title)
-                    .setMessage(text)
-                    .setPositiveButton(context.getString(R.string.sure_button), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
-                    .create().show();
-        });
+    public static AlertDialog showDialogMessage(Context context, String title, String text) {
+        AlertDialog alertDialog = new AlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage(text)
+                .setPositiveButton(context.getString(R.string.sure_button), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .create();
+        alertDialog.show();
+        return alertDialog;
     }
 
     static public AlertDialog showDialogMessage(Context context, String title, String text, CallbackUtils.noReturn callback) {

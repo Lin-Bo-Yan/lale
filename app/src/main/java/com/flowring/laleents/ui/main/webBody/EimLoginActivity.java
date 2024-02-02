@@ -186,7 +186,9 @@ public class EimLoginActivity extends MainAppCompatActivity {
                     //errMsg = getErrorMessage(errMsg);
                     //}
                     StringUtils.HaoLog(errMsg);
-                    DialogUtils.showDialogMessage(EimLoginActivity.this,getString(R.string.enter_account_password));
+                    runOnUiThread(()->{
+                        DialogUtils.showDialogMessage(EimLoginActivity.this,getString(R.string.enter_account_password));
+                    });
                     return;
                 }
 
