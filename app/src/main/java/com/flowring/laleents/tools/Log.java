@@ -100,6 +100,7 @@ public class Log {
         appendLog("Device : " + android.os.Build.DEVICE);
         appendLog("Codename : " + android.os.Build.VERSION.CODENAME);
         appendLog("Release : " + android.os.Build.VERSION.RELEASE);
+        appendLog("AndroidSDK : " + android.os.Build.VERSION.SDK_INT);
     }
 
     public static void saveLog(Activity activity) {

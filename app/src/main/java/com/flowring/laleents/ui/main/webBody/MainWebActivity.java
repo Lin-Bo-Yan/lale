@@ -165,14 +165,7 @@ public class MainWebActivity extends MainAppCompatActivity {
                 StringUtils.HaoLog("詢問使用重啟");
                 PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.RECEIVE_BOOT_COMPLETED, getString(R.string.dialog_reboot_permissions));
             }
-            if (PermissionUtils.checkPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                StringUtils.HaoLog("可以使用讀寫");
-            } else {
-                PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE, getString(R.string.dialog_download_permissions));
-            }
 
-            StringUtils.HaoLog("權限檢查= 手機設備幾版?" + Build.VERSION.SDK_INT);
-            StringUtils.HaoLog("權限檢查= 是否大於33?" + (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU));
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
                 if(PermissionUtils.checkPermission(MainWebActivity.this, Manifest.permission.POST_NOTIFICATIONS)){
                     StringUtils.HaoLog("Android 13版之後，可以使用通知");
@@ -323,12 +316,20 @@ public class MainWebActivity extends MainAppCompatActivity {
                 StringUtils.HaoLog("ShareActivityBroadcastReceiver= " + action + " " + intent.getStringExtra("data"));
                 switch (action){
                     case Intent.ACTION_SEND:
-                        shareToWeb(intent);
-                        StringUtils.HaoLog("ShareActivity ACTION_SEND");
+                        if (PermissionUtils.checkPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) || (Build.VERSION.SDK_INT > Build.VERSION_CODES.R)) {
+                            shareToWeb(intent);
+                            StringUtils.HaoLog("ShareActivity ACTION_SEND");
+                        } else {
+                            PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE, getString(R.string.dialog_download_permissions));
+                        }
                         break;
                     case Intent.ACTION_SEND_MULTIPLE:
-                        multipleShareToWeb(intent);
-                        StringUtils.HaoLog("ShareActivity ACTION_SEND_MULTIPLE");
+                        if (PermissionUtils.checkPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) || (Build.VERSION.SDK_INT > Build.VERSION_CODES.R)) {
+                            multipleShareToWeb(intent);
+                            StringUtils.HaoLog("ShareActivity ACTION_SEND_MULTIPLE");
+                        } else {
+                            PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE, getString(R.string.dialog_download_permissions));
+                        }
                         break;
                 }
             }
@@ -1007,9 +1008,17 @@ public class MainWebActivity extends MainAppCompatActivity {
         if (!init) {
             init = true;
             if (getIntent().getAction() != null && getIntent().getAction().equals(Intent.ACTION_SEND)) {
-                shareToWeb(getIntent());
+                if (PermissionUtils.checkPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) || (Build.VERSION.SDK_INT > Build.VERSION_CODES.R)) {
+                    shareToWeb(getIntent());
+                } else {
+                    PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE, getString(R.string.dialog_download_permissions));
+                }
             } else if (getIntent().getAction() != null && getIntent().getAction().equals(Intent.ACTION_SEND_MULTIPLE)) {
-                multipleShareToWeb(getIntent());
+                if (PermissionUtils.checkPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) || (Build.VERSION.SDK_INT > Build.VERSION_CODES.R)) {
+                    multipleShareToWeb(getIntent());
+                } else {
+                    PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE, getString(R.string.dialog_download_permissions));
+                }
             } else if (UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim){
                 UserControlCenter.googlePlatformVersion(MainWebActivity.this);
             } else {
