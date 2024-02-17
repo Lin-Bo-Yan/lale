@@ -320,6 +320,8 @@ public class MainWebActivity extends MainAppCompatActivity {
                             shareToWeb(intent);
                             StringUtils.HaoLog("ShareActivity ACTION_SEND");
                         } else {
+                            shareIntent = intent;
+                            singleShare = true;
                             PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE, getString(R.string.dialog_download_permissions));
                         }
                         break;
@@ -328,6 +330,8 @@ public class MainWebActivity extends MainAppCompatActivity {
                             multipleShareToWeb(intent);
                             StringUtils.HaoLog("ShareActivity ACTION_SEND_MULTIPLE");
                         } else {
+                            shareIntent = intent;
+                            multipleShare = true;
                             PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE, getString(R.string.dialog_download_permissions));
                         }
                         break;
@@ -368,6 +372,9 @@ public class MainWebActivity extends MainAppCompatActivity {
     private int urlsNew = 0;
     private AlertDialog requestDrawOverlaysDialog = null;
     public static ExecutorService executorService;
+    private Intent shareIntent = null;
+    private boolean singleShare = false;
+    private boolean multipleShare = false;
 
     final Handler handler = new Handler();
     Runnable log = new Runnable() {
@@ -460,6 +467,16 @@ public class MainWebActivity extends MainAppCompatActivity {
                 sendToWeb(jsonObject.toString());
             } catch (JSONException e) {
                 e.printStackTrace();
+            }
+        } else if(permissions[0].equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+            if(singleShare){
+                shareToWeb(shareIntent);
+                shareIntent = null;
+                singleShare = false;
+            } else if(multipleShare){
+                multipleShareToWeb(shareIntent);
+                shareIntent = null;
+                multipleShare = false;
             }
         }
     }
@@ -1011,12 +1028,17 @@ public class MainWebActivity extends MainAppCompatActivity {
                 if (PermissionUtils.checkPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) || (Build.VERSION.SDK_INT > Build.VERSION_CODES.R)) {
                     shareToWeb(getIntent());
                 } else {
+                    shareIntent = getIntent();
+                    singleShare = true;
                     PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE, getString(R.string.dialog_download_permissions));
                 }
             } else if (getIntent().getAction() != null && getIntent().getAction().equals(Intent.ACTION_SEND_MULTIPLE)) {
+                // 這邊 Bundle 沒資料，基本上沒辦法馬上分享出去，此段程式無用
                 if (PermissionUtils.checkPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) || (Build.VERSION.SDK_INT > Build.VERSION_CODES.R)) {
                     multipleShareToWeb(getIntent());
                 } else {
+                    shareIntent = getIntent();
+                    multipleShare = true;
                     PermissionUtils.requestPermission(MainWebActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE, getString(R.string.dialog_download_permissions));
                 }
             } else if (UserControlCenter.getUserMinInfo().eimUserData.isLaleAppEim){

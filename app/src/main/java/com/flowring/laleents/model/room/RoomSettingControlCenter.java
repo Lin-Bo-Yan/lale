@@ -36,8 +36,6 @@ public class RoomSettingControlCenter {
             HttpReturn httpReturn = CloudUtils.iCloudUtils.delRecord(Roomid);
             callback.Callback(httpReturn);
         }).start();
-
-
     }
 
     public static void getRoomSetting(String Roomid, CallbackUtils.ReturnData<RoomSetting> callback) {
@@ -137,7 +135,6 @@ public class RoomSettingControlCenter {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
             }
             return friendInfos;
         } else {
@@ -209,7 +206,6 @@ public class RoomSettingControlCenter {
     }
 
     public static void setHead(String groupId, File file, CallbackUtils.ReturnHttp callback) {
-
         new Thread(() -> {
             HttpReturn httpReturn = CloudUtils.iCloudUtils.updateGroupAvatar(groupId, file);
             if (httpReturn != null) {
@@ -321,6 +317,5 @@ public class RoomSettingControlCenter {
             CloudUtils.CloundTask(CloudUtils.iCloudUtils.getGroupInfo(groupId), callback, GroupInfo.class);
         }).start();
     }
-
 
 }

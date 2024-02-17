@@ -85,8 +85,9 @@ public class WaitAnswerActivity extends MainAppCompatActivity {
             RoomMinInfo roomMinInfo = AllData.getRoomMinInfoNoNull(MessageInfo.room_id);
             UserControlCenter.getOrgtreeuserimage();
             runOnUiThread(() -> {
-                if (roomMinInfo == null)
+                if (roomMinInfo == null){
                     finish();
+                }
                 StringUtils.HaoLog("roomMinInfo=" + new Gson().toJson(roomMinInfo));
 
                 video_user_caller_txt = findViewById(R.id.video_user_caller_txt);
@@ -97,7 +98,6 @@ public class WaitAnswerActivity extends MainAppCompatActivity {
                 video_user_caller_name.setText(roomMinInfo.name);
                 end = findViewById(R.id.end);
                 findViewById(R.id.endButton).setOnClickListener(view -> {
-
                     MsgControlCenter.sendRejectRequest(roomMinInfo.id, MessageInfo.id);
                     finish();
                 });
@@ -128,11 +128,8 @@ public class WaitAnswerActivity extends MainAppCompatActivity {
                     MsgControlCenter.sendApplyRequest(roomMinInfo.id, MessageInfo.id);
                     finish();
                 });
-
             });
         }).start();
-
-
     }
 
     @Override
