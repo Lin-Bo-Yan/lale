@@ -2,15 +2,12 @@ package org.jitsi.meet.sdk.tools.cloud;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-
 import org.jitsi.meet.sdk.log.StringUtils;
 import org.jitsi.meet.sdk.model.HttpReturn;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;

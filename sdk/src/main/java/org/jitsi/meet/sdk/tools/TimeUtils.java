@@ -1,8 +1,6 @@
 package org.jitsi.meet.sdk.tools;
 
-import org.jitsi.meet.sdk.log.StringUtils;
 import org.jitsi.meet.sdk.tools.TaskUtils.DateTask;
-
 import java.util.Timer;
 
 public class TimeUtils {

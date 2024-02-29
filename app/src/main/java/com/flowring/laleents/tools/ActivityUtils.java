@@ -25,7 +25,6 @@ import org.jitsi.meet.sdk.BroadcastEvent;
 import org.jitsi.meet.sdk.JitsiMeetActivity;
 import org.jitsi.meet.sdk.JitsiMeetConferenceOptions;
 import org.jitsi.meet.sdk.JitsiMeetUserInfo;
-import org.jitsi.meet.sdk.log.StringUtils;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -58,7 +57,10 @@ public class ActivityUtils {
                                          String mqttHost, String jitsiDomain, String callType, String msgId, String roomId, String roomName, boolean isGroupCall
     ) {
         //判斷lale server是不是新版
-        if(true){
+        String baseVersion = "1.6.10";
+        String laleVersion = UserControlCenter.getUserMinInfo().externalServerSetting.applicationVersion.split("-")[0];
+        boolean isNew = StringUtils.laleVersion(laleVersion,baseVersion);
+        if(isNew){
             Bundle bundle = new Bundle();
             bundle.putString("displayName", displayName);
             bundle.putString("email", "your.email@example.com");

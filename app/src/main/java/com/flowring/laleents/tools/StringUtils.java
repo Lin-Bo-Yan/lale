@@ -217,6 +217,20 @@ public class StringUtils {
         return false;
     }
 
+    public static boolean laleVersion(String version,String baseVersion) {
+        String[] versionParts = version.split("\\.");
+        String[] baseVersionParts = baseVersion.split("\\.");
+
+        int length = Math.max(versionParts.length, baseVersionParts.length);
+        for (int i = 0; i < length; i++) {
+            int versionPart = i < versionParts.length ? Integer.parseInt(versionParts[i]) : 0;
+            int baseVersionPart = i < baseVersionParts.length ? Integer.parseInt(baseVersionParts[i]) : 0;
+            if (versionPart < baseVersionPart) return false;
+            if (versionPart > baseVersionPart) return true;
+        }
+        return true;
+    }
+
     public static Bitmap drawBitmap(String data) {
 
         int[] color = new int[]{
