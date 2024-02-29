@@ -286,7 +286,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (data.is_lale_ecosystem_af_notify()) {
             try {
                 String msg = new JSONObject(data.content).optString("data");
-                StringUtils.HaoLog("Notification= "+msg);
+                StringUtils.HaoLog("Notification= " + msg);
                 workNotifi = new Gson().fromJson(msg, workNotifi.class);
                 intent.putExtra("Notification", notificationBody);
                 intent.putExtra("roomInfo", data.room_id);
