@@ -7,8 +7,8 @@ android {
         applicationId "com.flowring.laleents"
         minSdkVersion 28
         targetSdkVersion 33
-        versionCode 175
-        versionName "1.4.1.0"
+        versionCode 176
+        versionName "1.4.2.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         ndkVersion "21.3.6528147"
     }
