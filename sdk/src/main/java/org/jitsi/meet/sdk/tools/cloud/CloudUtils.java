@@ -18,8 +18,8 @@ public class CloudUtils implements ICloudUtils{
     static public ICloudUtils iCloudUtils = new CloudUtils();
 
     @Override
-    public HttpReturn callHeartbeat(String jitsiDomain, String userId, String laleToken) {
-        if(jitsiDomain == null || jitsiDomain.isEmpty()){
+    public HttpReturn callHeartbeat(String messageServerUrl, String userId, String laleToken) {
+        if(messageServerUrl == null || messageServerUrl.isEmpty()){
             return new HttpReturn();
         }
 
@@ -29,7 +29,7 @@ public class CloudUtils implements ICloudUtils{
         RequestBody body = RequestBody.create(mediaType, new JSONObject(map).toString());
 
         Request.Builder request = new Request.Builder()
-                .url(jitsiDomain + "/lalemessage/api/messages/calling/alive")
+                .url(messageServerUrl + "/api/messages/calling/alive")
                 .method("PUT", body)
                 .addHeader("Authorization", "Bearer " + laleToken);
 

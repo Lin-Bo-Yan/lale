@@ -104,6 +104,7 @@ public class ActivityUtils {
             try {
                 options = new JitsiMeetConferenceOptions.Builder()
                         .setServerURL(new URL(jitsiDomain))
+                        .setMessageServerURL(new URL(UserControlCenter.getUserMinInfo().eimUserData.lale_external_server_info.messageServerUrl))
                         .setFeatureFlag("pip.enabled",  true)
                         .setFeatureFlag("welcomepage.enabled",  false)
                         .setFeatureFlag("readOnlyName",  true)

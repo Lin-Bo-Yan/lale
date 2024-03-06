@@ -9,5 +9,5 @@ public interface ICloudUtils {
      * 通話心跳包
      */
     @WorkerThread
-    HttpReturn callHeartbeat(String jitsiDomain,String userId,String laleToken);
+    HttpReturn callHeartbeat(String messageServerUrl,String userId,String laleToken);
 }

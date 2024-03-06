@@ -183,7 +183,7 @@ public class JitsiMeetActivity extends AppCompatActivity
 
     public void join(JitsiMeetConferenceOptions options) {
         if (this.jitsiView  != null) {
-            TimeUtils.startCallHeartbeat(options.getToken(), options.getUserId(), String.valueOf(options.getServerURL()));
+            TimeUtils.startCallHeartbeat(options.getToken(), options.getUserId(), String.valueOf(options.getMessageServerURL()));
             this.jitsiView.join(options);
         } else {
             JitsiMeetLogger.w("Cannot join, view is null");
